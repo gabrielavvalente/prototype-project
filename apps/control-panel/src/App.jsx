@@ -8,6 +8,7 @@ import NotAllowed from './shell/NotAllowed.jsx';
 import PillarLayout from './shell/PillarLayout.jsx';
 import PillarPicker from './shell/PillarPicker.jsx';
 import StartScreen from './shell/StartScreen.jsx';
+import WorkflowTab from './workflow/WorkflowTab.jsx';
 
 // Every signed-in page: header on top, the page below. Only people holding a Control Panel role
 // get past it (FR-002).
@@ -49,7 +50,7 @@ const router = createHashRouter([
         element: <PillarLayout />,
         children: [
           { index: true, element: <Navigate to="workflow" replace /> },
-          { path: 'workflow/*', element: <TabPlaceholder title="Workflow" /> },
+          { path: 'workflow/*', element: <WorkflowTab /> },
           { path: 'master-data/*', element: <TabPlaceholder title="Master data" /> },
           { path: 'audit', element: <TabPlaceholder title="Audit" /> },
         ],

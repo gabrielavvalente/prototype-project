@@ -213,3 +213,331 @@
   height: 16px;
   border-radius: 5px;
 }
+
+/* Workflow tab */
+
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
+}
+
+.segmented-item {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.segmented-item.active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.field--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 420px;
+}
+
+.field--inline .field-label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.field--inline select {
+  flex: 1;
+}
+
+/* The grid scrolls sideways inside its card on narrow screens; the level column stays visible. */
+.grid-card {
+  /* position keeps the hidden screen-reader labels of the cells inside the scrolling card */
+  position: relative;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.workflow-grid {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: var(--font-size-small);
+}
+
+.workflow-grid th,
+.workflow-grid td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.workflow-grid td {
+  min-width: 140px;
+}
+
+.workflow-grid thead th {
+  background: var(--color-surface-muted);
+  color: var(--color-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.workflow-grid tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 150px;
+  background: var(--color-surface);
+  font-weight: 400;
+}
+
+.workflow-grid tbody th strong,
+.workflow-grid tbody th small {
+  display: block;
+}
+
+.workflow-grid tbody th small,
+.cell-locked small,
+.cell-switch small {
+  color: var(--color-muted);
+  font-size: var(--font-size-tiny);
+}
+
+.workflow-grid .row--selected th,
+.workflow-grid .row--selected td {
+  background: var(--color-accent-light);
+}
+
+.cell-locked {
+  display: flex;
+  gap: var(--space-2);
+  color: var(--color-text);
+}
+
+.cell-locked > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-muted);
+}
+
+.cell-locked small {
+  display: block;
+}
+
+.cell-switch {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.cell-link {
+  padding: 0;
+  font-size: var(--font-size-tiny);
+}
+
+/* On/off switch (a button with role="switch") */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.switch-track {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+  transition: background 0.15s;
+}
+
+.switch-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.15s;
+}
+
+.switch[aria-checked='true'] .switch-track {
+  background: var(--color-accent);
+}
+
+.switch[aria-checked='true'] .switch-track::after {
+  transform: translateX(18px);
+}
+
+.switch[aria-checked='false'] .switch-label {
+  color: var(--color-muted);
+}
+
+.result-cell {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 36px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.result-cell:hover {
+  border-color: var(--color-border);
+}
+
+.result-cell--optional {
+  color: var(--color-muted);
+}
+
+.result-required {
+  font-weight: 600;
+}
+
+.level-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.event-path {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.event-path h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-base);
+}
+
+.path-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.path-step {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-size: var(--font-size-small);
+  font-weight: 600;
+}
+
+.path-step:not(:last-child)::after {
+  content: '→';
+  margin-left: var(--space-2);
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.path-step--skipped {
+  background: var(--color-surface-muted);
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.path-step--end {
+  background: var(--color-text);
+  color: #ffffff;
+}
+
+/* Sheets: reviewers, cell details, notifications */
+
+.check-list,
+.source-list,
+.notification-list,
+.reviewer-list {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-target);
+  cursor: pointer;
+}
+
+.source-item {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.source-item .level-badge {
+  justify-self: start;
+}
+
+.reviewer-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--font-size-small);
+}
+
+.notification {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.notification p {
+  margin: 0 0 var(--space-1);
+}
+
+.notification small {
+  color: var(--color-muted);
+}
+
+.notification--unread {
+  border-left: 4px solid var(--color-accent);
+}
