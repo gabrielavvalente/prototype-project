@@ -22,6 +22,15 @@ under constitution v2.3.0.
 - **Alternatives considered**: a launcher proxying to one dev server per app (three processes,
   WebSocket proxying for hot reload, more to explain); a backend (out of the constitution);
   exporting/importing configuration files (clumsy, rejected by the user).
+- **Verified (2026-10-24, tasks T001–T006)**: both apps open through the launcher with no console
+  errors, React hooks work, and data written by one app is read by the other. Findings:
+  - Vite pre-bundles each package **once for the whole server** (cache in
+    `launcher/node_modules/.vite`, set with `cacheDir` so nothing is written at the repository
+    root). Both apps therefore get the same copy of React. This is safe because the apps pin the
+    **same exact versions**; keep shared packages (React, React DOM, React Router) on identical
+    versions in every app. If an app ever needs a different version, switch the launcher to
+    forwarding requests to one dev server per app (the proxy alternative below).
+  - The launcher page is served at `/launcher/` (no file may sit at the repository root).
 - **Note**: when an app is run on its own (its own port), it gets its own copy of the platform
   data seeded from the sample data — useful for development, but not shared with other apps.
 

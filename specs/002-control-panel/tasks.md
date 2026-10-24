@@ -30,24 +30,24 @@ own.
 
 **Purpose**: Launcher, the new app skeleton and the shared platform folder
 
-- [ ] T001 Create `launcher/package.json` (`"name": "launcher"`, `"private": true`,
+- [X] T001 Create `launcher/package.json` (`"name": "launcher"`, `"private": true`,
   `"type": "module"`, script `dev: vite`) and install with exact versions from `launcher/`:
   `npm install --save-exact --save-dev vite@8.3.5 @vitejs/plugin-react@6.1.2`; add
   `launcher/.gitignore` (`node_modules/`, `dist/`); commit `package-lock.json`
-- [ ] T002 Create `launcher/vite.config.js` (research R1): `root` = the repository folder
+- [X] T002 Create `launcher/vite.config.js` (research R1): `root` = the repository folder
   (`fileURLToPath(new URL('..', import.meta.url))`), React plugin, `server.port` 5173,
   `server.fs.allow` = repository folder; a comment explaining that one address lets the apps share
   browser data
-- [ ] T003 Create `launcher/index.html`, served at `/launcher/` because the server root is the
+- [X] T003 Create `launcher/index.html`, served at `/launcher/` because the server root is the
   repository (no file may sit at the repository root); set `server.open: '/launcher/'` in
   `launcher/vite.config.js`. The page (`<title>Prototype
   apps</title>`, links `../shared/theme.css`) shows one card per app with name, one-line
   description and an Open link to `/apps/event-reporting/` and `/apps/control-panel/`
-- [ ] T004 Change `apps/event-reporting/index.html` to load `./src/main.jsx` (relative path, R1);
+- [X] T004 Change `apps/event-reporting/index.html` to load `./src/main.jsx` (relative path, R1);
   run the launcher (`npm run dev` in `launcher/`) and confirm `/launcher/` lists the apps and
   `/apps/event-reporting/` opens Event Reporting with no console errors (if dependency
   resolution fails, record the fix in research R1 before going on)
-- [ ] T005 Create the Control Panel skeleton in `apps/control-panel/`: `package.json`
+- [X] T005 Create the Control Panel skeleton in `apps/control-panel/`: `package.json`
   (`"name": "control-panel"`, private, module, scripts `dev`, `build`, `preview`, `test: vitest
   run`), `index.html` (`lang="en"`, `<title>Control Panel</title>`, script `./src/main.jsx`),
   `vite.config.js` (React plugin, `server.port` 5174, `server.fs.allow` app folder and
@@ -55,7 +55,7 @@ own.
   `.gitignore`, `src/main.jsx` (imports `@fontsource/poppins` weights as Event Reporting,
   `../../../shared/theme.css`, `./app.css`, renders `<App />` in StrictMode), placeholder
   `src/App.jsx`, empty `src/app.css`
-- [ ] T006 Install the Control Panel dependencies with exact versions from `apps/control-panel/`:
+- [X] T006 Install the Control Panel dependencies with exact versions from `apps/control-panel/`:
   `npm install --save-exact react@19.3.1 react-dom@19.3.1 react-router-dom@7.18.4
   @fontsource/poppins@5.3.0` and `npm install --save-exact --save-dev vite@8.3.5
   @vitejs/plugin-react@6.1.2 vitest@5.0.5`; confirm no `^`/`~`; open it through the launcher at
