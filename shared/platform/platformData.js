@@ -2,10 +2,12 @@
 // It is stored once per browser address, so apps opened through the launcher share it.
 // Shared code: imports no packages and nothing from apps/ (constitution v2.3.0).
 
+import { masterValues } from './catalogs.js';
+import { allowedValueActions, getList, ownActivation, validateValue } from './masterData.js';
 import { getPlantName } from './organization.js';
 import { getRole, LEVEL_LABELS } from './permissions.js';
 import * as sampleData from './sampleData.js';
-import { getAll, getAllByIndex, getById, openDatabase, runTransaction } from './storage.js';
+import { getAll, getAllByIndex, openDatabase, runTransaction } from './storage.js';
 import { cellStateFor, PHASE_LABELS } from './workflow.js';
 
 const DATABASE_NAME = 'platform';
@@ -34,22 +36,28 @@ function createStores(db) {
   }
 }
 
-function seededLists() {
-  return { workflowSettings: sampleData.workflowSettings };
-}
+// Editable data loaded once per list; a "seeded-<list>" mark in meta remembers it, so lists added
+// later (like master data) are still loaded in a browser that already has the others.
+const SEEDED_LISTS = {
+  workflowSettings: sampleData.workflowSettings,
+  masterValues,
+};
 
 async function seedPlatform(db) {
-  const seeded = await getById(db, 'meta', 'seededAt');
+  const marks = await getAll(db, 'meta');
+  // "seededAt" is the mark of the first version, which seeded the workflow settings only.
+  const isSeeded = (name) =>
+    marks.some((mark) => mark.key === `seeded-${name}` || (name === 'workflowSettings' && mark.key === 'seededAt'));
   await runTransaction(db, STORES, 'readwrite', (stores) => {
     for (const name of FIXED_STORES) {
       stores[name].clear();
       sampleData[name].forEach((item) => stores[name].put(item));
     }
-    if (!seeded) {
-      for (const [name, items] of Object.entries(seededLists())) {
+    for (const [name, items] of Object.entries(SEEDED_LISTS)) {
+      if (!isSeeded(name)) {
         items.forEach((item) => stores[name].put(item));
+        stores.meta.put({ key: `seeded-${name}`, value: new Date().toISOString() });
       }
-      stores.meta.put({ key: 'seededAt', value: new Date().toISOString() });
     }
   });
 }
@@ -218,5 +226,138 @@ export async function markNotificationsRead(userId) {
   const items = await getAllByIndex(db, 'notifications', 'userId', userId);
   await runTransaction(db, ['notifications'], 'readwrite', (stores) => {
     items.filter((item) => !item.read).forEach((item) => stores.notifications.put({ ...item, read: true }));
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Master data (FR-015 to FR-020, FR-022)
+// ---------------------------------------------------------------------------
+
+// Every value and activation choice: the lists are small, and Body Parts need their categories.
+export async function getMasterData() {
+  const db = await openPlatform();
+  const [values, activations] = await Promise.all([getAll(db, 'masterValues'), getAll(db, 'activations')]);
+  return { values, activations };
+}
+
+function auditEntry(user, list, value, action, before, after) {
+  const role = getRole(user, list.pillarId);
+  return {
+    id: newId(),
+    pillarId: list.pillarId,
+    at: new Date().toISOString(),
+    userId: user.id,
+    scopeLevel: role.level,
+    plantIds: role.plantIds,
+    subject: list.id,
+    targetId: value.code ? `${value.code} — ${value.name}` : value.name,
+    action,
+    before,
+    after,
+  };
+}
+
+function describeValue(value) {
+  return [value.code, value.name, value.description].filter(Boolean).join(' · ');
+}
+
+// Adds a value (value.id empty) or saves changes to one. Throws with the validation messages
+// joined when the value is not valid.
+export async function saveValue(user, listId, changes) {
+  const list = getList(listId);
+  const role = getRole(user, list.pillarId);
+  const { values, activations } = await getMasterData();
+  const { id, ...fields } = changes;
+  const existing = id ? values.find((item) => item.id === id) : null;
+  const allowed = allowedValueActions(user, list, existing || null, activations);
+  if (existing ? !allowed.edit : !allowed.add) {
+    throw new Error('You are not allowed to change this list.');
+  }
+  const now = new Date().toISOString();
+  const value = existing
+    ? { ...existing, ...fields, updatedBy: user.id, updatedAt: now }
+    : {
+        id: newId(),
+        listId,
+        code: '',
+        description: '',
+        parentId: '',
+        ...fields,
+        ownerLevel: role.level,
+        ownerPlantIds: role.level === 'central' ? [] : role.plantIds,
+        status: 'Active',
+        createdBy: user.id,
+        createdAt: now,
+        updatedBy: user.id,
+        updatedAt: now,
+      };
+  const errors = validateValue(list, value, values);
+  if (Object.keys(errors).length > 0) {
+    throw new Error(Object.values(errors).join(' '));
+  }
+  const db = await openPlatform();
+  await runTransaction(db, ['masterValues', 'audit'], 'readwrite', (stores) => {
+    stores.masterValues.put(value);
+    stores.audit.put(
+      auditEntry(user, list, value, existing ? 'edit' : 'add', existing ? describeValue(existing) : '—', describeValue(value)),
+    );
+  });
+  return value;
+}
+
+// The owner changes a value's status: Active ⇄ Inactive, or Retired (final).
+export async function setValueStatus(user, listId, valueId, status) {
+  const list = getList(listId);
+  const { values, activations } = await getMasterData();
+  const value = values.find((item) => item.id === valueId);
+  const allowed = allowedValueActions(user, list, value, activations);
+  const permitted = { Active: allowed.reactivate, Inactive: allowed.deactivate, Retired: allowed.retire }[status];
+  if (!permitted) {
+    throw new Error('You are not allowed to change the status of this value.');
+  }
+  const updated = { ...value, status, updatedBy: user.id, updatedAt: new Date().toISOString() };
+  // A Body Part cannot become active while its category is not active (FR-020).
+  if (status === 'Active') {
+    const errors = validateValue(list, updated, values);
+    if (errors.parentId) {
+      throw new Error(errors.parentId);
+    }
+  }
+  const action = { Active: 'reactivate', Inactive: 'deactivate', Retired: 'retire' }[status];
+  const db = await openPlatform();
+  await runTransaction(db, ['masterValues', 'audit'], 'readwrite', (stores) => {
+    stores.masterValues.put(updated);
+    stores.audit.put(auditEntry(user, list, value, action, value.status, status));
+  });
+}
+
+// Someone who does not own a value switches it off (or back on) for their own plants.
+export async function setActivation(user, listId, valueId, active) {
+  const list = getList(listId);
+  const role = getRole(user, list.pillarId);
+  const { values, activations } = await getMasterData();
+  const value = values.find((item) => item.id === valueId);
+  const allowed = allowedValueActions(user, list, value, activations);
+  if (active ? !allowed.reactivateHere : !allowed.deactivateHere) {
+    throw new Error('You are not allowed to change this value for your plants.');
+  }
+  const scope = `${LEVEL_LABELS[role.level]} level`;
+  const db = await openPlatform();
+  await runTransaction(db, ['activations', 'audit'], 'readwrite', (stores) => {
+    if (active) {
+      stores.activations.delete(ownActivation(user, list, value, activations).id);
+    } else {
+      stores.activations.put({
+        id: newId(),
+        valueId,
+        scopeLevel: role.level,
+        plantIds: role.plantIds,
+        authorId: user.id,
+        createdAt: new Date().toISOString(),
+      });
+    }
+    const before = active ? `Deactivated at ${scope}` : `Active at ${scope}`;
+    const after = active ? `Active at ${scope}` : `Deactivated at ${scope}`;
+    stores.audit.put(auditEntry(user, list, value, active ? 'reactivate' : 'deactivate', before, after));
   });
 }
