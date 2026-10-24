@@ -1,4 +1,4 @@
-# Specification Quality Checklist: Event Reporting
+# Specification Quality Checklist: Event Reporting — MVP (Global Shell, Event Creation, Event Library)
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-10-24
@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,6 +31,8 @@
 
 ## Notes
 
-- 2 open [NEEDS CLARIFICATION] markers: FR-012 (management depth), FR-018 (data shared across
-  devices). Awaiting user answers. FR-019 resolved: English.
+- Resolved: FR-036 — data stays on the single demonstration device/browser (user choice A).
+- Spec rewritten from the source requirements in `source/`; MVP limited to features 01, 02 and 03.
+  Out-of-scope items and source conflicts (status `Submitted` vs `Open`, role models) are recorded
+  in the spec's Assumptions.
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
