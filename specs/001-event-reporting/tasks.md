@@ -406,6 +406,33 @@ the list shows Kanban and List views as described in FR-041
 
 ---
 
+## Phase 5d: Review of the event creation form
+
+**Goal**: Apply the form review decisions (spec Clarifications, session "review of the event
+creation form")
+
+**Independent Test**: Quickstart scenarios 1–4 pass on the one-page form; SIP replaces HPR
+everywhere; photos and immediate actions are optional
+
+- [ ] T067 Rename HPR to SIP (question, data, KPI chip, filter, tags) in
+  `apps/event-reporting/src/logic/validation.js`, `src/logic/eventList.js`, `src/data/sampleData.js`
+  and every screen, with tests; bump the database version
+- [ ] T068 Make photos/videos and immediate actions optional for every level in
+  `src/logic/validation.js` (+ tests) and remove the related hints
+- [ ] T069 Remove Subcategory and Action plan detail from immediate actions (form, validation,
+  summary rows, sample data, reference lists)
+- [ ] T070 Create `src/create/LocationPicker.jsx`: a location field opening a sheet with type-to-
+  search (full paths of tasks), browse one level at a time (breadcrumb), and **Scan QR code**
+  using the browser's `BarcodeDetector` when available (fallback message otherwise); a code for
+  a workstation opens browsing there; replace the dependent selects in `LocationSection.jsx`
+- [ ] T071 Turn `src/create/EventForm.jsx` into one continuous page (all sections with headings,
+  fixed bottom bar with Save as Draft and Submit/Save changes); on Submit with missing fields,
+  flag them in place, show the count and scroll to the first; remove `Stepper.jsx` and the
+  summary step (move `SummaryList` to `src/events/SummaryList.jsx`)
+- [ ] T072 Rerun quickstart scenarios 1–7 at 390px and desktop width with no console errors
+
+---
+
 ## Phase 6: Polish & Cross-Cutting Concerns
 
 **Purpose**: Documentation, accessibility, performance and the final end-to-end check
@@ -435,7 +462,8 @@ the list shows Kanban and List views as described in FR-041
 - **User Stories (Phases 3–5)**: Depend on Foundational; done in priority order P1 → P2 → P3
 - **UI/UX iteration (Phase 5b)**: Depends on User Stories 1–3
 - **Review round (Phase 5c)**: Depends on Phase 5b
-- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b, 5c)
+- **Form review (Phase 5d)**: Depends on Phase 5c
+- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b–5d)
 
 ### User Story Dependencies
 

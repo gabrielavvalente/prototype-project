@@ -34,7 +34,7 @@ are placeholders for the ones defined in the sample data.
 
 1. Device mode 320px. Sign in as a **User** demo user, enter **without a pillar**.
 2. Start Create Event; count taps from the landing screen: ≤ 3.
-3. Choose Health & Safety → TF → TF4; answer the HPR question **No**.
+3. Choose Health & Safety → TF → TF4; answer the SIP question **No**.
 4. Fill Location down to Task and a Task Type; fill General Information and Event Details; add no
    attachment and no immediate action.
 5. Summary shows every section with no missing fields → **Submit**.
@@ -42,21 +42,24 @@ are placeholders for the ones defined in the sample data.
 Expected: confirmation with a record number like `TF-26-0001`; status `Open`; done in under
 3 minutes.
 
-### 2. Mandatory rules for TF2 (FR-008, FR-012, SC-006)
+### 2. Required fields, optional photos and actions (FR-008, FR-012, FR-014, SC-006)
 
-1. Start a new event, choose TF2, fill everything except attachments and immediate actions.
-2. Summary flags "photo or video" and "immediate action" as missing; Submit is blocked.
-3. Add a photo (≤ 5 MB) and an immediate action with 1 performer → Submit.
+1. Start a new event, choose TF2 and tap **Submit** at once: nothing is saved, the missing fields
+   are flagged in place and the page scrolls to the first one.
+2. Fill the required fields without any photo or immediate action → Submit is accepted.
+3. Report another TF2 with a photo (≤ 5 MB) and an immediate action with 1 performer → Submit.
 
-Expected: submitted; the detail view shows the action as **Completed**. Try a 6 MB file and a
+Expected: both submitted; the second shows the action as **Completed**. Try a 6 MB file and a
 `.exe` file: both rejected with a clear message.
 
 ### 3. Risk questions and dependent fields (FR-004, FR-005, Edge Cases)
 
 - Industrial Risk → SRE2 asks **CRP**; change to SRE4 → the CRP answer is cleared and **SRP** is asked.
-- Environment → any level asks **HPR**. Industrial Hygiene asks no risk question but shows
+- Environment → any level asks **SIP**. Industrial Hygiene asks no risk question but shows
   Disease(s).
-- Change the Department → Workshop, Job, Workstation and Task are cleared.
+- Location picker: type "station 10" → full paths are listed; browse Department → … → Task;
+  "Scan QR code" opens the camera where supported (Chrome on Android) or explains it is
+  unavailable.
 
 ### 4. Drafts (FR-015, FR-017)
 
@@ -86,9 +89,9 @@ Expected: submitted; the detail view shows the action as **Completed**. Try a 6 
   number (e.g., `TF-26-0003`) and a word of a title.
 - **Kanban**: one column per status (Draft, Open, In Progress, Closed, Archived) with a count; your
   drafts are in the Draft column.
-- Apply each filter; the KPI chips (All, My events, Open, With HPR, Drafts) change with them and
+- Apply each filter; the KPI chips (All, My events, Open, With SIP, Drafts) change with them and
   match a manual count.
-- Tap **With HPR** → only HPR events are shown.
+- Tap **With SIP** → only SIP events are shown.
 - Hide a column, reload the page → it stays hidden; the chosen view (Kanban or List) is kept too.
 - Tap the eye icon on a row or card → the quick view opens and the list stays in place.
 

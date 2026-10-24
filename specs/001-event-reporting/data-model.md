@@ -32,7 +32,7 @@ One event, from draft to submitted.
 | `pillarId` | text | Pre-set when the user entered through a pillar (FR-037) |
 | `familyCode` | `TF` \| `EVE` \| `SRE` \| `OH` | Must belong to the pillar |
 | `levelCode` | text | e.g., `TF4`, `EvE2`, `SRE1`; for OH, the disease classification |
-| `riskQuestion` | object or null | `{ type: 'HPR' \| 'CRP' \| 'SRP', answer: true \| false }`; type follows FR-004; cleared when pillar or level changes |
+| `riskQuestion` | object or null | `{ type: 'SIP' \| 'CRP' \| 'SRP', answer: true \| false }`; type follows FR-004; cleared when pillar or level changes |
 | `location` | object | `{ departmentId, workshopId, jobId, workstationId, taskId }`; each child must belong to its parent (FR-005) |
 | `taskTypeId` | text | Required before leaving the Location section |
 | `title` | text | Required, 1–120 characters |
@@ -46,8 +46,8 @@ One event, from draft to submitted.
 | `comments` | text | Optional |
 | `feedbackEmails` | list of text | Optional; each must look like an email address; stored, never sent |
 | `diseaseIds` | list of text | Shown and required only when `familyCode` is `OH` |
-| `immediateActions` | list of ImmediateAction | See below; at least one for TF1–TF3 and SRE1–SRE3 (FR-012) |
-| `attachmentIds` | list of text | 0–5 items; at least one for TF1–TF3 (FR-008) |
+| `immediateActions` | list of ImmediateAction | See below; optional (FR-012) |
+| `attachmentIds` | list of text | 0–5 items; optional (FR-008) |
 | `createdBy`, `createdAt`, `updatedBy`, `updatedAt` | text / date-time | Set automatically (FR-035) |
 | `submittedAt` | date-time or null | Set on submit |
 
@@ -60,8 +60,7 @@ Indexes: `plantId`, `status`, `reporterId`, `recordNumber` (unique when not null
 | `id` | text | Generated |
 | `description` | text | Required |
 | `priority` | text | Required, from reference list |
-| `categoryId`, `subcategoryId` | text | Required; subcategory must belong to category |
-| `planDetail` | text | Optional |
+| `categoryId` | text | Required |
 | `completionDate` | date | Required; not after today, not before the event's report date |
 | `kpiId` | text | Optional |
 | `comments` | text | Optional |
@@ -138,7 +137,7 @@ Every item has `id`, `list` and `label`; some have extra fields.
 | `level` | `code` (TF1…TF5, EvE1…EvE5, SRE1…SRE5), `familyId`, `description` (plain-language text, FR-003) |
 | `disease` | `familyId` (OH classifications and the Disease(s) list) |
 | `taskType`, `employeeType`, `shiftMoment`, `actionPriority` | — |
-| `actionCategory` / `actionSubcategory` | subcategory has `categoryId` |
+| `actionCategory` | — |
 
 ## counters
 
@@ -179,11 +178,9 @@ start screen; everything else lives in IndexedDB.
 
 | Rule | Applies when | Source |
 |---|---|---|
-| Risk question answered | Pillar H&S or ENV (HPR); SRE1–SRE2 (CRP); SRE3–SRE5 (SRP) | FR-004 |
+| Risk question answered | Pillar H&S or ENV (SIP); SRE1–SRE2 (CRP); SRE3–SRE5 (SRP) | FR-004 |
 | Task Type chosen | Always, before leaving Location | FR-005 |
-| ≥ 1 photo or video | Level TF1, TF2, TF3 | FR-008 |
 | File type, extension, size ≤ 5 MB, ≤ 5 files | Every upload | FR-009 |
-| ≥ 1 immediate action | Level TF1–TF3, SRE1–SRE3 | FR-012 |
 | 1–5 performers per immediate action | Every immediate action | FR-013 |
 | Diseases chosen | Family OH | FR-010 |
 | Event time not in the future; completion date within report date…today | Always | Edge Cases |

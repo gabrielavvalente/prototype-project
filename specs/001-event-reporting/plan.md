@@ -158,8 +158,9 @@ The PNGs in [design/](design/) are the visual guideline (research R14). Changes 
 same structure: shared visual pieces (tokens, chips, tags, cards, sheets, bottom bar, severity
 dots) go to `shared/theme.css`; new app files are `src/shell/Icon.jsx` (inline SVG icons, no
 library), `src/shell/Sheet.jsx` (bottom/side sheet), `src/shell/BottomNav.jsx`,
-`src/shell/AccountSheet.jsx`, `src/shell/SearchPage.jsx`, `src/create/Stepper.jsx`,
-`src/create/ChipGroup.jsx`, `src/events/EventCard.jsx` and `src/events/FilterSheet.jsx`;
+`src/shell/AccountSheet.jsx`, `src/shell/SearchPage.jsx`, `src/create/ChipGroup.jsx`,
+`src/create/LocationPicker.jsx` (search, browse, QR scan with the browser's built-in
+`BarcodeDetector`, no library), `src/events/EventCard.jsx` and `src/events/FilterSheet.jsx`;
 `AlertsPanel.jsx` becomes a notifications sheet and `KpiTiles.jsx` a chip row.
 
 ## Follow-ups

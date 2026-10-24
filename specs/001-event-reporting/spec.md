@@ -58,7 +58,7 @@ management module). They are a **guideline for the overall look and interaction 
 screens to copy; product logo and name are not reused, and all text stays in English.
 
 - Q: Should the creation form become a single scrolling page like the reference? → A: No. The 6
-  sections stay, shown as a visible stepper; the reference sets the look (chips, cards, fixed
+  sections stay, shown as a visible stepper (superseded below: one continuous page); the reference sets the look (chips, cards, fixed
   bottom action bar).
 - Q: How should the event list appear? → A: Cards on phones and a table on desktop, with a toggle
   between the two. (Superseded by the review session below: Kanban and List.)
@@ -79,6 +79,21 @@ screens to copy; product logo and name are not reused, and all text stays in Eng
   view (replacing "Quick view" and "View"). Search, Filters and Columns sit on one line. Statuses
   are shown as colored badges.
 
+### Session 2026-10-24 (review of the event creation form)
+
+- Q: Should the form keep its 6 sections? → A: No. Everything is on **one continuous page** with
+  section headings; Save as draft and Submit sit in a bar fixed to the bottom. Missing fields are
+  flagged in place when the user submits. (Supersedes the stepper decision above and the summary
+  step.)
+- Q: How is the location chosen? → A: One location field opens a picker where the user can
+  **type to search**, **browse one level at a time**, or **scan the QR code** of a station.
+- Q: What is the follow-up question for Safety and Environment? → A: "Could this be a **SIP**?"
+  (not HPR). Industrial Risk keeps CRP / SRP.
+- Q: Are photos/videos or immediate actions mandatory for some levels? → A: No. Both are
+  optional for every level.
+- Q: Which fields does an immediate action have? → A: Subcategory and Action plan detail are
+  removed.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Report an event from the shop floor (Priority: P1)
@@ -86,21 +101,21 @@ screens to copy; product logo and name are not reused, and all text stays in Eng
 *Traces to: US-CREATE-01, 02, 03, 04, 05, 06, 09, 10, 11 (and proposed US-CREATE-12).*
 
 A frontline worker sees something wrong — a near miss with a forklift, an oil spill, a damaged
-guard. From the landing screen they start a new event in no more than 3 taps. A guided form takes
-them through sections with a visible progress indicator: they pick the pillar (unless they entered
-the module through a pillar, which then sets it), family and level
-(each level explained in plain language) and answer the follow-up risk question (HPR, CRP or SRP),
-drill down to the exact location, enter the core facts and attach photos, add event details, and
-record any immediate actions already taken at the scene (with up to 5 people who performed each).
-A summary page shows everything they entered and flags anything missing. They either save a draft
-to finish later or submit. On submit the event gets a unique record number and the pillar's
+guard. From the landing screen they start a new event in no more than 3 taps. One continuous page
+takes them from top to bottom: they pick the pillar (unless they entered the module through a
+pillar, which then sets it), family and level (each level explained in plain language) and answer
+the follow-up risk question (SIP, CRP or SRP), find the exact location by typing, browsing or
+scanning a station's QR code, enter the core facts and optionally attach photos, add event
+details, and optionally record immediate actions already taken at the scene (with up to 5 people
+who performed each). They either save a draft to finish later or submit; anything missing is
+flagged in place. On submit the event gets a unique record number and the pillar's
 Managers see a new alert in My Alerts.
 
 **Why this priority**: Event creation is the highest-traffic flow. Without fast, reliable reporting
 every other part of the product has no data.
 
 **Independent Test**: Choose a User-role demo user, report one TF4 event on a phone-sized screen
-and one TF2 event with a photo and an immediate action, then confirm that both receive record
+and one TF2 event with a photo and an immediate action (both optional), then confirm that both receive record
 numbers, that the TF2 event shows its immediate action as Completed, and that a Manager sees two
 new alerts.
 
@@ -113,35 +128,35 @@ new alerts.
    **and given** I entered through a pillar, **then** the pillar step is skipped and the form
    opens with that pillar's families and levels.
 2. **Given** I choose a Health & Safety or Environment level, **When** the level is selected,
-   **Then** "Could this be an HPR?" (Yes/No) is required before I can continue.
+   **Then** "Could this be a SIP?" (Yes/No) is required before I can submit.
 3. **Given** I choose Industrial Risk level SRE1 or SRE2, **When** the level is selected, **Then**
    "Could this be a CRP? (Critical Risk Potential)" (Yes/No) with a brief definition is required;
    **and given** SRE3, SRE4 or SRE5, **then** "Could this be an SRP? (Serious Risk Potential)" is
    required instead.
-4. **Given** I reach the location step, **When** I select a level of Plant → Department →
-   Workshop → Job → Workstation → Task, **Then** each child list only shows the children of the
-   selected parent, and I cannot continue without choosing a Task Type.
-5. **Given** I reach General Information, **When** the section renders, **Then** Title, Reporter
+4. **Given** I open the location picker, **When** I type part of a name, browse level by level, or
+   scan a station's QR code, **Then** I end on a full location (Department → Workshop → Job →
+   Workstation → Task in my plant), shown as one path in the form; Task Type is also required.
+5. **Given** I look at General Information, **When** the section renders, **Then** Title, Reporter
    (pre-filled with me, editable only by a Manager), Report Date (today, read-only), Event Time,
    Shift Moment (Day / Night / Afternoon) and Description are captured.
-6. **Given** the event is TF1, TF2 or TF3, **When** I try to submit without a photo or video,
-   **Then** submission is blocked and the missing attachment is flagged.
+6. **Given** any level, **When** I submit without a photo or video, **Then** the event is
+   accepted (photos and videos are optional).
 7. **Given** I am on a phone, **When** I add media, **Then** I can take a photo or video with the
    device camera.
 8. **Given** I upload a file of a type or size that is not allowed, **When** it is checked,
    **Then** it is rejected with a clear message and not attached.
-9. **Given** I reach Event Details, **When** the section renders, **Then** I choose an Employee
+9. **Given** I look at Event Details, **When** the section renders, **Then** I choose an Employee
    type, set Recurrence (Yes/No), enter Comments and Feedback email recipients; **and given** the
    family is OH, **then** a Disease(s) multi-select is also shown.
-10. **Given** the event is TF1–TF3 or SRE1–SRE3, **When** I try to submit without an immediate
-    action, **Then** submission is blocked.
+10. **Given** any level, **When** I submit without an immediate action, **Then** the event is
+    accepted (immediate actions are optional).
 11. **Given** I add an immediate action, **When** the action card renders, **Then** I capture
-    Description, Priority, Category, Subcategory, Action plan detail, Completion date, KPI ID
-    (optional), Comments and 1 to 5 people who performed it; the action is saved with status
+    Description, Priority, Category, Completion date, KPI ID (optional), Comments and 1 to 5
+    people who performed it; the action is saved with status
     Completed and its creation date is set automatically; I can add more actions as repeatable
     cards.
-12. **Given** I reach the summary page, **When** it renders, **Then** every section is shown with
-    its values, missing mandatory fields are flagged, and each section has an edit link back to it.
+12. **Given** something required is missing, **When** I tap Submit, **Then** nothing is saved,
+    each missing field is flagged next to it, and the page scrolls to the first one.
 13. **Given** I choose Save as Draft, **When** it is saved, **Then** the event has status `Draft`
     and nobody is notified; **and given** I choose Submit, **then** the event gets a record number
     and status `Open`, and every Manager of the event's pillar and plant gets a My Alerts entry.
@@ -195,7 +210,7 @@ header, navigation, visible events and My Alerts match each user's role and scop
 *Traces to: US-LIB-01, 02, 03, 04 (View / Edit), 06, 07.*
 
 A Manager arrives at the start of a shift and opens Events. KPI chips show All, My events, Open,
-With HPR and Drafts. They tap "With HPR" and the list narrows to those events. They search a record number someone mentioned in a meeting, open a quick view of the
+With SIP and Drafts. They tap "With SIP" and the list narrows to those events. They search a record number someone mentioned in a meeting, open a quick view of the
 event without leaving the list, then open it to view or edit it. A Reporter turns on "My Events" to
 see only what they submitted.
 
@@ -216,12 +231,12 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
    **Then** it shows events whose title matches, or the event with that record number, combined
    with any active filters.
 5. **Given** the filter bar is open, **When** I inspect it, **Then** I can filter by Type (and
-   level), Time range, Organization (Department → Task), Reporter, HPR flag, Status and a My Events
+   level), Time range, Organization (Department → Task), Reporter, SIP flag, Status and a My Events
    toggle.
 6. **Given** I apply a filter, **When** the list refreshes, **Then** the list and all KPI counts
    update to match; **and given** My Events is on, **then** only events I reported are listed.
 7. **Given** I open Events, **When** the page loads, **Then** clickable KPI chips show All,
-   My events, Open, With HPR and Drafts; selecting a chip narrows the list to it.
+   My events, Open, With SIP and Drafts; selecting a chip narrows the list to it.
 8. **Given** any row, **When** I open its actions, **Then** View is available, and Edit is
    available only when my role allows editing that event.
 
@@ -234,10 +249,10 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 - **Search with no match**: the list says no event matches and offers to clear search and filters.
 - **Level changed after answering the risk question**: changing the pillar or level clears answers
   that no longer apply (e.g., switching SRE2 → SRE4 replaces the CRP question with the SRP question).
-- **Parent location changed**: changing a parent location level clears every child level chosen
-  under it.
-- **Level changed to one that needs more**: switching from TF4 to TF2 makes a photo and an
-  immediate action mandatory, and the summary flags them as missing.
+- **Location search with no match**: the picker says nothing matches and offers browsing.
+- **QR code not recognized or scanning unavailable**: the picker explains it (unknown code, or
+  this browser cannot scan) and the user searches or browses instead; a QR code pointing to a
+  workstation opens browsing at that workstation so the task can be chosen.
 - **More than 5 performers**: a 6th person cannot be added to an immediate action and the limit is
   explained.
 - **Completion date in the future**: an immediate action's completion date cannot be later than
@@ -246,7 +261,7 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   date.
 - **Leaving the form**: leaving with unsaved changes asks whether to save a draft, discard or stay.
 - **Draft visibility**: drafts are visible only to their reporter, count only under "All",
-  "My events" and "Drafts" (never under "Open" or "With HPR"), and never create alerts.
+  "My events" and "Drafts" (never under "Open" or "With SIP"), and never create alerts.
 - **Device storage full**: when an attachment or event cannot be saved because device storage is
   full, the user sees a clear message, nothing already entered is lost, and they can remove
   attachments and try again.
@@ -260,28 +275,30 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 
 - **FR-001**: Users MUST be able to start a new event from the landing screen in no more than
   3 taps. *(US-CREATE-10, US-SHELL-08)*
-- **FR-002**: The creation form MUST be split into sections — Classification, Location, General
-  Information, Event Details, Immediate Actions, Summary — with a progress indicator showing the
-  current section and how many remain. *(US-CREATE-12, SCR-MOB-01, SCR-DSK-01)*
+- **FR-002**: The creation form MUST be one continuous page with the sections Classification,
+  Location, General Information, Event Details and Immediate Actions under headings, and a bar
+  fixed to the bottom with Save as Draft and Submit. *(Clarification 2026-10-24, form review)*
 - **FR-003**: Users MUST classify the event by pillar (skipped and pre-set when the user entered
   through a pillar), then family, then type and level, using these catalogs, each level with a
   plain-language description: Health & Safety / TF: TF1 Lost Time Accident, TF2 Non-Lost Time Accident, TF3 First Aid, TF4 Near Miss, TF5 Hazardous
   Situation; Environment / EVE: EvE1 Major environmental accident … EvE5 Poor environmental
   situation or condition; Industrial Risk / SRE: SRE1 Major site risk accident … SRE5 Site risk hazardous
   acts or conditions; Industrial Hygiene / OH: classification by disease type. *(US-CREATE-01)*
-- **FR-004**: The system MUST require, immediately after the level: "Could this be an HPR?" for
+- **FR-004**: The system MUST require, immediately after the level: "Could this be a SIP?" for
   Health & Safety and Environment; "Could this be a CRP?" for SRE1–SRE2; "Could this be an SRP?"
   for SRE3–SRE5. Each question MUST show a brief definition. *(SCR-MOB-01 FR-2 to FR-4)*
-- **FR-005**: Users MUST pick the location through Plant → Department → Workshop → Job →
-  Workstation → Task, with each list filtered to the selected parent, and MUST choose a Task Type
-  before continuing. *(US-CREATE-02)*
+- **FR-005**: Users MUST pick a full location (Department → Workshop → Job → Workstation → Task in
+  the event's plant) from a location picker offering three ways: typing part of any level's name
+  (results show the full path), browsing one level at a time, and scanning a station QR code
+  where the browser supports it. Task Type MUST also be chosen. *(US-CREATE-02, SCR-MOB-01 FR-5,
+  Clarification 2026-10-24, form review)*
 - **FR-006**: The system MUST capture Title, Reporter (pre-filled with the current user, editable
   only by a Manager), Report Date (today, read-only), Event Time, Shift Moment (Day / Night /
   Afternoon) and Description with basic formatting. *(US-CREATE-03)*
 - **FR-007**: Users MUST be able to attach photos and videos, and capture them directly with the
   device camera on a phone. *(US-CREATE-03)*
-- **FR-008**: The system MUST require at least one photo or video before submitting a TF1, TF2 or
-  TF3 event. *(US-CREATE-03)*
+- **FR-008**: Photos and videos MUST be optional for every level. *(Clarification 2026-10-24,
+  form review; replaces the TF1–TF3 rule of US-CREATE-03)*
 - **FR-009**: The system MUST check each file's type, extension and size against the allowed list
   (common image and video formats, at most 5 MB per file and 5 files per event) and reject failing
   files with a clear message without attaching them. *(US-CREATE-11, Clarification 2026-10-24)*
@@ -289,16 +306,16 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   Contractor / Non-Permanent Contractor / Other), Recurrence (Yes/No), Comments and Feedback email
   recipients, plus a Disease(s) multi-select when the family is OH. *(US-CREATE-04)*
 - **FR-011**: Users MUST be able to add any number of immediate actions as repeatable cards, each
-  with Description, Priority, Category, Subcategory, Action plan detail, Completion date, KPI ID
-  (optional) and Comments; each immediate action MUST be saved with status Completed (it records
+  with Description, Priority, Category, Completion date, KPI ID (optional) and Comments; each immediate action MUST be saved with status Completed (it records
   containment already done at the scene) and its creation date set automatically.
   *(US-CREATE-05, Clarification 2026-10-24)*
-- **FR-012**: The system MUST require at least one immediate action before submitting a TF1–TF3 or
-  SRE1–SRE3 event. *(US-CREATE-05)*
+- **FR-012**: Immediate actions MUST be optional for every level. *(Clarification 2026-10-24,
+  form review; replaces the TF1–TF3 / SRE1–SRE3 rule of US-CREATE-05)*
 - **FR-013**: Users MUST record 1 to 5 people who performed each immediate action; this creates no
   task or notification for them. *(US-CREATE-06, Clarification 2026-10-24)*
-- **FR-014**: The summary MUST show every section with its values, flag missing mandatory fields
-  and link back to each section for editing. *(US-CREATE-09)*
+- **FR-014**: When the user submits with something missing, the system MUST save nothing, flag
+  each missing field next to it, show how many are missing, and scroll to the first one.
+  *(US-CREATE-09, Clarification 2026-10-24, form review)*
 - **FR-015**: Save as Draft MUST store the event with status `Draft` and trigger nothing; Submit
   MUST be possible only when no mandatory field is missing. *(US-CREATE-09)*
 - **FR-016**: On submit, the system MUST give the event a unique record number in the format
@@ -355,11 +372,11 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   case-insensitive) and MUST combine with active
   filters. *(US-LIB-02)*
 - **FR-030**: Users MUST be able to filter by Type (and level), Time range, Organization
-  (Department → Task), Reporter, HPR flag, Status (Draft / Open) and a My Events toggle; filters MUST update the list and
+  (Department → Task), Reporter, SIP flag, Status (Draft / Open) and a My Events toggle; filters MUST update the list and
   the KPI counts. *(US-LIB-03)*
-- **FR-031**: Events MUST show a row of clickable KPI chips — All, My events, Open, With HPR,
+- **FR-031**: Events MUST show a row of clickable KPI chips — All, My events, Open, With SIP,
   Drafts — whose counts reflect the search and active filters; selecting a chip narrows the list
-  to it. "All" and "My events" include the user's own drafts; "Open" and "With HPR" count
+  to it. "All" and "My events" include the user's own drafts; "Open" and "With SIP" count
   submitted events only; "Drafts" counts the user's own drafts. *(US-LIB-06, Clarification 2026-10-24 UI/UX)*
 - **FR-032**: Each row MUST offer View; Edit MUST be offered to the reporter of a draft and to
   Managers for any event in their scope. *(US-LIB-04)*
@@ -369,9 +386,7 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 
 **Interface** (design guideline, Clarification 2026-10-24 UI/UX)
 
-- **FR-038**: The creation form MUST show all 6 sections as a visible stepper (done / current /
-  upcoming); users MUST be able to jump back to any section already reached, and Back / Next /
-  Submit MUST sit in a bar fixed to the bottom of the screen.
+- **FR-038**: *(Replaced by FR-002: one continuous page instead of a stepper.)*
 - **FR-039**: Choices with few options (pillar, shift moment, employee type, recurrence, action
   priority, task type) MUST be shown as tappable chips; levels MUST show severity dots (4 dots =
   level 1 … 1 dot = levels 4–5) and pillars a color dot.
@@ -395,7 +410,7 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   searches (kept on the device) and live results by title or record number; an exact record
   number opens that event directly.
 - **FR-045**: The event detail MUST show a top bar with back and record number, a header card
-  with tags (pillar, level, status, HPR) and title, key facts in a grid, collapsible sections,
+  with tags (pillar, level, status, SIP) and title, key facts in a grid, collapsible sections,
   a history timeline (created, submitted, last updated) and a fixed bottom bar with the actions
   the user may take (Edit / Continue draft).
 
@@ -413,12 +428,12 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 
 - **Event**: Something reported from the shop floor. Record number (`<FAMILY>-<YY>-<NNNN>`,
   unique, assigned on submit), pillar, family, type and level,
-  risk-question answer (HPR / CRP / SRP), location chain (Plant → Task) and Task Type, title,
+  risk-question answer (SIP / CRP / SRP), location chain (Plant → Task) and Task Type, title,
   description, reporter, report date, event time, shift moment, employee type, recurrence,
   comments, feedback recipients, diseases (OH only), status (`Draft` or `Open` in this MVP),
   created/updated by and at. Belongs to one business, plant and pillar.
 - **Immediate Action**: Containment already done at the scene, recorded at creation. Description,
-  priority, category, subcategory, action plan detail, completion date, KPI ID, comments, creation
+  priority, category, completion date, KPI ID, comments, creation
   date, 1–5 people who performed it; status is always Completed. Belongs to one event. In the later
   Action Plan phase these become part of the event's action plan alongside new actions with due
   dates and a status workflow.
@@ -430,7 +445,7 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 - **Organization structure**: Business → Plant (with plant type and country) and the location
   hierarchy Department → Workshop → Job → Workstation → Task, plus the Task Type list.
 - **Reference lists**: pillars, families and levels with descriptions; employee types; action
-  priorities, categories and subcategories; diseases.
+  priorities and categories; diseases.
 
 ## Success Criteria *(mandatory)*
 
@@ -441,8 +456,8 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 - **SC-003**: The creation form appears in under 2 seconds after it is opened.
 - **SC-004**: The event list shows 100 rows with all filters applied in under 3 seconds.
 - **SC-005**: At least 9 out of 10 first-time users complete a report without help.
-- **SC-006**: 100% of mandatory-field rules (photo for TF1–TF3, immediate action for TF1–TF3 and
-  SRE1–SRE3, risk question, Task Type) block submission when unmet, in testing.
+- **SC-006**: 100% of mandatory-field rules (risk question, full location, Task Type and the
+  other required fields) block submission when unmet, in testing.
 - **SC-007**: In testing, no user ever sees an event outside their scope, by any route.
 - **SC-008**: Every KPI chip count matches a manual count of the events it represents.
 - **SC-009**: A submitted event's alerts appear for the right Managers the next time they open or
@@ -469,9 +484,8 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   resizing column widths.
 - From Event Creation: US-CREATE-07 First Causes; US-CREATE-08 External Reporting Platform health
   detail; proposed US-CREATE-13 (bottom sheets) and US-CREATE-14 (skip action steps); Section
-  Mandatoriness Configuration (fixed defaults are used: actions mandatory for TF1–TF3 and
-  SRE1–SRE3); type-specific fields from the event-type specs (e.g., First Aid Treatment for TF3).
-- From Detailed Screens: QR-code and GPS location, photo mark-up, speech-to-text, report on behalf
+  Mandatoriness Configuration (no section is mandatory by level in this MVP); type-specific fields from the event-type specs (e.g., First Aid Treatment for TF3).
+- From Detailed Screens: GPS location, photo mark-up, speech-to-text, report on behalf
   of others with directory search, witness statements, offline drafts, safety broadcast feed.
 - Emails of any kind (assignment, feedback recipients, Manager notifications): feedback recipients
   are captured but not sent; notifications appear only in My Alerts.
@@ -486,7 +500,7 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 - The Action Management Platform is not connected; immediate actions live inside the app.
 - Sample data includes at least 2 businesses, 3 plants (different types and countries), all four
   pillars, a full location hierarchy, demo users of each role, and enough events (including drafts,
-  HPR events and events with immediate actions) to demonstrate every filter and KPI chip.
+  SIP events and events with immediate actions) to demonstrate every filter and KPI chip.
 - Allowed attachments: common image and video formats, up to 5 MB per file and 5 files per event
   (FR-009). Because data stays on the device, only a limited number of attachments fit; this is an
   accepted prototype limitation.
