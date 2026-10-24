@@ -62,7 +62,7 @@ needs
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 Create `apps/event-reporting/src/data/sampleData.js` exporting plain arrays that match
+- [X] T007 Create `apps/event-reporting/src/data/sampleData.js` exporting plain arrays that match
   [data-model.md](data-model.md):
   - `reference`: pillars (Health & Safety `H&S`, Environment `ENV`, Site Risk `SITE_RISK`,
     Industrial Hygiene `IH`); families (`SAF`, `ENV`, `IR`, `OH`) linked to pillars; levels with
@@ -84,7 +84,7 @@ needs
     TF1–TF3 events with immediate actions, OH events with diseases — with record numbers in the
     format `<FAMILY>-<YEAR>-<NNNN>`, and matching `counters`
   - `alerts`: a few "Event submitted" alerts for the Managers
-- [ ] T008 Create `apps/event-reporting/src/data/db.js` using `idb`: open database
+- [X] T008 Create `apps/event-reporting/src/data/db.js` using `idb`: open database
   `event-reporting` version 1 with stores `events`, `attachments`, `alerts`, `users`,
   `organization`, `reference`, `counters`, `settings` (key `id`) and indexes `events.plantId`,
   `events.status`, `events.reporterId`, `events.recordNumber` (unique), `attachments.eventId`,
@@ -92,7 +92,7 @@ needs
   `getById(store, id)`, `getByIndex(store, index, value)`, `put(store, item)`), `seedIfEmpty()`
   (loads `sampleData.js` when `users` is empty), `resetDemoData()` (clears every store and seeds
   again) and a `StorageFullError` thrown when the browser reports `QuotaExceededError`
-- [ ] T009 [P] Create `apps/event-reporting/src/logic/access.js` (research R11) with plain
+- [X] T009 [P] Create `apps/event-reporting/src/logic/access.js` (research R11) with plain
   functions: `getMenuItems(role)` (User: Events, Create Event, My Alerts; Manager: same; Site Admin:
   Events only — contracts/routes.md), `canOpenRoute(role, routeName)`, `isEventVisible(user,
   context, event)` (event business and plant equal the context, pillar in the user's access for
@@ -100,21 +100,21 @@ needs
   reporter), `canEditEvent(user, event)` (reporter on own `Draft`; Manager on any visible event;
   never Site Admin), `getManagersToAlert(users, event)` (role `Manager` whose access includes the
   event's plant and pillar)
-- [ ] T010 [P] Create `apps/event-reporting/src/logic/access.test.js` covering each role's menu,
+- [X] T010 [P] Create `apps/event-reporting/src/logic/access.test.js` covering each role's menu,
   route refusals (Site Admin on `events/new`), visibility across plant, pillar context, other
   users' drafts, edit rights and alert recipients
-- [ ] T011 [P] Create `apps/event-reporting/src/shell/NotAllowed.jsx` with two variants:
+- [X] T011 [P] Create `apps/event-reporting/src/shell/NotAllowed.jsx` with two variants:
   "You do not have permission to open this page." and "Event not found.", each with a link back to
   Events (contracts/routes.md → Refusals)
-- [ ] T012 Create `apps/event-reporting/src/shell/StartScreen.jsx`: page title "Event Reporting",
+- [X] T012 Create `apps/event-reporting/src/shell/StartScreen.jsx`: page title "Event Reporting",
   list of demo users (avatar, name, role, plants) as buttons; signing in stores the user id in
   `sessionStorage` and, if the user has no `settings` record, saves one with their first business
   and plant and `pillarId: null`; a **Reset demo data** button that asks for confirmation and calls
   `resetDemoData()`
-- [ ] T013 Create `apps/event-reporting/src/shell/Header.jsx` (basic version): avatar, name, role,
+- [X] T013 Create `apps/event-reporting/src/shell/Header.jsx` (basic version): avatar, name, role,
   current plant name and a **Switch user** button that clears `sessionStorage` and goes to `#/`;
   links to Events and Create Event
-- [ ] T014 Replace `apps/event-reporting/src/App.jsx` with a `HashRouter` app: calls
+- [X] T014 Replace `apps/event-reporting/src/App.jsx` with a `HashRouter` app: calls
   `seedIfEmpty()` on start (shows "Loading…" until done); loads the signed-in user and their
   `settings` (context) and provides them through a React context (`AppContext`) with a
   `setContext` function; routes from contracts/routes.md (`/`, `/entry`, `/events`,
