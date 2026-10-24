@@ -1,6 +1,7 @@
 // Browser database (IndexedDB) for the app, see data-model.md and research R2.
 
 import { openDB } from 'idb';
+import { resetPlatformData } from '../../../../shared/platform/platformData.js';
 import { getManagersToAlert } from '../logic/access.js';
 import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 import * as sampleData from './sampleData.js';
@@ -8,19 +9,12 @@ import * as sampleData from './sampleData.js';
 const DATABASE_NAME = 'event-reporting';
 // Version 2 renamed family codes and record numbers, version 3 renamed HPR to SIP, version 4
 // replaced feedback emails with Shared with, version 5 added the person involved and first aid
-// (reviews of 2026-10-24); older demo data is replaced.
-const DATABASE_VERSION = 5;
+// (reviews of 2026-10-24), version 6 moved users and the organization to the shared platform data
+// (feature 002); older demo data is replaced.
+const DATABASE_VERSION = 6;
 
-const STORES = [
-  'events',
-  'attachments',
-  'alerts',
-  'users',
-  'organization',
-  'reference',
-  'counters',
-  'settings',
-];
+// "reference" keeps the form lists only; pillars, families and levels are platform data.
+const STORES = ['events', 'attachments', 'alerts', 'reference', 'counters', 'settings'];
 
 // Thrown when the browser has no space left to save data (e.g. too many videos).
 export class StorageFullError extends Error {
@@ -50,7 +44,6 @@ function getDatabase() {
         stores.events.createIndex('recordNumber', 'recordNumber', { unique: true });
         stores.attachments.createIndex('eventId', 'eventId');
         stores.alerts.createIndex('recipientId', 'recipientId');
-        stores.organization.createIndex('parentId', 'parentId');
       },
     });
   }
@@ -195,8 +188,6 @@ async function loadSampleData() {
   const db = await getDatabase();
   const tx = db.transaction(STORES, 'readwrite');
   const stores = {
-    users: sampleData.users,
-    organization: sampleData.organization,
     reference: sampleData.reference,
     events: sampleData.events,
     counters: sampleData.counters,
@@ -210,30 +201,26 @@ async function loadSampleData() {
   await tx.done;
 }
 
-// Loads the sample data the first time the app opens. The fixed lists (users, organization,
-// reference) are refreshed on every start, since they cannot be edited in the app.
+// Loads the sample data the first time the app opens. The form lists are refreshed on every
+// start, since they cannot be edited in the app.
 export async function seedIfEmpty() {
   const db = await getDatabase();
-  const userCount = await db.count('users');
-  if (userCount === 0) {
+  const listCount = await db.count('reference');
+  if (listCount === 0) {
     await loadSampleData();
     return;
   }
-  const tx = db.transaction(['users', 'organization', 'reference'], 'readwrite');
-  for (const [storeName, items] of Object.entries({
-    users: sampleData.users,
-    organization: sampleData.organization,
-    reference: sampleData.reference,
-  })) {
-    for (const item of items) {
-      tx.objectStore(storeName).put(item);
-    }
+  const tx = db.transaction('reference', 'readwrite');
+  for (const item of sampleData.reference) {
+    tx.store.put(item);
   }
   await tx.done;
 }
 
-// Deletes everything (including reported events) and loads the sample data again.
+// Deletes everything (including reported events and Control Panel changes) and loads the sample
+// data again.
 export async function resetDemoData() {
+  await resetPlatformData();
   const db = await getDatabase();
   const tx = db.transaction(STORES, 'readwrite');
   for (const name of STORES) {

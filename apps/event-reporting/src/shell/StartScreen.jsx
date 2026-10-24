@@ -20,7 +20,7 @@ export default function StartScreen() {
 
   async function handleReset() {
     const confirmed = window.confirm(
-      'Reset demo data? Every event you reported on this device will be deleted.',
+      'Reset demo data? Every event you reported on this device and every Control Panel change will be deleted.',
     );
     if (confirmed) {
       await resetDemoData();
@@ -38,7 +38,8 @@ export default function StartScreen() {
       </div>
       <p className="field-hint">Prototype — choose a demo user to continue.</p>
       <ul className="card-list">
-        {users.map((user) => (
+        {/* People who only use the Control Panel have no event role and are not offered here. */}
+        {users.filter((user) => user.role).map((user) => (
           <li key={user.id}>
             <button type="button" className="button choice-card choice-card--row" onClick={() => handleSignIn(user.id)}>
               <span className="avatar" aria-hidden="true">

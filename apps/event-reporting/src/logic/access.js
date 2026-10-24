@@ -1,6 +1,11 @@
 // Role and scope rules, kept in one place so every screen applies them the same way
 // (research R11, contracts/routes.md).
 
+import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
+
+// Shared platform code; re-exported so screens keep one import.
+export { getPillarIdsForPlant };
+
 const menuByRole = {
   User: ['events', 'create-event', 'my-alerts'],
   Manager: ['events', 'create-event', 'my-alerts'],
@@ -19,12 +24,6 @@ export function getMenuItems(role) {
 
 export function canOpenRoute(role, routeName) {
   return (routesByRole[role] || []).includes(routeName);
-}
-
-// The pillars a user may access in one plant (empty when the plant is not theirs).
-export function getPillarIdsForPlant(user, plantId) {
-  const entry = user.access.find((item) => item.plantId === plantId);
-  return entry ? entry.pillarIds : [];
 }
 
 // context = { businessId, plantId, pillarId } where pillarId is null for "All pillars".

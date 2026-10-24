@@ -1,7 +1,8 @@
 import { createContext, useContext } from 'react';
 
 // Shared app state: signed-in user, current context (business, plant, pillar),
-// and the fixed lists loaded once at start (users, organization, reference).
+// and the fixed lists loaded once at start (users, organization, reference — mostly shared
+// platform data, see shared/platform/).
 export const AppContext = createContext(null);
 
 export function useApp() {

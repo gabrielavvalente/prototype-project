@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { organization } from '../data/sampleData.js';
+import { organization } from '../../../../shared/platform/sampleData.js';
 import { buildLocationPaths, locationFromNode, resolveQrCode, searchLocations } from './locations.js';
 
 const lyonTask = 'plant-lyon/department-1/workshop-2/job-1/workstation-2/task-1';
