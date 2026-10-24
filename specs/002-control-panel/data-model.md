@@ -39,15 +39,15 @@ Sample users (R8) — existing seven unchanged plus:
 
 | User | Event role | Control Panel roles |
 |---|---|---|
-| Helena Costa | none | Central — Health & Safety, Industrial Hygiene |
-| Ivan Petrov | none | Central — Environment |
-| Julia Martins | none | Central — Industrial Risk |
-| Kai Weber | Manager (Lyon, Porto) | Cluster — Health & Safety and Environment (Lyon, Porto) |
+| Ludovic Costa | none | Central — Health & Safety, Industrial Hygiene |
+| Ed Petrov | none | Central — Environment |
+| Sergio Martins | none | Central — Industrial Risk |
+| Lucas Weber | Manager (Lyon, Porto) | Cluster — Health & Safety and Environment (Lyon, Porto) |
 | Eva Novak *(existing)* | Site Admin (Lyon) | Local — all four pillars (Lyon) |
 | Felix Tanaka *(existing)* | Manager (Curitiba) | Local — Health & Safety, Environment (Curitiba) |
 | Carla Mendes *(existing)* | Manager (Lyon) | Local — Health & Safety (Lyon) |
 
-A second Cluster administrator covering Lyon and Curitiba on Health & Safety (Lena Fischer)
+A second Cluster administrator covering Lyon and Curitiba on Health & Safety (Pascal Fischer)
 demonstrates overlapping clusters; Carla and Eva (both Local Lyon on Health & Safety) demonstrate
 option A (changing a setting made by someone else at the same level).
 
@@ -179,7 +179,7 @@ fixed global lists: Central only.
 
 ## Notification
 
-`{ id, userId, at, read, text, pillarId, settingId }` — e.g., "Kai Weber changed your Review
+`{ id, userId, at, read, text, pillarId, settingId }` — e.g., "Lucas Weber changed your Review
 setting for TF2 (Health & Safety, Cluster Lyon + Porto): reviewers Carla Mendes → Diego Laurent."
 
 ## Changes to Event Reporting data

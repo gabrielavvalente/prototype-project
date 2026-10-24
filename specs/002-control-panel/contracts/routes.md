@@ -47,12 +47,12 @@ Not allowed → the "You don't have access to this page." message with a link to
 - Cell states for the current user:
   - **Mine — Required**: switch on; shows author when someone else at my level set it.
   - **Optional**: switch off.
-  - **Locked**: lock icon + "Required by Central — Helena Costa, 24 Oct 2026"; no switch.
+  - **Locked**: lock icon + "Required by Central — Ludovic Costa, 24 Oct 2026"; no switch.
   - **Required at my level by another perimeter** (e.g., another Cluster): informative only.
 - Switching Review on opens the reviewers picker (multi-select of valid reviewers, Done
   disabled until ≥ 1). Review cells show the reviewer count and open the picker to edit.
 - Saving is immediate per cell; a toast confirms "Saved — applies to new events".
-- Changing a setting authored by someone else asks to confirm: "Helena Costa set this. They will
+- Changing a setting authored by someone else asks to confirm: "Ludovic Costa set this. They will
   be notified."
 
 ## Workflow — Result per plant
