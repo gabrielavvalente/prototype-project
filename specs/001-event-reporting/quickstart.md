@@ -34,12 +34,12 @@ are placeholders for the ones defined in the sample data.
 
 1. Device mode 320px. Sign in as a **User** demo user, enter **without a pillar**.
 2. Start Create Event; count taps from the landing screen: ≤ 3.
-3. Choose Health & Safety → SAF → TF4; answer the HPR question **No**.
+3. Choose Health & Safety → TF → TF4; answer the HPR question **No**.
 4. Fill Location down to Task and a Task Type; fill General Information and Event Details; add no
    attachment and no immediate action.
 5. Summary shows every section with no missing fields → **Submit**.
 
-Expected: confirmation with a record number like `SAF-2026-0001`; status `Open`; done in under
+Expected: confirmation with a record number like `TF-26-0001`; status `Open`; done in under
 3 minutes.
 
 ### 2. Mandatory rules for TF2 (FR-008, FR-012, SC-006)
@@ -53,7 +53,7 @@ Expected: submitted; the detail view shows the action as **Completed**. Try a 6 
 
 ### 3. Risk questions and dependent fields (FR-004, FR-005, Edge Cases)
 
-- Site Risk → SRE2 asks **CRP**; change to SRE4 → the CRP answer is cleared and **SRP** is asked.
+- Industrial Risk → SRE2 asks **CRP**; change to SRE4 → the CRP answer is cleared and **SRP** is asked.
 - Environment → any level asks **HPR**. Industrial Hygiene asks no risk question but shows
   Disease(s).
 - Change the Department → Workshop, Job, Workstation and Task are cleared.

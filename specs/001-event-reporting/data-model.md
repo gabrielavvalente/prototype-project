@@ -26,11 +26,11 @@ One event, from draft to submitted.
 | Field | Type | Rules |
 |---|---|---|
 | `id` | text | Generated when the draft is first saved; never shown to users |
-| `recordNumber` | text or null | `null` while `Draft`; set on submit as `<FAMILY>-<YEAR>-<NNNN>` (FR-016) |
+| `recordNumber` | text or null | `null` while `Draft`; set on submit as `<FAMILY>-<YY>-<NNNN>`, e.g. `EVE-26-0001` (FR-016) |
 | `status` | `Draft` \| `Open` | Only these two in this MVP (see State transitions) |
 | `businessId`, `plantId` | text | Plant must belong to business and to the user's access (FR-021) |
 | `pillarId` | text | Pre-set when the user entered through a pillar (FR-037) |
-| `familyCode` | `SAF` \| `ENV` \| `IR` \| `OH` | Must belong to the pillar |
+| `familyCode` | `TF` \| `EVE` \| `SRE` \| `OH` | Must belong to the pillar |
 | `levelCode` | text | e.g., `TF4`, `EvE2`, `SRE1`; for OH, the disease classification |
 | `riskQuestion` | object or null | `{ type: 'HPR' \| 'CRP' \| 'SRP', answer: true \| false }`; type follows FR-004; cleared when pillar or level changes |
 | `location` | object | `{ departmentId, workshopId, jobId, workstationId, taskId }`; each child must belong to its parent (FR-005) |
@@ -133,8 +133,8 @@ Every item has `id`, `list` and `label`; some have extra fields.
 
 | `list` | Extra fields |
 |---|---|
-| `pillar` | `code` (H&S, ENV, SITE_RISK, IH) |
-| `family` | `code` (SAF, ENV, IR, OH), `pillarId` |
+| `pillar` | `code` (H&S, ENV, IR, IH) |
+| `family` | `code` (TF, EVE, SRE, OH), `pillarId` |
 | `level` | `code` (TF1…TF5, EvE1…EvE5, SRE1…SRE5), `familyId`, `description` (plain-language text, FR-003) |
 | `disease` | `familyId` (OH classifications and the Disease(s) list) |
 | `taskType`, `employeeType`, `shiftMoment`, `actionPriority` | — |
@@ -144,7 +144,7 @@ Every item has `id`, `list` and `label`; some have extra fields.
 
 | Field | Type | Rules |
 |---|---|---|
-| `id` | text | `<FAMILY>-<YEAR>`, e.g., `SAF-2026` |
+| `id` | text | `<FAMILY>-<YY>`, e.g., `EVE-26` |
 | `lastSequence` | number | Incremented in the same transaction that submits the event (research R10) |
 
 ## settings
@@ -155,7 +155,7 @@ Every item has `id`, `list` and `label`; some have extra fields.
 | `businessId`, `plantId` | text | Current context |
 | `pillarId` | text or null | `null` = entered without a pillar ("All pillars") |
 | `visibleColumns` | list of text | Event list columns the user chose to show (FR-028) |
-| `listView` | `cards` \| `table` \| null | Remembered list view; null = cards on phones, table on wide screens (FR-041) |
+| `listView` | `kanban` \| `list` \| null | Remembered view; null = Kanban on phones, List on wide screens (FR-041) |
 | `recentSearches` | list of text | The user's last 5 searches, newest first (FR-044) |
 
 The id of the "signed-in" demo user is kept in `sessionStorage` so closing the tab returns to the

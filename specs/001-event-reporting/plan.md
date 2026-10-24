@@ -10,7 +10,7 @@ Build the first app of the monorepo, `apps/event-reporting/`: a browser-only web
 frontline worker reports an event through a guided 6-section form (classification with HPR / CRP /
 SRP questions, location drill-down, general information with photos and videos, event details,
 immediate actions, summary), saves it as a draft or submits it with a record number such as
-`SAF-2026-0042`; a shell scopes everything to business, plant and an optional pillar and shows
+`TF-26-0042`; a shell scopes everything to business, plant and an optional pillar and shows
 My Alerts; and an event library lists, searches, filters and counts events in scope.
 
 Technical approach: React + Vite in plain JavaScript, all data in the browser's IndexedDB (via the

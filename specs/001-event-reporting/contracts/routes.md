@@ -12,7 +12,7 @@ someone may not. Access rules are implemented once in `src/logic/access.js` (res
 |---|---|:---:|:---:|:---:|---|
 | `#/` | Start: pick a demo user, Reset demo data | any (not signed in) | | | R12 |
 | `#/entry` | Entry: choose a pillar or enter without one | ✓ | ✓ | ✓ | FR-037 |
-| `#/events` | Event library (KPI chips, filters, cards / table, quick view) | ✓ | ✓ | ✓ | FR-026–FR-031 |
+| `#/events` | Event library (KPI chips, filters, Kanban / List, quick view) | ✓ | ✓ | ✓ | FR-026–FR-031 |
 | `#/events/new` | Event creation form | ✓ | ✓ | — | FR-001–FR-017 |
 | `#/search` | Full-screen search: recent searches and live results | ✓ | ✓ | ✓ | FR-044 |
 | `#/events/:id` | Event detail (`:id` = record number, or internal id for drafts) | ✓ ¹ | ✓ ¹ | ✓ ¹ | FR-033 |

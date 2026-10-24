@@ -31,7 +31,7 @@ Each decision below resolves an open point from the plan's Technical Context.
 
 ## R3. Screens and direct links
 
-- **Decision**: `react-router-dom` with hash URLs (e.g., `#/events/SAF-2026-0042`).
+- **Decision**: `react-router-dom` with hash URLs (e.g., `#/events/TF-26-0042`).
 - **Rationale**: The spec requires direct links to be checked against role and scope (FR-021,
   FR-022) and alerts that open the source event (FR-023), so each screen needs its own address.
   React Router is the standard, well-documented way to do this in React. Hash URLs work when the
@@ -101,9 +101,9 @@ Each decision below resolves an open point from the plan's Technical Context.
 
 ## R10. Record numbers (FR-016)
 
-- **Decision**: A `counters` store in IndexedDB keyed by `<FAMILY>-<YEAR>` (e.g., `SAF-2026`)
+- **Decision**: A `counters` store in IndexedDB keyed by `<FAMILY>-<YY>` (e.g., `TF-26`)
   holding the last sequence used. On submit the counter is read, incremented and saved in the same
-  database transaction as the event, producing `SAF-2026-0042`.
+  database transaction as the event, producing `TF-26-0042`.
 - **Rationale**: One transaction guarantees no two events get the same number, even with a
   double-click on Submit. Formatting lives in a small tested function.
 - **Alternatives considered**: Counting existing events (breaks if counting logic and data

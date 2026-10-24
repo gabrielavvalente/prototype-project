@@ -48,7 +48,7 @@ SCR-DSK-01, SCR-DSK-02), and the event-type specs for level names
   reported? → A: All submitted events in their scope (plant and accessible pillars), plus only
   their own drafts; the My Events toggle narrows the list to their own reports.
 - Q: What format should an event's record number have? → A: Family + year + a sequence per family
-  and year, e.g., `SAF-2026-0042`, `ENV-2026-0007`, `IR-2026-0003`, `OH-2026-0001`; assigned on
+  and year, e.g., `SAF-2026-0042` (superseded by the review session below: `EVE-26-0001`); assigned on
   submit only (drafts have none).
 
 ### Session 2026-10-24 (UI/UX iteration)
@@ -61,10 +61,23 @@ screens to copy; product logo and name are not reused, and all text stays in Eng
   sections stay, shown as a visible stepper; the reference sets the look (chips, cards, fixed
   bottom action bar).
 - Q: How should the event list appear? → A: Cards on phones and a table on desktop, with a toggle
-  between the two. A kanban board waits until there are more statuses (Review and Governance).
+  between the two. (Superseded by the review session below: Kanban and List.)
 - Q: How much of the reference applies in this round? → A: Everything that fits the MVP: visual
   theme, compact top bar, bottom navigation on phones, KPI chips, cards, filters and notifications
   in bottom sheets, full-screen search, and the new event detail layout.
+
+### Session 2026-10-24 (review of the first UI round)
+
+- Q: What are the pillar and family names and acronyms? → A: The pillar is "Industrial Risk" (not
+  "Site Risk"). Each family uses the same acronym as its levels: **TF** (Safety, TF1–TF5), **EVE**
+  (Environment, EvE1–EvE5), **SRE** (Industrial Risk, SRE1–SRE5) and **OH** (Occupational Health).
+- Q: Can the record number be simpler? → A: Family acronym + last two digits of the year + a
+  4-digit sequence, e.g., `EVE-26-0001`, `TF-26-0042`.
+- Q: How should the event list look? → A: Two views, chosen with icon + word buttons: **Kanban**
+  (event cards in columns by status) and **List** (a table). The list columns, in order: record
+  number, status, level, report date, title, department, reporter. One eye icon opens the quick
+  view (replacing "Quick view" and "View"). Search, Filters and Columns sit on one line. Statuses
+  are shown as colored badges.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -94,14 +107,14 @@ new alerts.
 **Acceptance Scenarios**:
 
 1. **Given** I entered the module without selecting a pillar, **When** I start a new event,
-   **Then** I first choose a pillar (Health & Safety / Environment / Site Risk / Industrial
+   **Then** I first choose a pillar (Health & Safety / Environment / Industrial Risk / Industrial
    Hygiene), then the family, then the specific type and level, and each level shows a short
    plain-language description (e.g., "TF4 — Near Miss: something occurred but nobody was hurt");
    **and given** I entered through a pillar, **then** the pillar step is skipped and the form
    opens with that pillar's families and levels.
 2. **Given** I choose a Health & Safety or Environment level, **When** the level is selected,
    **Then** "Could this be an HPR?" (Yes/No) is required before I can continue.
-3. **Given** I choose Site Risk level SRE1 or SRE2, **When** the level is selected, **Then**
+3. **Given** I choose Industrial Risk level SRE1 or SRE2, **When** the level is selected, **Then**
    "Could this be a CRP? (Critical Risk Potential)" (Yes/No) with a brief definition is required;
    **and given** SRE3, SRE4 or SRE5, **then** "Could this be an SRP? (Serious Risk Potential)" is
    required instead.
@@ -252,9 +265,9 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   current section and how many remain. *(US-CREATE-12, SCR-MOB-01, SCR-DSK-01)*
 - **FR-003**: Users MUST classify the event by pillar (skipped and pre-set when the user entered
   through a pillar), then family, then type and level, using these catalogs, each level with a
-  plain-language description: Health & Safety / SAF: TF1 Lost Time Accident, TF2 Non-Lost Time Accident, TF3 First Aid, TF4 Near Miss, TF5 Hazardous
-  Situation; Environment / ENV: EvE1 Major environmental accident … EvE5 Poor environmental
-  situation or condition; Site Risk / IR: SRE1 Major site risk accident … SRE5 Site risk hazardous
+  plain-language description: Health & Safety / TF: TF1 Lost Time Accident, TF2 Non-Lost Time Accident, TF3 First Aid, TF4 Near Miss, TF5 Hazardous
+  Situation; Environment / EVE: EvE1 Major environmental accident … EvE5 Poor environmental
+  situation or condition; Industrial Risk / SRE: SRE1 Major site risk accident … SRE5 Site risk hazardous
   acts or conditions; Industrial Hygiene / OH: classification by disease type. *(US-CREATE-01)*
 - **FR-004**: The system MUST require, immediately after the level: "Could this be an HPR?" for
   Health & Safety and Environment; "Could this be a CRP?" for SRE1–SRE2; "Could this be an SRP?"
@@ -289,8 +302,8 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 - **FR-015**: Save as Draft MUST store the event with status `Draft` and trigger nothing; Submit
   MUST be possible only when no mandatory field is missing. *(US-CREATE-09)*
 - **FR-016**: On submit, the system MUST give the event a unique record number in the format
-  `<FAMILY>-<YEAR>-<NNNN>` (family code SAF / ENV / IR / OH, year of submission, 4-digit sequence
-  restarting at 0001 for each family and year, e.g., `SAF-2026-0042`), set its status to `Open`, and create a My Alerts entry "Event submitted" for every Manager of
+  `<FAMILY>-<YY>-<NNNN>` (family acronym TF / EVE / SRE / OH, last two digits of the year of
+  submission, 4-digit sequence restarting at 0001 for each family and year, e.g., `EVE-26-0001`), set its status to `Open`, and create a My Alerts entry "Event submitted" for every Manager of
   the event's plant and pillar. *(US-CREATE-09, Core FR-1)*
 - **FR-017**: A reporter MUST be able to reopen their own draft, continue it and submit it.
   *(US-CREATE-09)*
@@ -333,11 +346,12 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   scope plus the user's own drafts (never other users' drafts),
   sortable by date, type, level, status and reporter, with 20, 50 or 100 records per page.
   *(US-LIB-01, Clarification 2026-10-24)*
-- **FR-027**: Users MUST be able to open a quick view of a row's event without leaving the list.
+- **FR-027**: Users MUST be able to open a quick view of an event without leaving the list, with
+  a single eye icon on each row and card; the quick view links to the full event.
   *(US-LIB-01, SCR-DSK-02 FR-33)*
 - **FR-028**: Users MUST be able to show and hide columns, and their choice MUST be remembered.
   *(US-LIB-01)*
-- **FR-029**: Search MUST match event titles or an exact record number (e.g., `SAF-2026-0042`,
+- **FR-029**: Search MUST match event titles or an exact record number (e.g., `TF-26-0042`,
   case-insensitive) and MUST combine with active
   filters. *(US-LIB-02)*
 - **FR-030**: Users MUST be able to filter by Type (and level), Time range, Organization
@@ -365,8 +379,12 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   unread dot and the user's avatar; the avatar opens a sheet with name, role, business, plant,
   pillar (with Change) and Switch user. On phones a bottom navigation MUST offer Home (entry
   screen), Events and a floating New button (hidden for roles that cannot create).
-- **FR-041**: Users MUST be able to switch the event list between cards and a table; cards are
-  the default on phones and the table on wider screens, and the choice MUST be remembered.
+- **FR-041**: Users MUST be able to switch the event list between a **Kanban** view (event cards
+  in columns by status: Draft, Open, In Progress, Closed, Archived) and a **List** view (a table
+  with columns record number, status, level, report date, title, department, reporter), using
+  buttons with an icon and a word; Kanban is the default on phones and List on wider screens, and
+  the choice MUST be remembered. Search, Filters and Columns MUST sit on one line, and statuses
+  MUST appear as colored badges. *(Clarification 2026-10-24, review)*
 - **FR-042**: Filters MUST open in a bottom sheet (side sheet on wide screens) with chip groups
   and date fields, and apply only when the user taps Apply; a Filters button MUST show how many
   filters are active.
@@ -393,7 +411,7 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 
 ### Key Entities
 
-- **Event**: Something reported from the shop floor. Record number (`<FAMILY>-<YEAR>-<NNNN>`,
+- **Event**: Something reported from the shop floor. Record number (`<FAMILY>-<YY>-<NNNN>`,
   unique, assigned on submit), pillar, family, type and level,
   risk-question answer (HPR / CRP / SRP), location chain (Plant → Task) and Task Type, title,
   description, reporter, report date, event time, shift moment, employee type, recurrence,
