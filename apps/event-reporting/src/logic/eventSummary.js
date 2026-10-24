@@ -61,7 +61,7 @@ export function describeEvent(event, lists, attachmentCount) {
 
   if (event.riskQuestion) {
     rows.classification.push({
-      label: `Could this be ${event.riskQuestion.type === 'HPR' ? 'an' : 'a'} ${event.riskQuestion.type}?`,
+      label: `Could this be a ${event.riskQuestion.type}?`,
       value: yesNo(event.riskQuestion.answer),
     });
   }
@@ -82,8 +82,6 @@ export function describeImmediateAction(action, lists) {
     { label: 'Description', value: action.description },
     { label: 'Priority', value: getLabel(reference, action.priority) },
     { label: 'Category', value: getLabel(reference, action.categoryId) },
-    { label: 'Subcategory', value: getLabel(reference, action.subcategoryId) },
-    { label: 'Action plan detail', value: action.planDetail },
     { label: 'Completion date', value: action.completionDate },
     { label: 'KPI ID', value: action.kpiId },
     { label: 'Comments', value: action.comments },

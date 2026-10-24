@@ -1,7 +1,7 @@
 import { useApp } from '../AppContext.js';
 import { newId } from '../data/db.js';
 import { getReferenceList, toDateString } from '../logic/lookups.js';
-import { isImmediateActionRequired, MAX_PERFORMERS, validateImmediateAction } from '../logic/validation.js';
+import { MAX_PERFORMERS, validateImmediateAction } from '../logic/validation.js';
 import { SeverityDots } from '../events/EventCard.jsx';
 import { FieldError, SelectField, TextField } from './fields.jsx';
 
@@ -14,8 +14,6 @@ function emptyAction(today) {
     description: '',
     priority: '',
     categoryId: '',
-    subcategoryId: '',
-    planDetail: '',
     completionDate: today,
     kpiId: '',
     comments: '',
@@ -28,9 +26,8 @@ function emptyAction(today) {
 
 function ActionCard({ action, index, reportDate, plantUsers, onChange, onRemove, showErrors }) {
   const { reference } = useApp();
-  const subcategories = getReferenceList(reference, 'actionSubcategory');
   const today = toDateString(new Date());
-  const errors = showErrors ? validateImmediateAction(action, reportDate, today, subcategories) : [];
+  const errors = showErrors ? validateImmediateAction(action, reportDate, today) : [];
   // Field ids are unique per card so labels and errors match the right action.
   const prefix = `action-${index}-`;
   const prefixed = errors.map((item) => ({ ...item, field: prefix + item.field }));
@@ -44,7 +41,7 @@ function ActionCard({ action, index, reportDate, plantUsers, onChange, onRemove,
   }
 
   return (
-    <li className="card">
+    <li className="card card--flat" id={`immediate-action-${index}`}>
       <h3>
         Immediate action {index + 1} <span className="tag tag--teal">COMPLETED</span>
       </h3>
@@ -78,22 +75,10 @@ function ActionCard({ action, index, reportDate, plantUsers, onChange, onRemove,
         label="Category"
         value={action.categoryId}
         options={getReferenceList(reference, 'actionCategory')}
-        onChange={(value) => set({ categoryId: value, subcategoryId: '' })}
+        required
+        onChange={(value) => set({ categoryId: value })}
         errors={prefixed}
       />
-      <SelectField
-        id={`${prefix}subcategoryId`}
-        label="Subcategory"
-        value={action.subcategoryId}
-        options={subcategories.filter((item) => item.categoryId === action.categoryId)}
-        disabled={!action.categoryId}
-        onChange={(value) => set({ subcategoryId: value })}
-        errors={prefixed}
-      />
-      <div className="field">
-        <label htmlFor={`${prefix}planDetail`}>Action plan detail (optional)</label>
-        <textarea id={`${prefix}planDetail`} value={action.planDetail} onChange={(e) => set({ planDetail: e.target.value })} />
-      </div>
       <TextField
         id={`${prefix}completionDate`}
         label="Completion date"
@@ -144,8 +129,8 @@ function ActionCard({ action, index, reportDate, plantUsers, onChange, onRemove,
   );
 }
 
-// Section 5: containment already done at the scene, saved as Completed (FR-011 to FR-013).
-export default function ImmediateActionsSection({ event, update, errors, showErrors }) {
+// Immediate actions (optional): containment already done at the scene, saved as Completed (FR-011 to FR-013).
+export default function ImmediateActionsSection({ event, update, showErrors }) {
   const { users } = useApp();
   const plantUsers = users.filter((person) => person.access.some((entry) => entry.plantId === event.plantId));
   const actions = event.immediateActions;
@@ -160,11 +145,7 @@ export default function ImmediateActionsSection({ event, update, errors, showErr
 
   return (
     <>
-      <p className="field-hint">
-        Record what was done straight away to make the situation safe.
-        {isImmediateActionRequired(event.levelCode) ? ' At least one is required for TF1–TF3 and SRE1–SRE3.' : ''}
-      </p>
-      <FieldError errors={errors} field="immediateActions" />
+      <p className="field-hint">Optional. Record what was done straight away to make the situation safe.</p>
       <ul className="card-list">
         {actions.map((action, index) => (
           <ActionCard

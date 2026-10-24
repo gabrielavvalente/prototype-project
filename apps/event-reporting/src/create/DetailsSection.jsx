@@ -4,7 +4,7 @@ import { getReferenceList } from '../logic/lookups.js';
 import ChipGroup from './ChipGroup.jsx';
 import { FieldError, YesNoField } from './fields.jsx';
 
-// Section 4: who was involved, recurrence, comments, feedback emails, diseases for OH (FR-010).
+// Event details: who was involved, recurrence, comments, feedback emails, diseases for OH (FR-010).
 export default function DetailsSection({ event, update, errors }) {
   const { reference } = useApp();
   const [newEmail, setNewEmail] = useState('');

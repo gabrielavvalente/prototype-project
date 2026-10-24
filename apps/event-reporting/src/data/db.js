@@ -6,8 +6,9 @@ import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 import * as sampleData from './sampleData.js';
 
 const DATABASE_NAME = 'event-reporting';
-// Version 2 renamed family codes and record numbers (review 2026-10-24); older demo data is replaced.
-const DATABASE_VERSION = 2;
+// Version 2 renamed family codes and record numbers, version 3 renamed HPR to SIP (reviews of
+// 2026-10-24); older demo data is replaced.
+const DATABASE_VERSION = 3;
 
 const STORES = [
   'events',

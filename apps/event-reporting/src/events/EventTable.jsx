@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { canEditEvent } from '../logic/access.js';
-import { isHpr, PAGE_SIZES } from '../logic/eventList.js';
+import { isSip, PAGE_SIZES } from '../logic/eventList.js';
 import { getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
 import { SeverityDots } from './EventCard.jsx';
@@ -31,7 +31,7 @@ function Cell({ column, event, lists }) {
       return (
         <span className="cell-level">
           <SeverityDots levelCode={event.levelCode} /> {event.levelCode}
-          {isHpr(event) && <span className="tag tag--red">HPR</span>}
+          {isSip(event) && <span className="tag tag--red">SIP</span>}
         </span>
       );
     case 'date':

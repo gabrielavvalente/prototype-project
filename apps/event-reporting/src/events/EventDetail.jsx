@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { AttachmentPreview } from '../create/AttachmentInput.jsx';
-import { SummaryList } from '../create/SummarySection.jsx';
+import SummaryList from './SummaryList.jsx';
 import { findEvent, getByIndex } from '../data/db.js';
 import { canEditEvent, isEventVisible } from '../logic/access.js';
 import { getSeverityDots } from '../logic/display.js';
-import { isHpr } from '../logic/eventList.js';
+import { isSip } from '../logic/eventList.js';
 import { describeEvent, describeImmediateAction } from '../logic/eventSummary.js';
 import { findById, findLevelByCode, getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
@@ -78,7 +78,7 @@ export default function EventDetail() {
   const pillar = findById(reference, event.pillarId);
   const level = findLevelByCode(reference, event.levelCode);
   const reporter = findById(users, event.reporterId);
-  const critical = isHpr(event) || getSeverityDots(event.levelCode) >= 3;
+  const critical = isSip(event) || getSeverityDots(event.levelCode) >= 3;
   const sections = describeEvent(event, lists, attachments.length).filter((section) => section.section !== 'classification');
   const locationPath = Object.values(event.location)
     .map((nodeId) => getLabel(organization, nodeId))
@@ -100,7 +100,7 @@ export default function EventDetail() {
           <PillarTag pillar={pillar} />
           <span className="tag tag--blue">{event.levelCode}</span>
           <StatusBadge status={event.status} />
-          {isHpr(event) && <span className="tag tag--red">HPR</span>}
+          {isSip(event) && <span className="tag tag--red">SIP</span>}
         </div>
         <h1>{event.title || '(no title yet)'}</h1>
         <dl className="facts-grid">
@@ -127,7 +127,7 @@ export default function EventDetail() {
           </div>
           {event.riskQuestion && (
             <div>
-              <dt className="section-label">Could this be {event.riskQuestion.type === 'HPR' ? 'an' : 'a'} {event.riskQuestion.type}?</dt>
+              <dt className="section-label">Could this be a {event.riskQuestion.type}?</dt>
               <dd>{event.riskQuestion.answer ? 'Yes' : 'No'}</dd>
             </div>
           )}

@@ -1400,3 +1400,90 @@ label.button:focus-within,
 .event-card-bottom .field-hint {
   white-space: nowrap;
 }
+
+/* Location field and picker (FR-005) */
+
+.location-field {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.location-field--chosen {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.location-field--error {
+  border-color: var(--color-error);
+}
+
+.location-field-button {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 52px;
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  background: none;
+  color: var(--color-muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.location-field--chosen .location-field-button {
+  color: var(--color-text);
+}
+
+.location-field-button > span {
+  flex: 1;
+}
+
+.location-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.location-search .search-field {
+  flex: 1 1 100%;
+}
+
+.location-search .button {
+  flex: 1 1 100%;
+}
+
+.breadcrumb {
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-small);
+}
+
+.breadcrumb .button--link {
+  min-height: auto;
+  padding: 0;
+}
+
+.qr-scanner video {
+  width: 100%;
+  max-height: 50vh;
+  border-radius: var(--radius);
+  background: #000000;
+  object-fit: cover;
+}
+
+/* One-page event form (FR-002) */
+
+.form-card > h2 {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.form-card .card--flat {
+  margin: 0;
+}

@@ -22,17 +22,17 @@ function makeEvent(id, changes = {}) {
     createdBy: 'user-1',
     reportDate: '2026-10-01',
     eventTime: '10:00',
-    riskQuestion: { type: 'HPR', answer: false },
+    riskQuestion: { type: 'SIP', answer: false },
     location: { departmentId: 'dep-1', workshopId: 'ws-1', jobId: 'job-1', workstationId: 'st-1', taskId: 'task-1' },
     ...changes,
   };
 }
 
 const events = [
-  makeEvent('1', { title: 'Forklift near miss', reportDate: '2026-09-01', riskQuestion: { type: 'HPR', answer: true } }),
+  makeEvent('1', { title: 'Forklift near miss', reportDate: '2026-09-01', riskQuestion: { type: 'SIP', answer: true } }),
   makeEvent('2', { title: 'Oil leak', familyCode: 'EVE', levelCode: 'EvE4', reporterId: 'user-2', createdBy: 'user-2', reportDate: '2026-09-15' }),
   makeEvent('3', { title: 'Fire in cabinet', familyCode: 'SRE', levelCode: 'SRE3', riskQuestion: { type: 'SRP', answer: true }, reportDate: '2026-10-05', location: { departmentId: 'dep-2', workshopId: 'ws-9', jobId: '', workstationId: '', taskId: '' } }),
-  makeEvent('4', { title: 'Draft forklift', status: 'Draft', recordNumber: null, reportDate: '2026-10-20', riskQuestion: { type: 'HPR', answer: true } }),
+  makeEvent('4', { title: 'Draft forklift', status: 'Draft', recordNumber: null, reportDate: '2026-10-20', riskQuestion: { type: 'SIP', answer: true } }),
 ];
 
 const ids = (list) => list.map((event) => event.id);
@@ -70,10 +70,10 @@ describe('applyFilters (FR-030)', () => {
     expect(filter({ location: { departmentId: 'dep-1', workshopId: 'ws-1' } })).toEqual(['1', '2', '4']);
   });
 
-  it('filters by reporter, HPR and status', () => {
+  it('filters by reporter, SIP and status', () => {
     expect(filter({ reporterId: 'user-2' })).toEqual(['2']);
-    expect(filter({ hpr: 'yes' })).toEqual(['1', '4']);
-    expect(filter({ hpr: 'no' })).toEqual(['2', '3']);
+    expect(filter({ sip: 'yes' })).toEqual(['1', '4']);
+    expect(filter({ sip: 'no' })).toEqual(['2', '3']);
     expect(filter({ status: 'Draft' })).toEqual(['4']);
   });
 
@@ -123,13 +123,13 @@ describe('paginate (FR-026)', () => {
 
 describe('KPI chips (FR-031)', () => {
   it('counts own drafts in All, My events and Drafts only', () => {
-    expect(computeKpis(events, 'user-1')).toEqual({ all: 4, mine: 3, open: 3, hpr: 1, drafts: 1 });
+    expect(computeKpis(events, 'user-1')).toEqual({ all: 4, mine: 3, open: 3, sip: 1, drafts: 1 });
   });
 
   it('narrows the list to the chosen chip', () => {
     expect(ids(applyQuickFilter(events, 'all', 'user-1'))).toEqual(['1', '2', '3', '4']);
     expect(ids(applyQuickFilter(events, 'mine', 'user-2'))).toEqual(['2']);
-    expect(ids(applyQuickFilter(events, 'hpr', 'user-1'))).toEqual(['1']);
+    expect(ids(applyQuickFilter(events, 'sip', 'user-1'))).toEqual(['1']);
     expect(ids(applyQuickFilter(events, 'drafts', 'user-1'))).toEqual(['4']);
   });
 });

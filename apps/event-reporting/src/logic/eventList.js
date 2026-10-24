@@ -9,13 +9,13 @@ export const EMPTY_FILTERS = {
   to: '',
   location: {},
   reporterId: '',
-  hpr: '', // '' | 'yes' | 'no'
+  sip: '', // '' | 'yes' | 'no'
   status: '', // '' | 'Draft' | 'Open'
   myEvents: false,
 };
 
-export function isHpr(event) {
-  return Boolean(event.riskQuestion && event.riskQuestion.type === 'HPR' && event.riskQuestion.answer === true);
+export function isSip(event) {
+  return Boolean(event.riskQuestion && event.riskQuestion.type === 'SIP' && event.riskQuestion.answer === true);
 }
 
 // Title contains the text, or the record number is exactly the text (ignoring case).
@@ -43,8 +43,8 @@ export function applyFilters(events, filters, currentUserId) {
     if (filters.to && event.reportDate > filters.to) return false;
     if (!matchesLocation(event, filters.location)) return false;
     if (filters.reporterId && event.reporterId !== filters.reporterId) return false;
-    if (filters.hpr === 'yes' && !isHpr(event)) return false;
-    if (filters.hpr === 'no' && isHpr(event)) return false;
+    if (filters.sip === 'yes' && !isSip(event)) return false;
+    if (filters.sip === 'no' && isSip(event)) return false;
     if (filters.status && event.status !== filters.status) return false;
     if (filters.myEvents && event.reporterId !== currentUserId && event.createdBy !== currentUserId) return false;
     return true;
@@ -89,12 +89,12 @@ function isMine(event, userId) {
 }
 
 // The KPI chip row (FR-031). "All" and "My events" include the user's own drafts, so the Kanban
-// Draft column is filled; "Open" and "With HPR" show submitted events only.
+// Draft column is filled; "Open" and "With SIP" show submitted events only.
 const QUICK_FILTERS = {
   all: () => true,
   mine: (event, userId) => isMine(event, userId),
   open: (event) => event.status === 'Open',
-  hpr: (event) => event.status !== 'Draft' && isHpr(event),
+  sip: (event) => event.status !== 'Draft' && isSip(event),
   drafts: (event) => event.status === 'Draft',
 };
 
@@ -110,7 +110,7 @@ export function computeKpis(events, userId) {
 
 // How many filters of the filter sheet are in use (shown on the Filters button, FR-042).
 export function countActiveFilters(filters) {
-  const simple = ['familyCode', 'levelCode', 'from', 'to', 'reporterId', 'hpr', 'status'].filter((key) => filters[key]);
+  const simple = ['familyCode', 'levelCode', 'from', 'to', 'reporterId', 'sip', 'status'].filter((key) => filters[key]);
   const location = Object.values(filters.location).some(Boolean) ? 1 : 0;
   return simple.length + location + (filters.myEvents ? 1 : 0);
 }

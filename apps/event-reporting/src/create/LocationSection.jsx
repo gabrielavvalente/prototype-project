@@ -1,51 +1,50 @@
+import { useCallback, useState } from 'react';
 import { useApp } from '../AppContext.js';
-import { getChildren, getLabel, getReferenceList } from '../logic/lookups.js';
+import { getLabel, getReferenceList } from '../logic/lookups.js';
+import { LOCATION_LEVELS } from '../logic/validation.js';
+import Icon from '../shell/Icon.jsx';
 import ChipGroup from './ChipGroup.jsx';
-import { SelectField } from './fields.jsx';
+import { FieldError } from './fields.jsx';
+import LocationPicker from './LocationPicker.jsx';
 
-const LEVELS = [
-  { field: 'departmentId', label: 'Department' },
-  { field: 'workshopId', label: 'Workshop' },
-  { field: 'jobId', label: 'Job' },
-  { field: 'workstationId', label: 'Workstation' },
-  { field: 'taskId', label: 'Task' },
-];
-
-// Section 2: drill down Plant → Department → Workshop → Job → Workstation → Task (FR-005).
+// Location: one field that opens the location picker, then the task type (FR-005).
 export default function LocationSection({ event, update, errors }) {
   const { organization, reference } = useApp();
-
-  function chooseLevel(index, value) {
-    const location = { ...event.location, [LEVELS[index].field]: value };
-    // Changing a parent clears every level below it (spec Edge Cases).
-    for (const lower of LEVELS.slice(index + 1)) {
-      location[lower.field] = '';
-    }
-    update({ location });
-  }
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const names = LOCATION_LEVELS.map((level) => getLabel(organization, event.location[level])).filter(Boolean);
+  const chosen = names.length === LOCATION_LEVELS.length;
+  const closePicker = useCallback(() => setPickerOpen(false), []);
+  const hasError = errors.some((item) => item.field === 'location');
 
   return (
     <>
-      <div className="field">
-        <label htmlFor="plant">Plant</label>
-        <input id="plant" value={getLabel(organization, event.plantId)} readOnly />
+      <div className="field" id="location">
+        <span className="field-label required" id="location-label">
+          Location in {getLabel(organization, event.plantId)}
+        </span>
+        <div className={`location-field${chosen ? ' location-field--chosen' : ''}${hasError ? ' location-field--error' : ''}`}>
+          <button
+            type="button"
+            className="location-field-button"
+            aria-labelledby="location-label location-value"
+            onClick={() => setPickerOpen(true)}
+          >
+            <Icon name="qr" size={20} />
+            <span id="location-value">{chosen ? names.join(' › ') : 'Search, browse or scan a QR code'}</span>
+            {!chosen && <Icon name="chevronRight" size={18} />}
+          </button>
+          {chosen && (
+            <button
+              type="button"
+              className="icon-button"
+              onClick={() => update({ location: Object.fromEntries(LOCATION_LEVELS.map((level) => [level, ''])) })}
+            >
+              <Icon name="close" size={18} label="Clear the location" />
+            </button>
+          )}
+        </div>
+        <FieldError errors={errors} field="location" />
       </div>
-      {LEVELS.map((level, index) => {
-        const parentId = index === 0 ? event.plantId : event.location[LEVELS[index - 1].field];
-        return (
-          <SelectField
-            key={level.field}
-            id={level.field}
-            label={level.label}
-            value={event.location[level.field]}
-            options={parentId ? getChildren(organization, parentId) : []}
-            disabled={!parentId}
-            required
-            onChange={(value) => chooseLevel(index, value)}
-            errors={errors}
-          />
-        );
-      })}
       <ChipGroup
         id="taskTypeId"
         label="Task type"
@@ -55,6 +54,9 @@ export default function LocationSection({ event, update, errors }) {
         onChange={(value) => update({ taskTypeId: value })}
         errors={errors}
       />
+      {pickerOpen && (
+        <LocationPicker plantId={event.plantId} onSelect={(location) => update({ location })} onClose={closePicker} />
+      )}
     </>
   );
 }

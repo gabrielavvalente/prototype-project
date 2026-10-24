@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   getRiskQuestionType,
-  isAttachmentRequired,
-  isImmediateActionRequired,
   validateEventForSubmit,
   validateFile,
   validateImmediateAction,
@@ -17,8 +15,6 @@ function makeAction(changes = {}) {
     description: 'Area closed',
     priority: 'actionPriority-1',
     categoryId: 'category-1',
-    subcategoryId: 'subcategory-1',
-    planDetail: '',
     completionDate: '2026-10-24',
     kpiId: '',
     comments: '',
@@ -34,7 +30,7 @@ function makeEvent(changes = {}) {
     pillarId: 'pillar-hs',
     familyCode: 'TF',
     levelCode: 'TF4',
-    riskQuestion: { type: 'HPR', answer: false },
+    riskQuestion: { type: 'SIP', answer: false },
     location: {
       departmentId: 'd',
       workshopId: 'w',
@@ -58,19 +54,14 @@ function makeEvent(changes = {}) {
   };
 }
 
-const subcategories = [
-  { id: 'subcategory-1', categoryId: 'category-1' },
-  { id: 'subcategory-3', categoryId: 'category-2' },
-];
-
 function fields(errors) {
   return errors.map((error) => error.field);
 }
 
 describe('getRiskQuestionType (FR-004)', () => {
-  it('asks HPR for Safety and Environment', () => {
-    expect(getRiskQuestionType('TF', 'TF2')).toBe('HPR');
-    expect(getRiskQuestionType('EVE', 'EvE5')).toBe('HPR');
+  it('asks SIP for Safety and Environment', () => {
+    expect(getRiskQuestionType('TF', 'TF2')).toBe('SIP');
+    expect(getRiskQuestionType('EVE', 'EvE5')).toBe('SIP');
   });
 
   it('asks CRP for SRE1-SRE2 and SRP for SRE3-SRE5', () => {
@@ -83,18 +74,6 @@ describe('getRiskQuestionType (FR-004)', () => {
   it('asks nothing for Occupational Health or before a level is chosen', () => {
     expect(getRiskQuestionType('OH', 'OH-SKIN')).toBeNull();
     expect(getRiskQuestionType('SRE', '')).toBeNull();
-  });
-});
-
-describe('mandatory evidence and actions by level (FR-008, FR-012)', () => {
-  it('requires an attachment for TF1-TF3 only', () => {
-    expect(['TF1', 'TF2', 'TF3'].every(isAttachmentRequired)).toBe(true);
-    expect(['TF4', 'TF5', 'SRE1', 'EvE1'].some(isAttachmentRequired)).toBe(false);
-  });
-
-  it('requires an immediate action for TF1-TF3 and SRE1-SRE3 only', () => {
-    expect(['TF1', 'TF3', 'SRE1', 'SRE3'].every(isImmediateActionRequired)).toBe(true);
-    expect(['TF4', 'SRE4', 'EvE1', 'OH-SKIN'].some(isImmediateActionRequired)).toBe(false);
   });
 });
 
@@ -117,41 +96,31 @@ describe('validateFile (FR-009)', () => {
 
 describe('validateImmediateAction (FR-011, FR-013)', () => {
   it('accepts a complete action', () => {
-    expect(validateImmediateAction(makeAction(), '2026-10-20', '2026-10-24', subcategories)).toEqual([]);
+    expect(validateImmediateAction(makeAction(), '2026-10-20', '2026-10-24')).toEqual([]);
   });
 
-  it('requires description, priority, category and subcategory', () => {
-    const errors = validateImmediateAction(
-      makeAction({ description: ' ', priority: '', categoryId: '', subcategoryId: '' }),
-      '2026-10-20',
-      '2026-10-24',
-      subcategories,
-    );
-    expect(fields(errors)).toEqual(['description', 'priority', 'categoryId', 'subcategoryId']);
-  });
-
-  it('requires the subcategory to belong to the category', () => {
-    const errors = validateImmediateAction(makeAction({ subcategoryId: 'subcategory-3' }), '2026-10-20', '2026-10-24', subcategories);
-    expect(fields(errors)).toEqual(['subcategoryId']);
+  it('requires description, priority and category', () => {
+    const errors = validateImmediateAction(makeAction({ description: ' ', priority: '', categoryId: '' }), '2026-10-20', '2026-10-24');
+    expect(fields(errors)).toEqual(['description', 'priority', 'categoryId']);
   });
 
   it('keeps the completion date between the report date and today', () => {
-    const future = validateImmediateAction(makeAction({ completionDate: '2026-10-25' }), '2026-10-20', '2026-10-24', subcategories);
-    const early = validateImmediateAction(makeAction({ completionDate: '2026-10-19' }), '2026-10-20', '2026-10-24', subcategories);
+    const future = validateImmediateAction(makeAction({ completionDate: '2026-10-25' }), '2026-10-20', '2026-10-24');
+    const early = validateImmediateAction(makeAction({ completionDate: '2026-10-19' }), '2026-10-20', '2026-10-24');
     expect(fields(future)).toEqual(['completionDate']);
     expect(fields(early)).toEqual(['completionDate']);
   });
 
   it('needs 1 to 5 people who performed it', () => {
-    const none = validateImmediateAction(makeAction({ performedByIds: [] }), '2026-10-20', '2026-10-24', subcategories);
-    const six = validateImmediateAction(makeAction({ performedByIds: ['1', '2', '3', '4', '5', '6'] }), '2026-10-20', '2026-10-24', subcategories);
+    const none = validateImmediateAction(makeAction({ performedByIds: [] }), '2026-10-20', '2026-10-24');
+    const six = validateImmediateAction(makeAction({ performedByIds: ['1', '2', '3', '4', '5', '6'] }), '2026-10-20', '2026-10-24');
     expect(fields(none)).toEqual(['performedByIds']);
     expect(fields(six)).toEqual(['performedByIds']);
   });
 });
 
 describe('validateSection', () => {
-  const options = { now, subcategories };
+  const options = { now };
 
   it('passes a complete event in every section', () => {
     for (const section of ['classification', 'location', 'general', 'details', 'actions']) {
@@ -160,8 +129,15 @@ describe('validateSection', () => {
   });
 
   it('requires the risk question answer when it applies (FR-004)', () => {
-    const errors = validateSection('classification', makeEvent({ riskQuestion: { type: 'HPR', answer: null } }), options);
+    const errors = validateSection('classification', makeEvent({ riskQuestion: { type: 'SIP', answer: null } }), options);
     expect(fields(errors)).toEqual(['riskQuestion']);
+  });
+
+  it('reports the classification one step at a time', () => {
+    const empty = makeEvent({ pillarId: '', familyCode: '', levelCode: '', riskQuestion: null });
+    expect(fields(validateSection('classification', empty, options))).toEqual(['pillarId']);
+    const noLevel = makeEvent({ levelCode: '', riskQuestion: null });
+    expect(fields(validateSection('classification', noLevel, options))).toEqual(['levelCode']);
   });
 
   it('does not ask a risk question for Occupational Health', () => {
@@ -169,15 +145,9 @@ describe('validateSection', () => {
     expect(validateSection('classification', event, options)).toEqual([]);
   });
 
-  it('requires every location level and the task type (FR-005)', () => {
+  it('requires a full location and the task type (FR-005)', () => {
     const event = makeEvent({ location: { departmentId: 'd' }, taskTypeId: '' });
-    expect(fields(validateSection('location', event, options))).toEqual([
-      'workshopId',
-      'jobId',
-      'workstationId',
-      'taskId',
-      'taskTypeId',
-    ]);
+    expect(fields(validateSection('location', event, options))).toEqual(['location', 'taskTypeId']);
   });
 
   it('checks title length, description length and future time (FR-006)', () => {
@@ -190,10 +160,8 @@ describe('validateSection', () => {
     expect(validateSection('general', event, options)).toEqual([]);
   });
 
-  it('requires a photo or video for TF1-TF3 (FR-008)', () => {
-    const event = makeEvent({ levelCode: 'TF2' });
-    expect(fields(validateSection('general', event, options))).toEqual(['attachments']);
-    expect(validateSection('general', event, { ...options, attachmentCount: 1 })).toEqual([]);
+  it('does not require a photo or video at any level (FR-008)', () => {
+    expect(validateSection('general', makeEvent({ levelCode: 'TF1' }), options)).toEqual([]);
   });
 
   it('checks event details, emails and OH diseases (FR-010)', () => {
@@ -203,25 +171,21 @@ describe('validateSection', () => {
     expect(fields(validateSection('details', oh, options))).toEqual(['diseaseIds']);
   });
 
-  it('requires an immediate action for TF1-TF3 and SRE1-SRE3 (FR-012)', () => {
-    const event = makeEvent({ familyCode: 'SRE', levelCode: 'SRE2', riskQuestion: { type: 'CRP', answer: true } });
-    expect(fields(validateSection('actions', event, options))).toEqual(['immediateActions']);
-    const withAction = { ...event, immediateActions: [makeAction()] };
-    expect(validateSection('actions', withAction, options)).toEqual([]);
+  it('does not require an immediate action at any level, but checks the ones added (FR-012)', () => {
+    const event = makeEvent({ familyCode: 'SRE', levelCode: 'SRE1', riskQuestion: { type: 'CRP', answer: true } });
+    expect(validateSection('actions', event, options)).toEqual([]);
+    const incomplete = { ...event, immediateActions: [makeAction({ description: '' })] };
+    expect(fields(validateSection('actions', incomplete, options))).toEqual(['immediateActions.0']);
   });
 });
 
 describe('validateEventForSubmit (FR-014, FR-015)', () => {
   it('returns nothing for a complete event', () => {
-    expect(validateEventForSubmit(makeEvent(), { now, subcategories })).toEqual([]);
+    expect(validateEventForSubmit(makeEvent(), { now })).toEqual([]);
   });
 
-  it('lists missing items with their section', () => {
-    const errors = validateEventForSubmit(makeEvent({ levelCode: 'TF2', title: '' }), { now, subcategories });
-    expect(errors.map((error) => `${error.section}:${error.field}`)).toEqual([
-      'general:title',
-      'general:attachments',
-      'actions:immediateActions',
-    ]);
+  it('lists missing items with their section, in page order', () => {
+    const errors = validateEventForSubmit(makeEvent({ taskTypeId: '', title: '' }), { now });
+    expect(errors.map((error) => `${error.section}:${error.field}`)).toEqual(['location:taskTypeId', 'general:title']);
   });
 });

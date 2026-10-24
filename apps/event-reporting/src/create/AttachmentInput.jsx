@@ -24,7 +24,7 @@ export function AttachmentPreview({ attachment, controls = false }) {
 }
 
 // Photos and videos of the event, from files or the device camera (FR-007, FR-009).
-export default function AttachmentInput({ attachments, onChange, required, errors }) {
+export default function AttachmentInput({ attachments, onChange, errors }) {
   const [rejections, setRejections] = useState([]);
 
   function addFiles(fileList) {
@@ -88,7 +88,7 @@ export default function AttachmentInput({ attachments, onChange, required, error
           <input type="file" accept="image/*,video/*" multiple className="visually-hidden" disabled={full} onChange={handleInput} />
         </label>
         <span className="field-hint attachment-count">
-          {attachments.length}/{MAX_FILES} files · 5 MB max{required ? ' · required for TF1–TF3' : ''}
+          Optional · {attachments.length}/{MAX_FILES} files · 5 MB max
         </span>
       </div>
       {rejections.map((problem) => (

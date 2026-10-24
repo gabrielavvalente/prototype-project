@@ -1,11 +1,11 @@
 import { useApp } from '../AppContext.js';
 import { getReferenceList } from '../logic/lookups.js';
-import { isAttachmentRequired, MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH } from '../logic/validation.js';
+import { MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH } from '../logic/validation.js';
 import AttachmentInput from './AttachmentInput.jsx';
 import ChipGroup from './ChipGroup.jsx';
 import { FieldError, SelectField, TextField } from './fields.jsx';
 
-// Section 3: the core facts and the photos or videos (FR-006 to FR-008).
+// General information: the core facts and optional photos or videos (FR-006 to FR-008).
 export default function GeneralInfoSection({ event, update, errors, attachments, setAttachments }) {
   const { reference, users, user } = useApp();
   const plantUsers = users.filter((person) => person.access.some((entry) => entry.plantId === event.plantId));
@@ -64,12 +64,7 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
             aria-describedby="description-count"
             onChange={(e) => update({ description: e.target.value })}
           />
-          <AttachmentInput
-            attachments={attachments}
-            onChange={setAttachments}
-            required={isAttachmentRequired(event.levelCode)}
-            errors={errors}
-          />
+          <AttachmentInput attachments={attachments} onChange={setAttachments} errors={errors} />
         </div>
         <span className="field-hint" id="description-count">
           {description.length} / {MAX_DESCRIPTION_LENGTH}

@@ -62,7 +62,7 @@ export function TextField({ id, label, value, onChange, errors = [], type = 'tex
 
 export function YesNoField({ id, label, value, onChange, errors = [], hint }) {
   return (
-    <fieldset className="field">
+    <fieldset className="field" id={id}>
       <legend className="field-label required">{label}</legend>
       {hint && <span className="field-hint">{hint}</span>}
       <div className="chip-group">

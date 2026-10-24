@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { AttachmentPreview } from '../create/AttachmentInput.jsx';
-import { SummaryList } from '../create/SummarySection.jsx';
+import SummaryList from './SummaryList.jsx';
 import { getByIndex } from '../data/db.js';
-import { isHpr } from '../logic/eventList.js';
+import { isSip } from '../logic/eventList.js';
 import { findLevelByCode, getLabel } from '../logic/lookups.js';
 import Sheet from '../shell/Sheet.jsx';
 import StatusBadge from './StatusBadge.jsx';
@@ -28,7 +28,7 @@ export default function QuickView({ event, onClose }) {
   const rows = [
     { label: 'Record number', value: event.recordNumber || 'Draft' },
     { label: 'Classification', value: `${getLabel(reference, event.pillarId)} · ${level ? `${level.code} — ${level.label}` : ''}` },
-    { label: 'HPR', value: isHpr(event) ? 'Yes' : 'No' },
+    { label: 'SIP', value: isSip(event) ? 'Yes' : 'No' },
     { label: 'Location', value: location },
     { label: 'Reporter', value: getLabel(users, event.reporterId) },
     { label: 'Report date', value: `${event.reportDate} ${event.eventTime}` },

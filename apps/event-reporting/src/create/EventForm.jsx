@@ -13,12 +13,6 @@ import DetailsSection from './DetailsSection.jsx';
 import GeneralInfoSection from './GeneralInfoSection.jsx';
 import ImmediateActionsSection from './ImmediateActionsSection.jsx';
 import LocationSection from './LocationSection.jsx';
-import Stepper from './Stepper.jsx';
-import SummarySection from './SummarySection.jsx';
-
-const STEPS = [...SECTIONS, 'summary'];
-const STEP_TITLES = { ...SECTION_TITLES, summary: 'Summary' };
-const STEPPER_STEPS = STEPS.map((key) => ({ key, title: STEP_TITLES[key] }));
 
 const SECTION_COMPONENTS = {
   classification: ClassificationSection,
@@ -62,6 +56,12 @@ function newEvent(user, context, reference) {
     updatedAt: null,
     submittedAt: null,
   };
+}
+
+// The page element of a field reported by validation (immediate actions are flagged per card).
+function elementIdFor(field) {
+  const actionMatch = /^immediateActions\.(\d+)$/.exec(field);
+  return actionMatch ? `immediate-action-${actionMatch[1]}` : field;
 }
 
 function Confirmation({ result }) {
@@ -131,6 +131,7 @@ function UnsavedChangesDialog({ canSaveDraft, onSaveDraft, onDiscard, onStay }) 
   );
 }
 
+// The event form: one continuous page with every section (FR-002), used to create and to edit.
 function EventForm() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -139,16 +140,15 @@ function EventForm() {
   const [event, setEvent] = useState(() => (id ? null : newEvent(user, context, reference)));
   const [attachments, setAttachments] = useState([]);
   const [removedAttachmentIds, setRemovedAttachmentIds] = useState([]);
-  const [stepIndex, setStepIndex] = useState(0);
-  // The furthest section reached; an existing event can open any section straight away.
-  const [furthestStep, setFurthestStep] = useState(id ? STEPS.length - 1 : 0);
+  // Missing fields are flagged only after the first Submit (FR-014).
   const [showErrors, setShowErrors] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [result, setResult] = useState(null);
+  const [scrollToField, setScrollToField] = useState(null);
 
-  // Ask before leaving with unsaved changes, inside the app (blocker) and when closing the tab.
+  // Ask before leaving with unsaved changes (closing the tab is handled by the app).
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) => dirty && currentLocation.pathname !== nextLocation.pathname,
   );
@@ -167,8 +167,6 @@ function EventForm() {
     setEvent(newEvent(user, context, reference));
     setAttachments([]);
     setRemovedAttachmentIds([]);
-    setStepIndex(0);
-    setFurthestStep(0);
     setShowErrors(false);
     setDirty(false);
   }, [id, context, user, reference]);
@@ -193,10 +191,20 @@ function EventForm() {
     load();
   }, [id, user, context]);
 
+  // After a refused Submit, bring the first missing field into view.
+  useEffect(() => {
+    if (!scrollToField) return;
+    const element = document.getElementById(elementIdFor(scrollToField));
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    setScrollToField(null);
+  }, [scrollToField]);
+
   const isSubmitted = event && event.status === 'Open';
 
   useEffect(() => {
-    document.title = `${isSubmitted ? 'Edit event' : 'Create Event'} — Event Reporting`;
+    document.title = `${isSubmitted ? 'Edit event' : 'New event'} — Event Reporting`;
   }, [isSubmitted]);
 
   if (loadState === 'loading') return <p className="page">Loading…</p>;
@@ -204,14 +212,8 @@ function EventForm() {
   if (loadState === 'notAllowed') return <NotAllowed reason="permission" />;
   if (result) return <Confirmation result={result} />;
 
-  const step = STEPS[stepIndex];
-  const options = {
-    now: new Date(),
-    attachmentCount: attachments.length,
-    subcategories: getReferenceList(reference, 'actionSubcategory'),
-  };
-  const sectionErrors = showErrors && step !== 'summary' ? validateSection(step, event, options) : [];
-  const missing = step === 'summary' ? validateEventForSubmit(event, options) : [];
+  const options = { now: new Date() };
+  const missing = showErrors ? validateEventForSubmit(event, options) : [];
 
   function update(changes) {
     setEvent((previous) => ({ ...previous, ...changes }));
@@ -225,38 +227,16 @@ function EventForm() {
     setDirty(true);
   }
 
-  function showStep(index) {
-    setStepIndex(index);
-    setFurthestStep((previous) => Math.max(previous, index));
-    window.scrollTo(0, 0);
-  }
-
-  function jumpToStep(index) {
-    setShowErrors(false);
-    showStep(index);
-  }
-
-  function next() {
-    if (validateSection(step, event, options).length > 0) {
-      setShowErrors(true);
-      return;
-    }
-    setShowErrors(false);
-    showStep(stepIndex + 1);
-  }
-
-  function back() {
-    setShowErrors(false);
-    showStep(stepIndex - 1);
-  }
-
-  function goToSection(sectionName) {
-    setShowErrors(true);
-    showStep(STEPS.indexOf(sectionName));
-  }
-
   // kind: 'draft' | 'submit' | 'changes'. Returns true when saved.
   async function save(kind) {
+    if (kind !== 'draft') {
+      const problems = validateEventForSubmit(event, options);
+      if (problems.length > 0) {
+        setShowErrors(true);
+        setScrollToField(problems[0].field);
+        return false;
+      }
+    }
     setSaving(true);
     setSaveError('');
     const args = { event, attachments, removedAttachmentIds, userId: user.id };
@@ -282,8 +262,6 @@ function EventForm() {
     else blocker.reset();
   }
 
-  const Section = SECTION_COMPONENTS[step];
-
   return (
     <main className="page page--with-bar">
       <div className="form-titlebar">
@@ -294,55 +272,49 @@ function EventForm() {
         <span className="form-titlebar-spacer" />
       </div>
 
-      <Stepper steps={STEPPER_STEPS} current={stepIndex} furthest={furthestStep} onSelect={jumpToStep} />
-
       {saveError && (
         <p className="message message--error" role="alert">
           {saveError}
         </p>
       )}
+      {missing.length > 0 && (
+        <p className="message message--error" role="alert">
+          {missing.length === 1 ? '1 required field is' : `${missing.length} required fields are`} missing. They are
+          marked below.
+        </p>
+      )}
 
-      <section className="form-section" aria-labelledby="section-title">
-        <h2 id="section-title">{STEP_TITLES[step]}</h2>
-        {step === 'summary' ? (
-          <SummarySection event={event} attachmentCount={attachments.length} missing={missing} goToSection={goToSection} />
-        ) : (
-          <Section
-            event={event}
-            update={update}
-            errors={sectionErrors}
-            showErrors={showErrors}
-            pillarLocked={Boolean(context.pillarId)}
-            attachments={attachments}
-            setAttachments={changeAttachments}
-          />
-        )}
-        {!isSubmitted && (
-          <button type="button" className="button button--link" disabled={saving} onClick={() => save('draft')}>
-            Save as Draft
-          </button>
-        )}
-      </section>
+      {SECTIONS.map((sectionName) => {
+        const Section = SECTION_COMPONENTS[sectionName];
+        return (
+          <section key={sectionName} className="card form-card" aria-labelledby={`section-${sectionName}`}>
+            <h2 id={`section-${sectionName}`}>{SECTION_TITLES[sectionName]}</h2>
+            <Section
+              event={event}
+              update={update}
+              errors={showErrors ? validateSection(sectionName, event, options) : []}
+              showErrors={showErrors}
+              pillarLocked={Boolean(context.pillarId)}
+              attachments={attachments}
+              setAttachments={changeAttachments}
+            />
+          </section>
+        );
+      })}
 
       <div className="bottom-bar">
-        {stepIndex > 0 && (
-          <button type="button" className="button" onClick={back}>
-            <Icon name="back" size={18} /> Back
+        {!isSubmitted && (
+          <button type="button" className="button" disabled={saving} onClick={() => save('draft')}>
+            Save as draft
           </button>
         )}
-        {step !== 'summary' && (
-          <button type="button" className="button button--primary" onClick={next}>
-            Next
-          </button>
-        )}
-        {step === 'summary' && !isSubmitted && (
-          <button type="button" className="button button--primary" disabled={saving || missing.length > 0} onClick={() => save('submit')}>
-            <Icon name="check" size={18} /> Submit
-          </button>
-        )}
-        {step === 'summary' && isSubmitted && (
-          <button type="button" className="button button--primary" disabled={saving || missing.length > 0} onClick={() => save('changes')}>
+        {isSubmitted ? (
+          <button type="button" className="button button--primary" disabled={saving} onClick={() => save('changes')}>
             <Icon name="check" size={18} /> Save changes
+          </button>
+        ) : (
+          <button type="button" className="button button--primary" disabled={saving} onClick={() => save('submit')}>
+            <Icon name="check" size={18} /> Submit
           </button>
         )}
       </div>

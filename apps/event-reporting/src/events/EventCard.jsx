@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { getPillarColorClass, getSeverityDots } from '../logic/display.js';
-import { isHpr } from '../logic/eventList.js';
+import { isSip } from '../logic/eventList.js';
 import { findById, getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
 
@@ -32,7 +32,7 @@ export default function EventCard({ event, onQuickView }) {
   const { reference, organization, users } = useApp();
   const pillar = findById(reference, event.pillarId);
   const reporter = findById(users, event.reporterId);
-  const critical = isHpr(event) || getSeverityDots(event.levelCode) >= 3;
+  const critical = isSip(event) || getSeverityDots(event.levelCode) >= 3;
   const department = getLabel(organization, event.location.departmentId);
 
   return (
@@ -41,7 +41,7 @@ export default function EventCard({ event, onQuickView }) {
         <div className="tag-row">
           <PillarTag pillar={pillar} />
           <span className="tag tag--blue">{event.levelCode}</span>
-          {isHpr(event) && <span className="tag tag--red">HPR</span>}
+          {isSip(event) && <span className="tag tag--red">SIP</span>}
         </div>
         <div className="event-card-corner">
           <SeverityDots levelCode={event.levelCode} />

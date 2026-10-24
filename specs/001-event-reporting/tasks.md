@@ -414,22 +414,22 @@ creation form")
 **Independent Test**: Quickstart scenarios 1–4 pass on the one-page form; SIP replaces HPR
 everywhere; photos and immediate actions are optional
 
-- [ ] T067 Rename HPR to SIP (question, data, KPI chip, filter, tags) in
+- [X] T067 Rename HPR to SIP (question, data, KPI chip, filter, tags) in
   `apps/event-reporting/src/logic/validation.js`, `src/logic/eventList.js`, `src/data/sampleData.js`
   and every screen, with tests; bump the database version
-- [ ] T068 Make photos/videos and immediate actions optional for every level in
+- [X] T068 Make photos/videos and immediate actions optional for every level in
   `src/logic/validation.js` (+ tests) and remove the related hints
-- [ ] T069 Remove Subcategory and Action plan detail from immediate actions (form, validation,
+- [X] T069 Remove Subcategory and Action plan detail from immediate actions (form, validation,
   summary rows, sample data, reference lists)
-- [ ] T070 Create `src/create/LocationPicker.jsx`: a location field opening a sheet with type-to-
+- [X] T070 Create `src/create/LocationPicker.jsx`: a location field opening a sheet with type-to-
   search (full paths of tasks), browse one level at a time (breadcrumb), and **Scan QR code**
   using the browser's `BarcodeDetector` when available (fallback message otherwise); a code for
   a workstation opens browsing there; replace the dependent selects in `LocationSection.jsx`
-- [ ] T071 Turn `src/create/EventForm.jsx` into one continuous page (all sections with headings,
+- [X] T071 Turn `src/create/EventForm.jsx` into one continuous page (all sections with headings,
   fixed bottom bar with Save as Draft and Submit/Save changes); on Submit with missing fields,
   flag them in place, show the count and scroll to the first; remove `Stepper.jsx` and the
   summary step (move `SummaryList` to `src/events/SummaryList.jsx`)
-- [ ] T072 Rerun quickstart scenarios 1–7 at 390px and desktop width with no console errors
+- [X] T072 Rerun quickstart scenarios 1–7 at 390px and desktop width with no console errors
 
 ---
 

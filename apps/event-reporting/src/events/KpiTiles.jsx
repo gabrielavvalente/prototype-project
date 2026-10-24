@@ -2,7 +2,7 @@ const CHIPS = [
   { key: 'all', label: 'All' },
   { key: 'mine', label: 'My events' },
   { key: 'open', label: 'Open' },
-  { key: 'hpr', label: 'With HPR' },
+  { key: 'sip', label: 'With SIP' },
   { key: 'drafts', label: 'Drafts' },
 ];
 

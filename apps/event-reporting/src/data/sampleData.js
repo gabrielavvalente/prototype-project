@@ -75,17 +75,6 @@ const actionCategories = [
   { id: 'category-4', list: 'actionCategory', label: 'Care for people' },
 ];
 
-const actionSubcategories = [
-  { id: 'subcategory-1', list: 'actionSubcategory', label: 'Barrier or tape', categoryId: 'category-1' },
-  { id: 'subcategory-2', list: 'actionSubcategory', label: 'Stop the line', categoryId: 'category-1' },
-  { id: 'subcategory-3', list: 'actionSubcategory', label: 'Lock out machine', categoryId: 'category-2' },
-  { id: 'subcategory-4', list: 'actionSubcategory', label: 'Temporary fix', categoryId: 'category-2' },
-  { id: 'subcategory-5', list: 'actionSubcategory', label: 'Absorb spill', categoryId: 'category-3' },
-  { id: 'subcategory-6', list: 'actionSubcategory', label: 'Remove debris', categoryId: 'category-3' },
-  { id: 'subcategory-7', list: 'actionSubcategory', label: 'First aid given', categoryId: 'category-4' },
-  { id: 'subcategory-8', list: 'actionSubcategory', label: 'Sent to medical service', categoryId: 'category-4' },
-];
-
 // sortOrder keeps lists in the order written here (the database returns them sorted by id).
 export const reference = [
   ...pillars,
@@ -103,7 +92,6 @@ export const reference = [
   ...simpleList('shiftMoment', ['Day', 'Night', 'Afternoon']),
   ...simpleList('actionPriority', ['Low', 'Medium', 'High']),
   ...actionCategories,
-  ...actionSubcategories,
 ].map((item, index) => ({ ...item, sortOrder: index }));
 
 // ---------------------------------------------------------------------------
@@ -267,7 +255,7 @@ const businessOfPlant = {
 
 function riskQuestionFor(familyCode, levelCode, answer) {
   if (familyCode === 'TF' || familyCode === 'EVE') {
-    return { type: 'HPR', answer };
+    return { type: 'SIP', answer };
   }
   if (familyCode === 'SRE') {
     const type = ['SRE1', 'SRE2'].includes(levelCode) ? 'CRP' : 'SRP';
@@ -341,8 +329,6 @@ function sampleImmediateAction(eventId, reporterId, reportDate) {
     description: 'Area made safe and people informed',
     priority: 'actionPriority-3',
     categoryId: 'category-1',
-    subcategoryId: 'subcategory-1',
-    planDetail: 'Area closed with barrier tape until checked by maintenance.',
     completionDate: reportDate,
     kpiId: '',
     comments: '',
