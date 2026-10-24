@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useBlocker, useLocation, useParams } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { findEvent, getByIndex, saveChanges, saveDraft, StorageFullError, submitEvent } from '../data/db.js';
@@ -130,7 +130,7 @@ function UnsavedChangesDialog({ canSaveDraft, onSaveDraft, onDiscard, onStay }) 
 
 function EventForm() {
   const { id } = useParams();
-  const { user, context, users, reference } = useApp();
+  const { user, context, users, reference, setFormDirty } = useApp();
   const [loadState, setLoadState] = useState(id ? 'loading' : 'ready');
   const [event, setEvent] = useState(() => (id ? null : newEvent(user, context, reference)));
   const [attachments, setAttachments] = useState([]);
@@ -147,12 +147,24 @@ function EventForm() {
     ({ currentLocation, nextLocation }) => dirty && currentLocation.pathname !== nextLocation.pathname,
   );
 
+  // Lets the header (and closing the tab) know the form has unsaved changes.
   useEffect(() => {
-    if (!dirty) return undefined;
-    const warn = (e) => e.preventDefault();
-    window.addEventListener('beforeunload', warn);
-    return () => window.removeEventListener('beforeunload', warn);
-  }, [dirty]);
+    setFormDirty(dirty);
+    return () => setFormDirty(false);
+  }, [dirty, setFormDirty]);
+
+  // A new event follows the header: changing plant or pillar starts it again in the new context.
+  const firstContext = useRef(context);
+  useEffect(() => {
+    if (id || context === firstContext.current) return;
+    firstContext.current = context;
+    setEvent(newEvent(user, context, reference));
+    setAttachments([]);
+    setRemovedAttachmentIds([]);
+    setStepIndex(0);
+    setShowErrors(false);
+    setDirty(false);
+  }, [id, context, user, reference]);
 
   useEffect(() => {
     if (!id) return;

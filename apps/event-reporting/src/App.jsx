@@ -1,28 +1,26 @@
-import { useEffect, useMemo, useState } from 'react';
-import { createHashRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
-import { AppContext, SIGNED_IN_USER_KEY, useApp } from './AppContext.js';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { createHashRouter, Navigate, Outlet, RouterProvider, useLocation } from 'react-router-dom';
+import { AppContext, ENTERED_KEY, SIGNED_IN_USER_KEY, useApp } from './AppContext.js';
 import { getAll, getById, put, seedIfEmpty } from './data/db.js';
 import EventFormPage from './create/EventForm.jsx';
 import EventDetail from './events/EventDetail.jsx';
+import EventLibrary from './events/EventLibrary.jsx';
 import { canOpenRoute } from './logic/access.js';
+import EntryScreen from './shell/EntryScreen.jsx';
 import Header from './shell/Header.jsx';
 import NotAllowed from './shell/NotAllowed.jsx';
 import StartScreen from './shell/StartScreen.jsx';
 
-function Placeholder({ title }) {
-  return (
-    <main className="page">
-      <h1>{title}</h1>
-      <p>Coming soon.</p>
-    </main>
-  );
-}
-
-// Every signed-in page: header on top, the page below. Sends signed-out visitors to the start screen.
+// Every signed-in page: header on top, the page below. Sends signed-out visitors to the start
+// screen, and signed-in users to the entry screen until they have chosen where to start.
 function SignedInLayout() {
-  const { user } = useApp();
+  const { user, entered } = useApp();
+  const location = useLocation();
   if (!user) {
     return <Navigate to="/" replace />;
+  }
+  if (!entered && location.pathname !== '/entry') {
+    return <Navigate to="/entry" replace />;
   }
   return (
     <>
@@ -43,8 +41,8 @@ const router = createHashRouter([
   {
     element: <SignedInLayout />,
     children: [
-      { path: 'entry', element: <RequireRoute name="entry"><Placeholder title="Choose where to start" /></RequireRoute> },
-      { path: 'events', element: <RequireRoute name="events"><Placeholder title="Events" /></RequireRoute> },
+      { path: 'entry', element: <RequireRoute name="entry"><EntryScreen /></RequireRoute> },
+      { path: 'events', element: <RequireRoute name="events"><EventLibrary /></RequireRoute> },
       { path: 'events/new', element: <RequireRoute name="events-new"><EventFormPage /></RequireRoute> },
       { path: 'events/:id', element: <RequireRoute name="event-detail"><EventDetail /></RequireRoute> },
       { path: 'events/:id/edit', element: <RequireRoute name="event-edit"><EventFormPage /></RequireRoute> },
@@ -64,6 +62,19 @@ export default function App() {
   const [lists, setLists] = useState({ users: [], organization: [], reference: [] });
   const [user, setUser] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [entered, setEntered] = useState(sessionStorage.getItem(ENTERED_KEY) === 'yes');
+  const [formDirty, setFormDirty] = useState(false);
+  const reloading = useRef(false);
+
+  // Warn before closing the tab while the event form has unsaved changes.
+  useEffect(() => {
+    if (!formDirty) return undefined;
+    const warn = (e) => {
+      if (!reloading.current) e.preventDefault();
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [formDirty]);
 
   async function loadSignedInUser(userId) {
     const signedInUser = await getById('users', userId);
@@ -99,11 +110,15 @@ export default function App() {
 
   async function signIn(userId) {
     sessionStorage.setItem(SIGNED_IN_USER_KEY, userId);
+    sessionStorage.removeItem(ENTERED_KEY);
+    setEntered(false);
     await loadSignedInUser(userId);
   }
 
   function signOut() {
     sessionStorage.removeItem(SIGNED_IN_USER_KEY);
+    sessionStorage.removeItem(ENTERED_KEY);
+    setEntered(false);
     setUser(null);
     setSettings(null);
   }
@@ -113,6 +128,20 @@ export default function App() {
     const updated = { ...settings, ...changes };
     await put('settings', updated);
     setSettings(updated);
+  }
+
+  // Entry screen choice: a pillar id, or null for "All pillars" (FR-037).
+  async function enter(pillarId) {
+    await updateSettings({ pillarId });
+    sessionStorage.setItem(ENTERED_KEY, 'yes');
+    setEntered(true);
+  }
+
+  // Reloads the whole page (used when switching business) without the unsaved-changes warning,
+  // because the user has already confirmed.
+  function reloadPage() {
+    reloading.current = true;
+    window.location.reload();
   }
 
   // Kept as the same object until the context really changes, so pages do not reload their data.
@@ -133,8 +162,12 @@ export default function App() {
     user,
     settings,
     context,
-    setContext: updateSettings,
     updateSettings,
+    entered,
+    enter,
+    formDirty,
+    setFormDirty,
+    reloadPage,
     signIn,
     signOut,
   };

@@ -9,3 +9,6 @@ export function useApp() {
 }
 
 export const SIGNED_IN_USER_KEY = 'event-reporting.userId';
+
+// Set once the user has chosen a pillar (or none) on the entry screen in this browser tab.
+export const ENTERED_KEY = 'event-reporting.entered';

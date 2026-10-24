@@ -15,7 +15,7 @@ export default function StartScreen() {
 
   async function handleSignIn(userId) {
     await signIn(userId);
-    navigate('/events');
+    navigate('/entry');
   }
 
   async function handleReset() {
