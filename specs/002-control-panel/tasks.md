@@ -349,16 +349,16 @@ scenarios 1–5
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T054 [P] Create `apps/control-panel/README.md` and `apps/user-management/README.md`
+- [X] T054 [P] Create `apps/control-panel/README.md` and `apps/user-management/README.md`
   (what it does, how to run through the launcher, how to test) and update `apps/event-reporting/README.md` (run through the launcher
   for shared data)
-- [ ] T055 [P] Update the root `README.md`: list the Control Panel and User Management, explain the launcher
+- [X] T055 [P] Update the root `README.md`: list the Control Panel and User Management, explain the launcher
   (`cd launcher && npm install && npm run dev`) and `shared/platform/`
-- [ ] T056 Check every Control Panel and User Management screen at 320px and with the keyboard (switches, sheets,
+- [X] T056 Check every Control Panel and User Management screen at 320px and with the keyboard (switches, sheets,
   pickers, tabs), titles per screen, `alt`/labels on icons (constitution IV)
-- [ ] T057 Run `npm test` in the Control Panel and Event Reporting and `npm run build` in all
+- [X] T057 Run `npm test` in the Control Panel and Event Reporting and `npm run build` in all
   three apps; open all three through the launcher with no console errors
-- [ ] T058 Run the whole [quickstart.md](quickstart.md) once more from **Reset demo data** and mark
+- [X] T058 Run the whole [quickstart.md](quickstart.md) once more from **Reset demo data** and mark
   this file complete
 
 ---
