@@ -17,7 +17,8 @@ user notified, no blocking in the MVP). When Review is Required, a group of revi
 defined. Master data: Safety = Standards, Hazards, Body Parts, Injuries; Environment = Aspects,
 Impacts; Industrial Risk = Categories (Industrial Hygiene master data later)."
 
-**App folder**: `apps/event-reporting/` (adds the Control Panel to the existing app)
+**App folders**: `apps/control-panel/` (new, separate app) and `apps/event-reporting/` (reads
+the configuration; small changes at submission)
 
 **Sources** (in [../001-event-reporting/source/Control Panel/](../001-event-reporting/source/Control%20Panel/)):
 [master-data-control.md](../001-event-reporting/source/Control%20Panel/master-data-control.md)
@@ -29,6 +30,25 @@ Impacts; Industrial Risk = Categories (Industrial Hygiene master data later)."
 [aspect-impact.md](../001-event-reporting/source/Control%20Panel/aspect-impact.md),
 [industrial-risk-category.md](../001-event-reporting/source/Control%20Panel/industrial-risk-category.md);
 lifecycle phases from [core.md](../001-event-reporting/source/core.md).
+
+## Clarifications
+
+### Session 2026-10-24
+
+- Q: May a higher level change or remove a setting made at a lower level? → A: No. Settings are
+  changed only by people at the same level; a higher level only adds Required on top (option A).
+- Q: Is the Control Panel part of the Event Reporting app? → A: No. It is a **separate app**,
+  because the other apps of the monorepo will use the same configuration and content. Users,
+  plants, roles, master data and workflow settings are shared platform data that every app reads;
+  all apps are opened from one address so they see the same data on the device.
+- Q: How is the resulting workflow shown? → A: The Workflow tab has a **Settings** view (what my
+  level sets) and a **Result per plant** view (what applies, with who requires each phase, cell
+  details and a preview of an event's path); Central and Cluster also get **Compare plants** for
+  one level.
+- Q: Is user management included? → A: Yes, **read-only** for now: a users list and a user detail
+  with their access and Control Panel roles. Editing access is a later feature.
+- Q: What happens to an event when only Submission is Required? → A: It is **Closed** right after
+  submission.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -73,6 +93,15 @@ submitted.
 8. **Given** a plant's workflow changed, **When** events are submitted afterwards, **Then** they
    follow the new workflow, while events submitted before keep the workflow they were submitted
    with.
+9. **Given** I open **Result per plant** and choose a plant, **When** the grid shows, **Then** each
+   cell says Required or Optional, and each Required cell says which level requires it; opening a
+   cell shows every level requiring it, who set it and when, and the reviewers for Review.
+10. **Given** I chose a level row in Result per plant, **When** I look under the grid, **Then** I see
+    the path an event of that level takes at that plant, with skipped phases crossed out.
+11. **Given** I am Central or Cluster, **When** I open **Compare plants** and choose a level,
+    **Then** I see my plants side by side with each phase's result.
+12. **Given** only Submission is Required for a plant and level, **When** an event of that level is
+    submitted there, **Then** it is Closed right away.
 
 ---
 
@@ -147,6 +176,34 @@ level and plants shown, and that the audit trail lists every change made in Stor
 
 ---
 
+### User Story 4 - See users and their access (Priority: P4)
+
+A Central administrator opens **Users** in the Control Panel and searches for a person. The list
+shows each user's event role, plants, pillars and Control Panel roles. Opening a user shows all
+their access in one place — which plants and pillars they can report and see, their Control Panel
+roles with level and plants, and the review groups they belong to. A Cluster administrator sees
+only the users of their plants.
+
+**Why this priority**: Helps administrators understand who can do what (for example, before
+choosing reviewers), but nothing else depends on it; editing access comes later.
+
+**Independent Test**: With the sample data, check that the list, search, filters and user details
+match each demo user's access, and that a Cluster administrator only sees users of their plants.
+
+**Acceptance Scenarios**:
+
+1. **Given** I open Users, **When** the list loads, **Then** I see name, event role, plants, pillars
+   and Control Panel roles of every user within my perimeter, with search by name and filters by
+   plant, pillar and role.
+2. **Given** I open a user, **When** the detail shows, **Then** I see their event access (plants and
+   pillars), their Control Panel roles (pillar, level, plants) and the review groups they belong
+   to.
+3. **Given** I am a Cluster or Local administrator, **When** I open Users, **Then** I only see users
+   who have access to at least one of my plants.
+4. **Given** any user screen, **When** I look for edit actions, **Then** there are none (read-only).
+
+---
+
 ### Edge Cases
 
 - **Higher level adds Required later**: a Local or Cluster setting that becomes Required at a
@@ -171,6 +228,13 @@ level and plants shown, and that the audit trail lists every change made in Stor
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
+
+**Separate app and shared configuration**
+
+- **FR-024**: The Control Panel MUST be a separate app from Event Reporting; users, plants,
+  location hierarchy, roles, workflow settings and master data MUST be shared platform data that
+  Event Reporting (and future apps) read, so a change made in the Control Panel is seen by the
+  other apps on the same device without copying anything.
 
 **Access and levels**
 
@@ -203,10 +267,18 @@ level and plants shown, and that the audit trail lists every change made in Stor
   can only add Required on top of a lower level's settings.
 - **FR-010**: Making Review Required MUST require choosing a group of at least one reviewer among
   the Managers and Site Admins who can see the plants concerned and the pillar.
-- **FR-011**: Every user with a Control Panel role MUST be able to see, for each plant they cover,
-  the resulting workflow per level, with the origin of each Required phase.
+- **FR-011**: The Workflow tab MUST offer a **Settings** view (cells of the user's level, editable
+  per FR-006/FR-008) and a **Result per plant** view: for a chosen plant the user covers, each
+  level × phase cell shows Required or Optional and, when Required, the level(s) requiring it;
+  opening a cell shows every requiring setting with author, date and reviewers; choosing a level
+  shows the path of an event of that level, with skipped phases crossed out.
+- **FR-025**: Central and Cluster users MUST also have a **Compare plants** view: for a chosen
+  level, their plants side by side with each phase's result.
 - **FR-012**: Workflow changes MUST apply only to events submitted after the change; each event
   MUST keep the workflow (required phases and reviewers) in force at its submission.
+- **FR-026**: When only Submission is Required for the event's plant and level, the event MUST be
+  Closed right after submission (instead of Open); otherwise it is Open as today. *(changes
+  001 FR-016 for this case)*
 
 **Master data**
 
@@ -236,6 +308,16 @@ level and plants shown, and that the audit trail lists every change made in Stor
 - **FR-021**: The Industrial Risk panel MUST show the Health & Safety Standards and Hazards
   read-only, marked as owned by Health & Safety; no configuration of another pillar's list is
   possible from it.
+
+**User management (read-only)**
+
+- **FR-027**: The Control Panel MUST offer a read-only **Users** list with name, event role,
+  plants, pillars and Control Panel roles, searchable by name and filterable by plant, pillar and
+  role; Central sees every user, Cluster and Local only users with access to at least one of their
+  plants.
+- **FR-028**: Opening a user MUST show their event access (plants and pillars), their Control
+  Panel roles (pillar, level, plants) and the review groups they belong to; no edit action is
+  offered.
 
 **Audit and notifications**
 
@@ -282,20 +364,27 @@ level and plants shown, and that the audit trail lists every change made in Stor
 ## Assumptions
 
 - **Prototype simplifications (as in 001)**: demo users instead of real accounts; data kept on the
-  demonstration device; English interface. Control Panel roles are given to demo users in the
+  demonstration device (now shared between the apps opened from the same address); English
+  interface. Control Panel roles are given to demo users in the
   sample data (assigning roles from a screen is out of scope).
 - **Sample data**: a Central administrator per pillar; a Cluster administrator for Health &
   Safety and Environment covering Lyon and Porto; Local administrators for Lyon and Curitiba; a
   starting workflow that demonstrates every case of the combination rule.
 - **Levels of Industrial Hygiene**: its "levels" are its disease types (as in event creation).
 - **Notifications**: shown in the existing notifications panel; no email.
+- **Impact on event creation**: the form does not change. At submission the event stores its
+  workflow (FR-012) and is Closed when only Submission is Required (FR-026); users, plants and the
+  location hierarchy come from the shared platform data instead of the app's own sample data.
+- **Constitution**: sharing data between apps opened from one address needs a small amendment
+  (the constitution currently forbids anything with its own setup at the repository root); it is
+  handled in the plan of this feature.
 - **Consumption by events**: this feature stores the resulting workflow on each new event (FR-012)
   and computes the available values per plant (FR-018); using the lists in event screens
   (classification during review) and acting on the phases are part of the next features (Review
   and Governance, Root cause analysis, Action Plan, Validation).
 - **Out of scope** (from the sources, kept for later): the Body Part → Injury relationship matrix
   and the Aspect → Impact association matrix (content not specified in the sources); import and
-  export; translations; effective start/end dates; "where used" before deactivating (no event uses
+  export; translations; effective start/end dates; editing users and their access; "where used" before deactivating (no event uses
   these lists yet); value requests from lower levels; Industrial Hygiene master data (Diseases,
   Risks, PPEs, Means of control); Shared Contractor Directory; approval of Cluster additions by
   Central.
