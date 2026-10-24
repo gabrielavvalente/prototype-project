@@ -509,18 +509,18 @@ FR-048)
 
 **Purpose**: Documentation, accessibility, performance and the final end-to-end check
 
-- [ ] T044 [P] Create `apps/event-reporting/README.md` with only: what the app does (1–3
+- [X] T044 [P] Create `apps/event-reporting/README.md` with only: what the app does (1–3
   sentences), how to run it (`npm install`, `npm run dev`), and how to test it (`npm test` plus a
   short list of the quickstart checks) — constitution principle V
-- [ ] T045 [P] Create root `README.md` listing the apps with a link to `apps/event-reporting/`
-- [ ] T046 Set a clear page title (`document.title` and a visible `<h1>`) on every screen in
+- [X] T045 [P] Create root `README.md` listing the apps with a link to `apps/event-reporting/`
+- [X] T046 Set a clear page title (`document.title` and a visible `<h1>`) on every screen in
   `apps/event-reporting/src/` and check at 320px width that no screen scrolls sideways (except the
   event table's own scroll area), every control is reachable with Tab and has a visible focus
   outline, and every image has `alt` text (FR-025)
-- [ ] T047 Check performance in the browser: creation form appears in under 2 seconds and the event
+- [X] T047 Check performance in the browser: creation form appears in under 2 seconds and the event
   list with 100 rows per page and all filters applied shows in under 3 seconds (SC-003, SC-004);
   if the sample data has fewer than 100 events, temporarily generate extra events to test
-- [ ] T048 Run every scenario in [quickstart.md](quickstart.md), `npm test` and `npm run build` in
+- [X] T048 Run every scenario in [quickstart.md](quickstart.md), `npm test` and `npm run build` in
   `apps/event-reporting/`, and confirm the browser console shows no errors
 
 ---
