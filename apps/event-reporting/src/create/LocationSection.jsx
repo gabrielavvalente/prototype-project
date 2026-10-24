@@ -1,5 +1,6 @@
 import { useApp } from '../AppContext.js';
 import { getChildren, getLabel, getReferenceList } from '../logic/lookups.js';
+import ChipGroup from './ChipGroup.jsx';
 import { SelectField } from './fields.jsx';
 
 const LEVELS = [
@@ -39,16 +40,18 @@ export default function LocationSection({ event, update, errors }) {
             value={event.location[level.field]}
             options={parentId ? getChildren(organization, parentId) : []}
             disabled={!parentId}
+            required
             onChange={(value) => chooseLevel(index, value)}
             errors={errors}
           />
         );
       })}
-      <SelectField
+      <ChipGroup
         id="taskTypeId"
         label="Task type"
+        required
         value={event.taskTypeId}
-        options={getReferenceList(reference, 'taskType')}
+        options={getReferenceList(reference, 'taskType').map((item) => ({ value: item.id, label: item.label }))}
         onChange={(value) => update({ taskTypeId: value })}
         errors={errors}
       />

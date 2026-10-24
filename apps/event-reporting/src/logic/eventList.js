@@ -84,12 +84,32 @@ export function paginate(events, pageSize, page) {
   return { rows: events.slice(start, start + pageSize), page: safePage, pageCount };
 }
 
-// Drafts are not counted (spec Edge Cases).
-export function computeKpis(events) {
-  const submitted = events.filter((event) => event.status !== 'Draft');
-  return {
-    total: submitted.length,
-    open: submitted.filter((event) => event.status === 'Open').length,
-    withHpr: submitted.filter(isHpr).length,
-  };
+function isMine(event, userId) {
+  return event.reporterId === userId || event.createdBy === userId;
+}
+
+// The KPI chip row (FR-031). Drafts appear only under "drafts"; every other chip shows submitted events.
+const QUICK_FILTERS = {
+  all: (event) => event.status !== 'Draft',
+  mine: (event, userId) => event.status !== 'Draft' && isMine(event, userId),
+  open: (event) => event.status === 'Open',
+  hpr: (event) => event.status !== 'Draft' && isHpr(event),
+  drafts: (event) => event.status === 'Draft',
+};
+
+export const QUICK_FILTER_KEYS = Object.keys(QUICK_FILTERS);
+
+export function applyQuickFilter(events, key, userId) {
+  return events.filter((event) => QUICK_FILTERS[key](event, userId));
+}
+
+export function computeKpis(events, userId) {
+  return Object.fromEntries(QUICK_FILTER_KEYS.map((key) => [key, applyQuickFilter(events, key, userId).length]));
+}
+
+// How many filters of the filter sheet are in use (shown on the Filters button, FR-042).
+export function countActiveFilters(filters) {
+  const simple = ['familyCode', 'levelCode', 'from', 'to', 'reporterId', 'hpr', 'status'].filter((key) => filters[key]);
+  const location = Object.values(filters.location).some(Boolean) ? 1 : 0;
+  return simple.length + location + (filters.myEvents ? 1 : 0);
 }

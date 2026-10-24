@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { applyFilters, computeKpis, EMPTY_FILTERS, paginate, searchEvents, sortEvents } from './eventList.js';
+import {
+  applyFilters,
+  applyQuickFilter,
+  computeKpis,
+  countActiveFilters,
+  EMPTY_FILTERS,
+  paginate,
+  searchEvents,
+  sortEvents,
+} from './eventList.js';
 
 function makeEvent(id, changes = {}) {
   return {
@@ -112,8 +121,23 @@ describe('paginate (FR-026)', () => {
   });
 });
 
-describe('computeKpis (FR-031)', () => {
-  it('counts submitted events only', () => {
-    expect(computeKpis(events)).toEqual({ total: 3, open: 3, withHpr: 1 });
+describe('KPI chips (FR-031)', () => {
+  it('counts submitted events, and drafts only under drafts', () => {
+    expect(computeKpis(events, 'user-1')).toEqual({ all: 3, mine: 2, open: 3, hpr: 1, drafts: 1 });
+  });
+
+  it('narrows the list to the chosen chip', () => {
+    expect(ids(applyQuickFilter(events, 'all', 'user-1'))).toEqual(['1', '2', '3']);
+    expect(ids(applyQuickFilter(events, 'mine', 'user-2'))).toEqual(['2']);
+    expect(ids(applyQuickFilter(events, 'hpr', 'user-1'))).toEqual(['1']);
+    expect(ids(applyQuickFilter(events, 'drafts', 'user-1'))).toEqual(['4']);
+  });
+});
+
+describe('countActiveFilters (FR-042)', () => {
+  it('counts each filter in use once', () => {
+    expect(countActiveFilters(EMPTY_FILTERS)).toBe(0);
+    expect(countActiveFilters({ ...EMPTY_FILTERS, familyCode: 'SAF', from: '2026-01-01' })).toBe(2);
+    expect(countActiveFilters({ ...EMPTY_FILTERS, location: { departmentId: 'd', workshopId: 'w' } })).toBe(1);
   });
 });

@@ -2,7 +2,9 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { getPillarIdsForPlant } from '../logic/access.js';
+import { getPillarColorClass } from '../logic/display.js';
 import { getLabel, getReferenceList } from '../logic/lookups.js';
+import Icon from './Icon.jsx';
 
 // The pillar is an optional entry point (FR-037, Clarification 2026-10-24).
 export default function EntryScreen() {
@@ -21,27 +23,30 @@ export default function EntryScreen() {
   }
 
   return (
-    <main className="page">
-      <h1>Choose where to start</h1>
-      <p>
-        Pick the pillar you are reporting for in {getLabel(organization, context.plantId)}, or enter without one to see
-        every pillar you can access.
+    <main className="page page--with-nav">
+      <h1>Hello, {user.name.split(' ')[0]}</h1>
+      <p className="field-hint">
+        Choose the pillar you are reporting for in {getLabel(organization, context.plantId)}, or see every pillar you
+        can access.
       </p>
+      <p className="section-label">Pillars</p>
       <ul className="card-list">
         {pillars.map((pillar) => (
           <li key={pillar.id}>
             <button
               type="button"
-              className="button choice-card"
+              className="button choice-card choice-card--row"
               aria-pressed={context.pillarId === pillar.id}
               onClick={() => choose(pillar.id)}
             >
+              <span className={`pillar-dot pillar-dot--large ${getPillarColorClass(pillar.code)}`} aria-hidden="true" />
               <strong>{pillar.label}</strong>
+              <Icon name="chevronRight" />
             </button>
           </li>
         ))}
       </ul>
-      <button type="button" className="button button--secondary" onClick={() => choose(null)}>
+      <button type="button" className="button button--secondary button--block" onClick={() => choose(null)}>
         Enter without a pillar
       </button>
     </main>

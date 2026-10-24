@@ -30,21 +30,26 @@ export default function StartScreen() {
 
   return (
     <main className="page">
-      <h1>Event Reporting</h1>
-      <p>Choose a demo user to continue.</p>
+      <div className="start-brand">
+        <span className="app-mark-logo" aria-hidden="true">
+          ER
+        </span>
+        <h1>Event Reporting</h1>
+      </div>
+      <p className="field-hint">Prototype — choose a demo user to continue.</p>
       <ul className="card-list">
         {users.map((user) => (
           <li key={user.id}>
-            <button type="button" className="button choice-card" onClick={() => handleSignIn(user.id)}>
-              <span className="header-user">
-                <span className="avatar" aria-hidden="true">
-                  {user.avatar}
-                </span>
-                <strong>{user.name}</strong>
+            <button type="button" className="button choice-card choice-card--row" onClick={() => handleSignIn(user.id)}>
+              <span className="avatar" aria-hidden="true">
+                {user.avatar}
               </span>
-              <small>
-                {user.role} · {user.access.map((entry) => getLabel(organization, entry.plantId)).join(', ')}
-              </small>
+              <span className="list-row-text">
+                <strong>{user.name}</strong>
+                <small>
+                  {user.role} · {user.access.map((entry) => getLabel(organization, entry.plantId)).join(', ')}
+                </small>
+              </span>
             </button>
           </li>
         ))}

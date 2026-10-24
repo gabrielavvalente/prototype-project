@@ -52,6 +52,7 @@ describe('canOpenRoute', () => {
     expect(canOpenRoute('Site Admin', 'events-new')).toBe(false);
     expect(canOpenRoute('Site Admin', 'event-edit')).toBe(false);
     expect(canOpenRoute('Site Admin', 'events')).toBe(true);
+    expect(canOpenRoute('Site Admin', 'search')).toBe(true);
   });
 
   it('allows event creation to User and Manager', () => {

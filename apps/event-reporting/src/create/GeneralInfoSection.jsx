@@ -2,6 +2,7 @@ import { useApp } from '../AppContext.js';
 import { getReferenceList } from '../logic/lookups.js';
 import { isAttachmentRequired, MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH } from '../logic/validation.js';
 import AttachmentInput from './AttachmentInput.jsx';
+import ChipGroup from './ChipGroup.jsx';
 import { FieldError, SelectField, TextField } from './fields.jsx';
 
 // Section 3: the core facts and the photos or videos (FR-006 to FR-008).
@@ -15,6 +16,7 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
       <TextField
         id="title"
         label="Title"
+        required
         value={event.title}
         maxLength={MAX_TITLE_LENGTH}
         onChange={(value) => update({ title: value })}
@@ -34,39 +36,46 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
       <TextField
         id="eventTime"
         label="Event time"
+        required
         type="time"
         value={event.eventTime}
         onChange={(value) => update({ eventTime: value })}
         errors={errors}
       />
-      <SelectField
+      <ChipGroup
         id="shiftMoment"
         label="Shift moment"
+        required
         value={event.shiftMoment}
-        options={getReferenceList(reference, 'shiftMoment')}
+        options={getReferenceList(reference, 'shiftMoment').map((item) => ({ value: item.id, label: item.label }))}
         onChange={(value) => update({ shiftMoment: value })}
         errors={errors}
       />
       <div className="field">
-        <label htmlFor="description">Description</label>
+        <label htmlFor="description" className="required">
+          Description
+        </label>
+        <div className="composer">
+          <textarea
+            id="description"
+            value={description}
+            maxLength={MAX_DESCRIPTION_LENGTH}
+            placeholder="What happened? Describe it clearly and briefly."
+            aria-describedby="description-count"
+            onChange={(e) => update({ description: e.target.value })}
+          />
+          <AttachmentInput
+            attachments={attachments}
+            onChange={setAttachments}
+            required={isAttachmentRequired(event.levelCode)}
+            errors={errors}
+          />
+        </div>
         <span className="field-hint" id="description-count">
           {description.length} / {MAX_DESCRIPTION_LENGTH}
         </span>
-        <textarea
-          id="description"
-          value={description}
-          maxLength={MAX_DESCRIPTION_LENGTH}
-          aria-describedby="description-count"
-          onChange={(e) => update({ description: e.target.value })}
-        />
         <FieldError errors={errors} field="description" />
       </div>
-      <AttachmentInput
-        attachments={attachments}
-        onChange={setAttachments}
-        required={isAttachmentRequired(event.levelCode)}
-        errors={errors}
-      />
     </>
   );
 }

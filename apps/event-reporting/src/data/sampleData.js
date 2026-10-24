@@ -85,6 +85,7 @@ const actionSubcategories = [
   { id: 'subcategory-8', list: 'actionSubcategory', label: 'Sent to medical service', categoryId: 'category-4' },
 ];
 
+// sortOrder keeps lists in the order written here (the database returns them sorted by id).
 export const reference = [
   ...pillars,
   ...families,
@@ -102,7 +103,7 @@ export const reference = [
   ...simpleList('actionPriority', ['Low', 'Medium', 'High']),
   ...actionCategories,
   ...actionSubcategories,
-];
+].map((item, index) => ({ ...item, sortOrder: index }));
 
 // ---------------------------------------------------------------------------
 // Organization: businesses, plants and the location hierarchy

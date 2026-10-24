@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useApp } from '../AppContext.js';
 import { getReferenceList } from '../logic/lookups.js';
-import { FieldError, SelectField, YesNoField } from './fields.jsx';
+import ChipGroup from './ChipGroup.jsx';
+import { FieldError, YesNoField } from './fields.jsx';
 
 // Section 4: who was involved, recurrence, comments, feedback emails, diseases for OH (FR-010).
 export default function DetailsSection({ event, update, errors }) {
@@ -17,20 +18,14 @@ export default function DetailsSection({ event, update, errors }) {
     setNewEmail('');
   }
 
-  function toggleDisease(id) {
-    const diseaseIds = event.diseaseIds.includes(id)
-      ? event.diseaseIds.filter((item) => item !== id)
-      : [...event.diseaseIds, id];
-    update({ diseaseIds });
-  }
-
   return (
     <>
-      <SelectField
+      <ChipGroup
         id="employeeType"
         label="Employee type"
+        required
         value={event.employeeType}
-        options={getReferenceList(reference, 'employeeType')}
+        options={getReferenceList(reference, 'employeeType').map((item) => ({ value: item.id, label: item.label }))}
         onChange={(value) => update({ employeeType: value })}
         errors={errors}
       />
@@ -48,7 +43,7 @@ export default function DetailsSection({ event, update, errors }) {
       <div className="field">
         <label htmlFor="feedbackEmail">Feedback email recipients (optional)</label>
         <span className="field-hint">These people will be told about this event. Emails are not sent in this prototype.</span>
-        <div className="yes-no">
+        <div className="input-with-button">
           <input
             id="feedbackEmail"
             type="email"
@@ -84,20 +79,16 @@ export default function DetailsSection({ event, update, errors }) {
         <FieldError errors={errors} field="feedbackEmails" />
       </div>
       {event.familyCode === 'OH' && (
-        <fieldset className="field">
-          <legend className="field-label">Disease(s)</legend>
-          {diseases.map((disease) => (
-            <label key={disease.id} className="field-hint">
-              <input
-                type="checkbox"
-                checked={event.diseaseIds.includes(disease.id)}
-                onChange={() => toggleDisease(disease.id)}
-              />{' '}
-              {disease.label}
-            </label>
-          ))}
-          <FieldError errors={errors} field="diseaseIds" />
-        </fieldset>
+        <ChipGroup
+          id="diseaseIds"
+          label="Disease(s)"
+          required
+          multiple
+          value={event.diseaseIds}
+          options={diseases.map((disease) => ({ value: disease.id, label: disease.label }))}
+          onChange={(diseaseIds) => update({ diseaseIds })}
+          errors={errors}
+        />
       )}
     </>
   );

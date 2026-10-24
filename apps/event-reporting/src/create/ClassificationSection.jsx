@@ -1,6 +1,9 @@
 import { useApp } from '../AppContext.js';
 import { getPillarIdsForPlant } from '../logic/access.js';
+import { getPillarColorClass } from '../logic/display.js';
 import { getReferenceList } from '../logic/lookups.js';
+import { SeverityDots } from '../events/EventCard.jsx';
+import ChipGroup from './ChipGroup.jsx';
 import { getRiskQuestionType } from '../logic/validation.js';
 import { FieldError, YesNoField } from './fields.jsx';
 
@@ -22,7 +25,7 @@ const RISK_QUESTIONS = {
 function ChoiceCards({ legend, items, selectedId, onSelect, errors, field }) {
   return (
     <fieldset className="field">
-      <legend className="field-label">{legend}</legend>
+      <legend className="field-label required">{legend}</legend>
       <ul className="card-list">
         {items.map((item) => (
           <li key={item.id}>
@@ -32,7 +35,10 @@ function ChoiceCards({ legend, items, selectedId, onSelect, errors, field }) {
               aria-pressed={item.id === selectedId}
               onClick={() => onSelect(item)}
             >
-              <strong>{item.title}</strong>
+              <span className="choice-card-title">
+                <strong>{item.title}</strong>
+                <SeverityDots levelCode={item.id} />
+              </span>
               {item.description && <small>{item.description}</small>}
             </button>
           </li>
@@ -77,23 +83,25 @@ export default function ClassificationSection({ event, update, errors, pillarLoc
   return (
     <>
       {!pillarLocked && (
-        <ChoiceCards
-          legend="Pillar"
-          items={pillars.map((pillar) => ({ id: pillar.id, title: pillar.label, item: pillar }))}
-          selectedId={event.pillarId}
-          onSelect={(card) => choosePillar(card.item)}
+        <ChipGroup
+          id="pillarId"
+          label="Pillar"
+          required
+          value={event.pillarId}
+          onChange={(pillarId) => choosePillar(pillars.find((pillar) => pillar.id === pillarId))}
+          options={pillars.map((pillar) => ({ value: pillar.id, label: pillar.label, dotClass: getPillarColorClass(pillar.code) }))}
           errors={errors}
-          field="pillarId"
         />
       )}
       {event.pillarId && (
-        <ChoiceCards
-          legend="Family"
-          items={families.map((item) => ({ id: item.code, title: `${item.code} — ${item.label}`, item }))}
-          selectedId={event.familyCode}
-          onSelect={(card) => chooseFamily(card.item)}
+        <ChipGroup
+          id="familyCode"
+          label="Family"
+          required
+          value={event.familyCode}
+          onChange={(code) => chooseFamily(families.find((item) => item.code === code))}
+          options={families.map((item) => ({ value: item.code, label: `${item.code} — ${item.label}` }))}
           errors={errors}
-          field="familyCode"
         />
       )}
       {family && (

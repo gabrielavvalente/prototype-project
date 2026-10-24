@@ -1,21 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useBlocker, useLocation, useParams } from 'react-router-dom';
+import { Link, useBlocker, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { findEvent, getByIndex, saveChanges, saveDraft, StorageFullError, submitEvent } from '../data/db.js';
 import { canEditEvent, isEventVisible } from '../logic/access.js';
 import { SECTION_TITLES } from '../logic/eventSummary.js';
 import { getReferenceList, toDateString } from '../logic/lookups.js';
 import { SECTIONS, validateEventForSubmit, validateSection } from '../logic/validation.js';
+import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
 import ClassificationSection from './ClassificationSection.jsx';
 import DetailsSection from './DetailsSection.jsx';
 import GeneralInfoSection from './GeneralInfoSection.jsx';
 import ImmediateActionsSection from './ImmediateActionsSection.jsx';
 import LocationSection from './LocationSection.jsx';
+import Stepper from './Stepper.jsx';
 import SummarySection from './SummarySection.jsx';
 
 const STEPS = [...SECTIONS, 'summary'];
 const STEP_TITLES = { ...SECTION_TITLES, summary: 'Summary' };
+const STEPPER_STEPS = STEPS.map((key) => ({ key, title: STEP_TITLES[key] }));
 
 const SECTION_COMPONENTS = {
   classification: ClassificationSection,
@@ -130,12 +133,15 @@ function UnsavedChangesDialog({ canSaveDraft, onSaveDraft, onDiscard, onStay }) 
 
 function EventForm() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user, context, users, reference, setFormDirty } = useApp();
   const [loadState, setLoadState] = useState(id ? 'loading' : 'ready');
   const [event, setEvent] = useState(() => (id ? null : newEvent(user, context, reference)));
   const [attachments, setAttachments] = useState([]);
   const [removedAttachmentIds, setRemovedAttachmentIds] = useState([]);
   const [stepIndex, setStepIndex] = useState(0);
+  // The furthest section reached; an existing event can open any section straight away.
+  const [furthestStep, setFurthestStep] = useState(id ? STEPS.length - 1 : 0);
   const [showErrors, setShowErrors] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -162,6 +168,7 @@ function EventForm() {
     setAttachments([]);
     setRemovedAttachmentIds([]);
     setStepIndex(0);
+    setFurthestStep(0);
     setShowErrors(false);
     setDirty(false);
   }, [id, context, user, reference]);
@@ -220,7 +227,13 @@ function EventForm() {
 
   function showStep(index) {
     setStepIndex(index);
+    setFurthestStep((previous) => Math.max(previous, index));
     window.scrollTo(0, 0);
+  }
+
+  function jumpToStep(index) {
+    setShowErrors(false);
+    showStep(index);
   }
 
   function next() {
@@ -272,16 +285,16 @@ function EventForm() {
   const Section = SECTION_COMPONENTS[step];
 
   return (
-    <main className="page">
-      <h1>{isSubmitted ? `Edit event ${event.recordNumber}` : 'Create Event'}</h1>
-      <div className="progress">
-        <p>
-          Section {stepIndex + 1} of {STEPS.length}: <strong>{STEP_TITLES[step]}</strong>
-        </p>
-        <div className="progress-bar" aria-hidden="true">
-          <span style={{ width: `${((stepIndex + 1) / STEPS.length) * 100}%` }} />
-        </div>
+    <main className="page page--with-bar">
+      <div className="form-titlebar">
+        <button type="button" className="icon-button" onClick={() => navigate('/events')}>
+          <Icon name="close" label="Close the form" />
+        </button>
+        <h1>{isSubmitted ? `Edit ${event.recordNumber}` : 'New event'}</h1>
+        <span className="form-titlebar-spacer" />
       </div>
+
+      <Stepper steps={STEPPER_STEPS} current={stepIndex} furthest={furthestStep} onSelect={jumpToStep} />
 
       {saveError && (
         <p className="message message--error" role="alert">
@@ -289,7 +302,8 @@ function EventForm() {
         </p>
       )}
 
-      <section className="card" aria-label={STEP_TITLES[step]}>
+      <section className="form-section" aria-labelledby="section-title">
+        <h2 id="section-title">{STEP_TITLES[step]}</h2>
         {step === 'summary' ? (
           <SummarySection event={event} attachmentCount={attachments.length} missing={missing} goToSection={goToSection} />
         ) : (
@@ -303,12 +317,17 @@ function EventForm() {
             setAttachments={changeAttachments}
           />
         )}
+        {!isSubmitted && (
+          <button type="button" className="button button--link" disabled={saving} onClick={() => save('draft')}>
+            Save as Draft
+          </button>
+        )}
       </section>
 
-      <div className="button-row">
+      <div className="bottom-bar">
         {stepIndex > 0 && (
           <button type="button" className="button" onClick={back}>
-            Back
+            <Icon name="back" size={18} /> Back
           </button>
         )}
         {step !== 'summary' && (
@@ -316,19 +335,14 @@ function EventForm() {
             Next
           </button>
         )}
-        {!isSubmitted && (
-          <button type="button" className="button button--secondary" disabled={saving} onClick={() => save('draft')}>
-            Save as Draft
-          </button>
-        )}
         {step === 'summary' && !isSubmitted && (
           <button type="button" className="button button--primary" disabled={saving || missing.length > 0} onClick={() => save('submit')}>
-            Submit
+            <Icon name="check" size={18} /> Submit
           </button>
         )}
         {step === 'summary' && isSubmitted && (
           <button type="button" className="button button--primary" disabled={saving || missing.length > 0} onClick={() => save('changes')}>
-            Save changes
+            <Icon name="check" size={18} /> Save changes
           </button>
         )}
       </div>

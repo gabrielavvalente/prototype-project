@@ -12,10 +12,12 @@ export function FieldError({ errors, field }) {
   );
 }
 
-export function SelectField({ id, label, value, options, onChange, errors = [], disabled = false, hint }) {
+export function SelectField({ id, label, value, options, onChange, errors = [], disabled = false, hint, required = false }) {
   return (
     <div className="field">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id} className={required ? 'required' : undefined}>
+        {label}
+      </label>
       {hint && <span className="field-hint">{hint}</span>}
       <select
         id={id}
@@ -23,6 +25,7 @@ export function SelectField({ id, label, value, options, onChange, errors = [], 
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         aria-invalid={errors.some((item) => item.field === id)}
+        aria-required={required || undefined}
       >
         <option value="">Choose…</option>
         {options.map((option) => (
@@ -36,10 +39,12 @@ export function SelectField({ id, label, value, options, onChange, errors = [], 
   );
 }
 
-export function TextField({ id, label, value, onChange, errors = [], type = 'text', hint, ...rest }) {
+export function TextField({ id, label, value, onChange, errors = [], type = 'text', hint, required = false, ...rest }) {
   return (
     <div className="field">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id} className={required ? 'required' : undefined}>
+        {label}
+      </label>
       {hint && <span className="field-hint">{hint}</span>}
       <input
         id={id}
@@ -47,6 +52,7 @@ export function TextField({ id, label, value, onChange, errors = [], type = 'tex
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
         aria-invalid={errors.some((item) => item.field === id)}
+        aria-required={required || undefined}
         {...rest}
       />
       <FieldError errors={errors} field={id} />
@@ -57,13 +63,13 @@ export function TextField({ id, label, value, onChange, errors = [], type = 'tex
 export function YesNoField({ id, label, value, onChange, errors = [], hint }) {
   return (
     <fieldset className="field">
-      <legend className="field-label">{label}</legend>
+      <legend className="field-label required">{label}</legend>
       {hint && <span className="field-hint">{hint}</span>}
-      <div className="yes-no">
-        <button type="button" className="button" aria-pressed={value === true} onClick={() => onChange(true)}>
+      <div className="chip-group">
+        <button type="button" className="chip" aria-pressed={value === true} onClick={() => onChange(true)}>
           Yes
         </button>
-        <button type="button" className="button" aria-pressed={value === false} onClick={() => onChange(false)}>
+        <button type="button" className="chip" aria-pressed={value === false} onClick={() => onChange(false)}>
           No
         </button>
       </div>

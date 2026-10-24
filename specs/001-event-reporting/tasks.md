@@ -329,52 +329,52 @@ view, View and Edit behave as described for a Manager and for a User (quickstart
 **Independent Test**: Quickstart scenarios 1–7 still pass, and every screen at 390px and at
 desktop width follows the guideline: top bar, bottom navigation, chips, cards, sheets, stepper
 
-- [ ] T049 Install `@fontsource/poppins` with an exact version in `apps/event-reporting/` and import
+- [X] T049 Install `@fontsource/poppins` with an exact version in `apps/event-reporting/` and import
   weights 400, 500 and 600 in `apps/event-reporting/src/main.jsx`
-- [ ] T050 Rewrite `shared/theme.css` from the guideline (research R14): color tokens (primary
+- [X] T050 Rewrite `shared/theme.css` from the guideline (research R14): color tokens (primary
   blue, teal accent, red/orange/blue severity, one color per pillar, light gray background,
   borders), Poppins font stack, radius (12px cards, pill chips), and shared components: `.chip`
   (+ selected state), `.tag`, `.card`, `.severity-dots`, `.pillar-dot`, `.sheet` (bottom sheet on
   phones, side sheet on wide screens), `.bottom-bar` (fixed action bar), `.icon-button`; text
   contrast at WCAG AA
-- [ ] T051 [P] Create `apps/event-reporting/src/shell/Icon.jsx` with inline SVG icons (search, bell,
+- [X] T051 [P] Create `apps/event-reporting/src/shell/Icon.jsx` with inline SVG icons (search, bell,
   back, close, plus, filter, grid, list, camera, image, check, chevron, home, calendar) and
   `apps/event-reporting/src/shell/Sheet.jsx` (title, close button, Escape, backdrop, focus moved
   in and restored on close)
-- [ ] T052 [P] Create `apps/event-reporting/src/logic/display.js` with `getSeverityDots(levelCode)`
+- [X] T052 [P] Create `apps/event-reporting/src/logic/display.js` with `getSeverityDots(levelCode)`
   (level 1 → 4, 2 → 3, 3 → 2, 4–5 → 1, OH → 0), `getPillarColor(pillarCode)` and
   `formatRelativeTime(isoText, now)` ("just now", "5 min ago", "2h ago", "3d ago"), with tests in
   `apps/event-reporting/src/logic/display.test.js`
-- [ ] T053 Replace the header with a compact top bar in `apps/event-reporting/src/shell/Header.jsx`:
+- [X] T053 Replace the header with a compact top bar in `apps/event-reporting/src/shell/Header.jsx`:
   app name, search field opening `#/search`, bell with unread dot, avatar; create
   `apps/event-reporting/src/shell/AccountSheet.jsx` (name, role, business and plant selectors,
   pillar with Change, Switch user) and `apps/event-reporting/src/shell/BottomNav.jsx` (Home,
   Events, floating New for User/Manager; phones only) (FR-040)
-- [ ] T054 Turn `apps/event-reporting/src/shell/AlertsPanel.jsx` into a notifications sheet:
+- [X] T054 Turn `apps/event-reporting/src/shell/AlertsPanel.jsx` into a notifications sheet:
   relative time, unread highlight, **Mark all read**, opening an alert sets `readAt`; unread count
   from `readAt` instead of `alertsSeenAt` (FR-043)
-- [ ] T055 Create `apps/event-reporting/src/shell/SearchPage.jsx` and route `#/search`: autofocused
+- [X] T055 Create `apps/event-reporting/src/shell/SearchPage.jsx` and route `#/search`: autofocused
   field, Cancel, last 5 searches from `settings.recentSearches`, live results by title or record
   number among visible events, exact record number opens the event (FR-044)
-- [ ] T056 Update `apps/event-reporting/src/logic/eventList.js` (and its tests): `computeKpis`
+- [X] T056 Update `apps/event-reporting/src/logic/eventList.js` (and its tests): `computeKpis`
   returns `{ all, mine, open, withHpr, drafts }` (drafts only under Drafts) and a `applyQuickFilter`
   for the chip row (FR-031)
-- [ ] T057 Rework the library: `KpiTiles.jsx` → chip row; create
+- [X] T057 Rework the library: `KpiTiles.jsx` → chip row; create
   `apps/event-reporting/src/events/FilterSheet.jsx` (chip groups for family and level, dates,
   organization selects, reporter; Apply / Clear; active count on the Filters button) and
   `apps/event-reporting/src/events/EventCard.jsx` (tags, record number, title, location chip,
   reporter avatar, date, severity dots, red left border for HPR or level 1–2); cards / table
   toggle saved in `settings.listView` in `EventLibrary.jsx` (FR-041, FR-042)
-- [ ] T058 Rework `apps/event-reporting/src/events/EventDetail.jsx`: top bar with back and record
+- [X] T058 Rework `apps/event-reporting/src/events/EventDetail.jsx`: top bar with back and record
   number, header card with tags and title, key-facts grid, collapsible sections, history timeline,
   fixed bottom bar with Edit / Continue draft (FR-045)
-- [ ] T059 Rework the form: create `apps/event-reporting/src/create/Stepper.jsx` (6 visible steps,
+- [X] T059 Rework the form: create `apps/event-reporting/src/create/Stepper.jsx` (6 visible steps,
   done / current / upcoming, jump back to reached steps) and
   `apps/event-reporting/src/create/ChipGroup.jsx`; use chips for pillar, family, shift moment,
   employee type, recurrence, task type and priority; severity dots on level cards; photo buttons
   inside the description card; Back / Next / Submit in a fixed bottom bar; close (✕) in the title
   row (FR-038, FR-039)
-- [ ] T060 Restyle `StartScreen.jsx` and `EntryScreen.jsx` (pillar cards with color dots) and run
+- [X] T060 Restyle `StartScreen.jsx` and `EntryScreen.jsx` (pillar cards with color dots) and run
   quickstart scenarios 1–7 again at 390px and desktop width with no console errors
 
 **Checkpoint**: All stories still pass and the UI follows the design guideline

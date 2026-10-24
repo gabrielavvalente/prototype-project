@@ -10,7 +10,9 @@ export function getLabel(items, id) {
 }
 
 export function getReferenceList(reference, listName) {
-  return reference.filter((item) => item.list === listName);
+  return reference
+    .filter((item) => item.list === listName)
+    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 }
 
 export function getChildren(organization, parentId) {

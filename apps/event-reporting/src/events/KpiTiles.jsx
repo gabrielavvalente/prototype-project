@@ -1,20 +1,27 @@
-// Headline counts above the list; clicking a tile applies its filter (FR-031).
-export default function KpiTiles({ kpis, filters, onSelect }) {
-  const tiles = [
-    { key: 'total', label: 'Total Events', value: kpis.total, active: !filters.status && !filters.hpr },
-    { key: 'open', label: 'Open Events', value: kpis.open, active: filters.status === 'Open' },
-    { key: 'hpr', label: 'Events With HPR', value: kpis.withHpr, active: filters.hpr === 'yes' },
-  ];
+const CHIPS = [
+  { key: 'all', label: 'All' },
+  { key: 'mine', label: 'My events' },
+  { key: 'open', label: 'Open' },
+  { key: 'hpr', label: 'With HPR' },
+  { key: 'drafts', label: 'Drafts' },
+];
+
+// The row of counter chips above the list; one is always selected (FR-031).
+export default function KpiTiles({ kpis, selected, onSelect }) {
   return (
-    <ul className="kpi-tiles">
-      {tiles.map((tile) => (
-        <li key={tile.key}>
-          <button type="button" className="button kpi-tile" aria-pressed={tile.active} onClick={() => onSelect(tile.key)}>
-            <span className="kpi-value">{tile.value}</span>
-            <span>{tile.label}</span>
-          </button>
-        </li>
+    <div className="kpi-row" role="group" aria-label="Quick filters">
+      {CHIPS.map((chip) => (
+        <button
+          key={chip.key}
+          type="button"
+          className="chip chip--counter"
+          aria-pressed={selected === chip.key}
+          onClick={() => onSelect(chip.key)}
+        >
+          <strong>{kpis[chip.key]}</strong>
+          <span>{chip.label}</span>
+        </button>
       ))}
-    </ul>
+    </div>
   );
 }

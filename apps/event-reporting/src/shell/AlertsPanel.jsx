@@ -1,66 +1,66 @@
-import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { formatRelativeTime } from '../logic/display.js';
+import Icon from './Icon.jsx';
+import Sheet from './Sheet.jsx';
 
-function formatDate(isoText) {
-  return new Date(isoText).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
-}
-
-// Sliding panel with the user's alerts, newest first (FR-023).
+// Notifications sheet: newest first, unread highlighted, "Mark all read" (FR-023, FR-043).
 // items: [{ alert, event }] already filtered to the user's current scope.
-export default function AlertsPanel({ items, onClose }) {
+export default function AlertsPanel({ items, onMarkRead, onClose }) {
   const navigate = useNavigate();
-  const headingRef = useRef(null);
+  const unread = items.filter((item) => !item.alert.readAt);
 
-  useEffect(() => {
-    headingRef.current.focus();
-    const closeOnEscape = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [onClose]);
-
-  function open(event) {
+  async function open({ alert, event }) {
+    await onMarkRead([alert]);
     onClose();
     navigate(`/events/${event.recordNumber || event.id}`);
   }
 
   return (
-    <div className="side-panel-backdrop" onClick={onClose}>
-      <aside
-        className="side-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="alerts-title"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="side-panel-header">
-          <h2 id="alerts-title" tabIndex={-1} ref={headingRef}>
-            My Alerts
-          </h2>
-          <button type="button" className="button" onClick={onClose}>
-            Close
+    <Sheet
+      title="Notifications"
+      titleExtra={unread.length > 0 && <span className="count-badge">{unread.length}</span>}
+      headerAction={
+        unread.length > 0 && (
+          <button type="button" className="button button--link" onClick={() => onMarkRead(unread.map((item) => item.alert))}>
+            Mark all read
           </button>
-        </div>
-        {items.length === 0 ? (
-          <p>No alerts yet.</p>
-        ) : (
-          <ul className="card-list">
-            {items.map(({ alert, event }) => (
-              <li key={alert.id}>
-                <button type="button" className="button choice-card" onClick={() => open(event)}>
+        )
+      }
+      onClose={onClose}
+    >
+      {items.length === 0 ? (
+        <p className="field-hint">No notifications yet.</p>
+      ) : (
+        <ul className="notification-list">
+          {items.map((item) => (
+            <li key={item.alert.id}>
+              <button
+                type="button"
+                className={`notification${item.alert.readAt ? '' : ' notification--unread'}`}
+                onClick={() => open(item)}
+              >
+                <span className="notification-icon">
+                  <Icon name="file" />
+                </span>
+                <span className="notification-text">
                   <strong>
-                    {event.recordNumber} — {event.title}
+                    {item.alert.type}: {item.event.recordNumber}
                   </strong>
-                  <small>
-                    {alert.type} · {formatDate(alert.createdAt)}
-                  </small>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </aside>
-    </div>
+                  <span className="field-hint">{item.event.title}</span>
+                </span>
+                <span className="notification-time">
+                  {formatRelativeTime(item.alert.createdAt)}
+                  {!item.alert.readAt && (
+                    <span className="unread-dot">
+                      <span className="visually-hidden">Unread</span>
+                    </span>
+                  )}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Sheet>
   );
 }

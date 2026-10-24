@@ -87,6 +87,19 @@ export async function put(storeName, item) {
   return withStorageCheck(() => db.put(storeName, item));
 }
 
+// Marks alerts as read (FR-043).
+export async function markAlertsRead(alerts) {
+  const db = await getDatabase();
+  const tx = db.transaction('alerts', 'readwrite');
+  const readAt = new Date().toISOString();
+  for (const alert of alerts) {
+    if (!alert.readAt) {
+      tx.store.put({ ...alert, readAt });
+    }
+  }
+  await tx.done;
+}
+
 // Finds an event by record number (submitted events) or by internal id (drafts).
 export async function findEvent(idOrRecordNumber) {
   const db = await getDatabase();
@@ -190,13 +203,26 @@ async function loadSampleData() {
   await tx.done;
 }
 
-// Loads the sample data the first time the app opens.
+// Loads the sample data the first time the app opens. The fixed lists (users, organization,
+// reference) are refreshed on every start, since they cannot be edited in the app.
 export async function seedIfEmpty() {
   const db = await getDatabase();
   const userCount = await db.count('users');
   if (userCount === 0) {
     await loadSampleData();
+    return;
   }
+  const tx = db.transaction(['users', 'organization', 'reference'], 'readwrite');
+  for (const [storeName, items] of Object.entries({
+    users: sampleData.users,
+    organization: sampleData.organization,
+    reference: sampleData.reference,
+  })) {
+    for (const item of items) {
+      tx.objectStore(storeName).put(item);
+    }
+  }
+  await tx.done;
 }
 
 // Deletes everything (including reported events) and loads the sample data again.

@@ -1,13 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
-import { getAll, getByIndex } from '../data/db.js';
-import { getMenuItems, getPillarIdsForPlant, isEventVisible } from '../logic/access.js';
+import { getAll, getByIndex, markAlertsRead } from '../data/db.js';
+import { getMenuItems, isEventVisible } from '../logic/access.js';
 import { findById, getLabel } from '../logic/lookups.js';
+import AccountSheet from './AccountSheet.jsx';
 import AlertsPanel from './AlertsPanel.jsx';
-import Navigation from './Navigation.jsx';
-
-const UNSAVED_WARNING = 'You have unsaved changes in the form. Change anyway? Your changes will be lost.';
+import Icon from './Icon.jsx';
 
 // The user's alerts whose event is in the current scope, newest first.
 async function loadAlerts(user, context) {
@@ -18,129 +17,85 @@ async function loadAlerts(user, context) {
     .sort((a, b) => b.alert.createdAt.localeCompare(a.alert.createdAt));
 }
 
-function plantOptionLabel(plant) {
-  return `${plant.plantTypeIcon} ${plant.name} — ${plant.plantTypeLabel} · ${plant.countryFlag} ${plant.countryName}`;
-}
-
-// Persistent header: who I am, where I am working, My Alerts and the menu (FR-018 to FR-020).
+// Compact top bar: app name, search, notifications, avatar; the current context just below
+// (FR-018, FR-040). Business, plant and pillar are changed in the account sheet.
 export default function Header() {
-  const { user, settings, context, organization, reference, updateSettings, signOut, formDirty, reloadPage } = useApp();
-  const navigate = useNavigate();
+  const { user, context, organization, reference } = useApp();
   const location = useLocation();
   const [alertItems, setAlertItems] = useState([]);
-  const [alertsOpen, setAlertsOpen] = useState(false);
-  const alertsButtonRef = useRef(null);
-  const showAlerts = getMenuItems(user.role).includes('my-alerts');
+  const [openSheet, setOpenSheet] = useState(null); // null | 'alerts' | 'account'
+  const menu = getMenuItems(user.role);
+  const showAlerts = menu.includes('my-alerts');
+  const plant = findById(organization, context.plantId);
 
-  const businessIds = [...new Set(user.access.map((entry) => entry.businessId))];
-  const plantsInBusiness = user.access
-    .filter((entry) => entry.businessId === context.businessId)
-    .map((entry) => findById(organization, entry.plantId));
-  const currentPlant = findById(organization, context.plantId);
-
-  // Reload alerts when the page or the context changes (e.g. after submitting an event).
-  useEffect(() => {
+  const reloadAlerts = useCallback(() => {
     if (showAlerts) {
       loadAlerts(user, context).then(setAlertItems);
     }
-  }, [user, context, location.pathname, showAlerts]);
+  }, [user, context, showAlerts]);
 
-  const seenAt = settings.alertsSeenAt || '';
-  const unreadCount = alertItems.filter((item) => item.alert.createdAt > seenAt).length;
+  // Reload alerts when the page or the context changes (e.g. after submitting an event).
+  useEffect(() => {
+    reloadAlerts();
+  }, [reloadAlerts, location.pathname]);
 
-  function confirmLeavingForm() {
-    return !formDirty || window.confirm(UNSAVED_WARNING);
+  const closeSheet = useCallback(() => setOpenSheet(null), []);
+
+  async function markRead(alerts) {
+    await markAlertsRead(alerts);
+    reloadAlerts();
   }
 
-  async function changeBusiness(businessId) {
-    if (!confirmLeavingForm()) return;
-    const firstPlant = user.access.find((entry) => entry.businessId === businessId);
-    await updateSettings({ businessId, plantId: firstPlant.plantId, pillarId: null });
-    reloadPage();
-  }
-
-  async function changePlant(plantId) {
-    if (!confirmLeavingForm()) return;
-    // Keep the selected pillar only if the user also has it in the new plant.
-    const keepPillar = context.pillarId && getPillarIdsForPlant(user, plantId).includes(context.pillarId);
-    await updateSettings({ plantId, pillarId: keepPillar ? context.pillarId : null });
-  }
-
-  function openAlerts() {
-    setAlertsOpen(true);
-    updateSettings({ alertsSeenAt: new Date().toISOString() });
-  }
-
-  const closeAlerts = useCallback(() => {
-    setAlertsOpen(false);
-    alertsButtonRef.current?.focus();
-  }, []);
-
-  function switchUser() {
-    signOut();
-    navigate('/');
-  }
+  const unreadCount = alertItems.filter((item) => !item.alert.readAt).length;
 
   return (
-    <header className="header">
-      <div className="header-user">
-        <span className="avatar" aria-hidden="true">
-          {user.avatar}
-        </span>
-        <div>
-          <strong>{user.name}</strong> · {user.role}
-          <div className="header-context">
-            {getLabel(organization, context.businessId)} · {currentPlant.name} ·{' '}
-            {context.pillarId ? getLabel(reference, context.pillarId) : 'All pillars'}{' '}
-            <Link to="/entry">Change pillar</Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="header-selectors">
-        {businessIds.length > 1 && (
-          <div className="field">
-            <label htmlFor="business-select">Business</label>
-            <select id="business-select" value={context.businessId} onChange={(e) => changeBusiness(e.target.value)}>
-              {businessIds.map((id) => (
-                <option key={id} value={id}>
-                  {getLabel(organization, id)}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        <div className="field">
-          <label htmlFor="plant-select">Plant</label>
-          <select id="plant-select" value={context.plantId} onChange={(e) => changePlant(e.target.value)}>
-            {plantsInBusiness.map((plant) => (
-              <option key={plant.id} value={plant.id}>
-                {plantOptionLabel(plant)}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="header-links">
-        <Navigation role={user.role} />
+    <>
+      <header className="topbar">
+        <Link to="/events" className="app-mark">
+          <span className="app-mark-logo" aria-hidden="true">
+            ER
+          </span>
+          <span className="app-mark-name">Event Reporting</span>
+        </Link>
+        <Link to="/search" className="search-pill">
+          <Icon name="search" size={18} />
+          <span>Search</span>
+        </Link>
+        <nav className="top-nav" aria-label="Main">
+          <NavLink to="/events" end className="top-nav-link">
+            Events
+          </NavLink>
+          {menu.includes('create-event') && (
+            <NavLink to="/events/new" className="button button--primary">
+              <Icon name="plus" size={18} /> New event
+            </NavLink>
+          )}
+        </nav>
         {showAlerts && (
-          <button type="button" className="button" ref={alertsButtonRef} onClick={openAlerts}>
-            My Alerts
-            {unreadCount > 0 && (
-              <span className="count-badge">
-                {unreadCount}
-                <span className="visually-hidden"> new</span>
-              </span>
-            )}
+          <button type="button" className="icon-button" onClick={() => setOpenSheet('alerts')}>
+            <Icon name="bell" size={22} label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`} />
+            {unreadCount > 0 && <span className="bell-dot" aria-hidden="true" />}
           </button>
         )}
-        <button type="button" className="button button--link" onClick={switchUser}>
-          Switch user
+        <button type="button" className="avatar avatar-button" onClick={() => setOpenSheet('account')}>
+          <span aria-hidden="true">{user.avatar}</span>
+          <span className="visually-hidden">Account: {user.name}</span>
+        </button>
+      </header>
+
+      <div className="context-bar">
+        <button type="button" className="context-button" onClick={() => setOpenSheet('account')}>
+          <span aria-hidden="true">{plant.plantTypeIcon}</span>
+          <span>
+            {getLabel(organization, context.businessId)} · {plant.name} ·{' '}
+            {context.pillarId ? getLabel(reference, context.pillarId) : 'All pillars'}
+          </span>
+          <Icon name="chevronDown" size={16} />
         </button>
       </div>
 
-      {alertsOpen && <AlertsPanel items={alertItems} onClose={closeAlerts} />}
-    </header>
+      {openSheet === 'alerts' && <AlertsPanel items={alertItems} onMarkRead={markRead} onClose={closeSheet} />}
+      {openSheet === 'account' && <AccountSheet onClose={closeSheet} />}
+    </>
   );
 }

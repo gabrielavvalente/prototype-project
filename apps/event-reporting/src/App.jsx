@@ -7,8 +7,10 @@ import EventDetail from './events/EventDetail.jsx';
 import EventLibrary from './events/EventLibrary.jsx';
 import { canOpenRoute } from './logic/access.js';
 import EntryScreen from './shell/EntryScreen.jsx';
+import BottomNav from './shell/BottomNav.jsx';
 import Header from './shell/Header.jsx';
 import NotAllowed from './shell/NotAllowed.jsx';
+import SearchPage from './shell/SearchPage.jsx';
 import StartScreen from './shell/StartScreen.jsx';
 
 // Every signed-in page: header on top, the page below. Sends signed-out visitors to the start
@@ -26,6 +28,7 @@ function SignedInLayout() {
     <>
       <Header />
       <Outlet />
+      <BottomNav />
     </>
   );
 }
@@ -43,6 +46,7 @@ const router = createHashRouter([
     children: [
       { path: 'entry', element: <RequireRoute name="entry"><EntryScreen /></RequireRoute> },
       { path: 'events', element: <RequireRoute name="events"><EventLibrary /></RequireRoute> },
+      { path: 'search', element: <RequireRoute name="search"><SearchPage /></RequireRoute> },
       { path: 'events/new', element: <RequireRoute name="events-new"><EventFormPage /></RequireRoute> },
       { path: 'events/:id', element: <RequireRoute name="event-detail"><EventDetail /></RequireRoute> },
       { path: 'events/:id/edit', element: <RequireRoute name="event-edit"><EventFormPage /></RequireRoute> },

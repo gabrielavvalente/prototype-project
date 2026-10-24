@@ -2,7 +2,11 @@ import { useApp } from '../AppContext.js';
 import { newId } from '../data/db.js';
 import { getReferenceList, toDateString } from '../logic/lookups.js';
 import { isImmediateActionRequired, MAX_PERFORMERS, validateImmediateAction } from '../logic/validation.js';
+import { SeverityDots } from '../events/EventCard.jsx';
 import { FieldError, SelectField, TextField } from './fields.jsx';
+
+// Low, Medium, High shown with 1, 2 and 3 severity dots, like the levels.
+const PRIORITY_DOTS_LEVEL = { Low: 'TF4', Medium: 'TF3', High: 'TF2' };
 
 function emptyAction(today) {
   return {
@@ -42,21 +46,33 @@ function ActionCard({ action, index, reportDate, plantUsers, onChange, onRemove,
   return (
     <li className="card">
       <h3>
-        Immediate action {index + 1} <span className="status-badge">Completed</span>
+        Immediate action {index + 1} <span className="tag tag--teal">COMPLETED</span>
       </h3>
       <div className="field">
-        <label htmlFor={`${prefix}description`}>Description</label>
+        <label htmlFor={`${prefix}description`} className="required">
+          Description
+        </label>
         <textarea id={`${prefix}description`} value={action.description} onChange={(e) => set({ description: e.target.value })} />
         <FieldError errors={prefixed} field={`${prefix}description`} />
       </div>
-      <SelectField
-        id={`${prefix}priority`}
-        label="Priority"
-        value={action.priority}
-        options={getReferenceList(reference, 'actionPriority')}
-        onChange={(value) => set({ priority: value })}
-        errors={prefixed}
-      />
+      <fieldset className="field" id={`${prefix}priority`}>
+        <legend className="field-label required">Priority</legend>
+        <div className="priority-options">
+          {getReferenceList(reference, 'actionPriority').map((priority) => (
+            <button
+              key={priority.id}
+              type="button"
+              className="chip priority-chip"
+              aria-pressed={action.priority === priority.id}
+              onClick={() => set({ priority: priority.id })}
+            >
+              <SeverityDots levelCode={PRIORITY_DOTS_LEVEL[priority.label]} />
+              {priority.label}
+            </button>
+          ))}
+        </div>
+        <FieldError errors={prefixed} field={`${prefix}priority`} />
+      </fieldset>
       <SelectField
         id={`${prefix}categoryId`}
         label="Category"
@@ -94,18 +110,31 @@ function ActionCard({ action, index, reportDate, plantUsers, onChange, onRemove,
         <textarea id={`${prefix}comments`} value={action.comments} onChange={(e) => set({ comments: e.target.value })} />
       </div>
       <fieldset className="field">
-        <legend className="field-label">Performed by</legend>
-        <span className="field-hint">Choose 1 to {MAX_PERFORMERS} people.</span>
-        {plantUsers.map((person) => {
-          const checked = action.performedByIds.includes(person.id);
-          const limitReached = !checked && action.performedByIds.length >= MAX_PERFORMERS;
-          return (
-            <label key={person.id} className="field-hint">
-              <input type="checkbox" checked={checked} disabled={limitReached} onChange={() => togglePerformer(person.id)} />{' '}
-              {person.name}
-            </label>
-          );
-        })}
+        <legend className="field-label required">Performed by</legend>
+        <span className="field-hint">
+          Choose 1 to {MAX_PERFORMERS} people ({action.performedByIds.length} of {MAX_PERFORMERS}).
+        </span>
+        <div className="chip-group">
+          {plantUsers.map((person) => {
+            const checked = action.performedByIds.includes(person.id);
+            const limitReached = !checked && action.performedByIds.length >= MAX_PERFORMERS;
+            return (
+              <button
+                key={person.id}
+                type="button"
+                className="chip"
+                aria-pressed={checked}
+                disabled={limitReached}
+                onClick={() => togglePerformer(person.id)}
+              >
+                <span className="avatar avatar--small" aria-hidden="true">
+                  {person.avatar}
+                </span>
+                {person.name}
+              </button>
+            );
+          })}
+        </div>
         <FieldError errors={prefixed} field={`${prefix}performedByIds`} />
       </fieldset>
       <button type="button" className="button button--link" onClick={onRemove}>

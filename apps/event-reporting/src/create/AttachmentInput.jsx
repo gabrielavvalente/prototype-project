@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { newId } from '../data/db.js';
 import { MAX_FILES, validateFile } from '../logic/validation.js';
+import Icon from '../shell/Icon.jsx';
 import { FieldError } from './fields.jsx';
 
 // Shows a stored or new file; the preview address is freed when it disappears.
@@ -63,21 +64,32 @@ export default function AttachmentInput({ attachments, onChange, required, error
   const full = attachments.length >= MAX_FILES;
 
   return (
-    <fieldset className="field">
-      <legend className="field-label">Photos and videos</legend>
-      <span className="field-hint">
-        {required ? 'At least one is required for TF1–TF3. ' : ''}
-        Up to {MAX_FILES} files, 5 MB each. {attachments.length} of {MAX_FILES} files.
-      </span>
-      <div className="button-row">
-        <label className={`button button--secondary${full ? ' button--disabled' : ''}`}>
-          Add photo or video
-          <input type="file" accept="image/*,video/*" multiple className="visually-hidden" disabled={full} onChange={handleInput} />
-        </label>
-        <label className={`button button--secondary${full ? ' button--disabled' : ''}`}>
-          Use camera
+    <fieldset className="attachments">
+      <legend className="visually-hidden">Photos and videos</legend>
+      {attachments.length > 0 && (
+        <ul className="attachment-list">
+          {attachments.map((attachment) => (
+            <li key={attachment.id} className="attachment-item">
+              <AttachmentPreview attachment={attachment} />
+              <button type="button" className="attachment-remove" onClick={() => remove(attachment.id)}>
+                <Icon name="close" size={14} label={`Remove ${attachment.fileName}`} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="attachment-actions">
+        <label className={`attachment-button${full ? ' button--disabled' : ''}`}>
+          <Icon name="camera" size={18} /> Take photo
           <input type="file" accept="image/*,video/*" capture="environment" className="visually-hidden" disabled={full} onChange={handleInput} />
         </label>
+        <label className={`attachment-button${full ? ' button--disabled' : ''}`}>
+          <Icon name="image" size={18} /> Attach photo or video
+          <input type="file" accept="image/*,video/*" multiple className="visually-hidden" disabled={full} onChange={handleInput} />
+        </label>
+        <span className="field-hint attachment-count">
+          {attachments.length}/{MAX_FILES} files · 5 MB max{required ? ' · required for TF1–TF3' : ''}
+        </span>
       </div>
       {rejections.map((problem) => (
         <p key={problem} className="field-error" role="alert">
@@ -85,19 +97,6 @@ export default function AttachmentInput({ attachments, onChange, required, error
         </p>
       ))}
       <FieldError errors={errors} field="attachments" />
-      {attachments.length > 0 && (
-        <ul className="attachment-list">
-          {attachments.map((attachment) => (
-            <li key={attachment.id} className="attachment-item">
-              <AttachmentPreview attachment={attachment} />
-              <span>{attachment.fileName}</span>
-              <button type="button" className="button button--link" onClick={() => remove(attachment.id)}>
-                Remove<span className="visually-hidden"> {attachment.fileName}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
     </fieldset>
   );
 }
