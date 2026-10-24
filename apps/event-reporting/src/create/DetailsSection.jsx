@@ -1,6 +1,7 @@
 import { useApp } from '../AppContext.js';
 import { getShareableUsers } from '../logic/access.js';
 import { getReferenceList } from '../logic/lookups.js';
+import Icon from '../shell/Icon.jsx';
 import ChipGroup from './ChipGroup.jsx';
 import { YesNoField } from './fields.jsx';
 
@@ -34,16 +35,46 @@ export default function DetailsSection({ event, update, errors }) {
         <textarea id="comments" value={event.comments} onChange={(e) => update({ comments: e.target.value })} />
       </div>
       {shareable.length > 0 ? (
-        <ChipGroup
-          id="sharedWithIds"
-          label="Shared with (optional)"
-          hint="They get an alert when the event is submitted."
-          multiple
-          value={event.sharedWithIds}
-          options={shareable.map((person) => ({ value: person.id, label: person.name }))}
-          onChange={(sharedWithIds) => update({ sharedWithIds })}
-          errors={errors}
-        />
+        <div className="field">
+          <label htmlFor="sharedWith">Shared with (optional)</label>
+          <span className="field-hint">They get an alert when the event is submitted.</span>
+          <select
+            id="sharedWith"
+            value=""
+            onChange={(e) => e.target.value && update({ sharedWithIds: [...event.sharedWithIds, e.target.value] })}
+          >
+            <option value="">Add a person…</option>
+            {shareable
+              .filter((person) => !event.sharedWithIds.includes(person.id))
+              .map((person) => (
+                <option key={person.id} value={person.id}>
+                  {person.name}
+                </option>
+              ))}
+          </select>
+          {event.sharedWithIds.length > 0 && (
+            <ul className="person-badges" aria-label="Shared with">
+              {event.sharedWithIds.map((id) => {
+                const person = users.find((item) => item.id === id);
+                return (
+                  <li key={id} className="person-badge">
+                    <span className="avatar avatar--small" aria-hidden="true">
+                      {person?.avatar}
+                    </span>
+                    {person?.name}
+                    <button
+                      type="button"
+                      className="person-badge-remove"
+                      onClick={() => update({ sharedWithIds: event.sharedWithIds.filter((item) => item !== id) })}
+                    >
+                      <Icon name="close" size={14} label={`Remove ${person?.name}`} />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       ) : (
         <div className="field">
           <span className="field-label">Shared with (optional)</span>

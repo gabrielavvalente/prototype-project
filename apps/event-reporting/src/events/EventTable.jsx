@@ -2,7 +2,6 @@ import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { canEditEvent } from '../logic/access.js';
-import { PAGE_SIZES } from '../logic/eventList.js';
 import { getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
 import { SeverityDots } from './EventCard.jsx';
@@ -172,18 +171,8 @@ export default function EventTable({ rows, sort, onSort, visibleColumns, paging,
         </table>
       </div>
 
-      <div className="pagination">
-        <label className="pagination-size">
-          Rows per page
-          <select value={paging.pageSize} onChange={(e) => paging.onPageSize(Number(e.target.value))}>
-            {PAGE_SIZES.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </label>
-        <nav className="pagination-pages" aria-label="Pages">
+      {paging.pageCount > 1 && (
+        <nav className="pagination" aria-label="Pages">
           <button type="button" className="button" disabled={paging.page <= 1} onClick={() => paging.onPage(paging.page - 1)}>
             Previous
           </button>
@@ -199,7 +188,7 @@ export default function EventTable({ rows, sort, onSort, visibleColumns, paging,
             Next
           </button>
         </nav>
-      </div>
+      )}
     </section>
   );
 }

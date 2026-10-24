@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { AttachmentPreview } from '../create/AttachmentInput.jsx';
-import SummaryList from './SummaryList.jsx';
 import { findEvent, getByIndex } from '../data/db.js';
-import { canEditEvent, isEventVisible } from '../logic/access.js';
+import { canEditEvent, getMenuItems, isEventVisible } from '../logic/access.js';
 import { getSeverityDots } from '../logic/display.js';
 import { isSip } from '../logic/eventList.js';
 import { describeEvent, describeImmediateAction } from '../logic/eventSummary.js';
@@ -13,6 +12,7 @@ import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
 import { PillarTag, SeverityDots } from './EventCard.jsx';
 import StatusBadge from './StatusBadge.jsx';
+import SummaryList from './SummaryList.jsx';
 
 function formatDateTime(isoText) {
   return isoText ? new Date(isoText).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : '';
@@ -28,6 +28,34 @@ function buildHistory(event, users) {
     items.push({ label: `Last updated by ${getLabel(users, event.updatedBy)}`, at: event.updatedAt });
   }
   return items;
+}
+
+// Shown once, right after the event was saved from the form (FR-015).
+function SavedBanner({ saved, recordNumber, canCreate }) {
+  const messages = {
+    submit: (
+      <>
+        Event <strong>{recordNumber}</strong> was submitted. The Managers of this plant have been alerted.
+      </>
+    ),
+    draft: 'Your draft was saved on this device. Only you can see it.',
+    changes: (
+      <>
+        Event <strong>{recordNumber}</strong> was updated.
+      </>
+    ),
+  };
+  return (
+    <div className="message message--success saved-banner" role="status">
+      <Icon name="check" />
+      <span>{messages[saved]}</span>
+      {saved === 'submit' && canCreate && (
+        <Link className="button button--link" to="/events/new">
+          Report another event
+        </Link>
+      )}
+    </div>
+  );
 }
 
 function Collapsible({ title, open = false, children }) {
@@ -46,6 +74,7 @@ function Collapsible({ title, open = false, children }) {
 export default function EventDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const lists = useApp();
   const { user, context, reference, organization, users } = lists;
   const [state, setState] = useState({ status: 'loading', event: null, attachments: [] });
@@ -94,6 +123,14 @@ export default function EventDetail() {
         </button>
         <span>{event.recordNumber || 'Draft'}</span>
       </div>
+
+      {location.state?.saved && (
+        <SavedBanner
+          saved={location.state.saved}
+          recordNumber={location.state.recordNumber}
+          canCreate={getMenuItems(user.role).includes('create-event')}
+        />
+      )}
 
       <section className={`card detail-head${critical ? ' card--critical' : ''}`}>
         <div className="tag-row">

@@ -468,16 +468,16 @@ shows level badges, two task types, optional event time, dictation and Shared wi
 cards repeat nothing; 20 rows per page; dictation sits with the photo buttons; Shared with is a
 dropdown with badges; saving opens the event's view page with a banner
 
-- [ ] T080 Top bar in `src/shell/Header.jsx`: Home icon to `#/entry`; app name visible and linking
+- [X] T080 Top bar in `src/shell/Header.jsx`: Home icon to `#/entry`; app name visible and linking
   to `#/events` on phones too (search becomes an icon there)
-- [ ] T081 `src/events/EventExpanded.jsx`: drop level, date and title (shown on the row / card);
+- [X] T081 `src/events/EventExpanded.jsx`: drop level, date and title (shown on the row / card);
   show event time only when given
-- [ ] T082 Remove the rows-per-page select (`EventTable.jsx`, `EventLibrary.jsx`); 20 rows fixed
-- [ ] T083 Move Dictate into the photo button row (`AttachmentInput.jsx`, `GeneralInfoSection.jsx`)
-- [ ] T084 Shared with as a dropdown plus removable badges (`DetailsSection.jsx`)
-- [ ] T085 After saving, open the event's view page with a confirmation banner (`EventForm.jsx`,
+- [X] T082 Remove the rows-per-page select (`EventTable.jsx`, `EventLibrary.jsx`); 20 rows fixed
+- [X] T083 Move Dictate into the photo button row (`AttachmentInput.jsx`, `GeneralInfoSection.jsx`)
+- [X] T084 Shared with as a dropdown plus removable badges (`DetailsSection.jsx`)
+- [X] T085 After saving, open the event's view page with a confirmation banner (`EventForm.jsx`,
   `EventDetail.jsx`); the Confirmation screen is removed
-- [ ] T086 Rerun quickstart scenarios 1–7 at 390px and desktop width with no console errors
+- [X] T086 Rerun quickstart scenarios 1–7 at 390px and desktop width with no console errors
 
 ---
 

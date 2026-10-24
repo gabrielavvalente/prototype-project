@@ -1,6 +1,7 @@
 // Search, filters, sorting, pages and KPI counts for the event library (FR-026 to FR-031).
 
-export const PAGE_SIZES = [20, 50, 100];
+// Rows per page in the List view, fixed for now (Clarification 2026-10-24, header/list/form review).
+export const PAGE_SIZE = 20;
 
 export const EMPTY_FILTERS = {
   familyCode: '',

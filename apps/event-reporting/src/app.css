@@ -1739,3 +1739,114 @@ label.button:focus-within,
 .event-card-details .event-expanded-description {
   font-size: var(--font-size-small);
 }
+
+/* Top bar on phones: the app name stays visible (it opens the event list) and search becomes an
+   icon, leaving room for the Home icon (FR-040) */
+
+.app-mark-name {
+  display: inline;
+}
+
+@media (max-width: 767px) {
+  .topbar {
+    gap: var(--space-1);
+  }
+
+  .app-mark {
+    margin-right: auto;
+    font-size: 0.95rem;
+  }
+
+  .search-pill {
+    flex: 0 0 var(--touch-target);
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--color-text);
+  }
+
+  /* Hidden on screen but still read out, so the icon keeps its name */
+  .search-pill-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}
+
+.pagination {
+  justify-content: center;
+}
+
+/* The dictation message takes its own line under the buttons */
+.attachment-actions .dictation-message {
+  flex-basis: 100%;
+}
+
+/* Shared with: chosen people as removable badges (FR-010) */
+
+.person-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-1);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-size: var(--font-size-small);
+  font-weight: 500;
+}
+
+.person-badge-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-accent);
+  cursor: pointer;
+}
+
+.person-badge-remove:hover {
+  background: rgba(18, 133, 126, 0.12);
+}
+
+.saved-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.saved-banner span {
+  flex: 1;
+}
+
+/* Banner: icon and text on one line, the link underneath the text */
+.saved-banner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+}
+
+.saved-banner .button--link {
+  grid-column: 2;
+  justify-self: start;
+  padding: 0;
+}

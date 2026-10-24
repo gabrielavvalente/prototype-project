@@ -4,7 +4,7 @@ import { useApp } from '../AppContext.js';
 import { AttachmentPreview } from '../create/AttachmentInput.jsx';
 import { getByIndex } from '../data/db.js';
 import { canEditEvent } from '../logic/access.js';
-import { findLevelByCode, getLabel } from '../logic/lookups.js';
+import { getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
 import SummaryList from './SummaryList.jsx';
 
@@ -37,19 +37,20 @@ export default function EventExpanded({ event }) {
     getByIndex('attachments', 'eventId', event.id).then(setPhotos);
   }, [event.id]);
 
-  const level = findLevelByCode(reference, event.levelCode);
   const locationPath = Object.values(event.location)
     .map((nodeId) => getLabel(organization, nodeId))
     .filter(Boolean)
     .join(' › ');
   const path = `/events/${event.recordNumber || event.id}`;
-  const facts = [
-    { label: 'Level', value: level ? `${level.code} — ${level.label}` : '' },
-    { label: 'Location', value: locationPath },
-    { label: 'When', value: [event.reportDate, event.eventTime].filter(Boolean).join(' ') },
+  // Only what the row or card does not already show (level, date and title are there).
+  const facts = [{ label: 'Location', value: locationPath }];
+  if (event.eventTime) {
+    facts.push({ label: 'Event time', value: event.eventTime });
+  }
+  facts.push(
     { label: 'Shift', value: getLabel(reference, event.shiftMoment) },
     { label: 'Task type', value: getLabel(reference, event.taskTypeId) },
-  ];
+  );
   if (event.riskQuestion) {
     facts.push({ label: `${event.riskQuestion.type}?`, value: event.riskQuestion.answer ? 'Yes' : 'No' });
   }

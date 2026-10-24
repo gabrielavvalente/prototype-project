@@ -24,7 +24,8 @@ export function AttachmentPreview({ attachment, controls = false }) {
 }
 
 // Photos and videos of the event, from files or the device camera (FR-007, FR-009).
-export default function AttachmentInput({ attachments, onChange, errors }) {
+// extraAction: another button shown on the same line (the Dictate button of the description).
+export default function AttachmentInput({ attachments, onChange, errors, extraAction }) {
   const [rejections, setRejections] = useState([]);
 
   function addFiles(fileList) {
@@ -79,6 +80,7 @@ export default function AttachmentInput({ attachments, onChange, errors }) {
         </ul>
       )}
       <div className="attachment-actions">
+        {extraAction}
         <label className={`attachment-button${full ? ' button--disabled' : ''}`}>
           <Icon name="camera" size={18} /> Take photo
           <input type="file" accept="image/*,video/*" capture="environment" className="visually-hidden" disabled={full} onChange={handleInput} />

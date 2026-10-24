@@ -51,7 +51,7 @@ export default function Header() {
   return (
     <>
       <header className="topbar">
-        <Link to="/events" className="app-mark">
+        <Link to="/events" className="app-mark" title="Event list">
           <span className="app-mark-logo" aria-hidden="true">
             ER
           </span>
@@ -59,7 +59,7 @@ export default function Header() {
         </Link>
         <Link to="/search" className="search-pill">
           <Icon name="search" size={18} />
-          <span>Search</span>
+          <span className="search-pill-text">Search</span>
         </Link>
         <nav className="top-nav" aria-label="Main">
           <NavLink to="/events" end className="top-nav-link">
@@ -71,6 +71,9 @@ export default function Header() {
             </NavLink>
           )}
         </nav>
+        <Link to="/entry" className="icon-button" title="Home">
+          <Icon name="home" size={22} label="Home — choose a pillar" />
+        </Link>
         {showAlerts && (
           <button type="button" className="icon-button" onClick={() => setOpenSheet('alerts')}>
             <Icon name="bell" size={22} label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`} />

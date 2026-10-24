@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useBlocker, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useBlocker, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { findEvent, getByIndex, saveChanges, saveDraft, StorageFullError, submitEvent } from '../data/db.js';
 import { canEditEvent, isEventVisible } from '../logic/access.js';
@@ -62,49 +62,6 @@ function newEvent(user, context, reference) {
 function elementIdFor(field) {
   const actionMatch = /^immediateActions\.(\d+)$/.exec(field);
   return actionMatch ? `immediate-action-${actionMatch[1]}` : field;
-}
-
-function Confirmation({ result }) {
-  const { kind, event } = result;
-  const eventPath = `/events/${event.recordNumber || event.id}`;
-  const titles = { submit: 'Event submitted', draft: 'Draft saved', changes: 'Changes saved' };
-  return (
-    <main className="page">
-      <h1>{titles[kind]}</h1>
-      {kind === 'submit' && (
-        <p className="message message--success" role="status">
-          Event <strong>{event.recordNumber}</strong> was submitted. The Managers of this plant have been alerted.
-        </p>
-      )}
-      {kind === 'draft' && (
-        <p className="message message--success" role="status">
-          Your draft was saved on this device. Only you can see it.
-        </p>
-      )}
-      {kind === 'changes' && (
-        <p className="message message--success" role="status">
-          Event <strong>{event.recordNumber}</strong> was updated.
-        </p>
-      )}
-      <div className="button-row">
-        {kind === 'draft' ? (
-          <Link className="button button--primary" to={`/events/${event.id}/edit`}>
-            Continue draft
-          </Link>
-        ) : (
-          <Link className="button button--primary" to={eventPath}>
-            View event
-          </Link>
-        )}
-        <Link className="button button--secondary" to="/events/new">
-          Report another event
-        </Link>
-        <Link className="button" to="/events">
-          Events
-        </Link>
-      </div>
-    </main>
-  );
 }
 
 function UnsavedChangesDialog({ canSaveDraft, onSaveDraft, onDiscard, onStay }) {
@@ -201,6 +158,16 @@ function EventForm() {
     setScrollToField(null);
   }, [scrollToField]);
 
+  // After a save, show the event's view page with a confirmation banner (FR-015). This runs after
+  // the re-render that cleared the unsaved-changes flag, so leaving is not blocked.
+  useEffect(() => {
+    if (!result) return;
+    navigate(`/events/${result.event.recordNumber || result.event.id}`, {
+      replace: true,
+      state: { saved: result.kind, recordNumber: result.event.recordNumber },
+    });
+  }, [result, navigate]);
+
   const isSubmitted = event && event.status === 'Open';
 
   useEffect(() => {
@@ -210,7 +177,7 @@ function EventForm() {
   if (loadState === 'loading') return <p className="page">Loading…</p>;
   if (loadState === 'notFound') return <NotAllowed reason="notFound" />;
   if (loadState === 'notAllowed') return <NotAllowed reason="permission" />;
-  if (result) return <Confirmation result={result} />;
+  if (result) return <p className="page">Saving…</p>;
 
   const options = { now: new Date() };
   const missing = showErrors ? validateEventForSubmit(event, options) : [];
@@ -230,7 +197,8 @@ function EventForm() {
   }
 
   // kind: 'draft' | 'submit' | 'changes'. Returns true when saved.
-  async function save(kind) {
+  // leaving: saving a draft on the way out (the unsaved-changes dialog), so no view page is opened.
+  async function save(kind, { leaving = false } = {}) {
     if (kind !== 'draft') {
       const problems = validateEventForSubmit(event, options);
       if (problems.length > 0) {
@@ -248,7 +216,9 @@ function EventForm() {
       else if (kind === 'submit') saved = await submitEvent({ ...args, users });
       else saved = await saveChanges(args);
       setDirty(false);
-      setResult({ kind, event: saved });
+      if (!leaving) {
+        setResult({ kind, event: saved });
+      }
       return true;
     } catch (error) {
       // Nothing typed is lost: the form keeps its state so the user can fix and retry.
@@ -260,7 +230,7 @@ function EventForm() {
   }
 
   async function saveDraftAndLeave() {
-    if (await save('draft')) blocker.proceed();
+    if (await save('draft', { leaving: true })) blocker.proceed();
     else blocker.reset();
   }
 

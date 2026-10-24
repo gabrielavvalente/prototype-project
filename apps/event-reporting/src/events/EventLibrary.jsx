@@ -8,6 +8,7 @@ import {
   computeKpis,
   countActiveFilters,
   EMPTY_FILTERS,
+  PAGE_SIZE,
   paginate,
   searchEvents,
   sortEvents,
@@ -36,7 +37,6 @@ export default function EventLibrary() {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [quickFilter, setQuickFilter] = useState('all');
   const [sort, setSort] = useState({ key: 'date', direction: 'desc' });
-  const [pageSize, setPageSize] = useState(20);
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
   // The one row or card shown expanded (FR-027).
@@ -61,7 +61,7 @@ export default function EventLibrary() {
   const kpis = computeKpis(filtered, user.id);
   const shown = useMemo(() => applyQuickFilter(filtered, quickFilter, user.id), [filtered, quickFilter, user.id]);
   const sorted = useMemo(() => sortEvents(shown, sort.key, sort.direction, reporterNames), [shown, sort, reporterNames]);
-  const paging = paginate(sorted, pageSize, page);
+  const paging = paginate(sorted, PAGE_SIZE, page);
   const activeFilters = countActiveFilters(filters);
   const visibleColumns = settings.visibleColumns || ALL_COLUMN_KEYS;
 
@@ -163,12 +163,7 @@ export default function EventLibrary() {
           paging={{
             page: paging.page,
             pageCount: paging.pageCount,
-            pageSize,
             onPage: setPage,
-            onPageSize: (size) => {
-              setPageSize(size);
-              setPage(1);
-            },
           }}
           expandedId={expandedId}
           onToggle={toggleExpanded}
