@@ -25,10 +25,9 @@ are listed at the end.
 
 | Field | Type | Rule |
 |---|---|---|
-| `id`, `name`, `email` | string | as in 001 |
+| `id`, `name`, `avatar` | string | as in 001 |
 | `role` | `User` \| `Manager` \| `Site Admin` \| `null` | event role; `null` = no event access (Control Panel only) |
-| `plantIds` | string[] | plants for events |
-| `pillarIdsByPlant` | `{ [plantId]: string[] }` | as in 001 |
+| `access` | `[{ businessId, plantId, pillarIds }]` | plants and pillars for events, as in 001; `[]` when no event role |
 | `controlPanelRoles` | ControlPanelRole[] | may be empty |
 
 **ControlPanelRole**: `{ pillarId, level: 'central' | 'cluster' | 'local', plantIds }`.

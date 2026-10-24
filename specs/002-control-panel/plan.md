@@ -10,7 +10,7 @@ A new app, `apps/control-panel/`, where administrators set per pillar which work
 Required for each level (Central → Cluster → Local, "Required wins") and govern the master data
 lists (Standards, Hazards, Body Parts, Injuries, Aspects, Impacts, Industrial Risk Categories).
 Users, organization, roles, workflow settings and master data become **shared platform data** in
-`shared/platform/` (plain JavaScript, built-in IndexedDB, no packages). A root `launcher/` serves
+`shared/platform/` (plain JavaScript, built-in IndexedDB, no packages). A root `launcher/` starts each app's own dev server and serves
 every app from one address so they share that data. Event Reporting moves its users and
 organization to the platform data, stores the resulting workflow on each submitted event and
 closes the event when only Submission is Required. A third app, `apps/user-management/`, shows
@@ -60,7 +60,7 @@ changes (data source, submission)
 | III. Minimal tests | ✅ | Vitest on the platform rules and submission status; quickstart manual flow; console checked before each commit. |
 | IV. Consistent interface | ✅ | Both apps use `shared/theme.css`; the Control Panel reuses Event Reporting's header, sheet, chips and badges patterns; titles per screen; 320px layouts (grids scroll horizontally inside their card). |
 | V. Short documentation | ✅ | New `apps/control-panel/README.md` and `apps/user-management/README.md`; the launcher is explained in the root README; Event Reporting README updated (run through the launcher). |
-| Monorepo: launcher | ✅ | `launcher/` has its own `package.json` (Vite only) and an index page; no app or business code. No root `package.json`, no workspaces. |
+| Monorepo: launcher | ✅ | `launcher/` has its own `package.json` (Vite only), a start script, the app list and an index page; no app or business code. No root `package.json`, no workspaces. |
 | Monorepo: shared platform data | ✅ | Users, plants, locations, roles, workflow settings, master data, rules and sample data in `shared/platform/`; stored once at the launcher's address. |
 | Stack, pinned versions, UTF-8, English, no secrets | ✅ | Exact versions above; all text in English; demo data only. |
 
@@ -86,9 +86,12 @@ specs/002-control-panel/
 
 ```text
 launcher/
-├── package.json          # vite + @vitejs/plugin-react only
-├── vite.config.js        # root = repository; serves /apps/<app-name>/
-└── index.html            # page listing the apps (uses shared/theme.css)
+├── package.json          # vite only; "dev" runs start.js
+├── apps.js               # the apps and their ports
+├── start.js              # starts each app's dev server, then the launcher server
+├── vite.config.js        # page at http://localhost:5173/, forwards /apps/<app-name>/ to the apps
+├── index.html            # page listing the apps
+└── main.js               # loads shared/theme.css for the page
 
 shared/
 ├── theme.css             # existing

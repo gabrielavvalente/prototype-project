@@ -9,7 +9,7 @@ through the launcher: `http://localhost:5173/apps/control-panel/`.
 
 | Address | Screen |
 |---|---|
-| `/launcher/` | "Prototype apps" page (opened automatically; the server root is the repository): one card per app (name, one-line description, Open button) |
+| `/` | "Prototype apps" page (opened automatically): one card per app (name, one-line description, Open button) |
 | `/apps/event-reporting/` | Event Reporting |
 | `/apps/control-panel/` | Control Panel |
 | `/apps/user-management/` | User Management |

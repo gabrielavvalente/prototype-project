@@ -7,30 +7,30 @@ under constitution v2.3.0.
 
 ## R1. One address for every app: the launcher
 
-- **Decision**: `launcher/` holds one Vite dev server whose root is the repository. It serves a
-  small index page listing the apps and opens each app as its own page:
-  `http://localhost:5173/apps/event-reporting/` and `http://localhost:5173/apps/control-panel/`.
-  Its `package.json` pins only `vite` and `@vitejs/plugin-react` (the same exact versions as the
-  apps). Each app keeps its own `vite.config.js` and can still be run on its own.
-- **Rationale**: The browser keeps stored data per address (origin). Serving every app from one
-  origin is what lets them share the platform data (constitution v2.3.0). A single server is the
-  simplest way: one command, one port, no proxy. Each app's code still resolves `react` and its
-  other packages from its own `node_modules`.
-- **Required change in apps**: `index.html` must load the entry with a relative path
-  (`./src/main.jsx`) so the page works both at `/` (app run alone) and under
-  `/apps/<app-name>/` (launcher).
-- **Alternatives considered**: a launcher proxying to one dev server per app (three processes,
-  WebSocket proxying for hot reload, more to explain); a backend (out of the constitution);
-  exporting/importing configuration files (clumsy, rejected by the user).
-- **Verified (2026-10-24, tasks T001–T006)**: both apps open through the launcher with no console
-  errors, React hooks work, and data written by one app is read by the other. Findings:
-  - Vite pre-bundles each package **once for the whole server** (cache in
-    `launcher/node_modules/.vite`, set with `cacheDir` so nothing is written at the repository
-    root). Both apps therefore get the same copy of React. This is safe because the apps pin the
-    **same exact versions**; keep shared packages (React, React DOM, React Router) on identical
-    versions in every app. If an app ever needs a different version, switch the launcher to
-    forwarding requests to one dev server per app (the proxy alternative below).
-  - The launcher page is served at `/launcher/` (no file may sit at the repository root).
+- **Decision**: `launcher/` starts **one dev server per app** (each in its own folder, with its own
+  packages, on its own port: Event Reporting 5181, Control Panel 5182, User Management 5183) and a
+  small Vite server on `http://localhost:5173/` in front of them. That front server shows the page
+  listing the apps and **forwards** `/apps/<app-name>/` to the app's server (Vite's built-in
+  `server.proxy`, WebSockets included for live reload). One command, `npm run dev` in
+  `launcher/`, runs `launcher/start.js`, which starts everything. The list of apps and their
+  ports is in `launcher/apps.js`. The launcher's `package.json` pins only `vite`.
+- **Rationale**: The browser keeps stored data per address (origin). Everything the browser sees
+  comes from `localhost:5173`, so the apps share the platform data (constitution v2.3.0), while
+  each app still runs with only its own packages, exactly as when it runs alone.
+- **Required change in apps**: `index.html` loads the entry with a relative path
+  (`./src/main.jsx`); the launcher starts each app with `--base /apps/<app-name>/`. No app config
+  changes; each app still runs on its own with `npm run dev`.
+- **Alternatives considered**: one Vite server for the whole repository (first choice, rejected
+  after testing — see below); a backend (out of the constitution); exporting/importing
+  configuration files (clumsy, rejected by the user).
+- **Why not one server for the repository** (tested 2026-10-24): Vite pre-bundles packages once
+  per server. With two apps each having their own React installed, React Router was bundled
+  against one copy of React and the app ran with another: "Invalid hook call" and a blank page.
+  Fixing it would have meant sharing one React install between apps, which breaks their
+  isolation.
+- **Verified (2026-10-24)**: launcher page, Event Reporting (sign in, entry, events list) and the
+  Control Panel all open through `localhost:5173` with no console errors; both databases
+  (`platform`, `event-reporting`) are visible from both apps.
 - **Note**: when an app is run on its own (its own port), it gets its own copy of the platform
   data seeded from the sample data — useful for development, but not shared with other apps.
 

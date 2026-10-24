@@ -31,22 +31,21 @@ own.
 **Purpose**: Launcher, the new app skeleton and the shared platform folder
 
 - [X] T001 Create `launcher/package.json` (`"name": "launcher"`, `"private": true`,
-  `"type": "module"`, script `dev: vite`) and install with exact versions from `launcher/`:
-  `npm install --save-exact --save-dev vite@8.3.5 @vitejs/plugin-react@6.1.2`; add
-  `launcher/.gitignore` (`node_modules/`, `dist/`); commit `package-lock.json`
-- [X] T002 Create `launcher/vite.config.js` (research R1): `root` = the repository folder
-  (`fileURLToPath(new URL('..', import.meta.url))`), React plugin, `server.port` 5173,
-  `server.fs.allow` = repository folder; a comment explaining that one address lets the apps share
-  browser data
-- [X] T003 Create `launcher/index.html`, served at `/launcher/` because the server root is the
-  repository (no file may sit at the repository root); set `server.open: '/launcher/'` in
-  `launcher/vite.config.js`. The page (`<title>Prototype
-  apps</title>`, links `../shared/theme.css`) shows one card per app with name, one-line
-  description and an Open link to `/apps/event-reporting/` and `/apps/control-panel/`
+  `"type": "module"`, script `dev: node start.js`) and install with exact versions from
+  `launcher/`: `npm install --save-exact --save-dev vite@8.3.5`; add `launcher/.gitignore`
+  (`node_modules/`, `dist/`); commit `package-lock.json`
+- [X] T002 Create `launcher/apps.js` (folder, name, port per app: 5181, 5182) and
+  `launcher/start.js` (research R1): for each app with `node_modules`, start
+  `npx vite --port <port> --strictPort --base /apps/<folder>/` in the app folder, then the
+  launcher's own Vite; stop the children when the launcher stops. Create `launcher/vite.config.js`:
+  port 5173, `open: true`, `server.proxy` forwarding `/apps/<folder>` to each app's port with
+  `ws: true`, `server.fs.allow` launcher folder and `../shared`
+- [X] T003 Create `launcher/index.html` (`<title>Prototype apps</title>`, script `./main.js` which
+  imports `../shared/theme.css`) showing one card per app with name, one-line description and an
+  Open link to `/apps/event-reporting/` and `/apps/control-panel/`
 - [X] T004 Change `apps/event-reporting/index.html` to load `./src/main.jsx` (relative path, R1);
-  run the launcher (`npm run dev` in `launcher/`) and confirm `/launcher/` lists the apps and
-  `/apps/event-reporting/` opens Event Reporting with no console errors (if dependency
-  resolution fails, record the fix in research R1 before going on)
+  run the launcher (`npm run dev` in `launcher/`) and confirm `/` lists the apps and
+  `/apps/event-reporting/` opens Event Reporting with no console errors
 - [X] T005 Create the Control Panel skeleton in `apps/control-panel/`: `package.json`
   (`"name": "control-panel"`, private, module, scripts `dev`, `build`, `preview`, `test: vitest
   run`), `index.html` (`lang="en"`, `<title>Control Panel</title>`, script `./src/main.jsx`),
@@ -60,7 +59,7 @@ own.
   @fontsource/poppins@5.3.0` and `npm install --save-exact --save-dev vite@8.3.5
   @vitejs/plugin-react@6.1.2 vitest@5.0.5`; confirm no `^`/`~`; open it through the launcher at
   `/apps/control-panel/` with no console errors
-- [ ] T007 [P] Create the folder `shared/platform/` with a short header comment in each new file
+- [X] T007 [P] Create the folder `shared/platform/` with a short header comment in each new file
   stating that it must import no packages and nothing from `apps/` (constitution v2.3.0)
 
 ---
@@ -72,18 +71,18 @@ Reporting, permissions, and the Control Panel shell
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T008 Create `shared/platform/storage.js` (research R2, ~60 lines): `openDatabase(name,
+- [X] T008 Create `shared/platform/storage.js` (research R2, ~60 lines): `openDatabase(name,
   version, upgrade)`, `requestToPromise`, `getAll(db, store)`, `getById`, `getAllByIndex`,
   `runTransaction(db, storeNames, mode, work)` resolving on `complete`; plain IndexedDB, no
   packages
-- [ ] T009 Move the platform part of Event Reporting's sample data to
+- [X] T009 Move the platform part of Event Reporting's sample data to
   `shared/platform/sampleData.js`: `organization` and `users` from
   `apps/event-reporting/src/data/sampleData.js`, and from `reference` only the types `pillar`,
   `family`, `level` (with `sortOrder`); keep in the app the form lists (taskType, employeeType,
   shiftMoment, firstAidTreatment, actionPriority, actionCategory, disease)
-- [ ] T010 Add Control Panel data to `shared/platform/sampleData.js` (data-model "User", R8):
+- [X] T010 Add Control Panel data to `shared/platform/sampleData.js` (data-model "User", R8):
   `controlPanelRoles: [{ pillarId, level: 'central' | 'cluster' | 'local', plantIds }]` on every
-  user (empty when none); new users with `role: null`, `plantIds: []`, `pillarIdsByPlant: {}`:
+  user (empty when none); new users with `role: null`, `access: []`:
   Ludovic Costa (Central `pillar-hs`, `pillar-ih`), Ed Petrov (Central `pillar-env`), Sergio
   Martins (Central `pillar-ir`), Pascal Fischer (Cluster `pillar-hs`, Lyon + Curitiba); Lucas
   Weber: event role Manager at Lyon and Porto (pillars H&S, Environment) and Cluster `pillar-hs`
@@ -91,31 +90,31 @@ Reporting, permissions, and the Control Panel shell
   Mendes (`pillar-hs`, Lyon), Felix Tanaka (`pillar-hs`, `pillar-env`, Curitiba). Rule: "`central`
   → `plantIds` = all plants; `cluster` → 2+ plants; `local` → exactly one plant. At most one role
   per pillar per user."
-- [ ] T011 [P] Create `shared/platform/organization.js`: move `getAncestry` and `getPlantOf`
+- [X] T011 [P] Create `shared/platform/organization.js`: move `getAncestry` and `getPlantOf`
   from `apps/event-reporting/src/logic/locations.js` and `getPillarIdsForPlant` from
   `apps/event-reporting/src/logic/access.js`; add `getPlants(organization)`; move their tests
   into `shared/platform/organization.test.js`
-- [ ] T012 [P] Create `shared/platform/permissions.js` (contracts/platform-api.md):
+- [X] T012 [P] Create `shared/platform/permissions.js` (contracts/platform-api.md):
   `LEVEL_ORDER = { central: 3, cluster: 2, local: 1 }`, `LEVEL_LABELS`, `getRole(user,
   pillarId)`, `hasControlPanelAccess(user)`, `coveredPlantIds(role, organization)` (all plants for
   Central), `plantsOverlap(a, b)`, `canSeeUser(viewer, user, organization)` (Central sees all;
   others: user has event access to or a role on one of the viewer's plants)
-- [ ] T013 [P] Write `shared/platform/permissions.test.js`: role lookup per pillar, Central covers
+- [X] T013 [P] Write `shared/platform/permissions.test.js`: role lookup per pillar, Central covers
   all plants, a role on H&S gives nothing on Environment (FR-003), `canSeeUser` for Lucas Weber
   (Lyon + Porto) excludes Ben Okafor (Curitiba)
-- [ ] T014 Create `shared/platform/platformData.js` — part 1 (research R4, data-model "Stores"):
+- [X] T014 Create `shared/platform/platformData.js` — part 1 (research R4, data-model "Stores"):
   `openPlatform()` opens database `platform` version 1 with stores `users`, `organization`,
   `reference`, `workflowSettings` (index `byPillar`), `masterValues` (index `byList`),
   `activations` (index `byValue`), `audit` (index `byPillar`), `notifications` (index `byUser`),
   `meta`; seeds from `sampleData.js` when `meta.seededAt` is missing; `loadPlatform()` →
   `{ users, organization, reference }`; `resetPlatformData()` clears every store and reseeds
-- [ ] T015 Update Event Reporting to read platform data: `apps/event-reporting/src/data/db.js`
+- [X] T015 Update Event Reporting to read platform data: `apps/event-reporting/src/data/db.js`
   version 6 deleting and no longer creating `users` and `organization` (keep `reference` for the
   form lists only); `seedIfEmpty`/`resetDemoData` stop writing users and organization;
   `resetDemoData` also calls `resetPlatformData()`; `apps/event-reporting/src/App.jsx` loads
   `loadPlatform()` and merges platform `reference` with the app's form lists; imports from
   `../../../shared/platform/…` only
-- [ ] T016 Update Event Reporting imports to the moved helpers
+- [X] T016 Update Event Reporting imports to the moved helpers
   (`apps/event-reporting/src/logic/locations.js`, `access.js` and their callers) so they import
   `getAncestry`, `getPlantOf`, `getPillarIdsForPlant` from `shared/platform/organization.js`;
   `apps/event-reporting/src/shell/StartScreen.jsx` lists only users with an event role
@@ -323,7 +322,8 @@ scenarios 1–5
   `server.port` 5175, `server.fs.allow` app folder and `../../shared`), `.gitignore`,
   `src/main.jsx`, `src/app.css`; install the **same exact versions** as the Control Panel
   (`react@19.3.1 react-dom@19.3.1 react-router-dom@7.18.4 @fontsource/poppins@5.3.0`; dev
-  `vite@8.3.5 @vitejs/plugin-react@6.1.2`); add a third card to `launcher/index.html` ("User
+  `vite@8.3.5 @vitejs/plugin-react@6.1.2`); add `{ folder: 'user-management', name: 'User Management', port: 5183 }` to
+  `launcher/apps.js` and a third card to `launcher/index.html` ("User
   Management — See users, their plants, pillars and Control Panel roles.", link
   `/apps/user-management/`)
 - [ ] T050 [US4] Build the User Management shell in `apps/user-management/src/`: copy `Icon.jsx`

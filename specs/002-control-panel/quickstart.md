@@ -13,7 +13,7 @@ cd apps/event-reporting && npm install     # first time only
 cd ../control-panel && npm install         # first time only
 cd ../user-management && npm install       # first time only
 cd ../../launcher && npm install           # first time only
-npm run dev                                # opens http://localhost:5173/launcher/
+npm run dev                                # starts every app and opens http://localhost:5173/
 
 cd ../apps/control-panel && npm test       # platform rules + Control Panel logic
 cd ../event-reporting && npm test          # Event Reporting rules
