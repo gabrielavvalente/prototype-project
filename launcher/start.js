@@ -8,12 +8,29 @@ import { fileURLToPath } from 'node:url';
 import { APPS } from './apps.js';
 
 const children = [];
+let stopping = false;
 
-function run(folder, args) {
+// Stop the app servers together with the launcher.
+function stopAll(exitCode = 0) {
+  stopping = true;
+  children.forEach((child) => child.kill());
+  process.exit(exitCode);
+}
+
+function run(name, folder, args) {
   // One command string: npx needs a shell on Windows; the arguments contain no spaces.
   const child = spawn(`npx vite ${args.join(' ')}`, { cwd: folder, stdio: 'inherit', shell: true });
+  // If one server cannot start (e.g. its port is taken), stop everything with a clear message.
+  child.on('exit', (code) => {
+    if (!stopping) {
+      console.error(
+        `\n${name} stopped (exit code ${code}). If a port is already in use, close the other ` +
+          'terminal running the launcher or the app, then run "npm run dev" again.',
+      );
+      stopAll(1);
+    }
+  });
   children.push(child);
-  return child;
 }
 
 for (const app of APPS) {
@@ -22,15 +39,10 @@ for (const app of APPS) {
     console.log(`Skipping ${app.name}: run "npm install" in apps/${app.folder} first.`);
     continue;
   }
-  run(folder, ['--port', String(app.port), '--strictPort', '--base', `/apps/${app.folder}/`, '--clearScreen', 'false']);
+  run(app.name, folder, ['--port', String(app.port), '--strictPort', '--base', `/apps/${app.folder}/`, '--clearScreen', 'false']);
 }
 
-run(fileURLToPath(new URL('.', import.meta.url)), ['--clearScreen', 'false']);
+run('Launcher', fileURLToPath(new URL('.', import.meta.url)), ['--clearScreen', 'false']);
 
-// Stop the app servers together with the launcher.
-function stopAll() {
-  children.forEach((child) => child.kill());
-  process.exit();
-}
-process.on('SIGINT', stopAll);
-process.on('SIGTERM', stopAll);
+process.on('SIGINT', () => stopAll());
+process.on('SIGTERM', () => stopAll());
