@@ -316,7 +316,7 @@ scenarios 1–5
 
 **Independent Test**: Quickstart scenario 6 (users part)
 
-- [ ] T049 [US4] Create the User Management skeleton in `apps/user-management/` like the Control
+- [X] T049 [US4] Create the User Management skeleton in `apps/user-management/` like the Control
   Panel's (T005–T006): `package.json` (`"name": "user-management"`, same scripts), `index.html`
   (`<title>User Management</title>`, script `./src/main.jsx`), `vite.config.js` (React plugin,
   `server.port` 5175, `server.fs.allow` app folder and `../../shared`), `.gitignore`,
@@ -326,22 +326,22 @@ scenarios 1–5
   `launcher/apps.js` and a third card to `launcher/index.html` ("User
   Management — See users, their plants, pillars and Control Panel roles.", link
   `/apps/user-management/`)
-- [ ] T050 [US4] Build the User Management shell in `apps/user-management/src/`: copy `Icon.jsx`
+- [X] T050 [US4] Build the User Management shell in `apps/user-management/src/`: copy `Icon.jsx`
   from the Control Panel's `shell/`; `App.jsx` with `createHashRouter` (`#/`, `#/users`,
   `#/users/:userId`), context (`users`, `organization`, `reference`, `workflowSettings`, `user`,
   `signIn`, `signOut`) loaded with `loadPlatform()` and `getWorkflowSettings()`; session key
   `user-management.userId`; `shell/StartScreen.jsx` (users without a Control Panel role disabled
   with "No Control Panel role"), `shell/Header.jsx` (app name link to `#/users`, avatar with
   switch user), `shell/NotAllowed.jsx`; access check `hasControlPanelAccess`
-- [ ] T051 [P] [US4] Create `apps/user-management/src/users/UsersList.jsx` (route `#/users`):
+- [X] T051 [P] [US4] Create `apps/user-management/src/users/UsersList.jsx` (route `#/users`):
   users filtered with `canSeeUser`; search by name; filters plant, pillar, role; columns name,
   event role, plants, pillars, Control Panel roles as badges ("H&S · Cluster"); row opens the
   detail; `document.title` "Users — User Management"
-- [ ] T052 [P] [US4] Create `apps/user-management/src/users/UserDetail.jsx` (route
+- [X] T052 [P] [US4] Create `apps/user-management/src/users/UserDetail.jsx` (route
   `#/users/:userId`): event access per plant (pillars), Control Panel roles (pillar, level,
   plants), review groups (settings whose `reviewerIds` include the user: pillar, level code,
   scope); no edit action; out of perimeter → `NotAllowed`
-- [ ] T053 [US4] Run quickstart scenario 6 (users) through the launcher with Ludovic and Lucas
+- [X] T053 [US4] Run quickstart scenario 6 (users) through the launcher with Ludovic and Lucas
 
 **Checkpoint**: All four stories work
 
