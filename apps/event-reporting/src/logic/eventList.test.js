@@ -1,0 +1,119 @@
+import { describe, expect, it } from 'vitest';
+import { applyFilters, computeKpis, EMPTY_FILTERS, paginate, searchEvents, sortEvents } from './eventList.js';
+
+function makeEvent(id, changes = {}) {
+  return {
+    id,
+    recordNumber: `SAF-2026-000${id}`,
+    title: `Event ${id}`,
+    status: 'Open',
+    familyCode: 'SAF',
+    levelCode: 'TF4',
+    reporterId: 'user-1',
+    createdBy: 'user-1',
+    reportDate: '2026-10-01',
+    eventTime: '10:00',
+    riskQuestion: { type: 'HPR', answer: false },
+    location: { departmentId: 'dep-1', workshopId: 'ws-1', jobId: 'job-1', workstationId: 'st-1', taskId: 'task-1' },
+    ...changes,
+  };
+}
+
+const events = [
+  makeEvent('1', { title: 'Forklift near miss', reportDate: '2026-09-01', riskQuestion: { type: 'HPR', answer: true } }),
+  makeEvent('2', { title: 'Oil leak', familyCode: 'ENV', levelCode: 'EvE4', reporterId: 'user-2', createdBy: 'user-2', reportDate: '2026-09-15' }),
+  makeEvent('3', { title: 'Fire in cabinet', familyCode: 'IR', levelCode: 'SRE3', riskQuestion: { type: 'SRP', answer: true }, reportDate: '2026-10-05', location: { departmentId: 'dep-2', workshopId: 'ws-9', jobId: '', workstationId: '', taskId: '' } }),
+  makeEvent('4', { title: 'Draft forklift', status: 'Draft', recordNumber: null, reportDate: '2026-10-20', riskQuestion: { type: 'HPR', answer: true } }),
+];
+
+const ids = (list) => list.map((event) => event.id);
+const names = { 'user-1': 'Zoe', 'user-2': 'Adam' };
+
+describe('searchEvents (FR-029)', () => {
+  it('matches words of the title, ignoring case', () => {
+    expect(ids(searchEvents(events, 'FORKLIFT'))).toEqual(['1', '4']);
+  });
+
+  it('matches an exact record number, ignoring case', () => {
+    expect(ids(searchEvents(events, 'saf-2026-0002'))).toEqual(['2']);
+    expect(ids(searchEvents(events, 'SAF-2026'))).toEqual([]);
+  });
+
+  it('returns everything for an empty search', () => {
+    expect(searchEvents(events, '  ')).toHaveLength(4);
+  });
+});
+
+describe('applyFilters (FR-030)', () => {
+  const filter = (changes) => ids(applyFilters(events, { ...EMPTY_FILTERS, ...changes }, 'user-1'));
+
+  it('filters by type and level', () => {
+    expect(filter({ familyCode: 'ENV' })).toEqual(['2']);
+    expect(filter({ familyCode: 'SAF', levelCode: 'TF4' })).toEqual(['1', '4']);
+  });
+
+  it('filters by time range on the report date', () => {
+    expect(filter({ from: '2026-09-10', to: '2026-10-05' })).toEqual(['2', '3']);
+  });
+
+  it('filters by organization levels', () => {
+    expect(filter({ location: { departmentId: 'dep-2' } })).toEqual(['3']);
+    expect(filter({ location: { departmentId: 'dep-1', workshopId: 'ws-1' } })).toEqual(['1', '2', '4']);
+  });
+
+  it('filters by reporter, HPR and status', () => {
+    expect(filter({ reporterId: 'user-2' })).toEqual(['2']);
+    expect(filter({ hpr: 'yes' })).toEqual(['1', '4']);
+    expect(filter({ hpr: 'no' })).toEqual(['2', '3']);
+    expect(filter({ status: 'Draft' })).toEqual(['4']);
+  });
+
+  it('shows only my events when My Events is on', () => {
+    expect(filter({ myEvents: true })).toEqual(['1', '3', '4']);
+  });
+
+  it('combines filters with search', () => {
+    const filtered = applyFilters(searchEvents(events, 'forklift'), { ...EMPTY_FILTERS, status: 'Open' }, 'user-1');
+    expect(ids(filtered)).toEqual(['1']);
+  });
+});
+
+describe('sortEvents', () => {
+  it('sorts by date both ways', () => {
+    expect(ids(sortEvents(events, 'date', 'asc', names))).toEqual(['1', '2', '3', '4']);
+    expect(ids(sortEvents(events, 'date', 'desc', names))).toEqual(['4', '3', '2', '1']);
+  });
+
+  it('sorts by type, level, status and reporter name', () => {
+    expect(ids(sortEvents(events, 'type', 'asc', names))).toEqual(['2', '3', '1', '4']);
+    expect(ids(sortEvents(events, 'level', 'asc', names))).toEqual(['2', '3', '1', '4']);
+    expect(ids(sortEvents(events, 'status', 'asc', names))).toEqual(['4', '1', '2', '3']);
+    expect(ids(sortEvents(events, 'reporter', 'asc', names))).toEqual(['2', '1', '3', '4']);
+  });
+
+  it('does not change the original list', () => {
+    sortEvents(events, 'date', 'desc', names);
+    expect(ids(events)).toEqual(['1', '2', '3', '4']);
+  });
+});
+
+describe('paginate (FR-026)', () => {
+  const many = Array.from({ length: 120 }, (_, i) => makeEvent(String(i)));
+
+  it('splits into pages of 20, 50 or 100', () => {
+    expect(paginate(many, 20, 1).rows).toHaveLength(20);
+    expect(paginate(many, 50, 3).rows).toHaveLength(20);
+    expect(paginate(many, 100, 1).pageCount).toBe(2);
+  });
+
+  it('keeps the page inside the range', () => {
+    expect(paginate(many, 100, 9).page).toBe(2);
+    expect(paginate([], 20, 3)).toEqual({ rows: [], page: 1, pageCount: 1 });
+  });
+});
+
+describe('computeKpis (FR-031)', () => {
+  it('counts submitted events only', () => {
+    expect(computeKpis(events)).toEqual({ total: 3, open: 3, withHpr: 1 });
+  });
+});

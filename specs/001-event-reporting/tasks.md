@@ -239,28 +239,28 @@ events and skips the pillar step (quickstart scenarios 5–6)
 
 ### Implementation for User Story 2
 
-- [ ] T030 [P] [US2] Create `apps/event-reporting/src/shell/EntryScreen.jsx`: title "Choose where to
+- [X] T030 [P] [US2] Create `apps/event-reporting/src/shell/EntryScreen.jsx`: title "Choose where to
   start"; one card per pillar the user can access in the current plant and an **Enter without a
   pillar** button; saves `pillarId` (or `null`) to `settings` through `setContext` and opens
   `#/events` (FR-037)
-- [ ] T031 [P] [US2] Create `apps/event-reporting/src/shell/Navigation.jsx` rendering only the items
+- [X] T031 [P] [US2] Create `apps/event-reporting/src/shell/Navigation.jsx` rendering only the items
   from `getMenuItems(user.role)` (FR-022), as a horizontal bar that wraps on narrow screens
-- [ ] T032 [P] [US2] Create `apps/event-reporting/src/shell/AlertsPanel.jsx`: sliding panel from the
+- [X] T032 [P] [US2] Create `apps/event-reporting/src/shell/AlertsPanel.jsx`: sliding panel from the
   right listing the signed-in user's alerts newest first, each with source event record number and
   title, type and creation date; selecting one opens `#/events/<record number>` and closes the
   panel; Escape and a Close button close it; focus moves into the panel when opened and back to the
   header control when closed; empty state "No alerts yet." (FR-023)
-- [ ] T033 [US2] Expand `apps/event-reporting/src/shell/Header.jsx` (FR-018–FR-020): avatar, name,
+- [X] T033 [US2] Expand `apps/event-reporting/src/shell/Header.jsx` (FR-018–FR-020): avatar, name,
   role; business selector only when the user has more than one business (saves the new context and
   calls `window.location.reload()`); plant selector listing each accessible plant with plant-type
   icon, country flag and their text labels; current pillar or "All pillars" with a **Change**
   link to `#/entry`; My Alerts button with unread count for User and Manager opening
   `AlertsPanel`; `Navigation`; Switch user; asks for confirmation before changing business, plant
   or pillar while the creation form is dirty (spec Edge Cases)
-- [ ] T034 [US2] Update `apps/event-reporting/src/shell/StartScreen.jsx` and
+- [X] T034 [US2] Update `apps/event-reporting/src/shell/StartScreen.jsx` and
   `apps/event-reporting/src/App.jsx` so that after sign-in the user lands on `#/entry`, and every
   signed-in route except `#/entry` redirects there until a context exists for the session
-- [ ] T035 [US2] Make `apps/event-reporting/src/events/EventDetail.jsx` and
+- [X] T035 [US2] Make `apps/event-reporting/src/events/EventDetail.jsx` and
   `apps/event-reporting/src/create/EventForm.jsx` read the current context from `AppContext` so
   plant and pillar changes apply immediately (pillar step skipped when a pillar is selected; event
   hidden with "Event not found." when it falls outside the new context) (FR-021)
@@ -279,42 +279,42 @@ view, View and Edit behave as described for a Manager and for a User (quickstart
 
 ### Tests for User Story 3
 
-- [ ] T036 [P] [US3] Create `apps/event-reporting/src/logic/eventList.test.js` covering search by
+- [X] T036 [P] [US3] Create `apps/event-reporting/src/logic/eventList.test.js` covering search by
   title and by record number (case-insensitive), each filter alone and combined with search,
   My Events, sorting by each column in both directions, page sizes 20/50/100 and KPI counts
   (drafts excluded)
 
 ### Implementation for User Story 3
 
-- [ ] T037 [P] [US3] Create `apps/event-reporting/src/logic/eventList.js` with plain functions:
+- [X] T037 [P] [US3] Create `apps/event-reporting/src/logic/eventList.js` with plain functions:
   `searchEvents(events, text)` (title contains text, or record number equals text, ignoring case,
   FR-029); `applyFilters(events, filters, currentUserId)` for type and level, time range on
   `reportDate`, organization (Department → Task), reporter, HPR flag, status (`Draft` / `Open`) and
   My Events (FR-030); `sortEvents(events, key, direction)` for date, type, level, status, reporter;
   `paginate(events, pageSize, page)`; `computeKpis(events)` → `{ total, open, withHpr }` counting
   only non-draft events (FR-031)
-- [ ] T038 [P] [US3] Create `apps/event-reporting/src/events/KpiTiles.jsx`: three clickable tiles
+- [X] T038 [P] [US3] Create `apps/event-reporting/src/events/KpiTiles.jsx`: three clickable tiles
   (Total Events, Open Events, Events With HPR) showing counts of the filtered list; clicking a tile
   sets its filter (Total clears status and HPR filters) (FR-031)
-- [ ] T039 [P] [US3] Create `apps/event-reporting/src/events/FilterBar.jsx`: search box and filters
+- [X] T039 [P] [US3] Create `apps/event-reporting/src/events/FilterBar.jsx`: search box and filters
   for Type (and level), Time range (from / to), Organization (Department → Task dependent selects),
   Reporter, HPR (Any / Yes / No), Status (Any / Draft / Open), My Events toggle, and **Clear all**
   (FR-029, FR-030)
-- [ ] T040 [P] [US3] Create `apps/event-reporting/src/events/EventTable.jsx`: columns Record number,
+- [X] T040 [P] [US3] Create `apps/event-reporting/src/events/EventTable.jsx`: columns Record number,
   Title, Pillar / Family, Level, Status, Reporter, Report date, Department, HPR; sortable headers
   with `aria-sort`; **Columns** menu to show or hide columns, saved to `settings.visibleColumns`
   (FR-028); page size select 20 / 50 / 100 and previous / next page (FR-026); per-row actions
   **Quick view**, **View** and **Edit** (Edit only when `canEditEvent`, FR-032)
-- [ ] T041 [P] [US3] Create `apps/event-reporting/src/events/QuickView.jsx`: side panel over the
+- [X] T041 [P] [US3] Create `apps/event-reporting/src/events/QuickView.jsx`: side panel over the
   list showing title, record number, classification, location, status, reporter, first photo and
   immediate actions count, with **Open event** and Close; Escape closes; the list keeps its scroll
   position, filters and page (FR-027)
-- [ ] T042 [US3] Create `apps/event-reporting/src/events/EventLibrary.jsx`: page title "Events";
+- [X] T042 [US3] Create `apps/event-reporting/src/events/EventLibrary.jsx`: page title "Events";
   loads events and keeps only those passing `isEventVisible`; holds search, filters, sort, page
   size and page in state; computes the list with `eventList.js`; renders `KpiTiles`, `FilterBar`,
   `EventTable` and `QuickView`; empty states "No events yet." and "No event matches your search."
   with a **Clear search and filters** button (spec Edge Cases)
-- [ ] T043 [US3] Wire `/events` in `apps/event-reporting/src/App.jsx` to `EventLibrary`, replacing
+- [X] T043 [US3] Wire `/events` in `apps/event-reporting/src/App.jsx` to `EventLibrary`, replacing
   the placeholder
 
 **Checkpoint**: Quickstart scenario 7 passes; User Stories 1 and 2 still pass
