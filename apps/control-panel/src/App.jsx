@@ -1,14 +1,97 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createHashRouter, Navigate, Outlet, RouterProvider, useOutletContext } from 'react-router-dom';
+import { AppContext, SIGNED_IN_USER_KEY, useApp } from './AppContext.js';
+import { loadPlatform } from '../../../shared/platform/platformData.js';
+import { hasControlPanelAccess } from '../../../shared/platform/permissions.js';
+import Header from './shell/Header.jsx';
+import NotAllowed from './shell/NotAllowed.jsx';
+import PillarLayout from './shell/PillarLayout.jsx';
+import PillarPicker from './shell/PillarPicker.jsx';
+import StartScreen from './shell/StartScreen.jsx';
 
-// Placeholder until the Control Panel screens are built (tasks T017+).
-export default function App() {
-  const [clicks, setClicks] = useState(0);
+// Every signed-in page: header on top, the page below. Only people holding a Control Panel role
+// get past it (FR-002).
+function SignedInLayout() {
+  const { user } = useApp();
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
   return (
-    <main style={{ padding: 'var(--space-4)' }}>
-      <h1>Control Panel</h1>
-      <button type="button" className="button button--primary" onClick={() => setClicks(clicks + 1)}>
-        Clicked {clicks} times
-      </button>
+    <>
+      <Header />
+      {hasControlPanelAccess(user) ? <Outlet /> : <NotAllowed />}
+    </>
+  );
+}
+
+// Temporary content of the tabs until their user stories are built.
+function TabPlaceholder({ title }) {
+  const { pillar } = useOutletContext();
+  useEffect(() => {
+    document.title = `${title} — ${pillar.label} — Control Panel`;
+  }, [title, pillar.label]);
+  return (
+    <main className="page">
+      <h1>{title}</h1>
+      <p className="field-hint">Coming soon.</p>
     </main>
+  );
+}
+
+const router = createHashRouter([
+  { path: '/', element: <StartScreen /> },
+  {
+    element: <SignedInLayout />,
+    children: [
+      { path: 'pillars', element: <PillarPicker /> },
+      {
+        path: 'pillars/:pillarId',
+        element: <PillarLayout />,
+        children: [
+          { index: true, element: <Navigate to="workflow" replace /> },
+          { path: 'workflow/*', element: <TabPlaceholder title="Workflow" /> },
+          { path: 'master-data/*', element: <TabPlaceholder title="Master data" /> },
+          { path: 'audit', element: <TabPlaceholder title="Audit" /> },
+        ],
+      },
+      { path: '*', element: <NotAllowed reason="notFound" /> },
+    ],
+  },
+]);
+
+export default function App() {
+  const [platform, setPlatform] = useState(null);
+  const [userId, setUserId] = useState(sessionStorage.getItem(SIGNED_IN_USER_KEY));
+
+  // Reads the shared platform data again, e.g. after a change was saved.
+  async function reloadPlatform() {
+    setPlatform(await loadPlatform());
+  }
+
+  useEffect(() => {
+    reloadPlatform();
+  }, []);
+
+  function signIn(id) {
+    sessionStorage.setItem(SIGNED_IN_USER_KEY, id);
+    setUserId(id);
+  }
+
+  function signOut() {
+    sessionStorage.removeItem(SIGNED_IN_USER_KEY);
+    setUserId(null);
+  }
+
+  if (!platform) {
+    return <p className="page">Loading…</p>;
+  }
+
+  const user = platform.users.find((item) => item.id === userId) || null;
+  const appState = { ...platform, user, signIn, signOut, reloadPlatform };
+
+  return (
+    <AppContext.Provider value={appState}>
+      <RouterProvider router={router} />
+    </AppContext.Provider>
   );
 }
