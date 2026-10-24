@@ -25,6 +25,32 @@ SCR-DSK-01, SCR-DSK-02), and the event-type specs for level names
 [Industrial Risk](source/Industrial%20risk%20event/industrial-risk-event.md),
 [Health](source/Health%20event/health-event.md)).
 
+## Clarifications
+
+### Session 2026-10-24
+
+- Q: Does the pillar shown in the header restrict what the user sees and reports, or is it only a
+  starting point? → A: The pillar is an optional entry point. If the user selects a pillar before
+  entering the module, Events opens filtered to that pillar and new events are created in that
+  pillar (the pillar step is skipped). If the user enters the module without selecting a pillar,
+  Events shows all pillars they can access and the pillar is chosen as the first step of event
+  creation.
+- Q: Should the prototype accept videos as attachments, or photos only? → A: Photos and short
+  videos, with a low size limit of 5 MB per file; running out of device storage is accepted as a
+  prototype limitation and must be handled with a clear message.
+- Q: How does an immediate action's status change, and who can change it? → A: An immediate action
+  records containment already done at the scene, so it is created with status Completed and has no
+  status workflow. The Action Plan (a later phase, after submission) gathers all of an event's
+  actions — the immediate ones plus new actions with due dates and a status workflow. The My
+  Actions panel, the Overdue Actions tile and the Action status filter therefore move to the Action
+  Plan spec.
+- Q: Should a User-role user see all events in their plant and pillars, or only events they
+  reported? → A: All submitted events in their scope (plant and accessible pillars), plus only
+  their own drafts; the My Events toggle narrows the list to their own reports.
+- Q: What format should an event's record number have? → A: Family + year + a sequence per family
+  and year, e.g., `SAF-2026-0042`, `ENV-2026-0007`, `IR-2026-0003`, `OH-2026-0001`; assigned on
+  submit only (drafts have none).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Report an event from the shop floor (Priority: P1)
@@ -33,12 +59,13 @@ SCR-DSK-01, SCR-DSK-02), and the event-type specs for level names
 
 A frontline worker sees something wrong — a near miss with a forklift, an oil spill, a damaged
 guard. From the landing screen they start a new event in no more than 3 taps. A guided form takes
-them through sections with a visible progress indicator: they pick the pillar, family and level
+them through sections with a visible progress indicator: they pick the pillar (unless they entered
+the module through a pillar, which then sets it), family and level
 (each level explained in plain language) and answer the follow-up risk question (HPR, CRP or SRP),
 drill down to the exact location, enter the core facts and attach photos, add event details, and
-record any immediate actions with up to 5 assignees. A summary page shows everything they entered
-and flags anything missing. They either save a draft to finish later or submit. On submit the event
-gets a unique record number, its assignees see the new actions in My Actions, and the pillar's
+record any immediate actions already taken at the scene (with up to 5 people who performed each).
+A summary page shows everything they entered and flags anything missing. They either save a draft
+to finish later or submit. On submit the event gets a unique record number and the pillar's
 Managers see a new alert in My Alerts.
 
 **Why this priority**: Event creation is the highest-traffic flow. Without fast, reliable reporting
@@ -46,15 +73,17 @@ every other part of the product has no data.
 
 **Independent Test**: Choose a User-role demo user, report one TF4 event on a phone-sized screen
 and one TF2 event with a photo and an immediate action, then confirm that both receive record
-numbers, that the TF2 assignee sees the action in My Actions, and that a Manager sees two new
-alerts.
+numbers, that the TF2 event shows its immediate action as Completed, and that a Manager sees two
+new alerts.
 
 **Acceptance Scenarios**:
 
-1. **Given** I start a new event, **When** the form opens, **Then** I first choose a pillar
-   (Health & Safety / Environment / Site Risk / Industrial Hygiene), then the family, then the
-   specific type and level, and each level shows a short plain-language description
-   (e.g., "TF4 — Near Miss: something occurred but nobody was hurt").
+1. **Given** I entered the module without selecting a pillar, **When** I start a new event,
+   **Then** I first choose a pillar (Health & Safety / Environment / Site Risk / Industrial
+   Hygiene), then the family, then the specific type and level, and each level shows a short
+   plain-language description (e.g., "TF4 — Near Miss: something occurred but nobody was hurt");
+   **and given** I entered through a pillar, **then** the pillar step is skipped and the form
+   opens with that pillar's families and levels.
 2. **Given** I choose a Health & Safety or Environment level, **When** the level is selected,
    **Then** "Could this be an HPR?" (Yes/No) is required before I can continue.
 3. **Given** I choose Site Risk level SRE1 or SRE2, **When** the level is selected, **Then**
@@ -79,55 +108,55 @@ alerts.
 10. **Given** the event is TF1–TF3 or SRE1–SRE3, **When** I try to submit without an immediate
     action, **Then** submission is blocked.
 11. **Given** I add an immediate action, **When** the action card renders, **Then** I capture
-    Description, Priority, Category, Subcategory, Action plan detail, Due date, KPI ID (optional)
-    and Comments; the creation date is set automatically; I can add more actions as repeatable
-    cards and assign up to 5 users to each.
+    Description, Priority, Category, Subcategory, Action plan detail, Completion date, KPI ID
+    (optional), Comments and 1 to 5 people who performed it; the action is saved with status
+    Completed and its creation date is set automatically; I can add more actions as repeatable
+    cards.
 12. **Given** I reach the summary page, **When** it renders, **Then** every section is shown with
     its values, missing mandatory fields are flagged, and each section has an edit link back to it.
 13. **Given** I choose Save as Draft, **When** it is saved, **Then** the event has status `Draft`
     and nobody is notified; **and given** I choose Submit, **then** the event gets a record number
-    and status `Open`, each action assignee gets a My Actions entry, and every Manager of the
-    event's pillar and plant gets a My Alerts entry.
+    and status `Open`, and every Manager of the event's pillar and plant gets a My Alerts entry.
 
 ---
 
 ### User Story 2 - Work inside a trusted application frame (Priority: P2)
 
-*Traces to: US-SHELL-01, 02, 03, 04, 06, 08.*
+*Traces to: US-SHELL-01, 02, 03, 06, 08.*
 
 Every screen sits inside the same frame. A header shows who I am (avatar, name, role), the business,
-plant and pillar I am working in, and quick-access controls for My Alerts and My Actions. The
-navigation only shows what my role can use. I only ever see events from my business, plant and
-pillar. My Alerts lists alerts addressed to me and takes me to the source event; My Actions lists
-actions assigned to me and lets me change their status without leaving the current screen.
+plant and pillar I am working in, and a quick-access control for My Alerts. The navigation only
+shows what my role can use. I can enter through a pillar or straight into the module; I only ever
+see events from my business, plant and accessible pillars, narrowed to the selected pillar when I
+entered through one. My Alerts lists alerts addressed to me and takes me to the source event.
 
 **Why this priority**: The selected business → plant → pillar context governs everything else.
 Without it, people report against the wrong plant or see data that is not theirs. It is P2 because
 a single-plant demo of Story 1 is already useful without switching context.
 
 **Independent Test**: Sign in as demo users with different roles and plants and confirm that the
-header, navigation, visible events, My Alerts and My Actions match each user's role and scope, and
-that changing an action's status in My Actions shows the new status on the event.
+header, navigation, visible events and My Alerts match each user's role and scope.
 
 **Acceptance Scenarios**:
 
 1. **Given** I open any screen, **When** it renders, **Then** the header shows my avatar, name,
-   role, the current business, plant and pillar, and controls for My Alerts and My Actions.
-2. **Given** I have access to more than one business, **When** I switch business, **Then** the
+   role, the current business, plant and pillar (or "All pillars" when I entered without one), and
+   a control for My Alerts.
+2. **Given** I am on the entry screen, **When** I select a pillar, **Then** the module opens with
+   Events filtered to that pillar; **and given** I open the module without selecting a pillar,
+   **then** Events shows all pillars I can access.
+3. **Given** I have access to more than one business, **When** I switch business, **Then** the
    whole page reloads in the new business scope.
-3. **Given** I open the plant selector, **When** the list renders, **Then** each plant shows its
+4. **Given** I open the plant selector, **When** the list renders, **Then** each plant shows its
    plant-type icon and country flag.
-4. **Given** I open the product, **When** the navigation renders, **Then** it matches the
+5. **Given** I open the product, **When** the navigation renders, **Then** it matches the
    visibility matrix for my role exactly (see FR-022).
-5. **Given** a screen is outside my role, **When** I open it by direct link, **Then** I get a
+6. **Given** a screen is outside my role, **When** I open it by direct link, **Then** I get a
    permission message and see none of its content.
-6. **Given** events exist in another plant, **When** I browse, search or open a direct link,
+7. **Given** events exist in another plant, **When** I browse, search or open a direct link,
    **Then** none of those events are ever shown to me.
-7. **Given** I open My Alerts, **When** the panel slides open, **Then** it lists my alerts newest
+8. **Given** I open My Alerts, **When** the panel slides open, **Then** it lists my alerts newest
    first with source event, type and creation date, and clicking one opens the source event.
-8. **Given** I open My Actions, **When** the panel slides open, **Then** it lists the actions
-   assigned to me with status On Going / To Complete / Completed / Overdue, and changing a status
-   saves it without leaving my current screen and shows the new status on the event.
 9. **Given** I use a phone, **When** I use the frame, **Then** it behaves the same as on desktop,
    and all of it can be operated with a keyboard and a screen reader.
 
@@ -138,7 +167,7 @@ that changing an action's status in My Actions shows the new status on the event
 *Traces to: US-LIB-01, 02, 03, 04 (View / Edit), 06, 07.*
 
 A Manager arrives at the start of a shift and opens Events. KPI tiles show Total Events, Open
-Events, Overdue Actions and Events With HPR. They click "Events With HPR" and the list filters to
+Events and Events With HPR. They click "Events With HPR" and the list filters to
 those events. They search a record number someone mentioned in a meeting, open a quick view of the
 event without leaving the list, then open it to view or edit it. A Reporter turns on "My Events" to
 see only what they submitted.
@@ -160,12 +189,12 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
    **Then** it shows events whose title matches, or the event with that record number, combined
    with any active filters.
 5. **Given** the filter bar is open, **When** I inspect it, **Then** I can filter by Type (and
-   level), Time range, Organization (Department → Task), Action status (On Going / To Complete /
-   Completed / Cancelled / No Action), Reporter, HPR flag, Status and a My Events toggle.
+   level), Time range, Organization (Department → Task), Reporter, HPR flag, Status and a My Events
+   toggle.
 6. **Given** I apply a filter, **When** the list refreshes, **Then** the list and all KPI counts
    update to match; **and given** My Events is on, **then** only events I reported are listed.
 7. **Given** I open Events, **When** the page loads, **Then** clickable KPI tiles show Total
-   Events, Open Events, Overdue Actions and Events With HPR; clicking a tile applies its filter.
+   Events, Open Events and Events With HPR; clicking a tile applies its filter.
 8. **Given** any row, **When** I open its actions, **Then** View is available, and Edit is
    available only when my role allows editing that event.
 
@@ -173,7 +202,7 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
 
 ### Edge Cases
 
-- **No events yet**: the list, KPI tiles, My Alerts and My Actions show a clear empty state rather
+- **No events yet**: the list, KPI tiles and My Alerts show a clear empty state rather
   than bare zeros.
 - **Search with no match**: the list says no event matches and offers to clear search and filters.
 - **Level changed after answering the risk question**: changing the pillar or level clears answers
@@ -182,16 +211,19 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
   under it.
 - **Level changed to one that needs more**: switching from TF4 to TF2 makes a photo and an
   immediate action mandatory, and the summary flags them as missing.
-- **More than 5 assignees**: the 6th assignee cannot be added and the limit is explained.
-- **Due date in the past**: an immediate action's due date cannot be earlier than today.
+- **More than 5 performers**: a 6th person cannot be added to an immediate action and the limit is
+  explained.
+- **Completion date in the future**: an immediate action's completion date cannot be later than
+  today, nor earlier than the event date.
 - **Event time in the future**: the event time cannot be later than the current time on the report
   date.
 - **Leaving the form**: leaving with unsaved changes asks whether to save a draft, discard or stay.
 - **Draft visibility**: drafts are visible only to their reporter, are excluded from KPI counts, and
-  never create alerts or actions.
-- **Business switch with unsaved form**: the user is warned before the page reloads.
-- **Action becomes overdue**: an action not Completed by its due date shows as Overdue in My Actions
-  and counts in the Overdue Actions tile.
+  never create alerts.
+- **Device storage full**: when an attachment or event cannot be saved because device storage is
+  full, the user sees a clear message, nothing already entered is lost, and they can remove
+  attachments and try again.
+- **Business or pillar switch with unsaved form**: the user is warned before the context changes.
 
 ## Requirements *(mandatory)*
 
@@ -204,9 +236,9 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
 - **FR-002**: The creation form MUST be split into sections — Classification, Location, General
   Information, Event Details, Immediate Actions, Summary — with a progress indicator showing the
   current section and how many remain. *(US-CREATE-12, SCR-MOB-01, SCR-DSK-01)*
-- **FR-003**: Users MUST classify the event by pillar, then family, then type and level, using
-  these catalogs, each level with a plain-language description: Health & Safety / TF: TF1 Lost
-  Time Accident, TF2 Non-Lost Time Accident, TF3 First Aid, TF4 Near Miss, TF5 Hazardous
+- **FR-003**: Users MUST classify the event by pillar (skipped and pre-set when the user entered
+  through a pillar), then family, then type and level, using these catalogs, each level with a
+  plain-language description: Health & Safety / SAF: TF1 Lost Time Accident, TF2 Non-Lost Time Accident, TF3 First Aid, TF4 Near Miss, TF5 Hazardous
   Situation; Environment / ENV: EvE1 Major environmental accident … EvE5 Poor environmental
   situation or condition; Site Risk / IR: SRE1 Major site risk accident … SRE5 Site risk hazardous
   acts or conditions; Industrial Hygiene / OH: classification by disease type. *(US-CREATE-01)*
@@ -224,39 +256,47 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
 - **FR-008**: The system MUST require at least one photo or video before submitting a TF1, TF2 or
   TF3 event. *(US-CREATE-03)*
 - **FR-009**: The system MUST check each file's type, extension and size against the allowed list
-  (images and videos, see Assumptions) and reject failing files with a clear message without
-  attaching them. *(US-CREATE-11)*
+  (common image and video formats, at most 5 MB per file and 5 files per event) and reject failing
+  files with a clear message without attaching them. *(US-CREATE-11, Clarification 2026-10-24)*
 - **FR-010**: The system MUST capture Employee type (Employee / Temporary Worker / Permanent
   Contractor / Non-Permanent Contractor / Other), Recurrence (Yes/No), Comments and Feedback email
   recipients, plus a Disease(s) multi-select when the family is OH. *(US-CREATE-04)*
 - **FR-011**: Users MUST be able to add any number of immediate actions as repeatable cards, each
-  with Description, Priority, Category, Subcategory, Action plan detail, Due date, KPI ID
-  (optional) and Comments; the creation date MUST be set automatically. *(US-CREATE-05)*
+  with Description, Priority, Category, Subcategory, Action plan detail, Completion date, KPI ID
+  (optional) and Comments; each immediate action MUST be saved with status Completed (it records
+  containment already done at the scene) and its creation date set automatically.
+  *(US-CREATE-05, Clarification 2026-10-24)*
 - **FR-012**: The system MUST require at least one immediate action before submitting a TF1–TF3 or
   SRE1–SRE3 event. *(US-CREATE-05)*
-- **FR-013**: Users MUST be able to assign 1 to 5 users to each immediate action. *(US-CREATE-06)*
+- **FR-013**: Users MUST record 1 to 5 people who performed each immediate action; this creates no
+  task or notification for them. *(US-CREATE-06, Clarification 2026-10-24)*
 - **FR-014**: The summary MUST show every section with its values, flag missing mandatory fields
   and link back to each section for editing. *(US-CREATE-09)*
 - **FR-015**: Save as Draft MUST store the event with status `Draft` and trigger nothing; Submit
   MUST be possible only when no mandatory field is missing. *(US-CREATE-09)*
-- **FR-016**: On submit, the system MUST give the event a unique, human-readable record number,
-  set its status to `Open`, create a My Actions entry for each action assignee, and create a
-  My Alerts entry "Event submitted" for every Manager of the event's plant and pillar.
-  *(US-CREATE-06, US-CREATE-09, Core FR-1)*
+- **FR-016**: On submit, the system MUST give the event a unique record number in the format
+  `<FAMILY>-<YEAR>-<NNNN>` (family code SAF / ENV / IR / OH, year of submission, 4-digit sequence
+  restarting at 0001 for each family and year, e.g., `SAF-2026-0042`), set its status to `Open`, and create a My Alerts entry "Event submitted" for every Manager of
+  the event's plant and pillar. *(US-CREATE-09, Core FR-1)*
 - **FR-017**: A reporter MUST be able to reopen their own draft, continue it and submit it.
   *(US-CREATE-09)*
 
 **Global shell** (US-SHELL-)
 
 - **FR-018**: Every screen MUST show a header with the user's avatar, name and role, the current
-  business, plant and pillar, and quick-access controls for My Alerts and My Actions.
+  business, plant and pillar (or "All pillars"), and a quick-access control for My Alerts.
   *(US-SHELL-01)*
+- **FR-037**: The entry screen MUST let the user either select one of their accessible pillars
+  before entering the module, or enter the module without a pillar. With a pillar, Events is
+  filtered to it and new events are created in it; without one, Events shows all accessible
+  pillars and event creation starts with the pillar step. *(US-SHELL-01, Clarification 2026-10-24)*
 - **FR-019**: Users with more than one business MUST be able to switch business, which reloads the
   page in the new scope. *(US-SHELL-01)*
 - **FR-020**: The plant selector MUST show each plant with its plant-type icon and country flag.
   *(US-SHELL-01)*
 - **FR-021**: Every list, count, search result and record shown MUST be limited to the user's
-  business → plant → pillar scope; out-of-scope events MUST NOT be shown or reachable, including
+  business, plant and accessible pillars, narrowed to the selected pillar when the user entered
+  through one; out-of-scope events MUST NOT be shown or reachable, including
   by direct link. *(US-SHELL-06)*
 - **FR-022**: The navigation MUST be built from the user's role, following this matrix for the
   in-scope items; screens outside a role MUST show a permission message when opened by direct link.
@@ -266,61 +306,60 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
   |---|:---:|:---:|:---:|
   | Events | ✓ | ✓ | ✓ |
   | Create Event | ✓ | ✓ | — |
-  | My Actions | ✓ | ✓ | — |
   | My Alerts | ✓ | ✓ | — |
 
 - **FR-023**: My Alerts MUST list the user's alerts newest first, each with source event, type and
   creation date; selecting one MUST open the source event. *(US-SHELL-03)*
-- **FR-024**: My Actions MUST list the actions assigned to the user with status On Going /
-  To Complete / Completed / Overdue, and changing a status MUST save it without leaving the
-  current screen and show the new status on the event. *(US-SHELL-04)*
 - **FR-025**: The shell and all MVP screens MUST work on screens from 320px wide, behave the same
   on phone and desktop, and be usable with keyboard and screen reader. *(US-SHELL-08)*
 
 **Event library** (US-LIB-)
 
-- **FR-026**: Events MUST list the events in the user's scope (excluding other users' drafts),
+- **FR-026**: Events MUST list, for every role including User, all submitted events in the user's
+  scope plus the user's own drafts (never other users' drafts),
   sortable by date, type, level, status and reporter, with 20, 50 or 100 records per page.
-  *(US-LIB-01)*
+  *(US-LIB-01, Clarification 2026-10-24)*
 - **FR-027**: Users MUST be able to open a quick view of a row's event without leaving the list.
   *(US-LIB-01, SCR-DSK-02 FR-33)*
 - **FR-028**: Users MUST be able to show and hide columns, and their choice MUST be remembered.
   *(US-LIB-01)*
-- **FR-029**: Search MUST match event titles or an exact record number and MUST combine with active
+- **FR-029**: Search MUST match event titles or an exact record number (e.g., `SAF-2026-0042`,
+  case-insensitive) and MUST combine with active
   filters. *(US-LIB-02)*
 - **FR-030**: Users MUST be able to filter by Type (and level), Time range, Organization
-  (Department → Task), Action status (On Going / To Complete / Completed / Cancelled / No Action),
-  Reporter, HPR flag, Status (Draft / Open) and a My Events toggle; filters MUST update the list and
+  (Department → Task), Reporter, HPR flag, Status (Draft / Open) and a My Events toggle; filters MUST update the list and
   the KPI counts. *(US-LIB-03)*
-- **FR-031**: Events MUST show clickable KPI tiles — Total Events, Open Events, Overdue Actions,
-  Events With HPR — whose counts reflect active filters and which apply their filter when clicked.
+- **FR-031**: Events MUST show clickable KPI tiles — Total Events, Open Events, Events With
+  HPR — whose counts reflect active filters and which apply their filter when clicked.
   *(US-LIB-06)*
 - **FR-032**: Each row MUST offer View; Edit MUST be offered to the reporter of a draft and to
   Managers for any event in their scope. *(US-LIB-04)*
 - **FR-033**: The event detail view MUST show every field entered at creation, its attachments and
-  its immediate actions with their current status. *(US-LIB-04)*
+  its immediate actions. *(US-LIB-04)*
 - **FR-034**: Edits MUST follow the same validation rules as creation. *(US-LIB-04)*
 
 **Data**
 
 - **FR-035**: The system MUST record, for every event, who created it and when, and who last
   changed it and when. *(Core FR-16, reduced)*
-- **FR-036**: All data (events, drafts, actions, alerts, column choices) MUST be kept on the single
+- **FR-036**: All data (events, drafts, immediate actions, alerts, column choices) MUST be kept on the single
   device and browser used for the demonstration and MUST survive closing and reopening the app;
   sharing data across devices is not required. Switching demo users on the same device is how
   multi-user flows (e.g., reporter → Manager alert) are demonstrated.
 
 ### Key Entities
 
-- **Event**: Something reported from the shop floor. Record number, pillar, family, type and level,
+- **Event**: Something reported from the shop floor. Record number (`<FAMILY>-<YEAR>-<NNNN>`,
+  unique, assigned on submit), pillar, family, type and level,
   risk-question answer (HPR / CRP / SRP), location chain (Plant → Task) and Task Type, title,
   description, reporter, report date, event time, shift moment, employee type, recurrence,
   comments, feedback recipients, diseases (OH only), status (`Draft` or `Open` in this MVP),
   created/updated by and at. Belongs to one business, plant and pillar.
-- **Immediate Action**: Containment recorded at creation. Description, priority, category,
-  subcategory, action plan detail, due date, KPI ID, comments, creation date, 1–5 assignees, status
-  (On Going / To Complete / Completed / Cancelled; shown as Overdue when past due and not
-  Completed). Belongs to one event.
+- **Immediate Action**: Containment already done at the scene, recorded at creation. Description,
+  priority, category, subcategory, action plan detail, completion date, KPI ID, comments, creation
+  date, 1–5 people who performed it; status is always Completed. Belongs to one event. In the later
+  Action Plan phase these become part of the event's action plan alongside new actions with due
+  dates and a status workflow.
 - **Attachment**: A photo or video on an event. File name, type, size, added by and when.
 - **Alert**: A message in a user's My Alerts. Type (e.g., "Event submitted"), source event,
   recipient, creation date.
@@ -344,14 +383,16 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
   SRE1–SRE3, risk question, Task Type) block submission when unmet, in testing.
 - **SC-007**: In testing, no user ever sees an event outside their scope, by any route.
 - **SC-008**: Every KPI tile count matches a manual count of the events it represents.
-- **SC-009**: A submitted event's alerts and action entries appear for the right users the next
-  time they open or refresh My Alerts or My Actions.
+- **SC-009**: A submitted event's alerts appear for the right Managers the next time they open or
+  refresh My Alerts.
 
 ## Assumptions
 
 **Out of scope for this MVP** (kept for later specs):
 
-- Features 04–14: Investigation, Action Plan, Review and Governance (including review, archiving,
+- Features 04–14: Investigation, Action Plan (including the My Actions panel from US-SHELL-04,
+  the Overdue Actions tile from US-LIB-06, the Action status filter from US-LIB-03, and new actions
+  with due dates and status), Review and Governance (including review, archiving,
   lock/unlock and closure), Safety Communication, External Reporting Platform integration,
   Reporting and Analytics, Configuration and Administration, Notifications settings, Integrations,
   Event Sharing Hub, Risk Assessment. The Core Event Lifecycle stops at `Open` here.
@@ -371,28 +412,30 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
 - From Detailed Screens: QR-code and GPS location, photo mark-up, speech-to-text, report on behalf
   of others with directory search, witness statements, offline drafts, safety broadcast feed.
 - Emails of any kind (assignment, feedback recipients, Manager notifications): feedback recipients
-  are captured but not sent; notifications appear only in My Alerts and My Actions.
+  are captured but not sent; notifications appear only in My Alerts.
 - Virus/malware scanning and a secure document service for attachments.
 
 **Prototype simplifications**:
 
 - Data lives only on the demonstration device and browser (decided 2026-10-24, FR-036); clearing
   the browser's site data resets the app to its sample data.
-
 - There is no real login. The user picks a demo user (with a role and access scope) on a start
   screen; scope rules are still enforced for whatever that user can see or open.
-- The Action Management Platform is not connected; immediate actions and their status live inside
-  the app.
+- The Action Management Platform is not connected; immediate actions live inside the app.
 - Sample data includes at least 2 businesses, 3 plants (different types and countries), all four
   pillars, a full location hierarchy, demo users of each role, and enough events (including drafts,
-  HPR events and overdue actions) to demonstrate every filter and KPI tile.
-- Allowed attachments: common image and video formats, up to 10 MB per file and 5 files per event.
+  HPR events and events with immediate actions) to demonstrate every filter and KPI tile.
+- Allowed attachments: common image and video formats, up to 5 MB per file and 5 files per event
+  (FR-009). Because data stays on the device, only a limited number of attachments fit; this is an
+  accepted prototype limitation.
 - The status after submission is `Open` (Core Event Lifecycle), not `Submitted` as in the Event
   Creation source; the Event Library Status filter therefore offers Draft and Open in this MVP.
 - Industrial Hygiene (OH) uses disease classification instead of levels 1–5 and has no risk
   question, as the sources leave this open.
 - Roles follow the Global Shell navigation matrix (User / Manager / Site Admin) rather than the
   Role Management roles (User / Reviewer / Investigator / Admin); the two sources conflict and
-  reconciling them belongs to the Review and Governance spec.
+  reconciling them belongs to the Review and Governance spec. Following the Event Library source,
+  a User sees all submitted events in their scope, not only their own (Role Management's stricter
+  rule is not applied in this MVP).
 - The app is self-contained in `apps/event-reporting/` and shares only the common visual theme in
   `shared/`, as required by the constitution.
