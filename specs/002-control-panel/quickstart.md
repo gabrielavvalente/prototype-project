@@ -26,39 +26,49 @@ Always open the apps **through the launcher** for shared data (R1).
 
 Start from fresh data: Control Panel start screen → **Reset demo data**.
 
+Starting settings (sample data): Central requires Review on TF1–TF4, EvE1–EvE4, SRE1–SRE4 and
+every Industrial Hygiene level, Actions on TF1–TF2 and EvE1–EvE2, Root cause analysis on
+SRE1–SRE2; Eva Novak requires Validation for TF1 at Lyon. TF5, EvE5 and SRE5 require nothing.
+
 ### 1. Central sets Review with reviewers (Story 1, SC-001)
 
-1. Control Panel as **Ludovic Costa** → Health & Safety → Workflow.
-2. Turn Review on for TF1, TF2, TF3; pick reviewers (only Managers and Site Admins offered).
-   Try Done with nobody selected → refused.
+1. Control Panel as **Ludovic Costa** → Health & Safety → Workflow: Review TF1–TF4 show
+   "4 reviewers".
+2. Turn Review on for TF5: the reviewers sheet offers only Managers and Site Admins; Done is
+   disabled until someone is chosen. Pick Carla Mendes → Done.
 
-Expected: done in under 2 minutes; Audit shows three entries.
+Expected: "Saved — TF5 Review is now Required. Applies to new events."; done in under 2 minutes.
 
 ### 2. Cluster and Local add on top (Story 1, FR-007, FR-008)
 
-1. As **Lucas Weber** (Cluster Lyon + Porto): Review TF1–TF3 are locked "Required by Central";
-   turn Root cause analysis on for TF1, TF2.
-2. As **Eva Novak** (Local Lyon): both are locked; turn Actions on for TF3.
+1. As **Lucas Weber** (Cluster Lyon + Porto): Review cells are locked "Required by Central —
+   Ludovic Costa, <date>"; turn Root cause analysis on for TF1 and TF2.
+2. As **Eva Novak** (Local Lyon): Review and Root cause TF1–TF2 are locked; turn Actions on for
+   TF3.
 3. Result per plant: Lyon TF3 = Review (Central) + Actions (Local); Porto TF3 = Review only;
-   Curitiba TF1 = Review only. Open a cell → author and date shown. Choose TF4 → path shows every
-   phase crossed out and "Closed after submission".
-4. Compare plants (Lucas, TF1): Lyon and Porto side by side.
+   Lyon TF1 = Review + Root cause (Cluster) + Actions (Central) + Validation (Local). Open a cell
+   → author, date and reviewers shown. In Lucas's Environment pillar, choose EvE5 → every phase
+   is crossed out and the path ends with "Closed after submission".
+4. Compare plants (Lucas, TF2): Lyon and Porto side by side. As Eva, Compare plants is not
+   offered and its address shows "Not allowed".
 
 ### 3. Same level change and notification (FR-009, FR-023)
 
 1. As **Pascal Fischer** (Cluster Lyon + Curitiba, H&S): Lucas's Root cause setting is editable
    (same level, Lyon in common) and shows "Set by Lucas Weber"; leave it unchanged.
-2. As **Carla Mendes** (Local Lyon, H&S): Eva's Actions TF3 setting is editable; switch it off
-   → confirm message "Eva Novak set this. They will be notified."; as Eva, the bell shows the
-   notification.
-3. As Eva (Local) try to switch off a Central cell → not possible (locked).
+2. As **Carla Mendes** (Local Lyon, H&S): Eva's Actions TF3 setting shows "Set by Eva Novak";
+   switch it off → confirm message "Eva Novak set this. They will be notified of your change.";
+   as Eva, the bell shows "Carla Mendes changed your Actions setting for TF3 … Required →
+   Optional."
+3. As Eva (Local) a Central cell has no switch (locked).
 
 ### 4. Event follows the workflow in force (FR-012, FR-026, SC-006)
 
-1. Event Reporting (launcher) as **Ana Ribeiro** (Lyon): submit a TF4 → status **Closed** right
-   away; submit a TF3 → status Open; its stored workflow has Review + Actions.
-2. In the Control Panel turn Validation on for TF3 at Central; submit another TF3 → its workflow
-   includes Validation; the first TF3 still does not.
+1. Event Reporting (launcher) as **Ana Ribeiro** (Lyon): submit a TF5 (SIP No) → banner "…
+   submitted and closed right away (no other phase required)", status **Closed**.
+2. In the Control Panel, Ludovic turns Review on for TF5 (scenario 1). Submit another TF5 →
+   status Open; its stored workflow requires Review with Carla Mendes as reviewer; the first TF5
+   is still Closed with Submission only.
 
 ### 5. Master data governance (Story 2, SC-003, SC-004)
 

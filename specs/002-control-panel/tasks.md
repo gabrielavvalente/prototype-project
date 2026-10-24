@@ -211,20 +211,20 @@ new events keep their workflow and close when only Submission is required
 - [X] T033 [US1] Create `apps/control-panel/src/shell/NotificationsPanel.jsx` and add
   `getNotifications(userId)` / `markNotificationsRead(userId)` to
   `shared/platform/platformData.js`; bell count in `Header.jsx` (FR-023)
-- [ ] T034 [US1] Event Reporting submission (research R6, FR-012, FR-026): in
+- [X] T034 [US1] Event Reporting submission (research R6, FR-012, FR-026): in
   `apps/event-reporting/src/App.jsx` (or the submit caller in `create/EventForm.jsx`) read
   `getWorkflowSettings(event.pillarId)` before submitting and pass `workflowForEvent(...)` to
   `submitEvent`; in `apps/event-reporting/src/data/db.js` `submitEvent` stores `event.workflow`
   and sets `status = 'Closed'`, `closedAt = now` when `isOnlySubmission`, else `'Open'`; update
   the comment
-- [ ] T035 [P] [US1] Add a test in `apps/event-reporting/src/logic/` (e.g.,
+- [X] T035 [P] [US1] Add a test in `apps/event-reporting/src/logic/` (e.g.,
   `submission.test.js`) for a small pure helper `getSubmittedStatus(workflow)` → `'Closed'` |
   `'Open'` used by `submitEvent`
-- [ ] T036 [US1] Event Reporting display: `events/EventDetail.jsx` saved banner adds "— closed
+- [X] T036 [US1] Event Reporting display: `events/EventDetail.jsx` saved banner adds "— closed
   right away (no other phase required)" when the event is Closed; sample events in
   `apps/event-reporting/src/data/sampleData.js` get a `workflow` computed with
   `workflowForEvent` from the starting settings at seed time
-- [ ] T037 [US1] Run quickstart scenarios 1–4 through the launcher; fix what fails
+- [X] T037 [US1] Run quickstart scenarios 1–4 through the launcher; fix what fails
 
 **Checkpoint**: Workflow fully usable; Event Reporting stores the workflow and closes TF4/TF5
 events with no required phase
