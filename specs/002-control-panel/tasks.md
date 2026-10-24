@@ -240,7 +240,7 @@ plant, lifecycle and audit
 
 ### Tests for User Story 2
 
-- [ ] T038 [P] [US2] Write `shared/platform/masterData.test.js`: catalog counts (14 Standards, 36
+- [X] T038 [P] [US2] Write `shared/platform/masterData.test.js`: catalog counts (14 Standards, 36
   Hazards, 8 Body Part Categories, 38 Injuries, 15 Aspects, 13 Impacts, 11 Categories);
   `availableValues` excludes Retired, Inactive, values deactivated by Central / covering Cluster /
   the plant's Local, Cluster values outside their perimeter, and Body Parts of an unavailable
@@ -251,12 +251,12 @@ plant, lifecycle and audit
 
 ### Implementation for User Story 2
 
-- [ ] T039 [P] [US2] Create `shared/platform/catalogs.js` with the initial catalogs from
+- [X] T039 [P] [US2] Create `shared/platform/catalogs.js` with the initial catalogs from
   `specs/001-event-reporting/source/Control Panel/` (`standard.md`, `hazard.md` A1…I1,
   `body-part.md` with the 8 categories, `injury.md`, `aspect-impact.md`,
   `industrial-risk-category.md` IRC1–IRC11), each value `ownerLevel: 'central'`,
   `ownerPlantIds: []`, `status: 'Active'`
-- [ ] T040 [US2] Create `shared/platform/masterData.js` (data-model "Master data list", "Master
+- [X] T040 [US2] Create `shared/platform/masterData.js` (data-model "Master data list", "Master
   data value", "Activation choice"): `LISTS` (ids `standards`, `hazards`, `bodyPartCategories`,
   `bodyParts`, `injuries`, `aspects`, `impacts`, `irCategories` with pillar, `fixedGlobal`,
   `hasCode`, `parentListId`), `listsForPillar(pillarId)` (Industrial Risk adds `standards` and
@@ -264,24 +264,24 @@ plant, lifecycle and audit
   `availableValues`, `allowedValueActions(user, list, value)`, `validateValue(list, value,
   existingValues)` → `{ field: message }`; lifecycle "Active ⇄ Inactive (by owner) → Retired (by
   owner, final)"
-- [ ] T041 [US2] Add to `shared/platform/platformData.js`: seed `masterValues` from
+- [X] T041 [US2] Add to `shared/platform/platformData.js`: seed `masterValues` from
   `catalogs.js`; `getMasterData(listId)` → `{ values, activations }`; `saveValue(user, value)`
   (validation + permission, audit `add`/`edit`); `setValueStatus(user, valueId, status)` (owner
   only; Retired final; audit); `setActivation(user, valueId, active)` (create or delete the
   choice at the user's level and plants; a Local cannot remove a Cluster's choice; audit
   `deactivate`/`reactivate`)
-- [ ] T042 [US2] Create `apps/control-panel/src/masterData/MasterDataTab.jsx` (routes
+- [X] T042 [US2] Create `apps/control-panel/src/masterData/MasterDataTab.jsx` (routes
   `…/master-data` and `…/master-data/:listId`): list chips from `listsForPillar`, "Owned by
   Health & Safety" mark for read-only lists, Industrial Hygiene message "Master data comes later",
   plant picker "Availability for: <plant>"
-- [ ] T043 [US2] Create `apps/control-panel/src/masterData/ValueList.jsx`: table code, name,
+- [X] T043 [US2] Create `apps/control-panel/src/masterData/ValueList.jsx`: table code, name,
   owner (Central / Cluster Lyon + Porto), status badge, "Available at <plant>" yes/no, only the
   actions `allowedValueActions` grants (Edit, Deactivate / Reactivate, Retire with confirm); Body
   Parts grouped by category; search by code or name
-- [ ] T044 [P] [US2] Create `apps/control-panel/src/masterData/ValueForm.jsx`: sheet with code
+- [X] T044 [P] [US2] Create `apps/control-panel/src/masterData/ValueForm.jsx`: sheet with code
   (when the list has codes), name, description, category (Body Parts); messages from
   `validateValue`; "Add value" shown only when allowed
-- [ ] T045 [US2] Run quickstart scenario 5 with Ludovic, Lucas, Eva, Ed and Sergio; fix what
+- [X] T045 [US2] Run quickstart scenario 5 with Ludovic, Lucas, Eva, Ed and Sergio; fix what
   fails
 
 **Checkpoint**: Master data governed per level; availability per plant matches a manual count
