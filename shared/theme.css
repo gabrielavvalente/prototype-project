@@ -1,0 +1,210 @@
+/*
+  Common theme for every app in the monorepo (constitution principle IV).
+  Apps use these variables and base styles instead of their own loose values.
+*/
+
+:root {
+  /* Colors */
+  --color-primary: #1f5fae;
+  --color-primary-dark: #174a88;
+  --color-primary-light: #e7effa;
+  --color-text: #1c2430;
+  --color-muted: #5b6676;
+  --color-background: #f4f6f9;
+  --color-surface: #ffffff;
+  --color-border: #d3d9e2;
+  --color-error: #b3261e;
+  --color-error-light: #fdecea;
+  --color-success: #1e7d3c;
+  --color-success-light: #e6f4ea;
+  --color-warning: #8a5a00;
+  --color-warning-light: #fff4dc;
+  --color-focus: #f2a900;
+
+  /* Typography */
+  --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-small: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-large: 1.25rem;
+  --font-size-title: 1.5rem;
+  --line-height: 1.5;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  /* Shapes */
+  --radius: 8px;
+  --touch-target: 44px;
+  --shadow: 0 2px 8px rgba(28, 36, 48, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 var(--space-4);
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: var(--font-size-title);
+}
+
+h2 {
+  font-size: var(--font-size-large);
+}
+
+h3 {
+  font-size: var(--font-size-base);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Buttons */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button--primary {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.button--primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.button--secondary {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.button--link {
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  text-decoration: underline;
+  padding: var(--space-1);
+}
+
+/* Form fields */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+label,
+.field-label {
+  font-weight: 600;
+}
+
+.field-hint {
+  font-size: var(--font-size-small);
+  color: var(--color-muted);
+}
+
+input,
+select,
+textarea {
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  width: 100%;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  width: auto;
+  min-height: auto;
+}
+
+input:disabled,
+input[readonly] {
+  background: var(--color-background);
+  color: var(--color-muted);
+}
+
+textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+/* Messages */
+
+.field-error {
+  color: var(--color-error);
+  font-size: var(--font-size-small);
+}
+
+.message {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-4);
+}
+
+.message--error {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.message--success {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.message--warning {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}

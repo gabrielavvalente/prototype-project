@@ -29,28 +29,28 @@ own.
 
 **Purpose**: Create the app folder, install the pinned dependencies and the shared theme
 
-- [ ] T001 Create the Vite + React app skeleton by hand in `apps/event-reporting/`:
+- [X] T001 Create the Vite + React app skeleton by hand in `apps/event-reporting/`:
   `package.json` (`"name": "event-reporting"`, `"private": true`, `"type": "module"`, scripts
   `dev: vite`, `build: vite build`, `preview: vite preview`, `test: vitest run`), `index.html`
   (`<html lang="en">`, `<title>Event Reporting</title>`, `<div id="root">`, script
   `/src/main.jsx`), `vite.config.js` (React plugin; `server.fs.allow` set to the app folder and
   `../../shared`), `src/main.jsx` (renders `<App />` inside `React.StrictMode`) and a placeholder
   `src/App.jsx`
-- [ ] T002 Install dependencies with exact versions (research R7) from `apps/event-reporting/`:
+- [X] T002 Install dependencies with exact versions (research R7) from `apps/event-reporting/`:
   `npm install --save-exact react react-dom react-router-dom idb` and
   `npm install --save-exact --save-dev vite @vitejs/plugin-react vitest`; confirm
   `apps/event-reporting/package.json` has no `^` or `~` and commit `package-lock.json`
-- [ ] T003 [P] Create `apps/event-reporting/.gitignore` ignoring `node_modules/` and `dist/`
-- [ ] T004 [P] Create `shared/theme.css` (research R5): CSS custom properties on `:root` for
+- [X] T003 [P] Create `apps/event-reporting/.gitignore` ignoring `node_modules/` and `dist/`
+- [X] T004 [P] Create `shared/theme.css` (research R5): CSS custom properties on `:root` for
   colors (primary, text, muted, background, surface, border, error, success, warning, focus),
   font family and sizes, spacing scale, radius; base styles for `body`, headings, `.button`,
   `.button--primary`, `.button--secondary`, form fields (`input`, `select`, `textarea`, labels),
   `.field-error` messages, a visible `:focus-visible` outline, and touch targets of at least 44px
-- [ ] T005 [P] Create `apps/event-reporting/src/app.css` with app layout only (page container,
+- [X] T005 [P] Create `apps/event-reporting/src/app.css` with app layout only (page container,
   header bar, side panels, cards, table wrapper with horizontal scroll at narrow widths), using
   only variables from `shared/theme.css`; import `../../../shared/theme.css` and `./app.css` in
   `apps/event-reporting/src/main.jsx`
-- [ ] T006 Run `npm run dev` in `apps/event-reporting/` and confirm the placeholder page opens with
+- [X] T006 Run `npm run dev` in `apps/event-reporting/` and confirm the placeholder page opens with
   no console errors
 
 ---
