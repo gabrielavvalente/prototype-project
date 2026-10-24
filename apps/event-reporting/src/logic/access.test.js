@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   canEditEvent,
   canOpenRoute,
+  getShareableUsers,
   getManagersToAlert,
   getMenuItems,
   isEventVisible,
@@ -103,6 +104,14 @@ describe('canEditEvent', () => {
 
   it('never lets a Site Admin edit', () => {
     expect(canEditEvent(siteAdmin, makeEvent())).toBe(false);
+  });
+});
+
+describe('getShareableUsers', () => {
+  it('offers people of the plant who can see the pillar, whatever their role', () => {
+    const users = [reporter, manager, siteAdmin, otherPlantManager];
+    expect(getShareableUsers(users, makeEvent())).toEqual([reporter, manager, siteAdmin]);
+    expect(getShareableUsers(users, makeEvent({ pillarId: 'pillar-ih' }))).toEqual([]);
   });
 });
 

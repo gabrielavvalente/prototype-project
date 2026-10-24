@@ -54,7 +54,7 @@ export function describeEvent(event, lists, attachmentCount) {
       { label: 'Employee type', value: getLabel(reference, event.employeeType) },
       { label: 'Has this happened before?', value: yesNo(event.recurrence) },
       { label: 'Comments', value: event.comments },
-      { label: 'Feedback emails', value: event.feedbackEmails.join(', ') },
+      { label: 'Shared with', value: listLabels(users, event.sharedWithIds) },
     ],
     actions: [{ label: 'Immediate actions', value: String(event.immediateActions.length) }],
   };

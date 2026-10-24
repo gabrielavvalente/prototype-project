@@ -6,9 +6,9 @@ import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 import * as sampleData from './sampleData.js';
 
 const DATABASE_NAME = 'event-reporting';
-// Version 2 renamed family codes and record numbers, version 3 renamed HPR to SIP (reviews of
-// 2026-10-24); older demo data is replaced.
-const DATABASE_VERSION = 3;
+// Version 2 renamed family codes and record numbers, version 3 renamed HPR to SIP, version 4
+// replaced feedback emails with Shared with (reviews of 2026-10-24); older demo data is replaced.
+const DATABASE_VERSION = 4;
 
 const STORES = [
   'events',
@@ -163,7 +163,8 @@ export function saveChanges(args) {
   return writeEvent(args);
 }
 
-// Submit: gives the next record number, sets status Open and alerts the Managers (FR-016).
+// Submit: gives the next record number, sets status Open and alerts the Managers and the
+// Shared with users (FR-016).
 // The counter is read and increased in the same transaction, so two events never share a number.
 export function submitEvent({ users, ...args }) {
   return writeEvent(args, async (tx, event, now) => {
@@ -177,14 +178,14 @@ export function submitEvent({ users, ...args }) {
     event.status = 'Open';
     event.submittedAt = now;
 
-    for (const manager of getManagersToAlert(users, event)) {
-      tx.objectStore('alerts').put({
-        id: newId(),
-        recipientId: manager.id,
-        type: 'Event submitted',
-        eventId: event.id,
-        createdAt: now,
-      });
+    const managerIds = getManagersToAlert(users, event).map((manager) => manager.id);
+    const sharedIds = event.sharedWithIds.filter((id) => !managerIds.includes(id));
+    const alerts = [
+      ...managerIds.map((recipientId) => ({ recipientId, type: 'Event submitted' })),
+      ...sharedIds.map((recipientId) => ({ recipientId, type: 'Event shared with you' })),
+    ];
+    for (const alert of alerts) {
+      tx.objectStore('alerts').put({ id: newId(), ...alert, eventId: event.id, createdAt: now });
     }
   });
 }

@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { getPillarColorClass, getSeverityDots } from '../logic/display.js';
 import { isSip } from '../logic/eventList.js';
 import { findById, getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
+import EventExpanded from './EventExpanded.jsx';
 
 export function SeverityDots({ levelCode }) {
   const dots = getSeverityDots(levelCode);
@@ -27,36 +27,34 @@ export function PillarTag({ pillar }) {
   );
 }
 
-// One event card (Kanban view, FR-041): tags, record number, title, location, reporter, date.
-export default function EventCard({ event, onQuickView }) {
+// One Kanban card (FR-041): tags, record number, title, location, reporter, date.
+// Clicking it expands it in place with the description and immediate actions (FR-027).
+export default function EventCard({ event, expanded, onToggle }) {
   const { reference, organization, users } = useApp();
   const pillar = findById(reference, event.pillarId);
   const reporter = findById(users, event.reporterId);
   const critical = isSip(event) || getSeverityDots(event.levelCode) >= 3;
   const department = getLabel(organization, event.location.departmentId);
+  const detailsId = `card-details-${event.id}`;
 
   return (
-    <article className={`card event-card${critical ? ' card--critical' : ''}`}>
-      <div className="event-card-top">
-        <div className="tag-row">
-          <PillarTag pillar={pillar} />
-          <span className="tag tag--blue">{event.levelCode}</span>
-          {isSip(event) && <span className="tag tag--red">SIP</span>}
-        </div>
-        <div className="event-card-corner">
-          <SeverityDots levelCode={event.levelCode} />
-          {onQuickView && (
-            <button type="button" className="icon-button card-eye" onClick={() => onQuickView(event)}>
-              <Icon name="eye" size={18} label={`Preview ${event.title || 'draft'}`} />
-            </button>
-          )}
-        </div>
+    <article className={`card event-card${critical ? ' card--critical' : ''}${expanded ? ' event-card--expanded' : ''}`}>
+      <div className="tag-row">
+        <PillarTag pillar={pillar} />
+        <span className="tag tag--blue">{event.levelCode}</span>
+        {isSip(event) && <span className="tag tag--red">SIP</span>}
       </div>
       <p className="event-card-number">{event.recordNumber || 'Draft — no record number yet'}</p>
       <h2 className="event-card-title">
-        <Link to={`/events/${event.recordNumber || event.id}`} className="stretched-link">
+        <button
+          type="button"
+          className="event-card-toggle"
+          aria-expanded={expanded}
+          aria-controls={detailsId}
+          onClick={onToggle}
+        >
           {event.title || '(no title yet)'}
-        </Link>
+        </button>
       </h2>
       {department && (
         <div className="tag-row">
@@ -74,8 +72,14 @@ export default function EventCard({ event, onQuickView }) {
         </span>
         <span className="field-hint">
           <Icon name="clock" size={14} /> {event.reportDate}
+          <Icon name="chevronDown" size={16} />
         </span>
       </div>
+      {expanded && (
+        <div id={detailsId} className="event-card-details">
+          <EventExpanded event={event} />
+        </div>
+      )}
     </article>
   );
 }

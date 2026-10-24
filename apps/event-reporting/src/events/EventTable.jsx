@@ -1,10 +1,12 @@
+import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { canEditEvent } from '../logic/access.js';
-import { isSip, PAGE_SIZES } from '../logic/eventList.js';
+import { PAGE_SIZES } from '../logic/eventList.js';
 import { getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
 import { SeverityDots } from './EventCard.jsx';
+import EventExpanded from './EventExpanded.jsx';
 import StatusBadge from './StatusBadge.jsx';
 
 // List view columns, in the order agreed in the review (FR-041).
@@ -31,7 +33,6 @@ function Cell({ column, event, lists }) {
       return (
         <span className="cell-level">
           <SeverityDots levelCode={event.levelCode} /> {event.levelCode}
-          {isSip(event) && <span className="tag tag--red">SIP</span>}
         </span>
       );
     case 'date':
@@ -84,8 +85,8 @@ export function ColumnsMenu({ visibleColumns, onChange }) {
   );
 }
 
-// The List view: a paginated, sortable table with one eye icon per row (FR-026, FR-027, FR-041).
-export default function EventTable({ rows, sort, onSort, visibleColumns, paging, onQuickView }) {
+// The List view: a paginated, sortable table; clicking a row expands it in place (FR-026, FR-027, FR-041).
+export default function EventTable({ rows, sort, onSort, visibleColumns, paging, expandedId, onToggle }) {
   const lists = useApp();
   const columns = COLUMNS.filter((column) => column.always || visibleColumns.includes(column.key));
 
@@ -110,27 +111,63 @@ export default function EventTable({ rows, sort, onSort, visibleColumns, paging,
             </tr>
           </thead>
           <tbody>
-            {rows.map((event) => (
-              <tr key={event.id}>
-                {columns.map((column) => (
-                  <td key={column.key}>
-                    <Cell column={column} event={event} lists={lists} />
-                  </td>
-                ))}
-                <td className="row-actions">
-                  <div className="row-actions-inner">
-                    <button type="button" className="icon-button" onClick={() => onQuickView(event)}>
-                      <Icon name="eye" label={`Preview ${event.title || 'draft'}`} />
-                    </button>
-                    {canEditEvent(lists.user, event) && (
-                      <Link className="icon-button" to={`/events/${event.recordNumber || event.id}/edit`}>
-                        <Icon name="edit" label={`Edit ${event.title || 'draft'}`} />
-                      </Link>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {rows.map((event) => {
+              const expanded = expandedId === event.id;
+              const detailsId = `row-details-${event.id}`;
+              return (
+                <Fragment key={event.id}>
+                  <tr className={`event-row${expanded ? ' event-row--expanded' : ''}`} onClick={() => onToggle(event.id)}>
+                    {columns.map((column) => (
+                      <td key={column.key}>
+                        {column.key === 'title' ? (
+                          // The title is the keyboard / screen reader control for expanding the row.
+                          <button
+                            type="button"
+                            className="row-toggle"
+                            aria-expanded={expanded}
+                            aria-controls={detailsId}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onToggle(event.id);
+                            }}
+                          >
+                            <Cell column={column} event={event} lists={lists} />
+                          </button>
+                        ) : (
+                          <Cell column={column} event={event} lists={lists} />
+                        )}
+                      </td>
+                    ))}
+                    <td className="row-actions">
+                      <div className="row-actions-inner">
+                        {canEditEvent(lists.user, event) ? (
+                          <Link
+                            className="icon-button"
+                            to={`/events/${event.recordNumber || event.id}/edit`}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Icon name="edit" label={`Edit ${event.title || 'draft'}`} />
+                          </Link>
+                        ) : (
+                          // Keeps the arrows of all rows lined up.
+                          <span className="icon-placeholder" aria-hidden="true" />
+                        )}
+                        <span className={`row-chevron${expanded ? ' row-chevron--open' : ''}`} aria-hidden="true">
+                          <Icon name="chevronDown" size={18} />
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                  {expanded && (
+                    <tr className="event-row-details" id={detailsId}>
+                      <td colSpan={columns.length + 1}>
+                        <EventExpanded event={event} />
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>

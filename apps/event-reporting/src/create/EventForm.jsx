@@ -46,7 +46,7 @@ function newEvent(user, context, reference) {
     employeeType: '',
     recurrence: null,
     comments: '',
-    feedbackEmails: [],
+    sharedWithIds: [],
     diseaseIds: [],
     immediateActions: [],
     attachmentIds: [],
@@ -215,8 +215,10 @@ function EventForm() {
   const options = { now: new Date() };
   const missing = showErrors ? validateEventForSubmit(event, options) : [];
 
+  // changes: the fields to change, or a function of the current event that returns them
+  // (used by dictation, which adds to the latest description).
   function update(changes) {
-    setEvent((previous) => ({ ...previous, ...changes }));
+    setEvent((previous) => ({ ...previous, ...(typeof changes === 'function' ? changes(previous) : changes) }));
     setDirty(true);
   }
 

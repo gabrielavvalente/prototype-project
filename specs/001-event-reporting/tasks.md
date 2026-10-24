@@ -441,22 +441,22 @@ form details"
 **Independent Test**: Rows and cards expand in place; every Kanban column is reachable; the form
 shows level badges, two task types, optional event time, dictation and Shared with
 
-- [ ] T073 Create `apps/event-reporting/src/events/EventExpanded.jsx` (description, key facts,
+- [X] T073 Create `apps/event-reporting/src/events/EventExpanded.jsx` (description, key facts,
   immediate actions as sub-cards, Open / Edit links); List rows expand in place on click
   (`EventTable.jsx`, no SIP badge, no eye icon); Kanban cards expand in place on click
   (`EventCard.jsx`, no severity dots); remove `QuickView.jsx`
-- [ ] T074 Kanban reachability in `KanbanBoard.jsx`: columns side by side on wide screens,
+- [X] T074 Kanban reachability in `KanbanBoard.jsx`: columns side by side on wide screens,
   horizontal scroll with ‹ › buttons otherwise
-- [ ] T075 Classification: hide the family when the pillar has one; levels as badges with the
+- [X] T075 Classification: hide the family when the pillar has one; levels as badges with the
   chosen level's name and description below (`ClassificationSection.jsx`)
-- [ ] T076 Task types Routine and Non-routine only (`sampleData.js`); event time optional
+- [X] T076 Task types Routine and Non-routine only (`sampleData.js`); event time optional
   (`validation.js` + tests); bump the database version
-- [ ] T077 Dictation button for the description using the browser's speech recognition, with a
+- [X] T077 Dictation button for the description using the browser's speech recognition, with a
   message where unavailable (`GeneralInfoSection.jsx`)
-- [ ] T078 Replace feedback emails with **Shared with** (`sharedWithIds`): chips of plant users who
+- [X] T078 Replace feedback emails with **Shared with** (`sharedWithIds`): chips of plant users who
   can see the pillar (`DetailsSection.jsx`), summary row, "Event shared with you" alerts on submit
   (`db.js`, `access.js` + tests)
-- [ ] T079 Rerun quickstart scenarios 1–7 at 390px and desktop width with no console errors
+- [X] T079 Rerun quickstart scenarios 1–7 at 390px and desktop width with no console errors
 
 ---
 

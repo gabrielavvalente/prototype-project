@@ -46,7 +46,7 @@ function makeEvent(changes = {}) {
     description: 'A forklift almost hit a pedestrian.',
     employeeType: 'employeeType-1',
     recurrence: false,
-    feedbackEmails: [],
+    sharedWithIds: [],
     diseaseIds: [],
     immediateActions: [],
     attachmentIds: [],
@@ -155,6 +155,10 @@ describe('validateSection', () => {
     expect(fields(validateSection('general', event, options))).toEqual(['title', 'eventTime', 'description']);
   });
 
+  it('accepts an empty event time (optional)', () => {
+    expect(validateSection('general', makeEvent({ eventTime: '' }), options)).toEqual([]);
+  });
+
   it('allows any time on an earlier report date', () => {
     const event = makeEvent({ reportDate: '2026-10-23', eventTime: '23:00' });
     expect(validateSection('general', event, options)).toEqual([]);
@@ -164,9 +168,9 @@ describe('validateSection', () => {
     expect(validateSection('general', makeEvent({ levelCode: 'TF1' }), options)).toEqual([]);
   });
 
-  it('checks event details, emails and OH diseases (FR-010)', () => {
-    const event = makeEvent({ employeeType: '', recurrence: null, feedbackEmails: ['not-an-email'] });
-    expect(fields(validateSection('details', event, options))).toEqual(['employeeType', 'recurrence', 'feedbackEmails']);
+  it('checks event details and OH diseases (FR-010)', () => {
+    const event = makeEvent({ employeeType: '', recurrence: null });
+    expect(fields(validateSection('details', event, options))).toEqual(['employeeType', 'recurrence']);
     const oh = makeEvent({ familyCode: 'OH', levelCode: 'OH-SKIN', diseaseIds: [] });
     expect(fields(validateSection('details', oh, options))).toEqual(['diseaseIds']);
   });

@@ -3,6 +3,7 @@ import { getReferenceList } from '../logic/lookups.js';
 import { MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH } from '../logic/validation.js';
 import AttachmentInput from './AttachmentInput.jsx';
 import ChipGroup from './ChipGroup.jsx';
+import DictationButton from './DictationButton.jsx';
 import { FieldError, SelectField, TextField } from './fields.jsx';
 
 // General information: the core facts and optional photos or videos (FR-006 to FR-008).
@@ -35,8 +36,7 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
       <TextField id="reportDate" label="Report date" type="date" value={event.reportDate} readOnly onChange={() => {}} />
       <TextField
         id="eventTime"
-        label="Event time"
-        required
+        label="Event time (optional)"
         type="time"
         value={event.eventTime}
         onChange={(value) => update({ eventTime: value })}
@@ -64,6 +64,15 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
             aria-describedby="description-count"
             onChange={(e) => update({ description: e.target.value })}
           />
+          <div className="composer-toolbar">
+            <DictationButton
+              onText={(text) =>
+                update((current) => ({
+                  description: [current.description.trim(), text].filter(Boolean).join(' ').slice(0, MAX_DESCRIPTION_LENGTH),
+                }))
+              }
+            />
+          </div>
           <AttachmentInput attachments={attachments} onChange={setAttachments} errors={errors} />
         </div>
         <span className="field-hint" id="description-count">

@@ -55,6 +55,11 @@ export function canEditEvent(user, event) {
   return user.role === 'Manager' && getPillarIdsForPlant(user, event.plantId).includes(event.pillarId);
 }
 
+// Users who can be chosen in "Shared with": people of the event's plant who can see its pillar.
+export function getShareableUsers(users, event) {
+  return users.filter((user) => getPillarIdsForPlant(user, event.plantId).includes(event.pillarId));
+}
+
 // Managers who receive the "Event submitted" alert for this event.
 export function getManagersToAlert(users, event) {
   return users.filter(

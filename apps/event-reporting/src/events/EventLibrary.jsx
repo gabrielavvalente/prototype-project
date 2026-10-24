@@ -17,7 +17,6 @@ import EventTable, { ALL_COLUMN_KEYS, ColumnsMenu } from './EventTable.jsx';
 import FilterSheet from './FilterSheet.jsx';
 import KanbanBoard from './KanbanBoard.jsx';
 import KpiTiles from './KpiTiles.jsx';
-import QuickView from './QuickView.jsx';
 
 const VIEWS = [
   { key: 'kanban', label: 'Kanban', icon: 'kanban' },
@@ -40,7 +39,8 @@ export default function EventLibrary() {
   const [pageSize, setPageSize] = useState(20);
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [quickViewEvent, setQuickViewEvent] = useState(null);
+  // The one row or card shown expanded (FR-027).
+  const [expandedId, setExpandedId] = useState(null);
   const view = ['kanban', 'list'].includes(settings.listView) ? settings.listView : defaultView();
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function EventLibrary() {
   const activeFilters = countActiveFilters(filters);
   const visibleColumns = settings.visibleColumns || ALL_COLUMN_KEYS;
 
-  const closeQuickView = useCallback(() => setQuickViewEvent(null), []);
+  const toggleExpanded = useCallback((id) => setExpandedId((current) => (current === id ? null : id)), []);
   const closeFilters = useCallback(() => setFiltersOpen(false), []);
 
   // Any change to what is shown starts again from page 1.
@@ -152,7 +152,7 @@ export default function EventLibrary() {
         </div>
       )}
 
-      {shown.length > 0 && view === 'kanban' && <KanbanBoard events={sorted} onQuickView={setQuickViewEvent} />}
+      {shown.length > 0 && view === 'kanban' && <KanbanBoard events={sorted} expandedId={expandedId} onToggle={toggleExpanded} />}
 
       {shown.length > 0 && view === 'list' && (
         <EventTable
@@ -170,12 +170,12 @@ export default function EventLibrary() {
               setPage(1);
             },
           }}
-          onQuickView={setQuickViewEvent}
+          expandedId={expandedId}
+          onToggle={toggleExpanded}
         />
       )}
 
       {filtersOpen && <FilterSheet filters={filters} onApply={changeFilters} onClose={closeFilters} />}
-      {quickViewEvent && <QuickView event={quickViewEvent} onClose={closeQuickView} />}
     </main>
   );
 }

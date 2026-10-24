@@ -13,7 +13,6 @@ export const MAX_PERFORMERS = 5;
 
 const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'mp4', 'mov', 'webm'];
 export const LOCATION_LEVELS = ['departmentId', 'workshopId', 'jobId', 'workstationId', 'taskId'];
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // The follow-up question after the level (FR-004): SIP for Safety and Environment,
 // CRP for SRE1–SRE2 and SRP for SRE3–SRE5; none for Occupational Health.
@@ -105,9 +104,8 @@ function validateGeneral(event, now) {
   } else if (title.length > MAX_TITLE_LENGTH) {
     errors.push(error('title', `Keep the title under ${MAX_TITLE_LENGTH} characters.`));
   }
-  if (isBlank(event.eventTime)) {
-    errors.push(error('eventTime', 'Enter the time of the event.'));
-  } else if (event.reportDate === toDateString(now) && event.eventTime > toTimeString(now)) {
+  // The event time is optional; when given it cannot be in the future.
+  if (!isBlank(event.eventTime) && event.reportDate === toDateString(now) && event.eventTime > toTimeString(now)) {
     errors.push(error('eventTime', 'The event time cannot be in the future.'));
   }
   if (isBlank(event.shiftMoment)) errors.push(error('shiftMoment', 'Choose the shift moment.'));
@@ -125,9 +123,6 @@ function validateDetails(event) {
   if (isBlank(event.employeeType)) errors.push(error('employeeType', 'Choose the employee type.'));
   if (event.recurrence !== true && event.recurrence !== false) {
     errors.push(error('recurrence', 'Say whether this has happened before.'));
-  }
-  if (event.feedbackEmails.some((email) => !EMAIL_PATTERN.test(email.trim()))) {
-    errors.push(error('feedbackEmails', 'Check the email addresses.'));
   }
   if (event.familyCode === 'OH' && event.diseaseIds.length === 0) {
     errors.push(error('diseaseIds', 'Choose at least one disease.'));
