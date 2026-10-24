@@ -12,16 +12,19 @@ someone may not. Access rules are implemented once in `src/logic/access.js` (res
 |---|---|:---:|:---:|:---:|---|
 | `#/` | Start: pick a demo user, Reset demo data | any (not signed in) | | | R12 |
 | `#/entry` | Entry: choose a pillar or enter without one | ✓ | ✓ | ✓ | FR-037 |
-| `#/events` | Event library (list, search, filters, KPI tiles, quick view) | ✓ | ✓ | ✓ | FR-026–FR-031 |
+| `#/events` | Event library (KPI chips, filters, cards / table, quick view) | ✓ | ✓ | ✓ | FR-026–FR-031 |
 | `#/events/new` | Event creation form | ✓ | ✓ | — | FR-001–FR-017 |
+| `#/search` | Full-screen search: recent searches and live results | ✓ | ✓ | ✓ | FR-044 |
 | `#/events/:id` | Event detail (`:id` = record number, or internal id for drafts) | ✓ ¹ | ✓ ¹ | ✓ ¹ | FR-033 |
 | `#/events/:id/edit` | Event edit (same form as creation) | own drafts | ✓ ¹ | — | FR-032, FR-034 |
 
 ¹ Only if the event is in the user's scope (business, plant, accessible pillars, narrowed by the
 selected pillar) and, for drafts, only its reporter.
 
-My Alerts is a sliding panel opened from the header on any screen, not a route. It is available
-to User and Manager (FR-022).
+Notifications (My Alerts) and the account menu are sheets opened from the top bar on any screen,
+not routes. Notifications are available to User and Manager (FR-022, FR-043). On phones a bottom
+navigation offers Home (`#/entry`), Events (`#/events`) and a floating New button
+(`#/events/new`, User and Manager only) (FR-040).
 
 ## Navigation menu (FR-022)
 

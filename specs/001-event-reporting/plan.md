@@ -70,6 +70,7 @@ a few dozen events; built for demonstrations on one device
 | `react-router-dom` | Direct links per screen, required for access checks and alert links (FR-021–FR-023) | Hand-written router reinvents a standard, less familiar to learners (R3) |
 | `idb` (~1 KB) | Readable `await` access to IndexedDB, needed for 5 MB videos (FR-009, FR-036) | Raw IndexedDB API is callback-based and error-prone; `localStorage` too small (R2) |
 | `vitest` (dev) | Small automated tests of business rules (principle III) | Jest needs extra configuration with Vite (R4) |
+| `@fontsource/poppins` | The design reference uses a geometric font (Poppins); this package serves it from the app itself, so it works offline on the shop floor (research R14) | A Google Fonts link needs internet and loads from another site; system fonts do not match the reference |
 
 **Post-design re-check (after Phase 1)**: data model, routes contract and quickstart introduce no
 new libraries, folders outside the app, or patterns beyond the above. ✅ Pass.
@@ -150,6 +151,16 @@ logic files they test (`validation.test.js`). The only file outside the app is `
 ## Complexity Tracking
 
 No constitution violations. Added libraries are justified in the Constitution Check above.
+
+## UI/UX iteration (Clarification 2026-10-24 UI/UX)
+
+The PNGs in [design/](design/) are the visual guideline (research R14). Changes stay inside the
+same structure: shared visual pieces (tokens, chips, tags, cards, sheets, bottom bar, severity
+dots) go to `shared/theme.css`; new app files are `src/shell/Icon.jsx` (inline SVG icons, no
+library), `src/shell/Sheet.jsx` (bottom/side sheet), `src/shell/BottomNav.jsx`,
+`src/shell/AccountSheet.jsx`, `src/shell/SearchPage.jsx`, `src/create/Stepper.jsx`,
+`src/create/ChipGroup.jsx`, `src/events/EventCard.jsx` and `src/events/FilterSheet.jsx`;
+`AlertsPanel.jsx` becomes a notifications sheet and `KpiTiles.jsx` a chip row.
 
 ## Follow-ups
 

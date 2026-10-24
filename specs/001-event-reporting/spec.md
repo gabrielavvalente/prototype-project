@@ -51,6 +51,21 @@ SCR-DSK-01, SCR-DSK-02), and the event-type specs for level names
   and year, e.g., `SAF-2026-0042`, `ENV-2026-0007`, `IR-2026-0003`, `OH-2026-0001`; assigned on
   submit only (drafts have none).
 
+### Session 2026-10-24 (UI/UX iteration)
+
+Design references: [design/](design/) (PNG exports from the product team's Figma for the action
+management module). They are a **guideline for the overall look and interaction patterns**, not
+screens to copy; product logo and name are not reused, and all text stays in English.
+
+- Q: Should the creation form become a single scrolling page like the reference? → A: No. The 6
+  sections stay, shown as a visible stepper; the reference sets the look (chips, cards, fixed
+  bottom action bar).
+- Q: How should the event list appear? → A: Cards on phones and a table on desktop, with a toggle
+  between the two. A kanban board waits until there are more statuses (Review and Governance).
+- Q: How much of the reference applies in this round? → A: Everything that fits the MVP: visual
+  theme, compact top bar, bottom navigation on phones, KPI chips, cards, filters and notifications
+  in bottom sheets, full-screen search, and the new event detail layout.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Report an event from the shop floor (Priority: P1)
@@ -166,9 +181,8 @@ header, navigation, visible events and My Alerts match each user's role and scop
 
 *Traces to: US-LIB-01, 02, 03, 04 (View / Edit), 06, 07.*
 
-A Manager arrives at the start of a shift and opens Events. KPI tiles show Total Events, Open
-Events and Events With HPR. They click "Events With HPR" and the list filters to
-those events. They search a record number someone mentioned in a meeting, open a quick view of the
+A Manager arrives at the start of a shift and opens Events. KPI chips show All, My events, Open,
+With HPR and Drafts. They tap "With HPR" and the list narrows to those events. They search a record number someone mentioned in a meeting, open a quick view of the
 event without leaving the list, then open it to view or edit it. A Reporter turns on "My Events" to
 see only what they submitted.
 
@@ -176,7 +190,7 @@ see only what they submitted.
 value once events are being reported (Story 1) inside a scoped frame (Story 2).
 
 **Independent Test**: Load the sample data, then check that the list, search, every filter, every
-KPI tile, the quick view, View and Edit all behave as described for a Manager and for a User.
+KPI chip, the quick view, View and Edit all behave as described for a Manager and for a User.
 
 **Acceptance Scenarios**:
 
@@ -193,8 +207,8 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
    toggle.
 6. **Given** I apply a filter, **When** the list refreshes, **Then** the list and all KPI counts
    update to match; **and given** My Events is on, **then** only events I reported are listed.
-7. **Given** I open Events, **When** the page loads, **Then** clickable KPI tiles show Total
-   Events, Open Events and Events With HPR; clicking a tile applies its filter.
+7. **Given** I open Events, **When** the page loads, **Then** clickable KPI chips show All,
+   My events, Open, With HPR and Drafts; selecting a chip narrows the list to it.
 8. **Given** any row, **When** I open its actions, **Then** View is available, and Edit is
    available only when my role allows editing that event.
 
@@ -202,7 +216,7 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
 
 ### Edge Cases
 
-- **No events yet**: the list, KPI tiles and My Alerts show a clear empty state rather
+- **No events yet**: the list, KPI chips and notifications show a clear empty state rather
   than bare zeros.
 - **Search with no match**: the list says no event matches and offers to clear search and filters.
 - **Level changed after answering the risk question**: changing the pillar or level clears answers
@@ -218,8 +232,8 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
 - **Event time in the future**: the event time cannot be later than the current time on the report
   date.
 - **Leaving the form**: leaving with unsaved changes asks whether to save a draft, discard or stay.
-- **Draft visibility**: drafts are visible only to their reporter, are excluded from KPI counts, and
-  never create alerts.
+- **Draft visibility**: drafts are visible only to their reporter, appear only under the
+  "Drafts" chip (excluded from the other KPI counts), and never create alerts.
 - **Device storage full**: when an attachment or event cannot be saved because device storage is
   full, the user sees a clear message, nothing already entered is lost, and they can remove
   attachments and try again.
@@ -329,20 +343,50 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
 - **FR-030**: Users MUST be able to filter by Type (and level), Time range, Organization
   (Department → Task), Reporter, HPR flag, Status (Draft / Open) and a My Events toggle; filters MUST update the list and
   the KPI counts. *(US-LIB-03)*
-- **FR-031**: Events MUST show clickable KPI tiles — Total Events, Open Events, Events With
-  HPR — whose counts reflect active filters and which apply their filter when clicked.
-  *(US-LIB-06)*
+- **FR-031**: Events MUST show a row of clickable KPI chips — All, My events, Open, With HPR,
+  Drafts — whose counts reflect the search and active filters; selecting a chip narrows the list
+  to it. "All", "Open", "My events" and "With HPR" count submitted events only; "Drafts" counts
+  the user's own drafts. *(US-LIB-06, Clarification 2026-10-24 UI/UX)*
 - **FR-032**: Each row MUST offer View; Edit MUST be offered to the reporter of a draft and to
   Managers for any event in their scope. *(US-LIB-04)*
 - **FR-033**: The event detail view MUST show every field entered at creation, its attachments and
   its immediate actions. *(US-LIB-04)*
 - **FR-034**: Edits MUST follow the same validation rules as creation. *(US-LIB-04)*
 
+**Interface** (design guideline, Clarification 2026-10-24 UI/UX)
+
+- **FR-038**: The creation form MUST show all 6 sections as a visible stepper (done / current /
+  upcoming); users MUST be able to jump back to any section already reached, and Back / Next /
+  Submit MUST sit in a bar fixed to the bottom of the screen.
+- **FR-039**: Choices with few options (pillar, shift moment, employee type, recurrence, action
+  priority, task type) MUST be shown as tappable chips; levels MUST show severity dots (4 dots =
+  level 1 … 1 dot = levels 4–5) and pillars a color dot.
+- **FR-040**: The top bar MUST hold the app name, a search field, a notifications bell with an
+  unread dot and the user's avatar; the avatar opens a sheet with name, role, business, plant,
+  pillar (with Change) and Switch user. On phones a bottom navigation MUST offer Home (entry
+  screen), Events and a floating New button (hidden for roles that cannot create).
+- **FR-041**: Users MUST be able to switch the event list between cards and a table; cards are
+  the default on phones and the table on wider screens, and the choice MUST be remembered.
+- **FR-042**: Filters MUST open in a bottom sheet (side sheet on wide screens) with chip groups
+  and date fields, and apply only when the user taps Apply; a Filters button MUST show how many
+  filters are active.
+- **FR-043**: Notifications MUST open in a sheet listing alerts newest first with relative time
+  ("2h ago"), unread ones highlighted, and a "Mark all read" action; opening an alert marks it
+  read.
+- **FR-044**: The top-bar search MUST open a full-screen search that shows the user's last 5
+  searches (kept on the device) and live results by title or record number; an exact record
+  number opens that event directly.
+- **FR-045**: The event detail MUST show a top bar with back and record number, a header card
+  with tags (pillar, level, status, HPR) and title, key facts in a grid, collapsible sections,
+  a history timeline (created, submitted, last updated) and a fixed bottom bar with the actions
+  the user may take (Edit / Continue draft).
+
 **Data**
 
 - **FR-035**: The system MUST record, for every event, who created it and when, and who last
   changed it and when. *(Core FR-16, reduced)*
-- **FR-036**: All data (events, drafts, immediate actions, alerts, column choices) MUST be kept on the single
+- **FR-036**: All data (events, drafts, immediate actions, alerts, read state, column and view
+  choices, recent searches) MUST be kept on the single
   device and browser used for the demonstration and MUST survive closing and reopening the app;
   sharing data across devices is not required. Switching demo users on the same device is how
   multi-user flows (e.g., reporter → Manager alert) are demonstrated.
@@ -382,7 +426,7 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
 - **SC-006**: 100% of mandatory-field rules (photo for TF1–TF3, immediate action for TF1–TF3 and
   SRE1–SRE3, risk question, Task Type) block submission when unmet, in testing.
 - **SC-007**: In testing, no user ever sees an event outside their scope, by any route.
-- **SC-008**: Every KPI tile count matches a manual count of the events it represents.
+- **SC-008**: Every KPI chip count matches a manual count of the events it represents.
 - **SC-009**: A submitted event's alerts appear for the right Managers the next time they open or
   refresh My Alerts.
 
@@ -424,7 +468,7 @@ KPI tile, the quick view, View and Edit all behave as described for a Manager an
 - The Action Management Platform is not connected; immediate actions live inside the app.
 - Sample data includes at least 2 businesses, 3 plants (different types and countries), all four
   pillars, a full location hierarchy, demo users of each role, and enough events (including drafts,
-  HPR events and events with immediate actions) to demonstrate every filter and KPI tile.
+  HPR events and events with immediate actions) to demonstrate every filter and KPI chip.
 - Allowed attachments: common image and video formats, up to 5 MB per file and 5 files per event
   (FR-009). Because data stays on the device, only a limited number of attachments fit; this is an
   accepted prototype limitation.

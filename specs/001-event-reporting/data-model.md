@@ -96,6 +96,7 @@ the form keeps everything already typed (spec Edge Cases).
 | `type` | `Event submitted` | Only type in this MVP |
 | `eventId` | text | Source event; opening the alert opens it (FR-023) |
 | `createdAt` | date-time | Sorted newest first |
+| `readAt` | date-time or null | Set when the alert is opened or on "Mark all read" (FR-043) |
 
 Created on submit, one per user whose role is `Manager` and whose access includes the event's plant
 and pillar (FR-016). Index: `recipientId`.
@@ -154,6 +155,8 @@ Every item has `id`, `list` and `label`; some have extra fields.
 | `businessId`, `plantId` | text | Current context |
 | `pillarId` | text or null | `null` = entered without a pillar ("All pillars") |
 | `visibleColumns` | list of text | Event list columns the user chose to show (FR-028) |
+| `listView` | `cards` \| `table` \| null | Remembered list view; null = cards on phones, table on wide screens (FR-041) |
+| `recentSearches` | list of text | The user's last 5 searches, newest first (FR-044) |
 
 The id of the "signed-in" demo user is kept in `sessionStorage` so closing the tab returns to the
 start screen; everything else lives in IndexedDB.

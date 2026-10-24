@@ -137,3 +137,14 @@ Each decision below resolves an open point from the plan's Technical Context.
 - **Rationale**: No image assets or icon library needed. Note: Windows does not draw flag emoji
   (it shows the two letters, e.g., "FR"); the text label keeps the meaning clear.
 - **Alternatives considered**: An icon or flag library (extra dependency for decoration).
+
+## R14. Design guideline and font
+
+- **Decision**: Follow the PNG references in [design/](design/) as a guideline (look and
+  interaction patterns), not pixel copies. Colors are sampled from them and adjusted where needed
+  to keep text contrast at WCAG AA (e.g., teal text darkened). The font is Poppins, bundled with
+  the app through `@fontsource/poppins` (weights 400, 500, 600), with system fonts as fallback.
+- **Rationale**: Product team references give the prototypes a familiar look. Bundling the font
+  keeps the app working offline and avoids loading from another site.
+- **Alternatives considered**: Google Fonts link (needs internet); system fonts only (do not match
+  the reference); an icon library for the icons (a dozen inline SVGs are enough).
