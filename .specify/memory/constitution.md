@@ -1,27 +1,17 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 2.0.0 → 2.1.0
-Bump rationale: MINOR — default user-facing language changed from Portuguese to English, and
-project documentation language set to English. Rest of the document translated to English with
-no change in meaning.
+Version change: 2.1.0 → 2.2.0
+Bump rationale: MINOR — "Monorepo Structure → Stack" materially expanded: the stack chosen in the
+first /speckit-plan (React + Vite, plain JavaScript, browser-only) is now recorded, with rules
+for standalone app packages (no workspaces), Vitest for tests, and a plain-CSS shared theme.
 
-Modified principles (old → new title, translation only):
-  - I. Código Simples e Legível → I. Simple, Readable Code
-  - II. Apps Isolados → II. Isolated Apps
-  - III. Testes Mínimos → III. Minimal Tests
-  - IV. Interface Consistente → IV. Consistent Interface
-  - V. Documentação Curta → V. Short Documentation
-
-Renamed sections: Estrutura do Monorepo → Monorepo Structure; Fluxo de Trabalho → Development
-Workflow
-Modified rules: Monorepo Structure → Language (Portuguese → English, now covers docs and specs)
+Modified principles: none
+Modified rules: Monorepo Structure → Stack (undefined → React + Vite, JavaScript)
 Added sections: none
 Removed sections: none
 
-Deferred TODOs:
-  - Stack (language/framework) intentionally undefined; to be chosen in the first /speckit-plan
-    and recorded in "Monorepo Structure" via /speckit-constitution.
+Deferred TODOs: none (stack TODO resolved).
 -->
 
 # Prototype Project Constitution
@@ -108,10 +98,17 @@ Each app MUST have a short `README.md` at `apps/<app-name>/README.md`.
   theme), `specs/` (Spec Kit artifacts) and `.specify/` (Spec Kit configuration).
 - **Root**: MAY contain a simple page that lists and links the apps; MUST NOT contain code from
   any app.
-- **Stack**: Not yet defined. The language and framework MUST be chosen in the first
-  `/speckit-plan`, with justification, favoring what is simplest for a beginner. All apps SHOULD
-  use the same stack; a different stack for one app MUST be justified in that app's `plan.md`.
-  Once chosen, this section SHOULD be updated via `/speckit-constitution`.
+- **Stack**: React + Vite, written in plain JavaScript (`.js` / `.jsx`, no TypeScript), chosen in
+  the first `/speckit-plan` (`specs/001-event-reporting/plan.md`, research R1). Apps run in the
+  browser only, with no server.
+  - Each app MUST be standalone, with its own `package.json` inside `apps/<app-name>/`; a root
+    `package.json` and npm workspaces MUST NOT be used.
+  - Automated tests MUST use Vitest.
+  - The shared visual theme MUST be plain CSS in `shared/theme.css` (CSS custom properties);
+    UI component libraries and CSS frameworks MUST NOT be added without justification in
+    `plan.md`.
+  - All apps SHOULD use this stack; a different stack for one app MUST be justified in that app's
+    `plan.md`.
 - **External dependencies**: MUST be pinned to an exact version and justified in `plan.md`.
 - **Encoding**: All files MUST be saved as UTF-8.
 - **Language**: All user-facing text, documentation, specs and code (names and comments) MUST be
@@ -143,4 +140,4 @@ conflicts with it, the constitution wins unless it is amended.
 - **Compliance**: Every `plan.md` MUST pass the Constitution Check before and after design.
   Unjustified complexity MUST be rejected.
 
-**Version**: 2.1.0 | **Ratified**: 2026-10-24 | **Last Amended**: 2026-10-24
+**Version**: 2.2.0 | **Ratified**: 2026-10-24 | **Last Amended**: 2026-10-24
