@@ -9,7 +9,7 @@ through the launcher: `http://localhost:5173/apps/control-panel/`.
 
 | Address | Screen |
 |---|---|
-| `/` | "Prototype apps" page: one card per app (name, one-line description, Open button) |
+| `/launcher/` | "Prototype apps" page (opened automatically; the server root is the repository): one card per app (name, one-line description, Open button) |
 | `/apps/event-reporting/` | Event Reporting |
 | `/apps/control-panel/` | Control Panel |
 
@@ -48,7 +48,6 @@ Not allowed → the "You don't have access to this page." message with a link to
   - **Mine — Required**: switch on; shows author when someone else at my level set it.
   - **Optional**: switch off.
   - **Locked**: lock icon + "Required by Central — Ludovic Costa, 24 Oct 2026"; no switch.
-  - **Required at my level by another perimeter** (e.g., another Cluster): informative only.
 - Switching Review on opens the reviewers picker (multi-select of valid reviewers, Done
   disabled until ≥ 1). Review cells show the reviewer count and open the picker to edit.
 - Saving is immediate per cell; a toast confirms "Saved — applies to new events".

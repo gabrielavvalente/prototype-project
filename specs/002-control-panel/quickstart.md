@@ -12,7 +12,7 @@ How to run the apps together and prove the feature works. Screens are in
 cd apps/event-reporting && npm install     # first time only
 cd ../control-panel && npm install         # first time only
 cd ../../launcher && npm install           # first time only
-npm run dev                                # http://localhost:5173 lists the apps
+npm run dev                                # opens http://localhost:5173/launcher/
 
 cd ../apps/control-panel && npm test       # platform rules + Control Panel logic
 cd ../event-reporting && npm test          # Event Reporting rules
@@ -45,8 +45,8 @@ Expected: done in under 2 minutes; Audit shows three entries.
 
 ### 3. Same level change and notification (FR-009, FR-023)
 
-1. As **Pascal Fischer** (Cluster Lyon + Curitiba, H&S): Lucas's Root cause setting is not theirs
-   (different perimeter) → shown as "Required at Cluster (Lyon, Porto)", not editable.
+1. As **Pascal Fischer** (Cluster Lyon + Curitiba, H&S): Lucas's Root cause setting is editable
+   (same level, Lyon in common) and shows "Set by Lucas Weber"; leave it unchanged.
 2. As **Carla Mendes** (Local Lyon, H&S): Eva's Actions TF3 setting is editable; switch it off
    → confirm message "Eva Novak set this. They will be notified."; as Eva, the bell shows the
    notification.

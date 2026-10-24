@@ -32,7 +32,7 @@ change a setting made at another level.", "A value with code H-12 already exists
 | `resultingWorkflow(settings, { pillarId, levelCode, plantId })` | per phase `{ required, sources }` (FR-007) |
 | `workflowForEvent(settings, users, event)` | snapshot `{ computedAt, phases }` with reviewers filtered to the event's plant and pillar (FR-012) |
 | `isOnlySubmission(snapshot)` | `true` → event is Closed at submission (FR-026) |
-| `cellStateFor(user, settings, { pillarId, levelCode, phase })` | `'mine' \| 'optional' \| 'locked' \| 'otherPerimeter'` with sources (FR-008) |
+| `cellStateFor(user, settings, { pillarId, levelCode, phase })` | `'mine' \| 'optional' \| 'locked'` with sources (FR-008) |
 | `validReviewers(users, { pillarId, plantIds })` | Managers and Site Admins with access (FR-010) |
 
 ## Rules — `permissions.js`
