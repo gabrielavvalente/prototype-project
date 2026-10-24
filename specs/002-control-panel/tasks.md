@@ -152,7 +152,7 @@ new events keep their workflow and close when only Submission is required
 
 ### Tests for User Story 1
 
-- [ ] T022 [P] [US1] Write `shared/platform/workflow.test.js`: `resultingWorkflow` with the
+- [X] T022 [P] [US1] Write `shared/platform/workflow.test.js`: `resultingWorkflow` with the
   example of spec Story 1 (Central Review TF1–3, Cluster Lyon+Porto Root cause TF1–2, Local Lyon
   Actions TF3) gives Lyon TF3 = Review + Actions, Porto TF3 = Review, Curitiba TF1 = Review;
   submission always required; overlapping clusters both apply; `cellStateFor` returns `locked`
@@ -163,21 +163,21 @@ new events keep their workflow and close when only Submission is required
 
 ### Implementation for User Story 1
 
-- [ ] T023 [US1] Create `shared/platform/workflow.js` (data-model "Workflow setting",
+- [X] T023 [US1] Create `shared/platform/workflow.js` (data-model "Workflow setting",
   "Resulting workflow"): `PHASES = ['submission', 'review', 'rootCause', 'actions',
   'validation']`, `PHASE_LABELS`, `settingApplies(setting, plantId)` ("applies to a plant when
   `scopeLevel = central`, or its `plantIds` include the plant"), `resultingWorkflow`,
   `cellStateFor` (`mine` / `optional` / `locked`), `validReviewers(users,
   { pillarId, plantIds })` (event role Manager or Site Admin with the pillar at the plants),
   `workflowForEvent(settings, users, event)` → `{ computedAt, phases }`, `isOnlySubmission`
-- [ ] T024 [US1] Add `canEditSetting(user, setting)` to `shared/platform/permissions.js`
+- [X] T024 [US1] Add `canEditSetting(user, setting)` to `shared/platform/permissions.js`
   ("the user holds a role on the setting's pillar at the same `scopeLevel`, and their plants
   overlap the setting's plants (Central always overlaps)")
-- [ ] T025 [US1] Add the starting workflow settings to `shared/platform/sampleData.js`: a few
+- [X] T025 [US1] Add the starting workflow settings to `shared/platform/sampleData.js`: a few
   Central settings on each pillar (e.g., H&S Review TF1–TF2 with reviewers Carla Mendes and Eva
   Novak; Environment Review EVE1; Industrial Risk Root cause SRE1), no setting for TF4/TF5 (so
   they close at submission); seed them in `openPlatform()`
-- [ ] T026 [US1] Add to `shared/platform/platformData.js`: `getWorkflowSettings(pillarId?)` and
+- [X] T026 [US1] Add to `shared/platform/platformData.js`: `getWorkflowSettings(pillarId?)` and
   `saveWorkflowSetting(user, { pillarId, levelCode, phase, required, reviewerIds })` in one
   transaction — refuse `submission`; refuse Review without reviewers ("Choose at least one
   reviewer."); find the setting of the user's level and perimeter ("one setting per `pillarId +
@@ -185,30 +185,30 @@ new events keep their workflow and close when only Submission is required
   `updatedAt`) / delete when `required` is false; refuse when `canEditSetting` is false; write an
   audit entry (`subject: 'workflow'`, `action` `required` | `optional` | `reviewers`, readable
   `before`/`after`); when the previous author differs, add a notification for them (FR-009)
-- [ ] T027 [P] [US1] Create `apps/control-panel/src/workflow/ReviewersPicker.jsx`: sheet with a
+- [X] T027 [P] [US1] Create `apps/control-panel/src/workflow/ReviewersPicker.jsx`: sheet with a
   multi-select of `validReviewers` (name, role, plants), Done disabled until ≥ 1, warning for
   saved reviewers who lost access
-- [ ] T028 [US1] Create `apps/control-panel/src/workflow/SettingsGrid.jsx` (route
+- [X] T028 [US1] Create `apps/control-panel/src/workflow/SettingsGrid.jsx` (route
   `#/pillars/:pillarId/workflow`): rows = levels of the pillar with description, columns = 5
   phases; Submission "Required" disabled ("Always required"); per `cellStateFor`: switch for
   `mine`/`optional`, lock + "Required by Central — Ludovic Costa, 24 Oct 2026" for `locked`
   (a `mine` cell set by someone else shows "Set by <name>"); Review on → `ReviewersPicker`; confirm before changing
   another person's setting ("<name> set this. They will be notified."); toast "Saved — applies to
   new events"; errors shown in place
-- [ ] T029 [US1] Create `apps/control-panel/src/workflow/WorkflowTab.jsx` with the view switch
+- [X] T029 [US1] Create `apps/control-panel/src/workflow/WorkflowTab.jsx` with the view switch
   Settings · Result per plant · Compare plants (Compare only for Central and Cluster) and the
   `document.title` per view
-- [ ] T030 [P] [US1] Create `apps/control-panel/src/workflow/ResultGrid.jsx` and
+- [X] T030 [P] [US1] Create `apps/control-panel/src/workflow/ResultGrid.jsx` and
   `CellDetails.jsx` (route `…/workflow/result`): plant picker limited to `coveredPlantIds`;
   read-only grid with origin badge (highest level + "+n"); muted Optional cells; clicking a cell
   opens `CellDetails` in a `Sheet` (each source: level, perimeter, author, date; reviewers)
-- [ ] T031 [P] [US1] Create `apps/control-panel/src/workflow/EventPath.jsx`: for the chosen level
+- [X] T031 [P] [US1] Create `apps/control-panel/src/workflow/EventPath.jsx`: for the chosen level
   row, phases in order with Optional ones crossed out (`<s>` with an accessible label "skipped"),
   ending with "Closed after submission" when only Submission is required
-- [ ] T032 [P] [US1] Create `apps/control-panel/src/workflow/ComparePlants.jsx` (route
+- [X] T032 [P] [US1] Create `apps/control-panel/src/workflow/ComparePlants.jsx` (route
   `…/workflow/compare`): level picker; rows = phases, columns = covered plants; cells Required
   with origin badge or Optional
-- [ ] T033 [US1] Create `apps/control-panel/src/shell/NotificationsPanel.jsx` and add
+- [X] T033 [US1] Create `apps/control-panel/src/shell/NotificationsPanel.jsx` and add
   `getNotifications(userId)` / `markNotificationsRead(userId)` to
   `shared/platform/platformData.js`; bell count in `Header.jsx` (FR-023)
 - [ ] T034 [US1] Event Reporting submission (research R6, FR-012, FR-026): in
