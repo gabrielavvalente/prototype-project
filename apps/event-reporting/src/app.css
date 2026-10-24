@@ -1854,3 +1854,85 @@ label.button:focus-within,
 .use-level {
   margin: var(--space-2) 0;
 }
+
+/* Multi-select dropdown that stays open while choosing (Shared with, FR-010) */
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-button[aria-expanded='true'] {
+  border-color: var(--color-primary);
+}
+
+.dropdown-button[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  right: 0;
+  z-index: 25;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.dropdown-options {
+  max-height: 260px;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-target);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-small);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.dropdown-option:hover {
+  background: var(--color-surface-muted);
+}
+
+.dropdown-option--selected {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.dropdown-option-name {
+  flex: 1;
+}
+
+.dropdown-option:focus-within {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -2px;
+}

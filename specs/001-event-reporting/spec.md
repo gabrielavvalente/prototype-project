@@ -137,6 +137,9 @@ screens to copy; product logo and name are not reused, and all text stays in Eng
 - Q: What if TF5 is answered SIP = Yes? → A: The level switches to **TF4** and the user is warned.
 - Q: Which location levels are required for TF4 and TF5? → A: Only **Department and Workshop**
   (deeper levels and Task Type optional); other levels keep the full location and Task Type.
+- Q: How does the "Shared with" dropdown behave? → A: It stays open while people are chosen,
+  shows the chosen ones as selected in the list, and closes with Done, Escape or a click outside;
+  the chosen people also appear as removable badges below it.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -355,7 +358,8 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
   Contractor / Non-Permanent Contractor / Other) and the person involved — for Employee a user of
   the plant (required); otherwise their name (required) and "What was the person doing?"
   (optional) — Recurrence (Yes/No), Comments and **Shared
-  with** (a dropdown of users of the event's plant who can see its pillar; each choice shown as a
+  with** (a multi-select dropdown of users of the event's plant who can see its pillar, which stays
+  open while choosing and marks the chosen people as selected; each choice also shown as a
   removable badge below it), plus a Disease(s) multi-select when
   the family is OH. *(US-CREATE-04, Clarification 2026-10-24, list/Kanban/form review)*
 - **FR-047**: For TF1, TF2 and TF3 the system MUST ask "What was the first aid treatment?" with a

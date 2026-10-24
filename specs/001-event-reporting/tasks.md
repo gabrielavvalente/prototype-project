@@ -500,6 +500,8 @@ FR-048)
   treatment for TF1–TF3 (`DetailsSection.jsx`); first aid list and sample data
   (`sampleData.js`, database version 5); summary rows (`eventSummary.js`)
 - [X] T092 Rerun quickstart scenarios 1–7 at 390px with no console errors
+- [X] T093 Shared with as a multi-select dropdown that stays open and marks chosen people
+  (`src/create/PeoplePicker.jsx`, `DetailsSection.jsx`)
 
 ---
 
