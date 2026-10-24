@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype apps</title>
+    <link rel="stylesheet" href="../shared/theme.css" />
+    <style>
+      .launcher {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: var(--space-6, 32px) var(--space-4, 16px);
+      }
+      .launcher-apps {
+        display: grid;
+        gap: var(--space-4, 16px);
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        padding: 0;
+        list-style: none;
+      }
+      .launcher-app {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3, 12px);
+        padding: var(--space-5, 24px);
+        background: var(--color-surface, #fff);
+        border: 1px solid var(--color-border, #ddd);
+        border-radius: var(--radius-large, 12px);
+      }
+      .launcher-app h2,
+      .launcher-app p {
+        margin: 0;
+      }
+      .launcher-app .button {
+        align-self: flex-start;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="launcher">
+      <h1>Prototype apps</h1>
+      <p>Open the apps from here so they share the same demo data on this device.</p>
+      <ul class="launcher-apps">
+        <li class="launcher-app">
+          <h2>Event Reporting</h2>
+          <p>Report health, safety, environment and industrial risk events, and find existing ones.</p>
+          <a class="button button--primary" href="/apps/event-reporting/">Open</a>
+        </li>
+        <li class="launcher-app">
+          <h2>Control Panel</h2>
+          <p>Set the event workflow and the master data of each pillar.</p>
+          <a class="button button--primary" href="/apps/control-panel/">Open</a>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>
