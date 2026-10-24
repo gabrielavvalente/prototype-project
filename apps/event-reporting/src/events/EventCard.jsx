@@ -27,8 +27,8 @@ export function PillarTag({ pillar }) {
   );
 }
 
-// One event in the card list (FR-041): tags, record number, title, location, reporter, date.
-export default function EventCard({ event }) {
+// One event card (Kanban view, FR-041): tags, record number, title, location, reporter, date.
+export default function EventCard({ event, onQuickView }) {
   const { reference, organization, users } = useApp();
   const pillar = findById(reference, event.pillarId);
   const reporter = findById(users, event.reporterId);
@@ -42,9 +42,15 @@ export default function EventCard({ event }) {
           <PillarTag pillar={pillar} />
           <span className="tag tag--blue">{event.levelCode}</span>
           {isHpr(event) && <span className="tag tag--red">HPR</span>}
-          {event.status === 'Draft' && <span className="tag">DRAFT</span>}
         </div>
-        <SeverityDots levelCode={event.levelCode} />
+        <div className="event-card-corner">
+          <SeverityDots levelCode={event.levelCode} />
+          {onQuickView && (
+            <button type="button" className="icon-button card-eye" onClick={() => onQuickView(event)}>
+              <Icon name="eye" size={18} label={`Preview ${event.title || 'draft'}`} />
+            </button>
+          )}
+        </div>
       </div>
       <p className="event-card-number">{event.recordNumber || 'Draft — no record number yet'}</p>
       <h2 className="event-card-title">

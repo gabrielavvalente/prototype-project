@@ -32,7 +32,7 @@ function makeAction(changes = {}) {
 function makeEvent(changes = {}) {
   return {
     pillarId: 'pillar-hs',
-    familyCode: 'SAF',
+    familyCode: 'TF',
     levelCode: 'TF4',
     riskQuestion: { type: 'HPR', answer: false },
     location: {
@@ -69,20 +69,20 @@ function fields(errors) {
 
 describe('getRiskQuestionType (FR-004)', () => {
   it('asks HPR for Safety and Environment', () => {
-    expect(getRiskQuestionType('SAF', 'TF2')).toBe('HPR');
-    expect(getRiskQuestionType('ENV', 'EvE5')).toBe('HPR');
+    expect(getRiskQuestionType('TF', 'TF2')).toBe('HPR');
+    expect(getRiskQuestionType('EVE', 'EvE5')).toBe('HPR');
   });
 
   it('asks CRP for SRE1-SRE2 and SRP for SRE3-SRE5', () => {
-    expect(getRiskQuestionType('IR', 'SRE1')).toBe('CRP');
-    expect(getRiskQuestionType('IR', 'SRE2')).toBe('CRP');
-    expect(getRiskQuestionType('IR', 'SRE3')).toBe('SRP');
-    expect(getRiskQuestionType('IR', 'SRE5')).toBe('SRP');
+    expect(getRiskQuestionType('SRE', 'SRE1')).toBe('CRP');
+    expect(getRiskQuestionType('SRE', 'SRE2')).toBe('CRP');
+    expect(getRiskQuestionType('SRE', 'SRE3')).toBe('SRP');
+    expect(getRiskQuestionType('SRE', 'SRE5')).toBe('SRP');
   });
 
   it('asks nothing for Occupational Health or before a level is chosen', () => {
     expect(getRiskQuestionType('OH', 'OH-SKIN')).toBeNull();
-    expect(getRiskQuestionType('IR', '')).toBeNull();
+    expect(getRiskQuestionType('SRE', '')).toBeNull();
   });
 });
 
@@ -204,7 +204,7 @@ describe('validateSection', () => {
   });
 
   it('requires an immediate action for TF1-TF3 and SRE1-SRE3 (FR-012)', () => {
-    const event = makeEvent({ familyCode: 'IR', levelCode: 'SRE2', riskQuestion: { type: 'CRP', answer: true } });
+    const event = makeEvent({ familyCode: 'SRE', levelCode: 'SRE2', riskQuestion: { type: 'CRP', answer: true } });
     expect(fields(validateSection('actions', event, options))).toEqual(['immediateActions']);
     const withAction = { ...event, immediateActions: [makeAction()] };
     expect(validateSection('actions', withAction, options)).toEqual([]);

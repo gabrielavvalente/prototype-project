@@ -12,6 +12,7 @@ import { findById, findLevelByCode, getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
 import { PillarTag, SeverityDots } from './EventCard.jsx';
+import StatusBadge from './StatusBadge.jsx';
 
 function formatDateTime(isoText) {
   return isoText ? new Date(isoText).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : '';
@@ -98,7 +99,7 @@ export default function EventDetail() {
         <div className="tag-row">
           <PillarTag pillar={pillar} />
           <span className="tag tag--blue">{event.levelCode}</span>
-          <span className={`tag ${event.status === 'Open' ? 'tag--teal' : ''}`}>{event.status.toUpperCase()}</span>
+          <StatusBadge status={event.status} />
           {isHpr(event) && <span className="tag tag--red">HPR</span>}
         </div>
         <h1>{event.title || '(no title yet)'}</h1>

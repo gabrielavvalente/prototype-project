@@ -13,10 +13,10 @@ import {
 function makeEvent(id, changes = {}) {
   return {
     id,
-    recordNumber: `SAF-2026-000${id}`,
+    recordNumber: `TF-26-000${id}`,
     title: `Event ${id}`,
     status: 'Open',
-    familyCode: 'SAF',
+    familyCode: 'TF',
     levelCode: 'TF4',
     reporterId: 'user-1',
     createdBy: 'user-1',
@@ -30,8 +30,8 @@ function makeEvent(id, changes = {}) {
 
 const events = [
   makeEvent('1', { title: 'Forklift near miss', reportDate: '2026-09-01', riskQuestion: { type: 'HPR', answer: true } }),
-  makeEvent('2', { title: 'Oil leak', familyCode: 'ENV', levelCode: 'EvE4', reporterId: 'user-2', createdBy: 'user-2', reportDate: '2026-09-15' }),
-  makeEvent('3', { title: 'Fire in cabinet', familyCode: 'IR', levelCode: 'SRE3', riskQuestion: { type: 'SRP', answer: true }, reportDate: '2026-10-05', location: { departmentId: 'dep-2', workshopId: 'ws-9', jobId: '', workstationId: '', taskId: '' } }),
+  makeEvent('2', { title: 'Oil leak', familyCode: 'EVE', levelCode: 'EvE4', reporterId: 'user-2', createdBy: 'user-2', reportDate: '2026-09-15' }),
+  makeEvent('3', { title: 'Fire in cabinet', familyCode: 'SRE', levelCode: 'SRE3', riskQuestion: { type: 'SRP', answer: true }, reportDate: '2026-10-05', location: { departmentId: 'dep-2', workshopId: 'ws-9', jobId: '', workstationId: '', taskId: '' } }),
   makeEvent('4', { title: 'Draft forklift', status: 'Draft', recordNumber: null, reportDate: '2026-10-20', riskQuestion: { type: 'HPR', answer: true } }),
 ];
 
@@ -44,8 +44,8 @@ describe('searchEvents (FR-029)', () => {
   });
 
   it('matches an exact record number, ignoring case', () => {
-    expect(ids(searchEvents(events, 'saf-2026-0002'))).toEqual(['2']);
-    expect(ids(searchEvents(events, 'SAF-2026'))).toEqual([]);
+    expect(ids(searchEvents(events, 'tf-26-0002'))).toEqual(['2']);
+    expect(ids(searchEvents(events, 'TF-26'))).toEqual([]);
   });
 
   it('returns everything for an empty search', () => {
@@ -57,8 +57,8 @@ describe('applyFilters (FR-030)', () => {
   const filter = (changes) => ids(applyFilters(events, { ...EMPTY_FILTERS, ...changes }, 'user-1'));
 
   it('filters by type and level', () => {
-    expect(filter({ familyCode: 'ENV' })).toEqual(['2']);
-    expect(filter({ familyCode: 'SAF', levelCode: 'TF4' })).toEqual(['1', '4']);
+    expect(filter({ familyCode: 'EVE' })).toEqual(['2']);
+    expect(filter({ familyCode: 'TF', levelCode: 'TF4' })).toEqual(['1', '4']);
   });
 
   it('filters by time range on the report date', () => {
@@ -122,12 +122,12 @@ describe('paginate (FR-026)', () => {
 });
 
 describe('KPI chips (FR-031)', () => {
-  it('counts submitted events, and drafts only under drafts', () => {
-    expect(computeKpis(events, 'user-1')).toEqual({ all: 3, mine: 2, open: 3, hpr: 1, drafts: 1 });
+  it('counts own drafts in All, My events and Drafts only', () => {
+    expect(computeKpis(events, 'user-1')).toEqual({ all: 4, mine: 3, open: 3, hpr: 1, drafts: 1 });
   });
 
   it('narrows the list to the chosen chip', () => {
-    expect(ids(applyQuickFilter(events, 'all', 'user-1'))).toEqual(['1', '2', '3']);
+    expect(ids(applyQuickFilter(events, 'all', 'user-1'))).toEqual(['1', '2', '3', '4']);
     expect(ids(applyQuickFilter(events, 'mine', 'user-2'))).toEqual(['2']);
     expect(ids(applyQuickFilter(events, 'hpr', 'user-1'))).toEqual(['1']);
     expect(ids(applyQuickFilter(events, 'drafts', 'user-1'))).toEqual(['4']);
@@ -137,7 +137,7 @@ describe('KPI chips (FR-031)', () => {
 describe('countActiveFilters (FR-042)', () => {
   it('counts each filter in use once', () => {
     expect(countActiveFilters(EMPTY_FILTERS)).toBe(0);
-    expect(countActiveFilters({ ...EMPTY_FILTERS, familyCode: 'SAF', from: '2026-01-01' })).toBe(2);
+    expect(countActiveFilters({ ...EMPTY_FILTERS, familyCode: 'TF', from: '2026-01-01' })).toBe(2);
     expect(countActiveFilters({ ...EMPTY_FILTERS, location: { departmentId: 'd', workshopId: 'w' } })).toBe(1);
   });
 });

@@ -6,7 +6,8 @@ import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 import * as sampleData from './sampleData.js';
 
 const DATABASE_NAME = 'event-reporting';
-const DATABASE_VERSION = 1;
+// Version 2 renamed family codes and record numbers (review 2026-10-24); older demo data is replaced.
+const DATABASE_VERSION = 2;
 
 const STORES = [
   'events',
@@ -33,6 +34,9 @@ function getDatabase() {
   if (!databasePromise) {
     databasePromise = openDB(DATABASE_NAME, DATABASE_VERSION, {
       upgrade(db) {
+        for (const name of [...db.objectStoreNames]) {
+          db.deleteObjectStore(name);
+        }
         const stores = {};
         for (const name of STORES) {
           stores[name] = db.createObjectStore(name, { keyPath: 'id' });

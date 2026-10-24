@@ -2,6 +2,7 @@
 // All names are fictional.
 
 import { getManagersToAlert } from '../logic/access.js';
+import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 
 // ---------------------------------------------------------------------------
 // Reference lists
@@ -10,14 +11,14 @@ import { getManagersToAlert } from '../logic/access.js';
 const pillars = [
   { id: 'pillar-hs', list: 'pillar', code: 'H&S', label: 'Health & Safety' },
   { id: 'pillar-env', list: 'pillar', code: 'ENV', label: 'Environment' },
-  { id: 'pillar-site-risk', list: 'pillar', code: 'SITE_RISK', label: 'Site Risk' },
+  { id: 'pillar-ir', list: 'pillar', code: 'IR', label: 'Industrial Risk' },
   { id: 'pillar-ih', list: 'pillar', code: 'IH', label: 'Industrial Hygiene' },
 ];
 
 const families = [
-  { id: 'family-saf', list: 'family', code: 'SAF', label: 'Safety', pillarId: 'pillar-hs' },
-  { id: 'family-env', list: 'family', code: 'ENV', label: 'Environment', pillarId: 'pillar-env' },
-  { id: 'family-ir', list: 'family', code: 'IR', label: 'Industrial Risk', pillarId: 'pillar-site-risk' },
+  { id: 'family-tf', list: 'family', code: 'TF', label: 'Safety', pillarId: 'pillar-hs' },
+  { id: 'family-eve', list: 'family', code: 'EVE', label: 'Environment', pillarId: 'pillar-env' },
+  { id: 'family-sre', list: 'family', code: 'SRE', label: 'Industrial Risk', pillarId: 'pillar-ir' },
   { id: 'family-oh', list: 'family', code: 'OH', label: 'Occupational Health', pillarId: 'pillar-ih' },
 ];
 
@@ -33,21 +34,21 @@ function level(code, familyCode, label, description) {
 }
 
 const levels = [
-  level('TF1', 'SAF', 'Lost Time Accident', 'Someone was hurt and could not work their next shift.'),
-  level('TF2', 'SAF', 'Non-Lost Time Accident', 'Someone was hurt and needed medical care, but kept working.'),
-  level('TF3', 'SAF', 'First Aid', 'Someone was slightly hurt and only needed first aid.'),
-  level('TF4', 'SAF', 'Near Miss', 'Something occurred but nobody was hurt.'),
-  level('TF5', 'SAF', 'Hazardous Situation', 'Nothing happened yet, but something could hurt someone.'),
-  level('EvE1', 'ENV', 'Major environmental accident', 'Serious harm to the environment outside the site.'),
-  level('EvE2', 'ENV', 'Environmental accident', 'Harm to the environment that needed outside help to contain.'),
-  level('EvE3', 'ENV', 'Minor environmental accident', 'A release contained on site by the team.'),
-  level('EvE4', 'ENV', 'Near-accident', 'A release almost happened but was stopped in time.'),
-  level('EvE5', 'ENV', 'Poor environmental situation', 'A condition that could lead to a release or waste.'),
-  level('SRE1', 'IR', 'Major site risk accident', 'Fire, explosion or failure with major damage to the site.'),
-  level('SRE2', 'IR', 'Significant site risk accident', 'Fire or failure with significant damage, contained on site.'),
-  level('SRE3', 'IR', 'Moderate site risk accident', 'A small fire or failure with limited damage.'),
-  level('SRE4', 'IR', 'Site risk near accident', 'A fire or failure almost happened but was stopped in time.'),
-  level('SRE5', 'IR', 'Site risk hazardous acts or conditions', 'An unsafe act or condition that could cause a fire or failure.'),
+  level('TF1', 'TF', 'Lost Time Accident', 'Someone was hurt and could not work their next shift.'),
+  level('TF2', 'TF', 'Non-Lost Time Accident', 'Someone was hurt and needed medical care, but kept working.'),
+  level('TF3', 'TF', 'First Aid', 'Someone was slightly hurt and only needed first aid.'),
+  level('TF4', 'TF', 'Near Miss', 'Something occurred but nobody was hurt.'),
+  level('TF5', 'TF', 'Hazardous Situation', 'Nothing happened yet, but something could hurt someone.'),
+  level('EvE1', 'EVE', 'Major environmental accident', 'Serious harm to the environment outside the site.'),
+  level('EvE2', 'EVE', 'Environmental accident', 'Harm to the environment that needed outside help to contain.'),
+  level('EvE3', 'EVE', 'Minor environmental accident', 'A release contained on site by the team.'),
+  level('EvE4', 'EVE', 'Near-accident', 'A release almost happened but was stopped in time.'),
+  level('EvE5', 'EVE', 'Poor environmental situation', 'A condition that could lead to a release or waste.'),
+  level('SRE1', 'SRE', 'Major site risk accident', 'Fire, explosion or failure with major damage to the site.'),
+  level('SRE2', 'SRE', 'Significant site risk accident', 'Fire or failure with significant damage, contained on site.'),
+  level('SRE3', 'SRE', 'Moderate site risk accident', 'A small fire or failure with limited damage.'),
+  level('SRE4', 'SRE', 'Site risk near accident', 'A fire or failure almost happened but was stopped in time.'),
+  level('SRE5', 'SRE', 'Site risk hazardous acts or conditions', 'An unsafe act or condition that could cause a fire or failure.'),
   // Industrial Hygiene is classified by disease type instead of levels 1-5.
   level('OH-RESP', 'OH', 'Respiratory disease', 'Breathing problems linked to dust, fumes or chemicals at work.'),
   level('OH-SKIN', 'OH', 'Skin disease', 'Skin irritation or allergy linked to contact with substances.'),
@@ -190,7 +191,7 @@ export const organization = [
 // Demo users
 // ---------------------------------------------------------------------------
 
-const allPillars = ['pillar-hs', 'pillar-env', 'pillar-site-risk', 'pillar-ih'];
+const allPillars = ['pillar-hs', 'pillar-env', 'pillar-ir', 'pillar-ih'];
 
 export const users = [
   {
@@ -220,7 +221,7 @@ export const users = [
     avatar: 'DL',
     role: 'Manager',
     access: [
-      { businessId: 'biz-auto', plantId: 'plant-lyon', pillarIds: ['pillar-hs', 'pillar-site-risk'] },
+      { businessId: 'biz-auto', plantId: 'plant-lyon', pillarIds: ['pillar-hs', 'pillar-ir'] },
       { businessId: 'biz-pack', plantId: 'plant-porto', pillarIds: allPillars },
     ],
   },
@@ -252,9 +253,9 @@ export const users = [
 // ---------------------------------------------------------------------------
 
 const pillarOfFamily = {
-  SAF: 'pillar-hs',
-  ENV: 'pillar-env',
-  IR: 'pillar-site-risk',
+  TF: 'pillar-hs',
+  EVE: 'pillar-env',
+  SRE: 'pillar-ir',
   OH: 'pillar-ih',
 };
 
@@ -265,10 +266,10 @@ const businessOfPlant = {
 };
 
 function riskQuestionFor(familyCode, levelCode, answer) {
-  if (familyCode === 'SAF' || familyCode === 'ENV') {
+  if (familyCode === 'TF' || familyCode === 'EVE') {
     return { type: 'HPR', answer };
   }
-  if (familyCode === 'IR') {
+  if (familyCode === 'SRE') {
     const type = ['SRE1', 'SRE2'].includes(levelCode) ? 'CRP' : 'SRP';
     return { type, answer };
   }
@@ -295,36 +296,36 @@ function locationFor(plantId, variant) {
 // One row per sample event:
 // [title, family, level, plant, reporter, risk answer, status, report date, time, needs action]
 const eventRows = [
-  ['Forklift almost hit a pedestrian at dock 3', 'SAF', 'TF4', 'plant-lyon', 'user-ana', true, 'Open', '2026-09-02', '08:15', false],
-  ['Operator cut finger on sheet metal edge', 'SAF', 'TF3', 'plant-lyon', 'user-ana', false, 'Open', '2026-09-05', '10:40', true],
-  ['Oil leak under press 4', 'ENV', 'EvE4', 'plant-lyon', 'user-carla', false, 'Open', '2026-09-08', '14:05', false],
-  ['Worker slipped on wet floor and twisted ankle', 'SAF', 'TF2', 'plant-lyon', 'user-ana', true, 'Open', '2026-09-10', '06:50', true],
-  ['Sparks from grinder near cardboard boxes', 'IR', 'SRE4', 'plant-lyon', 'user-diego', true, 'Open', '2026-09-12', '15:30', false],
-  ['Missing guard on conveyor', 'SAF', 'TF5', 'plant-lyon', 'user-carla', true, 'Open', '2026-09-15', '09:00', false],
-  ['Chemical drum stored outside bunded area', 'ENV', 'EvE5', 'plant-lyon', 'user-ana', false, 'Open', '2026-09-18', '11:20', false],
-  ['Small fire in electrical cabinet', 'IR', 'SRE3', 'plant-lyon', 'user-carla', false, 'Open', '2026-09-20', '22:10', true],
+  ['Forklift almost hit a pedestrian at dock 3', 'TF', 'TF4', 'plant-lyon', 'user-ana', true, 'Open', '2026-09-02', '08:15', false],
+  ['Operator cut finger on sheet metal edge', 'TF', 'TF3', 'plant-lyon', 'user-ana', false, 'Open', '2026-09-05', '10:40', true],
+  ['Oil leak under press 4', 'EVE', 'EvE4', 'plant-lyon', 'user-carla', false, 'Open', '2026-09-08', '14:05', false],
+  ['Worker slipped on wet floor and twisted ankle', 'TF', 'TF2', 'plant-lyon', 'user-ana', true, 'Open', '2026-09-10', '06:50', true],
+  ['Sparks from grinder near cardboard boxes', 'SRE', 'SRE4', 'plant-lyon', 'user-diego', true, 'Open', '2026-09-12', '15:30', false],
+  ['Missing guard on conveyor', 'TF', 'TF5', 'plant-lyon', 'user-carla', true, 'Open', '2026-09-15', '09:00', false],
+  ['Chemical drum stored outside bunded area', 'EVE', 'EvE5', 'plant-lyon', 'user-ana', false, 'Open', '2026-09-18', '11:20', false],
+  ['Small fire in electrical cabinet', 'SRE', 'SRE3', 'plant-lyon', 'user-carla', false, 'Open', '2026-09-20', '22:10', true],
   ['Operator reports wrist pain after long shifts', 'OH', 'OH-MSD', 'plant-lyon', 'user-ana', null, 'Open', '2026-09-22', '13:00', false],
-  ['Fall from ladder during maintenance', 'SAF', 'TF1', 'plant-lyon', 'user-carla', true, 'Open', '2026-09-24', '07:45', true],
-  ['Coolant spill reached rain drain', 'ENV', 'EvE2', 'plant-lyon', 'user-carla', true, 'Open', '2026-09-26', '16:35', false],
-  ['Compressed air hose whipped loose', 'IR', 'SRE5', 'plant-lyon', 'user-diego', false, 'Open', '2026-09-29', '10:10', false],
-  ['Pallet fell from racking, nobody nearby', 'SAF', 'TF4', 'plant-lyon', 'user-ana', true, 'Open', '2026-10-01', '12:25', false],
+  ['Fall from ladder during maintenance', 'TF', 'TF1', 'plant-lyon', 'user-carla', true, 'Open', '2026-09-24', '07:45', true],
+  ['Coolant spill reached rain drain', 'EVE', 'EvE2', 'plant-lyon', 'user-carla', true, 'Open', '2026-09-26', '16:35', false],
+  ['Compressed air hose whipped loose', 'SRE', 'SRE5', 'plant-lyon', 'user-diego', false, 'Open', '2026-09-29', '10:10', false],
+  ['Pallet fell from racking, nobody nearby', 'TF', 'TF4', 'plant-lyon', 'user-ana', true, 'Open', '2026-10-01', '12:25', false],
   ['Skin rash after handling new degreaser', 'OH', 'OH-SKIN', 'plant-lyon', 'user-ana', null, 'Open', '2026-10-03', '09:40', false],
-  ['Gas cylinder valve found damaged', 'IR', 'SRE2', 'plant-lyon', 'user-carla', true, 'Open', '2026-10-06', '08:00', true],
-  ['Blocked emergency exit in warehouse', 'SAF', 'TF5', 'plant-lyon', 'user-ana', false, 'Open', '2026-10-09', '17:15', false],
-  ['Hand caught in press, glove torn', 'SAF', 'TF4', 'plant-lyon', 'user-ana', true, 'Draft', '2026-10-20', '11:00', false],
-  ['Hydraulic oil drip from forklift', 'ENV', 'EvE4', 'plant-lyon', 'user-carla', false, 'Draft', '2026-10-21', '14:30', false],
-  ['Worker hit head on low beam', 'SAF', 'TF3', 'plant-curitiba', 'user-ben', false, 'Open', '2026-09-04', '09:30', true],
-  ['Paint fumes in booth 2', 'ENV', 'EvE5', 'plant-curitiba', 'user-ben', false, 'Open', '2026-09-11', '15:00', false],
-  ['Overheated motor smoking', 'IR', 'SRE3', 'plant-curitiba', 'user-felix', false, 'Open', '2026-09-19', '20:45', true],
+  ['Gas cylinder valve found damaged', 'SRE', 'SRE2', 'plant-lyon', 'user-carla', true, 'Open', '2026-10-06', '08:00', true],
+  ['Blocked emergency exit in warehouse', 'TF', 'TF5', 'plant-lyon', 'user-ana', false, 'Open', '2026-10-09', '17:15', false],
+  ['Hand caught in press, glove torn', 'TF', 'TF4', 'plant-lyon', 'user-ana', true, 'Draft', '2026-10-20', '11:00', false],
+  ['Hydraulic oil drip from forklift', 'EVE', 'EvE4', 'plant-lyon', 'user-carla', false, 'Draft', '2026-10-21', '14:30', false],
+  ['Worker hit head on low beam', 'TF', 'TF3', 'plant-curitiba', 'user-ben', false, 'Open', '2026-09-04', '09:30', true],
+  ['Paint fumes in booth 2', 'EVE', 'EvE5', 'plant-curitiba', 'user-ben', false, 'Open', '2026-09-11', '15:00', false],
+  ['Overheated motor smoking', 'SRE', 'SRE3', 'plant-curitiba', 'user-felix', false, 'Open', '2026-09-19', '20:45', true],
   ['Noise above limit near stamping line', 'OH', 'OH-HEAR', 'plant-curitiba', 'user-felix', null, 'Open', '2026-09-27', '10:00', false],
-  ['Trolley wheel broke while loaded', 'SAF', 'TF4', 'plant-curitiba', 'user-ben', true, 'Open', '2026-10-04', '13:50', false],
-  ['Burn from hot part out of oven', 'SAF', 'TF2', 'plant-curitiba', 'user-ben', true, 'Open', '2026-10-12', '07:20', true],
-  ['Unlabelled waste container', 'ENV', 'EvE5', 'plant-curitiba', 'user-ben', false, 'Draft', '2026-10-22', '16:00', false],
-  ['Stack of pallets leaning in aisle 7', 'SAF', 'TF5', 'plant-porto', 'user-gina', true, 'Open', '2026-09-07', '06:30', false],
-  ['Truck reversed into loading dock door', 'SAF', 'TF4', 'plant-porto', 'user-gina', true, 'Open', '2026-09-17', '05:55', false],
-  ['Shrink-wrap machine heater fire', 'IR', 'SRE3', 'plant-porto', 'user-diego', false, 'Open', '2026-09-25', '23:10', true],
+  ['Trolley wheel broke while loaded', 'TF', 'TF4', 'plant-curitiba', 'user-ben', true, 'Open', '2026-10-04', '13:50', false],
+  ['Burn from hot part out of oven', 'TF', 'TF2', 'plant-curitiba', 'user-ben', true, 'Open', '2026-10-12', '07:20', true],
+  ['Unlabelled waste container', 'EVE', 'EvE5', 'plant-curitiba', 'user-ben', false, 'Draft', '2026-10-22', '16:00', false],
+  ['Stack of pallets leaning in aisle 7', 'TF', 'TF5', 'plant-porto', 'user-gina', true, 'Open', '2026-09-07', '06:30', false],
+  ['Truck reversed into loading dock door', 'TF', 'TF4', 'plant-porto', 'user-gina', true, 'Open', '2026-09-17', '05:55', false],
+  ['Shrink-wrap machine heater fire', 'SRE', 'SRE3', 'plant-porto', 'user-diego', false, 'Open', '2026-09-25', '23:10', true],
   ['Dust from cardboard cutting', 'OH', 'OH-RESP', 'plant-porto', 'user-gina', null, 'Open', '2026-10-02', '11:45', false],
-  ['Plastic film waste in open skip', 'ENV', 'EvE5', 'plant-porto', 'user-gina', false, 'Open', '2026-10-10', '14:20', false],
+  ['Plastic film waste in open skip', 'EVE', 'EvE5', 'plant-porto', 'user-gina', false, 'Open', '2026-10-10', '14:20', false],
 ];
 
 const diseaseOfLevel = {
@@ -362,10 +363,10 @@ function buildSampleEvents() {
 
     let recordNumber = null;
     if (status === 'Open') {
-      const counterId = `${familyCode}-2026`;
+      const counterId = getCounterId(familyCode, 2026);
       sequences[counterId] = (sequences[counterId] || 0) + 1;
       counters[counterId] = sequences[counterId];
-      recordNumber = `${counterId}-${String(sequences[counterId]).padStart(4, '0')}`;
+      recordNumber = formatRecordNumber(familyCode, 2026, sequences[counterId]);
     }
 
     return {

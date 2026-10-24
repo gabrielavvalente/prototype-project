@@ -19,7 +19,7 @@ describe('getSeverityDots', () => {
 describe('getPillarColorClass', () => {
   it('maps each pillar code to its color', () => {
     expect(getPillarColorClass('H&S')).toBe('pillar-dot--hs');
-    expect(getPillarColorClass('SITE_RISK')).toBe('pillar-dot--site-risk');
+    expect(getPillarColorClass('IR')).toBe('pillar-dot--ir');
     expect(getPillarColorClass('unknown')).toBe('');
   });
 });

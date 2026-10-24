@@ -19,10 +19,10 @@ export function getRiskQuestionType(familyCode, levelCode) {
   if (!levelCode) {
     return null;
   }
-  if (familyCode === 'SAF' || familyCode === 'ENV') {
+  if (familyCode === 'TF' || familyCode === 'EVE') {
     return 'HPR';
   }
-  if (familyCode === 'IR') {
+  if (familyCode === 'SRE') {
     return ['SRE1', 'SRE2'].includes(levelCode) ? 'CRP' : 'SRP';
   }
   return null;

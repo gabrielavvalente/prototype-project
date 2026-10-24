@@ -3,44 +3,47 @@ import { useApp } from '../AppContext.js';
 import { canEditEvent } from '../logic/access.js';
 import { isHpr, PAGE_SIZES } from '../logic/eventList.js';
 import { getLabel } from '../logic/lookups.js';
+import Icon from '../shell/Icon.jsx';
+import { SeverityDots } from './EventCard.jsx';
+import StatusBadge from './StatusBadge.jsx';
 
+// List view columns, in the order agreed in the review (FR-041).
 // "always" columns cannot be hidden; "sortKey" columns can be sorted.
 const COLUMNS = [
   { key: 'recordNumber', label: 'Record number', always: true },
-  { key: 'title', label: 'Title', always: true },
-  { key: 'type', label: 'Pillar / Family', sortKey: 'type' },
-  { key: 'level', label: 'Level', sortKey: 'level' },
   { key: 'status', label: 'Status', sortKey: 'status' },
-  { key: 'reporter', label: 'Reporter', sortKey: 'reporter' },
+  { key: 'level', label: 'Level', sortKey: 'level' },
   { key: 'date', label: 'Report date', sortKey: 'date' },
+  { key: 'title', label: 'Title', always: true },
   { key: 'department', label: 'Department' },
-  { key: 'hpr', label: 'HPR' },
+  { key: 'reporter', label: 'Reporter', sortKey: 'reporter' },
 ];
 
 export const ALL_COLUMN_KEYS = COLUMNS.map((column) => column.key);
 
-function cellValue(column, event, lists) {
+function Cell({ column, event, lists }) {
   switch (column.key) {
     case 'recordNumber':
-      return event.recordNumber || 'Draft';
-    case 'title':
-      return event.title || '(no title yet)';
-    case 'type':
-      return `${getLabel(lists.reference, event.pillarId)} / ${event.familyCode}`;
-    case 'level':
-      return event.levelCode;
+      return <span className="cell-strong">{event.recordNumber || 'Draft'}</span>;
     case 'status':
-      return event.status;
-    case 'reporter':
-      return getLabel(lists.users, event.reporterId);
+      return <StatusBadge status={event.status} />;
+    case 'level':
+      return (
+        <span className="cell-level">
+          <SeverityDots levelCode={event.levelCode} /> {event.levelCode}
+          {isHpr(event) && <span className="tag tag--red">HPR</span>}
+        </span>
+      );
     case 'date':
       return event.reportDate;
+    case 'title':
+      return event.title || '(no title yet)';
     case 'department':
       return getLabel(lists.organization, event.location.departmentId);
-    case 'hpr':
-      return isHpr(event) ? 'Yes' : '—';
+    case 'reporter':
+      return getLabel(lists.users, event.reporterId);
     default:
-      return '';
+      return null;
   }
 }
 
@@ -57,47 +60,37 @@ function SortableHeader({ column, sort, onSort }) {
   );
 }
 
-// The paginated, sortable event grid with column choices and row actions (FR-026 to FR-028, FR-032).
-export default function EventTable({ rows, sort, onSort, visibleColumns, onChangeColumns, paging, onQuickView }) {
-  const lists = useApp();
-  const columns = COLUMNS.filter((column) => column.always || visibleColumns.includes(column.key));
-
-  function toggleColumn(key) {
-    const next = visibleColumns.includes(key) ? visibleColumns.filter((item) => item !== key) : [...visibleColumns, key];
-    onChangeColumns(next);
+// Show or hide the optional columns; the choice is remembered (FR-028).
+export function ColumnsMenu({ visibleColumns, onChange }) {
+  function toggle(key) {
+    onChange(visibleColumns.includes(key) ? visibleColumns.filter((item) => item !== key) : [...visibleColumns, key]);
   }
 
   return (
-    <section aria-label="Event list">
-      <div className="table-toolbar">
-        <details className="columns-menu">
-          <summary className="button">Columns</summary>
-          <fieldset className="card">
-            <legend className="field-label">Show columns</legend>
-            {COLUMNS.filter((column) => !column.always).map((column) => (
-              <label key={column.key} className="field-hint">
-                <input
-                  type="checkbox"
-                  checked={visibleColumns.includes(column.key)}
-                  onChange={() => toggleColumn(column.key)}
-                />{' '}
-                {column.label}
-              </label>
-            ))}
-          </fieldset>
-        </details>
-        <div className="field">
-          <label htmlFor="page-size">Rows per page</label>
-          <select id="page-size" value={paging.pageSize} onChange={(e) => paging.onPageSize(Number(e.target.value))}>
-            {PAGE_SIZES.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+    <details className="columns-menu">
+      <summary className="button">
+        <Icon name="columns" size={18} /> Columns
+      </summary>
+      <fieldset className="card columns-menu-panel">
+        <legend className="section-label">Show columns</legend>
+        {COLUMNS.filter((column) => !column.always).map((column) => (
+          <label key={column.key} className="columns-menu-option">
+            <input type="checkbox" checked={visibleColumns.includes(column.key)} onChange={() => toggle(column.key)} />
+            {column.label}
+          </label>
+        ))}
+      </fieldset>
+    </details>
+  );
+}
 
+// The List view: a paginated, sortable table with one eye icon per row (FR-026, FR-027, FR-041).
+export default function EventTable({ rows, sort, onSort, visibleColumns, paging, onQuickView }) {
+  const lists = useApp();
+  const columns = COLUMNS.filter((column) => column.always || visibleColumns.includes(column.key));
+
+  return (
+    <section aria-label="Event list">
       <div className="table-wrapper">
         <table className="event-table">
           <thead>
@@ -111,53 +104,65 @@ export default function EventTable({ rows, sort, onSort, visibleColumns, onChang
                   </th>
                 ),
               )}
-              <th scope="col">Actions</th>
+              <th scope="col">
+                <span className="visually-hidden">Actions</span>
+              </th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((event) => {
-              const path = `/events/${event.recordNumber || event.id}`;
-              return (
-                <tr key={event.id}>
-                  {columns.map((column) => (
-                    <td key={column.key}>{cellValue(column, event, lists)}</td>
-                  ))}
-                  <td className="row-actions">
-                    <button type="button" className="button button--link" onClick={() => onQuickView(event)}>
-                      Quick view<span className="visually-hidden"> of {event.title}</span>
+            {rows.map((event) => (
+              <tr key={event.id}>
+                {columns.map((column) => (
+                  <td key={column.key}>
+                    <Cell column={column} event={event} lists={lists} />
+                  </td>
+                ))}
+                <td className="row-actions">
+                  <div className="row-actions-inner">
+                    <button type="button" className="icon-button" onClick={() => onQuickView(event)}>
+                      <Icon name="eye" label={`Preview ${event.title || 'draft'}`} />
                     </button>
-                    <Link to={path}>
-                      View<span className="visually-hidden"> {event.title}</span>
-                    </Link>
                     {canEditEvent(lists.user, event) && (
-                      <Link to={`${path}/edit`}>
-                        Edit<span className="visually-hidden"> {event.title}</span>
+                      <Link className="icon-button" to={`/events/${event.recordNumber || event.id}/edit`}>
+                        <Icon name="edit" label={`Edit ${event.title || 'draft'}`} />
                       </Link>
                     )}
-                  </td>
-                </tr>
-              );
-            })}
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
 
-      <nav className="pagination" aria-label="Pages">
-        <button type="button" className="button" disabled={paging.page <= 1} onClick={() => paging.onPage(paging.page - 1)}>
-          Previous
-        </button>
-        <span>
-          Page {paging.page} of {paging.pageCount}
-        </span>
-        <button
-          type="button"
-          className="button"
-          disabled={paging.page >= paging.pageCount}
-          onClick={() => paging.onPage(paging.page + 1)}
-        >
-          Next
-        </button>
-      </nav>
+      <div className="pagination">
+        <label className="pagination-size">
+          Rows per page
+          <select value={paging.pageSize} onChange={(e) => paging.onPageSize(Number(e.target.value))}>
+            {PAGE_SIZES.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </label>
+        <nav className="pagination-pages" aria-label="Pages">
+          <button type="button" className="button" disabled={paging.page <= 1} onClick={() => paging.onPage(paging.page - 1)}>
+            Previous
+          </button>
+          <span>
+            Page {paging.page} of {paging.pageCount}
+          </span>
+          <button
+            type="button"
+            className="button"
+            disabled={paging.page >= paging.pageCount}
+            onClick={() => paging.onPage(paging.page + 1)}
+          >
+            Next
+          </button>
+        </nav>
+      </div>
     </section>
   );
 }

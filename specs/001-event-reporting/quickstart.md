@@ -80,11 +80,17 @@ Expected: submitted; the detail view shows the action as **Completed**. Try a 6 
 
 ### 7. Event library (User Story 3, SC-004, SC-008)
 
-- Set page size to 100; sort by each column; search a record number and a word of a title.
-- Apply each filter; KPI tiles (Total, Open, With HPR) change with them and match a manual count.
-- Click **Events With HPR** → the HPR filter is applied.
-- Hide a column, reload the page → it stays hidden.
-- Open a quick view → the list stays in place.
+- Search, Filters, Columns and the Kanban / List buttons sit on one line (desktop width).
+- **List**: columns are record number, status, level, report date, title, department, reporter;
+  statuses are colored badges; set page size to 100; sort by each sortable column; search a record
+  number (e.g., `TF-26-0003`) and a word of a title.
+- **Kanban**: one column per status (Draft, Open, In Progress, Closed, Archived) with a count; your
+  drafts are in the Draft column.
+- Apply each filter; the KPI chips (All, My events, Open, With HPR, Drafts) change with them and
+  match a manual count.
+- Tap **With HPR** → only HPR events are shown.
+- Hide a column, reload the page → it stays hidden; the chosen view (Kanban or List) is kept too.
+- Tap the eye icon on a row or card → the quick view opens and the list stays in place.
 
 ### 8. Persistence (FR-036)
 

@@ -88,10 +88,11 @@ function isMine(event, userId) {
   return event.reporterId === userId || event.createdBy === userId;
 }
 
-// The KPI chip row (FR-031). Drafts appear only under "drafts"; every other chip shows submitted events.
+// The KPI chip row (FR-031). "All" and "My events" include the user's own drafts, so the Kanban
+// Draft column is filled; "Open" and "With HPR" show submitted events only.
 const QUICK_FILTERS = {
-  all: (event) => event.status !== 'Draft',
-  mine: (event, userId) => event.status !== 'Draft' && isMine(event, userId),
+  all: () => true,
+  mine: (event, userId) => isMine(event, userId),
   open: (event) => event.status === 'Open',
   hpr: (event) => event.status !== 'Draft' && isHpr(event),
   drafts: (event) => event.status === 'Draft',

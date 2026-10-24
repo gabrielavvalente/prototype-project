@@ -388,21 +388,21 @@ desktop width follows the guideline: top bar, bottom navigation, chips, cards, s
 **Independent Test**: Quickstart scenarios 1–7 pass with the new acronyms and record numbers;
 the list shows Kanban and List views as described in FR-041
 
-- [ ] T061 Rename the Site Risk pillar to "Industrial Risk" (code `IR`) and the family codes to
+- [X] T061 Rename the Site Risk pillar to "Industrial Risk" (code `IR`) and the family codes to
   `TF`, `EVE`, `SRE`, `OH` in `apps/event-reporting/src/data/sampleData.js`,
   `src/logic/validation.js`, `src/logic/display.js`, `shared/theme.css` and their tests; bump the
   database version in `src/data/db.js` so old demo data is replaced by the new sample data
-- [ ] T062 Change record numbers to `<FAMILY>-<YY>-<NNNN>` (e.g., `EVE-26-0001`) in
+- [X] T062 Change record numbers to `<FAMILY>-<YY>-<NNNN>` (e.g., `EVE-26-0001`) in
   `src/logic/recordNumber.js` (+ tests) and in the sample data
-- [ ] T063 Add `apps/event-reporting/src/events/StatusBadge.jsx` with one color per status (Draft,
+- [X] T063 Add `apps/event-reporting/src/events/StatusBadge.jsx` with one color per status (Draft,
   Open, In Progress, Closed, Archived) and use it in cards, table, detail and quick view
-- [ ] T064 List view in `src/events/EventTable.jsx`: columns record number, status, level, report
+- [X] T064 List view in `src/events/EventTable.jsx`: columns record number, status, level, report
   date, title, department, reporter; one eye icon opening the quick view (Edit stays as an icon
   when allowed); move Columns next to Search and Filters on one line in `EventLibrary.jsx`
-- [ ] T065 Kanban view: create `src/events/KanbanBoard.jsx` with one column per status (count badge,
+- [X] T065 Kanban view: create `src/events/KanbanBoard.jsx` with one column per status (count badge,
   empty state) using `EventCard`; Kanban / List toggle buttons with icon + word; `listView` values
   `kanban` / `list`
-- [ ] T066 Update quickstart wording and rerun quickstart scenarios 1–7 at 390px and desktop width
+- [X] T066 Update quickstart wording and rerun quickstart scenarios 1–7 at 390px and desktop width
 
 ---
 

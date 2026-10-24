@@ -13,7 +13,7 @@ export function getSeverityDots(levelCode) {
 const PILLAR_COLOR_CLASSES = {
   'H&S': 'pillar-dot--hs',
   ENV: 'pillar-dot--env',
-  SITE_RISK: 'pillar-dot--site-risk',
+  IR: 'pillar-dot--ir',
   IH: 'pillar-dot--ih',
 };
 

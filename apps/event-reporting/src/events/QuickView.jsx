@@ -7,6 +7,7 @@ import { getByIndex } from '../data/db.js';
 import { isHpr } from '../logic/eventList.js';
 import { findLevelByCode, getLabel } from '../logic/lookups.js';
 import Sheet from '../shell/Sheet.jsx';
+import StatusBadge from './StatusBadge.jsx';
 
 // A preview of one event over the list, so the list keeps its place (FR-027).
 export default function QuickView({ event, onClose }) {
@@ -26,7 +27,6 @@ export default function QuickView({ event, onClose }) {
     .join(' › ');
   const rows = [
     { label: 'Record number', value: event.recordNumber || 'Draft' },
-    { label: 'Status', value: event.status },
     { label: 'Classification', value: `${getLabel(reference, event.pillarId)} · ${level ? `${level.code} — ${level.label}` : ''}` },
     { label: 'HPR', value: isHpr(event) ? 'Yes' : 'No' },
     { label: 'Location', value: location },
@@ -45,6 +45,9 @@ export default function QuickView({ event, onClose }) {
         </Link>
       }
     >
+      <div className="tag-row quick-view-status">
+        <StatusBadge status={event.status} />
+      </div>
       {firstPhoto && (
         <div className="detail-media">
           <AttachmentPreview attachment={firstPhoto} />

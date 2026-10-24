@@ -245,8 +245,8 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 - **Event time in the future**: the event time cannot be later than the current time on the report
   date.
 - **Leaving the form**: leaving with unsaved changes asks whether to save a draft, discard or stay.
-- **Draft visibility**: drafts are visible only to their reporter, appear only under the
-  "Drafts" chip (excluded from the other KPI counts), and never create alerts.
+- **Draft visibility**: drafts are visible only to their reporter, count only under "All",
+  "My events" and "Drafts" (never under "Open" or "With HPR"), and never create alerts.
 - **Device storage full**: when an attachment or event cannot be saved because device storage is
   full, the user sees a clear message, nothing already entered is lost, and they can remove
   attachments and try again.
@@ -359,8 +359,8 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   the KPI counts. *(US-LIB-03)*
 - **FR-031**: Events MUST show a row of clickable KPI chips — All, My events, Open, With HPR,
   Drafts — whose counts reflect the search and active filters; selecting a chip narrows the list
-  to it. "All", "Open", "My events" and "With HPR" count submitted events only; "Drafts" counts
-  the user's own drafts. *(US-LIB-06, Clarification 2026-10-24 UI/UX)*
+  to it. "All" and "My events" include the user's own drafts; "Open" and "With HPR" count
+  submitted events only; "Drafts" counts the user's own drafts. *(US-LIB-06, Clarification 2026-10-24 UI/UX)*
 - **FR-032**: Each row MUST offer View; Edit MUST be offered to the reporter of a draft and to
   Managers for any event in their scope. *(US-LIB-04)*
 - **FR-033**: The event detail view MUST show every field entered at creation, its attachments and

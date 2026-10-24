@@ -13,37 +13,23 @@ import {
   sortEvents,
 } from '../logic/eventList.js';
 import Icon from '../shell/Icon.jsx';
-import EventCard from './EventCard.jsx';
-import EventTable, { ALL_COLUMN_KEYS } from './EventTable.jsx';
+import EventTable, { ALL_COLUMN_KEYS, ColumnsMenu } from './EventTable.jsx';
 import FilterSheet from './FilterSheet.jsx';
+import KanbanBoard from './KanbanBoard.jsx';
 import KpiTiles from './KpiTiles.jsx';
 import QuickView from './QuickView.jsx';
 
-const CARD_PAGE_SIZE = 20;
+const VIEWS = [
+  { key: 'kanban', label: 'Kanban', icon: 'kanban' },
+  { key: 'list', label: 'List', icon: 'list' },
+];
 
-// Cards on phones, a table on wider screens, until the user picks one (FR-041).
+// Kanban on phones, List on wider screens, until the user picks one (FR-041).
 function defaultView() {
-  return window.matchMedia('(min-width: 768px)').matches ? 'table' : 'cards';
+  return window.matchMedia('(min-width: 768px)').matches ? 'list' : 'kanban';
 }
 
-function Pagination({ page, pageCount, onPage }) {
-  if (pageCount <= 1) return null;
-  return (
-    <nav className="pagination" aria-label="Pages">
-      <button type="button" className="button" disabled={page <= 1} onClick={() => onPage(page - 1)}>
-        Previous
-      </button>
-      <span>
-        Page {page} of {pageCount}
-      </span>
-      <button type="button" className="button" disabled={page >= pageCount} onClick={() => onPage(page + 1)}>
-        Next
-      </button>
-    </nav>
-  );
-}
-
-// The Events page: KPI chips, search and filters, and the events in scope as cards or a table (User Story 3).
+// The Events page: KPI chips, one toolbar line, and the events in scope as a Kanban board or a List (User Story 3).
 export default function EventLibrary() {
   const { user, users, context, settings, updateSettings } = useApp();
   const [events, setEvents] = useState(null);
@@ -55,7 +41,7 @@ export default function EventLibrary() {
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [quickViewEvent, setQuickViewEvent] = useState(null);
-  const view = settings.listView || defaultView();
+  const view = ['kanban', 'list'].includes(settings.listView) ? settings.listView : defaultView();
 
   useEffect(() => {
     document.title = 'Events — Event Reporting';
@@ -75,7 +61,7 @@ export default function EventLibrary() {
   const kpis = computeKpis(filtered, user.id);
   const shown = useMemo(() => applyQuickFilter(filtered, quickFilter, user.id), [filtered, quickFilter, user.id]);
   const sorted = useMemo(() => sortEvents(shown, sort.key, sort.direction, reporterNames), [shown, sort, reporterNames]);
-  const paging = paginate(sorted, view === 'table' ? pageSize : CARD_PAGE_SIZE, page);
+  const paging = paginate(sorted, pageSize, page);
   const activeFilters = countActiveFilters(filters);
   const visibleColumns = settings.visibleColumns || ALL_COLUMN_KEYS;
 
@@ -134,23 +120,21 @@ export default function EventLibrary() {
           <Icon name="filter" size={18} /> Filters
           {activeFilters > 0 && <span className="count-badge count-badge--neutral">{activeFilters}</span>}
         </button>
+        {view === 'list' && (
+          <ColumnsMenu visibleColumns={visibleColumns} onChange={(columns) => updateSettings({ visibleColumns: columns })} />
+        )}
         <div className="view-toggle" role="group" aria-label="View">
-          <button
-            type="button"
-            className="icon-button"
-            aria-pressed={view === 'cards'}
-            onClick={() => updateSettings({ listView: 'cards' })}
-          >
-            <Icon name="grid" label="Cards" />
-          </button>
-          <button
-            type="button"
-            className="icon-button"
-            aria-pressed={view === 'table'}
-            onClick={() => updateSettings({ listView: 'table' })}
-          >
-            <Icon name="list" label="Table" />
-          </button>
+          {VIEWS.map((option) => (
+            <button
+              key={option.key}
+              type="button"
+              className="view-toggle-button"
+              aria-pressed={view === option.key}
+              onClick={() => updateSettings({ listView: option.key })}
+            >
+              <Icon name={option.icon} size={18} /> {option.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -168,26 +152,14 @@ export default function EventLibrary() {
         </div>
       )}
 
-      {shown.length > 0 && view === 'cards' && (
-        <>
-          <ul className="event-cards">
-            {paging.rows.map((event) => (
-              <li key={event.id}>
-                <EventCard event={event} />
-              </li>
-            ))}
-          </ul>
-          <Pagination page={paging.page} pageCount={paging.pageCount} onPage={setPage} />
-        </>
-      )}
+      {shown.length > 0 && view === 'kanban' && <KanbanBoard events={sorted} onQuickView={setQuickViewEvent} />}
 
-      {shown.length > 0 && view === 'table' && (
+      {shown.length > 0 && view === 'list' && (
         <EventTable
           rows={paging.rows}
           sort={sort}
           onSort={changeSort}
           visibleColumns={visibleColumns}
-          onChangeColumns={(columns) => updateSettings({ visibleColumns: columns })}
           paging={{
             page: paging.page,
             pageCount: paging.pageCount,

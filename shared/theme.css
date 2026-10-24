@@ -36,7 +36,7 @@
   /* One color per pillar */
   --color-pillar-hs: #20a39e;
   --color-pillar-env: #2a8fd4;
-  --color-pillar-site-risk: #ef7d1a;
+  --color-pillar-ir: #ef7d1a;
   --color-pillar-ih: #7c4dcc;
 
   /* Typography */
@@ -447,8 +447,8 @@ textarea {
   background: var(--color-pillar-env);
 }
 
-.pillar-dot--site-risk {
-  background: var(--color-pillar-site-risk);
+.pillar-dot--ir {
+  background: var(--color-pillar-ir);
 }
 
 .pillar-dot--ih {
@@ -552,4 +552,9 @@ textarea {
 
 .bottom-bar .button {
   flex: 1;
+}
+
+/* Headings that receive focus from code (e.g. a sheet opening) do not need the focus ring */
+[tabindex='-1']:focus {
+  outline: none;
 }
