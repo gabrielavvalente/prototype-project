@@ -1,122 +1,146 @@
-# Constituição do Prototype Project
+<!--
+Sync Impact Report
+==================
+Version change: 2.0.0 → 2.1.0
+Bump rationale: MINOR — default user-facing language changed from Portuguese to English, and
+project documentation language set to English. Rest of the document translated to English with
+no change in meaning.
+
+Modified principles (old → new title, translation only):
+  - I. Código Simples e Legível → I. Simple, Readable Code
+  - II. Apps Isolados → II. Isolated Apps
+  - III. Testes Mínimos → III. Minimal Tests
+  - IV. Interface Consistente → IV. Consistent Interface
+  - V. Documentação Curta → V. Short Documentation
+
+Renamed sections: Estrutura do Monorepo → Monorepo Structure; Fluxo de Trabalho → Development
+Workflow
+Modified rules: Monorepo Structure → Language (Portuguese → English, now covers docs and specs)
+Added sections: none
+Removed sections: none
+
+Deferred TODOs:
+  - Stack (language/framework) intentionally undefined; to be chosen in the first /speckit-plan
+    and recorded in "Monorepo Structure" via /speckit-constitution.
+-->
+
+# Prototype Project Constitution
 
 ## Core Principles
 
-### I. Código Simples e Legível
+### I. Simple, Readable Code
 
-O código MUST ser fácil de ler e entender por uma pessoa iniciante.
+Code MUST be easy for a beginner to read and understand.
 
-- A solução mais simples que atende à spec MUST ser escolhida; padrões avançados, abstrações
-  genéricas e "otimizações para o futuro" MUST NOT ser usados sem justificativa no `plan.md`.
-- Nomes de variáveis, funções e arquivos MUST descrever o que fazem (ex.: `calcularTotal`,
-  não `ct`).
-- Funções SHOULD ter uma única responsabilidade e caber em uma tela (cerca de 30 linhas).
-- Comentários SHOULD explicar o *porquê* de trechos não óbvios, não repetir o que o código faz.
-- Bibliotecas e ferramentas além das que fazem parte da stack escolhida MUST NOT ser
-  adicionadas sem justificativa no `plan.md`.
+- The simplest solution that satisfies the spec MUST be chosen; advanced patterns, generic
+  abstractions and "future-proofing" MUST NOT be used without justification in `plan.md`.
+- Names of variables, functions and files MUST describe what they do (e.g., `calculateTotal`,
+  not `ct`).
+- Functions SHOULD have a single responsibility and fit on one screen (about 30 lines).
+- Comments SHOULD explain *why* for non-obvious code, not repeat what the code does.
+- Libraries and tools beyond those that are part of the chosen stack MUST NOT be added without
+  justification in `plan.md`.
 
-**Rationale**: O projeto é de aprendizado; código simples pode ser entendido, corrigido e
-modificado sem depender de conhecimento avançado.
+**Rationale**: This is a learning project; simple code can be understood, fixed and changed
+without advanced knowledge.
 
-### II. Apps Isolados
+### II. Isolated Apps
 
-Cada um dos aplicativos MUST viver em sua própria pasta `apps/<nome-do-app>/`.
+Each app MUST live in its own folder `apps/<app-name>/`.
 
-- O nome da pasta MUST usar letras minúsculas e hífens (ex.: `apps/lista-de-tarefas/`).
-- Todo o código, estilos, imagens e testes de um app MUST ficar dentro da pasta dele.
-- Um app MUST NOT importar ou referenciar arquivos de outro app.
-- Recursos usados por mais de um app (ex.: estilos comuns) MAY ficar em `shared/`; apps
-  MAY usar `shared/`, mas `shared/` MUST NOT depender de nenhum app.
-- Cada app MUST funcionar sozinho: apagar a pasta de um app MUST NOT quebrar os outros.
+- The folder name MUST use lowercase letters and hyphens (e.g., `apps/event-reporting/`).
+- All code, styles, images and tests of an app MUST stay inside its folder.
+- An app MUST NOT import or reference files from another app.
+- Resources used by more than one app (e.g., a common visual theme) MAY live in `shared/`; apps
+  MAY use `shared/`, but `shared/` MUST NOT depend on any app.
+- Each app MUST work on its own: deleting one app's folder MUST NOT break the others.
 
-**Rationale**: O isolamento permite trabalhar, testar e descartar cada protótipo sem efeitos
-colaterais nos demais.
+**Rationale**: Isolation lets each prototype be built, tested and discarded without side effects
+on the others.
 
-### III. Testes Mínimos
+### III. Minimal Tests
 
-Cada app MUST ter testes apenas do essencial: o fluxo principal e a lógica importante.
+Each app MUST test only what matters: the main flow and the important logic.
 
-- Cada app MUST ter pelo menos uma verificação do seu fluxo principal — um teste automatizado
-  simples ou uma lista de passos manuais na seção "Como testar" do README.
-- Funções com regras de negócio (cálculos, validações, transformações de dados) SHOULD ter
-  um teste automatizado pequeno.
-- Não há meta de cobertura de testes; ferramentas de teste complexas MUST NOT ser adicionadas
-  sem justificativa no `plan.md`.
-- Antes de cada commit, o fluxo principal do app alterado MUST ser verificado e o console do
-  navegador MUST estar sem erros.
+- Each app MUST have at least one check of its main flow — a simple automated test or a list of
+  manual steps in the "How to test" section of its README.
+- Functions with business rules (calculations, validations, data transformations) SHOULD have a
+  small automated test.
+- There is no coverage target; complex testing tools MUST NOT be added without justification in
+  `plan.md`.
+- Before each commit, the main flow of the changed app MUST be checked and the browser console
+  MUST show no errors.
 
-**Rationale**: Protótipos mudam rápido; poucos testes focados dão segurança sem se tornarem
-um peso de manutenção.
+**Rationale**: Prototypes change fast; a few focused tests give confidence without becoming a
+maintenance burden.
 
-### IV. Interface Consistente
+### IV. Consistent Interface
 
-Os apps MUST parecer parte da mesma família visual.
+All apps MUST look like they belong to the same family.
 
-- Cores, fontes, espaçamentos e estilos de botões e campos MUST vir de um tema comum em
-  `shared/`, em vez de valores soltos em cada app.
-- Elementos com a mesma função (botões principais, mensagens de erro, títulos) MUST ter a
-  mesma aparência e o mesmo comportamento em todos os apps.
-- Cada tela MUST ter um título claro e MUST ser usável em celular (a partir de 320px de
-  largura).
-- Imagens não decorativas MUST ter texto `alt`, e elementos interativos MUST funcionar pelo
-  teclado.
+- Colors, fonts, spacing and the styles of buttons and fields MUST come from a common theme in
+  `shared/`, instead of loose values in each app.
+- Elements with the same purpose (primary buttons, error messages, titles) MUST look and behave
+  the same across all apps.
+- Each screen MUST have a clear title and MUST be usable on a mobile phone (from 320px wide).
+- Non-decorative images MUST have `alt` text, and interactive elements MUST work with the
+  keyboard.
 
-**Rationale**: Uma base visual comum evita retrabalho e faz os protótipos parecerem
-profissionais com pouco esforço.
+**Rationale**: A common visual base avoids rework and makes the prototypes look professional with
+little effort.
 
-### V. Documentação Curta
+### V. Short Documentation
 
-Cada app MUST ter um `README.md` curto em `apps/<nome-do-app>/README.md`.
+Each app MUST have a short `README.md` at `apps/<app-name>/README.md`.
 
-- O README MUST conter apenas: o que o app faz (1–3 frases), como abrir ou rodar, e como
-  testar.
-- O README SHOULD caber em uma tela; detalhes de design ficam em `specs/`, não no README.
-- O README MUST ser atualizado no mesmo commit que mudar a forma de abrir, rodar ou testar
-  o app.
-- O `README.md` na raiz SHOULD listar os apps com um link para a pasta de cada um.
+- The README MUST contain only: what the app does (1–3 sentences), how to open or run it, and
+  how to test it.
+- The README SHOULD fit on one screen; design details belong in `specs/`, not in the README.
+- The README MUST be updated in the same commit that changes how the app is opened, run or
+  tested.
+- The root `README.md` SHOULD list the apps with a link to each app's folder.
 
-**Rationale**: Documentação curta é lida e mantida; documentação longa fica desatualizada.
+**Rationale**: Short documentation gets read and maintained; long documentation goes stale.
 
-## Estrutura do Monorepo
+## Monorepo Structure
 
-- **Pastas**: `apps/` (um subdiretório por app), `shared/` (recursos comuns, como estilos),
-  `specs/` (artefatos do Spec Kit) e `.specify/` (configuração do Spec Kit).
-- **Raiz**: MAY conter uma página simples (ex.: o `index.html` atual) que lista e linka os
-  apps; MUST NOT conter código de nenhum app.
-- **Stack**: Ainda não definida. A linguagem e o framework MUST ser escolhidos no primeiro
-  `/speckit-plan`, com justificativa, priorizando o que for mais simples para iniciante.
-  Todos os apps SHOULD usar a mesma stack; uma stack diferente para um app MUST ser
-  justificada no `plan.md` desse app. Após a escolha, esta seção SHOULD ser atualizada via
-  `/speckit-constitution`.
-- **Dependências externas**: MUST ter versão exata fixada e ser justificadas no `plan.md`.
-- **Codificação**: Todos os arquivos MUST ser salvos em UTF-8.
-- **Idioma**: O conteúdo visível ao usuário é em português (`lang="pt"`), salvo indicação
-  na spec.
-- **Segredos**: Senhas, chaves de API e dados pessoais MUST NOT ser commitados.
+- **Folders**: `apps/` (one subfolder per app), `shared/` (common resources, such as the visual
+  theme), `specs/` (Spec Kit artifacts) and `.specify/` (Spec Kit configuration).
+- **Root**: MAY contain a simple page that lists and links the apps; MUST NOT contain code from
+  any app.
+- **Stack**: Not yet defined. The language and framework MUST be chosen in the first
+  `/speckit-plan`, with justification, favoring what is simplest for a beginner. All apps SHOULD
+  use the same stack; a different stack for one app MUST be justified in that app's `plan.md`.
+  Once chosen, this section SHOULD be updated via `/speckit-constitution`.
+- **External dependencies**: MUST be pinned to an exact version and justified in `plan.md`.
+- **Encoding**: All files MUST be saved as UTF-8.
+- **Language**: All user-facing text, documentation, specs and code (names and comments) MUST be
+  in English.
+- **Secrets**: Passwords, API keys and personal data MUST NOT be committed.
 
-## Fluxo de Trabalho
+## Development Workflow
 
-- Cada funcionalidade MUST seguir o fluxo do Spec Kit: `/speckit-specify` →
-  (`/speckit-clarify`) → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`.
-- Cada spec MUST indicar a qual app pertence (ou `shared/`).
-- Cada `plan.md` MUST incluir a verificação da constituição (Constitution Check); qualquer
-  exceção MUST ser registrada com justificativa na seção Complexity Tracking.
-- Commits MUST ser pequenos, tratar de um só assunto e usar prefixos de Conventional Commits
-  (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `style:`).
-- A branch `main` MUST continuar funcionando: todos os apps abrem sem erros no console.
+- Each feature MUST follow the Spec Kit flow: `/speckit-specify` → (`/speckit-clarify`) →
+  `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`.
+- Each spec MUST state which app it belongs to (or `shared/`).
+- Each `plan.md` MUST include the Constitution Check; any exception MUST be recorded with
+  justification in the Complexity Tracking section.
+- Commits MUST be small, cover a single concern and use Conventional Commit prefixes (`feat:`,
+  `fix:`, `docs:`, `chore:`, `refactor:`, `style:`).
+- The `main` branch MUST keep working: all apps open with no errors in the console.
 
 ## Governance
 
-Esta constituição tem prioridade sobre qualquer outra prática do projeto. Em caso de
-conflito com um plano ou tarefa, vale a constituição, a menos que ela seja alterada.
+This constitution takes precedence over every other project practice. When a plan or task
+conflicts with it, the constitution wins unless it is amended.
 
-- **Alterações**: Feitas via `/speckit-constitution`, registradas no Sync Impact Report e
-  commitadas com prefixo `docs:`. Specs e planos em andamento MUST ser revistos após uma
-  alteração.
-- **Versionamento**: Versionamento semântico — MAJOR para remover ou redefinir um princípio,
-  MINOR para adicionar um princípio ou seção (ou ampliar bastante uma orientação), PATCH
-  para ajustes de texto e esclarecimentos.
-- **Conformidade**: Todo `plan.md` MUST passar pela verificação da constituição antes e
-  depois do design. Complexidade sem justificativa MUST ser rejeitada.
+- **Amendments**: Made via `/speckit-constitution`, recorded in the Sync Impact Report and
+  committed with a `docs:` prefix. Specs and plans in progress MUST be reviewed after an
+  amendment.
+- **Versioning**: Semantic versioning — MAJOR for removing or redefining a principle, MINOR for
+  adding a principle or section (or materially expanding guidance), PATCH for wording and
+  clarifications.
+- **Compliance**: Every `plan.md` MUST pass the Constitution Check before and after design.
+  Unjustified complexity MUST be rejected.
 
-**Version**: 2.0.0 | **Ratified**: 2026-10-24 | **Last Amended**: 2026-10-24
+**Version**: 2.1.0 | **Ratified**: 2026-10-24 | **Last Amended**: 2026-10-24
