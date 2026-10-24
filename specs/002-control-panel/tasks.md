@@ -295,15 +295,15 @@ plant, lifecycle and audit
 **Independent Test**: Quickstart scenario 6 (access part) and audit entries for every change of
 scenarios 1–5
 
-- [ ] T046 [US3] Add `getAudit(pillarId)` (newest first) to `shared/platform/platformData.js`
+- [X] T046 [US3] Add `getAudit(pillarId)` (newest first) to `shared/platform/platformData.js`
   and create `apps/control-panel/src/audit/AuditTab.jsx` (route `…/audit`): filters subject
   (Workflow or a list) and user; rows date, user, level and plants, subject, target, before →
   after
-- [ ] T047 [US3] Check route guards in `apps/control-panel/src/App.jsx` against
+- [X] T047 [US3] Check route guards in `apps/control-panel/src/App.jsx` against
   [contracts/routes.md](contracts/routes.md): no role → `NotAllowed` on every route except `#/`;
   pillar without role → `NotAllowed`; Compare plants for Local → `NotAllowed`; unknown pillar or
   user → "Not found"
-- [ ] T048 [US3] Run quickstart scenario 6 (access) and confirm every change made in scenarios 1–5
+- [X] T048 [US3] Run quickstart scenario 6 (access) and confirm every change made in scenarios 1–5
   appears in the audit trail with author, date, before and after (SC-005)
 
 **Checkpoint**: Access and audit complete
