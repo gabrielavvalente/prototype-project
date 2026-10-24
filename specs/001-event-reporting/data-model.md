@@ -33,8 +33,8 @@ One event, from draft to submitted.
 | `familyCode` | `TF` \| `EVE` \| `SRE` \| `OH` | Must belong to the pillar |
 | `levelCode` | text | e.g., `TF4`, `EvE2`, `SRE1`; for OH, the disease classification |
 | `riskQuestion` | object or null | `{ type: 'SIP' \| 'CRP' \| 'SRP', answer: true \| false }`; type follows FR-004; cleared when pillar or level changes |
-| `location` | object | `{ departmentId, workshopId, jobId, workstationId, taskId }`; each child must belong to its parent (FR-005) |
-| `taskTypeId` | text | Required before leaving the Location section |
+| `location` | object | `{ departmentId, workshopId, jobId, workstationId, taskId }`; each child must belong to its parent; all five required, or only department and workshop for TF4 / TF5 (FR-005) |
+| `taskTypeId` | text | Required, except for TF4 and TF5 (optional) |
 | `title` | text | Required, 1–120 characters |
 | `reporterId` | text | Defaults to the current user; only a Manager may change it (FR-006) |
 | `reportDate` | date | Set to today when the draft is created; read-only |
@@ -42,6 +42,10 @@ One event, from draft to submitted.
 | `shiftMoment` | `Day` \| `Night` \| `Afternoon` | Required |
 | `description` | text | Required, multi-line plain text, up to 2,000 characters |
 | `employeeType` | text | One of: Employee, Temporary Worker, Permanent Contractor, Non-Permanent Contractor, Other |
+| `involvedPersonId` | text | Required when `employeeType` is Employee: a user of the plant |
+| `involvedPersonName` | text | Required for the other employee types |
+| `involvedActivity` | text | Optional, other employee types: "What was the person doing?" |
+| `firstAidTreatmentId` | text | Required for TF1–TF3, from the `firstAidTreatment` list (FR-047) |
 | `recurrence` | true \| false | Required |
 | `comments` | text | Optional |
 | `sharedWithIds` | list of text | Optional; users of the event's plant who can see its pillar; each gets an alert on submit |
@@ -136,7 +140,7 @@ Every item has `id`, `list` and `label`; some have extra fields.
 | `family` | `code` (TF, EVE, SRE, OH), `pillarId` |
 | `level` | `code` (TF1…TF5, EvE1…EvE5, SRE1…SRE5), `familyId`, `description` (plain-language text, FR-003) |
 | `disease` | `familyId` (OH classifications and the Disease(s) list) |
-| `taskType` (Routine, Non-routine), `employeeType`, `shiftMoment`, `actionPriority` | — |
+| `taskType` (Routine, Non-routine), `employeeType`, `shiftMoment`, `actionPriority`, `firstAidTreatment` | — |
 | `actionCategory` | — |
 
 ## counters
@@ -183,4 +187,8 @@ start screen; everything else lives in IndexedDB.
 | File type, extension, size ≤ 5 MB, ≤ 5 files | Every upload | FR-009 |
 | 1–5 performers per immediate action | Every immediate action | FR-013 |
 | Diseases chosen | Family OH | FR-010 |
+| Person involved (user, or name) | Always | FR-010 |
+| First aid treatment chosen | TF1–TF3 | FR-047 |
+| Location down to Task + Task Type | All levels except TF4 / TF5 (Department + Workshop only) | FR-005 |
+| TF5 with SIP = Yes becomes TF4, with a warning | TF5 | FR-048 |
 | Event time (when given) not in the future; completion date within report date…today | Always | Edge Cases |

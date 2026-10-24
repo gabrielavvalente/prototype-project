@@ -58,6 +58,9 @@ Expected: both submitted; the second shows the action as **Completed**. Try a 6 
 - Industrial Risk → SRE2 asks **CRP**; change to SRE4 → the CRP answer is cleared and **SRP** is asked.
 - Environment → any level asks **SIP**. Industrial Hygiene asks no risk question but shows
   Disease(s).
+- Safety rules: Employee → pick a user; Temporary Worker → name required, "What was the person
+  doing?" optional; TF2 asks the first aid treatment; TF5 then SIP = Yes → level becomes TF4 with a
+  warning; TF4 and TF5 can stop the location at the workshop (no Task Type needed).
 - Location picker: type "station 10" → full paths are listed; browse Department → … → Task;
   "Scan QR code" opens the camera where supported (Chrome on Android) or explains it is
   unavailable.

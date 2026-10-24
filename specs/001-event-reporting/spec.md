@@ -126,6 +126,18 @@ screens to copy; product logo and name are not reused, and all text stays in Eng
   removable badge below it.
 - Q: What happens after saving? → A: The event's view page opens, with a confirmation banner.
 
+### Session 2026-10-24 (safety event rules)
+
+- Q: What is asked about the person involved? → A: For **Employee**, the person is chosen from the
+  plant's users (required). For Temporary Worker, Permanent Contractor, Non-Permanent Contractor
+  and Other, their **name** (required) and "**What was the person doing?**" (optional). Applies
+  to every event type.
+- Q: What is added for TF1–TF3? → A: "**What was the first aid treatment?**", chosen from a list
+  (required).
+- Q: What if TF5 is answered SIP = Yes? → A: The level switches to **TF4** and the user is warned.
+- Q: Which location levels are required for TF4 and TF5? → A: Only **Department and Workshop**
+  (deeper levels and Task Type optional); other levels keep the full location and Task Type.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Report an event from the shop floor (Priority: P1)
@@ -166,8 +178,9 @@ new alerts.
    **and given** SRE3, SRE4 or SRE5, **then** "Could this be an SRP? (Serious Risk Potential)" is
    required instead.
 4. **Given** I open the location picker, **When** I type part of a name, browse level by level, or
-   scan a station's QR code, **Then** I end on a full location (Department → Workshop → Job →
-   Workstation → Task in my plant), shown as one path in the form; Task Type is also required.
+   scan a station's QR code, **Then** I end on a location in my plant shown as one path in the
+   form: down to the Task with a Task Type, or — for TF4 and TF5 — at least Department and
+   Workshop.
 5. **Given** I look at General Information, **When** the section renders, **Then** Title, Reporter
    (pre-filled with me, editable only by a Manager), Report Date (today, read-only), Event Time (optional),
    Shift Moment (Day / Night / Afternoon) and Description are captured.
@@ -319,10 +332,12 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
 - **FR-004**: The system MUST require, immediately after the level: "Could this be a SIP?" for
   Health & Safety and Environment; "Could this be a CRP?" for SRE1–SRE2; "Could this be an SRP?"
   for SRE3–SRE5. Each question MUST show a brief definition. *(SCR-MOB-01 FR-2 to FR-4)*
-- **FR-005**: Users MUST pick a full location (Department → Workshop → Job → Workstation → Task in
-  the event's plant) from a location picker offering three ways: typing part of any level's name
+- **FR-005**: Users MUST pick a location (Department → Workshop → Job → Workstation → Task in the
+  event's plant) from a location picker offering three ways: typing part of any level's name
   (results show the full path), browsing one level at a time, and scanning a station QR code
-  where the browser supports it. Task Type MUST also be chosen. *(US-CREATE-02, SCR-MOB-01 FR-5,
+  where the browser supports it. The full location and a Task Type are required, except for TF4
+  and TF5, where only Department and Workshop are required and the picker lets the user stop at
+  the workshop (Clarification 2026-10-24, safety event rules). *(US-CREATE-02, SCR-MOB-01 FR-5,
   Clarification 2026-10-24, form review)*
 - **FR-006**: The system MUST capture Title, Reporter (pre-filled with the current user, editable
   only by a Manager), Report Date (today, read-only), Event Time (optional), Shift Moment (Day /
@@ -337,10 +352,18 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
   (common image and video formats, at most 5 MB per file and 5 files per event) and reject failing
   files with a clear message without attaching them. *(US-CREATE-11, Clarification 2026-10-24)*
 - **FR-010**: The system MUST capture Employee type (Employee / Temporary Worker / Permanent
-  Contractor / Non-Permanent Contractor / Other), Recurrence (Yes/No), Comments and **Shared
+  Contractor / Non-Permanent Contractor / Other) and the person involved — for Employee a user of
+  the plant (required); otherwise their name (required) and "What was the person doing?"
+  (optional) — Recurrence (Yes/No), Comments and **Shared
   with** (a dropdown of users of the event's plant who can see its pillar; each choice shown as a
   removable badge below it), plus a Disease(s) multi-select when
   the family is OH. *(US-CREATE-04, Clarification 2026-10-24, list/Kanban/form review)*
+- **FR-047**: For TF1, TF2 and TF3 the system MUST ask "What was the first aid treatment?" with a
+  choice from the first aid treatment list (required). *(safety-event source "First Aid
+  Treatment", Clarification 2026-10-24, safety event rules)*
+- **FR-048**: When a TF5 event is answered "Could this be a SIP?" = Yes (in either order), the
+  system MUST switch the level to TF4 and show a warning explaining the change. *(Clarification
+  2026-10-24, safety event rules)*
 - **FR-011**: Users MUST be able to add any number of immediate actions as repeatable cards, each
   with Description, Priority, Category, Completion date, KPI ID (optional) and Comments; each immediate action MUST be saved with status Completed (it records
   containment already done at the scene) and its creation date set automatically.
@@ -503,7 +526,8 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
 - **SC-003**: The creation form appears in under 2 seconds after it is opened.
 - **SC-004**: The event list shows 100 rows with all filters applied in under 3 seconds.
 - **SC-005**: At least 9 out of 10 first-time users complete a report without help.
-- **SC-006**: 100% of mandatory-field rules (risk question, full location, Task Type and the
+- **SC-006**: 100% of mandatory-field rules (risk question, location and Task Type by level, person
+  involved, first aid treatment for TF1–TF3, and the
   other required fields) block submission when unmet, in testing.
 - **SC-007**: In testing, no user ever sees an event outside their scope, by any route.
 - **SC-008**: Every KPI chip count matches a manual count of the events it represents.

@@ -481,6 +481,28 @@ dropdown with badges; saving opens the event's view page with a banner
 
 ---
 
+## Phase 5g: Safety event rules
+
+**Goal**: Apply the spec Clarifications session "safety event rules" (FR-005, FR-010, FR-047,
+FR-048)
+
+**Independent Test**: Quickstart scenario 3 "Safety rules" passes; rule functions are tested
+
+- [ ] T087 Rules with tests in `src/logic/validation.js`: person involved by employee type, first
+  aid treatment for TF1–TF3, location levels and Task Type by level (`getRequiredLocationLevels`),
+  `applySipLevelRule` (TF5 + SIP Yes → TF4)
+- [ ] T088 `src/logic/locations.js` (+ tests): paths, search and QR codes down to a minimum level
+  (workshop for TF4 / TF5, task otherwise); `locationFromNode`
+- [ ] T089 Location picker: "Use this workshop / job / station" while browsing when allowed, and
+  search results at those levels (`LocationPicker.jsx`, `LocationSection.jsx`)
+- [ ] T090 Classification: apply the TF5 → TF4 rule with a warning (`ClassificationSection.jsx`)
+- [ ] T091 Event details: person involved (user dropdown or name + activity) and first aid
+  treatment for TF1–TF3 (`DetailsSection.jsx`); first aid list and sample data
+  (`sampleData.js`, database version 5); summary rows (`eventSummary.js`)
+- [ ] T092 Rerun quickstart scenarios 1–7 at 390px with no console errors
+
+---
+
 ## Phase 6: Polish & Cross-Cutting Concerns
 
 **Purpose**: Documentation, accessibility, performance and the final end-to-end check
@@ -513,7 +535,8 @@ dropdown with badges; saving opens the event's view page with a banner
 - **Form review (Phase 5d)**: Depends on Phase 5c
 - **List/Kanban/form review (Phase 5e)**: Depends on Phase 5d
 - **Header/list/form review (Phase 5f)**: Depends on Phase 5e
-- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b–5f)
+- **Safety event rules (Phase 5g)**: Depends on Phase 5f
+- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b–5g)
 
 ### User Story Dependencies
 
