@@ -13,7 +13,8 @@ Users, organization, roles, workflow settings and master data become **shared pl
 `shared/platform/` (plain JavaScript, built-in IndexedDB, no packages). A root `launcher/` serves
 every app from one address so they share that data. Event Reporting moves its users and
 organization to the platform data, stores the resulting workflow on each submitted event and
-closes the event when only Submission is Required. Details in [research.md](research.md).
+closes the event when only Submission is Required. A third app, `apps/user-management/`, shows
+the users and their access read-only from the same shared data. Details in [research.md](research.md).
 
 ## Technical Context
 
@@ -34,7 +35,7 @@ plus submission status. Manual checks in [quickstart.md](quickstart.md).
 
 **Target Platform**: Recent Chrome, Edge, Firefox, Safari; desktop and phone (from 320px)
 
-**Project Type**: Browser-only web apps in a monorepo (two apps + shared code + launcher)
+**Project Type**: Browser-only web apps in a monorepo (three apps + shared code + launcher)
 
 **Performance Goals**: Panels open and grids update instantly on the sample data (4 pillars,
 ≤ 20 levels × 5 phases, ≤ 50 values per list, 3 plants, ~12 users)
@@ -43,8 +44,8 @@ plus submission status. Manual checks in [quickstart.md](quickstart.md).
 when opened through the launcher (R1)
 
 **Scale/Scope**: Control Panel ~8 screens (pillar choice, Workflow with 3 views, Master data,
-Audit, Users list and detail, notifications); Event Reporting small changes (data source,
-submission)
+Audit, notifications); User Management 2 screens (users list, user detail); Event Reporting small
+changes (data source, submission)
 
 ## Constitution Check
 
@@ -54,11 +55,11 @@ submission)
 |---|---|---|
 | I. Simple, readable code | ✅ | Rules are small pure functions (`resultingWorkflow`, `availableValues`, `canEditSetting`…); one tiny storage helper; no state library, no generic framework. |
 | I. No unjustified libraries | ✅ | Control Panel reuses Event Reporting's exact stack; `idb` deliberately not used in shared code (R2). |
-| II. Isolated apps | ✅ | `apps/control-panel/` and `apps/event-reporting/` never import each other; both import only `shared/`. UI pieces are copied, not shared (R2). Each app still runs alone (own seed). |
+| II. Isolated apps | ✅ | `apps/control-panel/`, `apps/user-management/` and `apps/event-reporting/` never import each other; both import only `shared/`. UI pieces are copied, not shared (R2). Each app still runs alone (own seed). |
 | II. `shared/` independent | ✅ | `shared/platform/` imports nothing from apps and no packages. |
 | III. Minimal tests | ✅ | Vitest on the platform rules and submission status; quickstart manual flow; console checked before each commit. |
 | IV. Consistent interface | ✅ | Both apps use `shared/theme.css`; the Control Panel reuses Event Reporting's header, sheet, chips and badges patterns; titles per screen; 320px layouts (grids scroll horizontally inside their card). |
-| V. Short documentation | ✅ | New `apps/control-panel/README.md`; the launcher is explained in the root README; Event Reporting README updated (run through the launcher). |
+| V. Short documentation | ✅ | New `apps/control-panel/README.md` and `apps/user-management/README.md`; the launcher is explained in the root README; Event Reporting README updated (run through the launcher). |
 | Monorepo: launcher | ✅ | `launcher/` has its own `package.json` (Vite only) and an index page; no app or business code. No root `package.json`, no workspaces. |
 | Monorepo: shared platform data | ✅ | Users, plants, locations, roles, workflow settings, master data, rules and sample data in `shared/platform/`; stored once at the launcher's address. |
 | Stack, pinned versions, UTF-8, English, no secrets | ✅ | Exact versions above; all text in English; demo data only. |
@@ -112,7 +113,13 @@ apps/control-panel/
     ├── workflow/         # WorkflowTab, SettingsGrid, ResultGrid, CellDetails, EventPath,
     │                     #   ComparePlants, ReviewersPicker
     ├── masterData/       # MasterDataTab, ValueList, ValueForm, ActivationToggle
-    ├── audit/            # AuditTab
+    └── audit/            # AuditTab
+
+apps/user-management/     # same stack and versions as the Control Panel, no idb
+├── package.json, vite.config.js, index.html, README.md
+└── src/
+    ├── main.jsx, App.jsx, app.css
+    ├── shell/            # Header, StartScreen, NotAllowed, Icon (copied patterns)
     └── users/            # UsersList, UserDetail
 
 apps/event-reporting/     # changes only
@@ -125,7 +132,7 @@ apps/event-reporting/     # changes only
     └── App.jsx           # loads platform data; submit stores workflow and Closed status
 ```
 
-**Structure Decision**: Two isolated apps, one shared plain-JavaScript data module and a minimal
+**Structure Decision**: Three isolated apps, one shared plain-JavaScript data module and a minimal
 launcher, exactly as allowed by constitution v2.3.0 (Monorepo Structure → Root and Shared platform
 data).
 

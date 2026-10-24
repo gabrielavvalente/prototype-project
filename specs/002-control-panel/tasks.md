@@ -317,15 +317,31 @@ scenarios 1–5
 
 **Independent Test**: Quickstart scenario 6 (users part)
 
-- [ ] T049 [P] [US4] Create `apps/control-panel/src/users/UsersList.jsx` (route `#/users`):
+- [ ] T049 [US4] Create the User Management skeleton in `apps/user-management/` like the Control
+  Panel's (T005–T006): `package.json` (`"name": "user-management"`, same scripts), `index.html`
+  (`<title>User Management</title>`, script `./src/main.jsx`), `vite.config.js` (React plugin,
+  `server.port` 5175, `server.fs.allow` app folder and `../../shared`), `.gitignore`,
+  `src/main.jsx`, `src/app.css`; install the **same exact versions** as the Control Panel
+  (`react@19.3.1 react-dom@19.3.1 react-router-dom@7.18.4 @fontsource/poppins@5.3.0`; dev
+  `vite@8.3.5 @vitejs/plugin-react@6.1.2`); add a third card to `launcher/index.html` ("User
+  Management — See users, their plants, pillars and Control Panel roles.", link
+  `/apps/user-management/`)
+- [ ] T050 [US4] Build the User Management shell in `apps/user-management/src/`: copy `Icon.jsx`
+  from the Control Panel's `shell/`; `App.jsx` with `createHashRouter` (`#/`, `#/users`,
+  `#/users/:userId`), context (`users`, `organization`, `reference`, `workflowSettings`, `user`,
+  `signIn`, `signOut`) loaded with `loadPlatform()` and `getWorkflowSettings()`; session key
+  `user-management.userId`; `shell/StartScreen.jsx` (users without a Control Panel role disabled
+  with "No Control Panel role"), `shell/Header.jsx` (app name link to `#/users`, avatar with
+  switch user), `shell/NotAllowed.jsx`; access check `hasControlPanelAccess`
+- [ ] T051 [P] [US4] Create `apps/user-management/src/users/UsersList.jsx` (route `#/users`):
   users filtered with `canSeeUser`; search by name; filters plant, pillar, role; columns name,
   event role, plants, pillars, Control Panel roles as badges ("H&S · Cluster"); row opens the
-  detail; link from the header menu
-- [ ] T050 [P] [US4] Create `apps/control-panel/src/users/UserDetail.jsx` (route
+  detail; `document.title` "Users — User Management"
+- [ ] T052 [P] [US4] Create `apps/user-management/src/users/UserDetail.jsx` (route
   `#/users/:userId`): event access per plant (pillars), Control Panel roles (pillar, level,
   plants), review groups (settings whose `reviewerIds` include the user: pillar, level code,
   scope); no edit action; out of perimeter → `NotAllowed`
-- [ ] T051 [US4] Run quickstart scenario 6 (users) with Ludovic and Lucas
+- [ ] T053 [US4] Run quickstart scenario 6 (users) through the launcher with Ludovic and Lucas
 
 **Checkpoint**: All four stories work
 
@@ -333,16 +349,16 @@ scenarios 1–5
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T052 [P] Create `apps/control-panel/README.md` (what it does, how to run through the
-  launcher, how to test) and update `apps/event-reporting/README.md` (run through the launcher
+- [ ] T054 [P] Create `apps/control-panel/README.md` and `apps/user-management/README.md`
+  (what it does, how to run through the launcher, how to test) and update `apps/event-reporting/README.md` (run through the launcher
   for shared data)
-- [ ] T053 [P] Update the root `README.md`: list the Control Panel, explain the launcher
+- [ ] T055 [P] Update the root `README.md`: list the Control Panel and User Management, explain the launcher
   (`cd launcher && npm install && npm run dev`) and `shared/platform/`
-- [ ] T054 Check every Control Panel screen at 320px and with the keyboard (switches, sheets,
+- [ ] T056 Check every Control Panel and User Management screen at 320px and with the keyboard (switches, sheets,
   pickers, tabs), titles per screen, `alt`/labels on icons (constitution IV)
-- [ ] T055 Run `npm test` in both apps and `npm run build` in both apps; open both through the
-  launcher with no console errors
-- [ ] T056 Run the whole [quickstart.md](quickstart.md) once more from **Reset demo data** and mark
+- [ ] T057 Run `npm test` in the Control Panel and Event Reporting and `npm run build` in all
+  three apps; open all three through the launcher with no console errors
+- [ ] T058 Run the whole [quickstart.md](quickstart.md) once more from **Reset demo data** and mark
   this file complete
 
 ---
@@ -358,7 +374,8 @@ scenarios 1–5
 - **US2 (Phase 4)**: after Foundational; independent of US1 (shares only `platformData.js`, so
   edit it in sequence)
 - **US3 (Phase 5)**: after US1 and US2 (audits their changes)
-- **US4 (Phase 6)**: after Foundational; review groups need US1 settings to show content
+- **US4 (Phase 6)**: after Foundational (new app `apps/user-management/`); review groups need
+  US1 settings to show content
 - **Polish (Phase 7)**: after the stories wanted
 
 ### Within Each Story
@@ -371,7 +388,7 @@ scenarios 1–5
 - T007 with T005–T006; T011, T012, T013 together; T018, T019 together
 - US1: T022 with T027; T030, T031, T032 together after T029; T035 with T034's screen work
 - US2: T038 with T039; T044 alongside T043
-- US4: T049 and T050 together
+- US4: T051 and T052 together
 
 ---
 

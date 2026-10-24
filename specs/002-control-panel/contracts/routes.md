@@ -12,6 +12,7 @@ through the launcher: `http://localhost:5173/apps/control-panel/`.
 | `/launcher/` | "Prototype apps" page (opened automatically; the server root is the repository): one card per app (name, one-line description, Open button) |
 | `/apps/event-reporting/` | Event Reporting |
 | `/apps/control-panel/` | Control Panel |
+| `/apps/user-management/` | User Management |
 
 ## Control Panel routes
 
@@ -25,8 +26,6 @@ through the launcher: `http://localhost:5173/apps/control-panel/`.
 | `#/pillars/:pillarId/master-data` | Lists of the pillar (first list selected) | role on the pillar, except Industrial Hygiene ("Master data comes later") |
 | `#/pillars/:pillarId/master-data/:listId` | One list | role on the pillar; IR may open `standards` and `hazards` read-only |
 | `#/pillars/:pillarId/audit` | Audit trail of the pillar, newest first | role on the pillar |
-| `#/users` | Users list (read-only) | any Control Panel role; perimeter per FR-027 |
-| `#/users/:userId` | User detail (read-only) | user within the perimeter |
 
 Not allowed → the "You don't have access to this page." message with a link to `#/pillars`
 (same pattern as Event Reporting's `NotAllowed`). Unknown user or pillar → "Not found".
@@ -37,7 +36,7 @@ Not allowed → the "You don't have access to this page." message with a link to
   (Control Panel notifications), avatar (switch user / sign out).
 - Context bar under the header on pillar screens: pillar name · level badge (Central / Cluster /
   Local) · plants ("All plants", "Lyon, Porto", "Lyon").
-- Tabs on pillar screens: Workflow · Master data · Audit. Users is in the header menu.
+- Tabs on pillar screens: Workflow · Master data · Audit.
 - Every screen sets `document.title` (e.g., "Workflow — Health & Safety — Control Panel").
 
 ## Workflow — Settings view
@@ -85,8 +84,19 @@ Not allowed → the "You don't have access to this page." message with a link to
 - Filters: subject (Workflow or a list), user. Each row: date, user, level and plants, subject,
   target, before → after.
 
-## Users
+## User Management app
 
+Address through the launcher: `http://localhost:5173/apps/user-management/`. Hash routes; session
+in `sessionStorage` key `user-management.userId`.
+
+| Route | Screen | Access |
+|---|---|---|
+| `#/` | Start: choose a demo user (those without a Control Panel role disabled) | everyone |
+| `#/users` | Users list (read-only) | any Control Panel role; perimeter per FR-027 |
+| `#/users/:userId` | User detail (read-only) | user within the perimeter |
+
+- Header: app name "User Management" (link to `#/users`), avatar (switch user / sign out); no
+  bell.
 - List: search by name; filters plant, pillar, role; columns name, event role, plants, pillars,
   Control Panel roles (badges like "H&S · Cluster").
 - Detail: event access per plant (pillars), Control Panel roles (pillar, level, plants), review

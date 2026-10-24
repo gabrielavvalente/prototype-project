@@ -11,6 +11,7 @@ How to run the apps together and prove the feature works. Screens are in
 ```bash
 cd apps/event-reporting && npm install     # first time only
 cd ../control-panel && npm install         # first time only
+cd ../user-management && npm install       # first time only
 cd ../../launcher && npm install           # first time only
 npm run dev                                # opens http://localhost:5173/launcher/
 
@@ -18,7 +19,7 @@ cd ../apps/control-panel && npm test       # platform rules + Control Panel logi
 cd ../event-reporting && npm test          # Event Reporting rules
 ```
 
-Expected: the launcher page shows both apps; each opens with no console errors; all tests pass.
+Expected: the launcher page shows the three apps; each opens with no console errors; all tests pass.
 Always open the apps **through the launcher** for shared data (R1).
 
 ## Validation scenarios
@@ -76,7 +77,7 @@ Expected: done in under 2 minutes; Audit shows three entries.
 - As **Ana Ribeiro** (no Control Panel role): start screen shows her disabled; `#/pillars` →
   permission message.
 - As Felix (Local Curitiba, H&S + Environment): only those two pillars offered.
-- Users: Ludovic sees everyone; Lucas sees only users of Lyon or Porto; a user detail lists access,
+- User Management (launcher): Ludovic sees everyone; Lucas sees only users of Lyon or Porto; a user detail lists access,
   roles and review groups; no edit action anywhere.
 
 ### 7. Persistence and shared data

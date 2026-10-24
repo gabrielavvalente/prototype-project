@@ -17,8 +17,9 @@ user notified, no blocking in the MVP). When Review is Required, a group of revi
 defined. Master data: Safety = Standards, Hazards, Body Parts, Injuries; Environment = Aspects,
 Impacts; Industrial Risk = Categories (Industrial Hygiene master data later)."
 
-**App folders**: `apps/control-panel/` (new, separate app) and `apps/event-reporting/` (reads
-the configuration; small changes at submission)
+**App folders**: `apps/control-panel/` (new, separate app), `apps/user-management/` (new,
+separate app, read-only users) and `apps/event-reporting/` (reads the configuration; small changes
+at submission)
 
 **Sources** (in [../001-event-reporting/source/Control Panel/](../001-event-reporting/source/Control%20Panel/)):
 [master-data-control.md](../001-event-reporting/source/Control%20Panel/master-data-control.md)
@@ -47,6 +48,9 @@ lifecycle phases from [core.md](../001-event-reporting/source/core.md).
   one level.
 - Q: Is user management included? → A: Yes, **read-only** for now: a users list and a user detail
   with their access and Control Panel roles. Editing access is a later feature.
+- Q: Should user management be inside the Control Panel? → A: No. It is a **third app**, User
+  Management, opened from the launcher like the others; it reads the same shared users, plants
+  and roles. Same read-only scope and access rules as before.
 - Q: What happens to an event when only Submission is Required? → A: It is **Closed** right after
   submission.
 
@@ -178,7 +182,7 @@ level and plants shown, and that the audit trail lists every change made in Stor
 
 ### User Story 4 - See users and their access (Priority: P4)
 
-A Central administrator opens **Users** in the Control Panel and searches for a person. The list
+A Central administrator opens the **User Management** app and searches for a person. The list
 shows each user's event role, plants, pillars and Control Panel roles. Opening a user shows all
 their access in one place — which plants and pillars they can report and see, their Control Panel
 roles with level and plants, and the review groups they belong to. A Cluster administrator sees
@@ -192,13 +196,13 @@ match each demo user's access, and that a Cluster administrator only sees users 
 
 **Acceptance Scenarios**:
 
-1. **Given** I open Users, **When** the list loads, **Then** I see name, event role, plants, pillars
+1. **Given** I open User Management, **When** the list loads, **Then** I see name, event role, plants, pillars
    and Control Panel roles of every user within my perimeter, with search by name and filters by
    plant, pillar and role.
 2. **Given** I open a user, **When** the detail shows, **Then** I see their event access (plants and
    pillars), their Control Panel roles (pillar, level, plants) and the review groups they belong
    to.
-3. **Given** I am a Cluster or Local administrator, **When** I open Users, **Then** I only see users
+3. **Given** I am a Cluster or Local administrator, **When** I open User Management, **Then** I only see users
    who have access to at least one of my plants.
 4. **Given** any user screen, **When** I look for edit actions, **Then** there are none (read-only).
 
@@ -311,10 +315,10 @@ match each demo user's access, and that a Cluster administrator only sees users 
 
 **User management (read-only)**
 
-- **FR-027**: The Control Panel MUST offer a read-only **Users** list with name, event role,
+- **FR-027**: A separate **User Management** app MUST offer a read-only users list with name, event role,
   plants, pillars and Control Panel roles, searchable by name and filterable by plant, pillar and
   role; Central sees every user, Cluster and Local only users with access to at least one of their
-  plants.
+  plants. Only users holding a Control Panel role can open it (as in FR-002).
 - **FR-028**: Opening a user MUST show their event access (plants and pillars), their Control
   Panel roles (pillar, level, plants) and the review groups they belong to; no edit action is
   offered.
