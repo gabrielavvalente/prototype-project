@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { createHashRouter, Navigate, Outlet, RouterProvider, useOutletContext } from 'react-router-dom';
+import { createHashRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 import { AppContext, SIGNED_IN_USER_KEY, useApp } from './AppContext.js';
 import { loadPlatform } from '../../../shared/platform/platformData.js';
 import { hasControlPanelAccess } from '../../../shared/platform/permissions.js';
+import AuditTab from './audit/AuditTab.jsx';
 import Header from './shell/Header.jsx';
 import NotAllowed from './shell/NotAllowed.jsx';
 import PillarLayout from './shell/PillarLayout.jsx';
@@ -26,20 +27,6 @@ function SignedInLayout() {
   );
 }
 
-// Temporary content of the tabs until their user stories are built.
-function TabPlaceholder({ title }) {
-  const { pillar } = useOutletContext();
-  useEffect(() => {
-    document.title = `${title} — ${pillar.label} — Control Panel`;
-  }, [title, pillar.label]);
-  return (
-    <main className="page">
-      <h1>{title}</h1>
-      <p className="field-hint">Coming soon.</p>
-    </main>
-  );
-}
-
 const router = createHashRouter([
   { path: '/', element: <StartScreen /> },
   {
@@ -53,7 +40,7 @@ const router = createHashRouter([
           { index: true, element: <Navigate to="workflow" replace /> },
           { path: 'workflow/*', element: <WorkflowTab /> },
           { path: 'master-data/*', element: <MasterDataTab /> },
-          { path: 'audit', element: <TabPlaceholder title="Audit" /> },
+          { path: 'audit', element: <AuditTab /> },
         ],
       },
       { path: '*', element: <NotAllowed reason="notFound" /> },

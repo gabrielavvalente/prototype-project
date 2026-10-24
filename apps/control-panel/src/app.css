@@ -656,3 +656,15 @@
   padding: var(--space-1) var(--space-2);
   font-size: var(--font-size-tiny);
 }
+
+/* Audit tab */
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 260px));
+  gap: 0 var(--space-3);
+}
+
+.audit-table td:first-child {
+  white-space: nowrap;
+}

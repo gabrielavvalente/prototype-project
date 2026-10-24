@@ -361,3 +361,13 @@ export async function setActivation(user, listId, valueId, active) {
     stores.audit.put(auditEntry(user, list, value, active ? 'reactivate' : 'deactivate', before, after));
   });
 }
+
+// ---------------------------------------------------------------------------
+// Audit trail (FR-022)
+// ---------------------------------------------------------------------------
+
+export async function getAudit(pillarId) {
+  const db = await openPlatform();
+  const entries = await getAllByIndex(db, 'audit', 'pillarId', pillarId);
+  return entries.sort((a, b) => b.at.localeCompare(a.at));
+}
