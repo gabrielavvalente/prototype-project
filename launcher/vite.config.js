@@ -1,21 +1,22 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
+import { APPS } from './apps.js';
 
-const repositoryFolder = fileURLToPath(new URL('..', import.meta.url));
+const launcherFolder = fileURLToPath(new URL('.', import.meta.url));
+const sharedFolder = fileURLToPath(new URL('../shared', import.meta.url));
 
-// One server for the whole repository, so every app opens from the same address
-// (e.g. /apps/control-panel/) and they all share the data stored in the browser.
-// This page is served at /launcher/ because no file may sit at the repository root.
+// The launcher page at http://localhost:5173/ and, behind it, every app at /apps/<app-name>/.
+// One address lets the apps share the data stored in the browser (research R1).
+const proxy = Object.fromEntries(
+  APPS.map((app) => [`/apps/${app.folder}`, { target: `http://localhost:${app.port}`, ws: true }]),
+);
+
 export default defineConfig({
-  root: repositoryFolder,
-  // Keep Vite's cache inside the launcher instead of the repository root.
-  cacheDir: fileURLToPath(new URL('./node_modules/.vite', import.meta.url)),
-  plugins: [react()],
   server: {
     port: 5173,
     strictPort: true,
-    open: '/launcher/',
-    fs: { allow: [repositoryFolder] },
+    open: true,
+    proxy,
+    fs: { allow: [launcherFolder, sharedFolder] },
   },
 });
