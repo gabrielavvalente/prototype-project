@@ -113,6 +113,19 @@ screens to copy; product logo and name are not reused, and all text stays in Eng
 - Q: What replaces "Feedback email recipients"? → A: **Shared with**: users of this plant (who can
   see the event's pillar) chosen from a list; each gets an "Event shared with you" alert on submit.
 
+### Session 2026-10-24 (review of header, list and form)
+
+- Q: How does the user get back to the pillars and to the event list? → A: A **Home** icon in the
+  top bar opens the entry screen (pillars); the "Event Reporting" name in the top bar opens the
+  event list, on every screen size.
+- Q: What does an expanded row or card show? → A: Only what the row or card does not already show
+  (no repeated level, date or title).
+- Q: Is the page size adjustable? → A: No, it is fixed at 20 rows for now.
+- Q: Where is the dictation button? → A: On the same line as Take photo and Attach photo or video.
+- Q: How is "Shared with" chosen? → A: A dropdown of the plant's users; each choice appears as a
+  removable badge below it.
+- Q: What happens after saving? → A: The event's view page opens, with a confirmation banner.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Report an event from the shop floor (Priority: P1)
@@ -242,7 +255,7 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
 **Acceptance Scenarios**:
 
 1. **Given** I open Events, **When** the list loads, **Then** it shows only events in my scope,
-   sortable by date, type, level, status and reporter, with 20, 50 or 100 records per page.
+   sortable by date, type, level, status and reporter, 20 records per page.
 2. **Given** the list or the Kanban board is displayed, **When** I click a row or a card, **Then**
    it expands in place showing the description, key facts and the immediate actions as sub-cards.
 3. **Given** I show or hide columns, **When** I come back later, **Then** my column choices are kept.
@@ -313,8 +326,8 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
   Clarification 2026-10-24, form review)*
 - **FR-006**: The system MUST capture Title, Reporter (pre-filled with the current user, editable
   only by a Manager), Report Date (today, read-only), Event Time (optional), Shift Moment (Day /
-  Night / Afternoon) and Description; a microphone button MUST transcribe speech into the
-  description where the browser supports it. *(US-CREATE-03, SCR-MOB-01 FR-8, Clarification
+  Night / Afternoon) and Description; a Dictate button, on the same line as the photo and video
+  buttons, MUST transcribe speech into the description where the browser supports it. *(US-CREATE-03, SCR-MOB-01 FR-8, Clarification
   2026-10-24, list/Kanban/form review)*
 - **FR-007**: Users MUST be able to attach photos and videos, and capture them directly with the
   device camera on a phone. *(US-CREATE-03)*
@@ -325,7 +338,8 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
   files with a clear message without attaching them. *(US-CREATE-11, Clarification 2026-10-24)*
 - **FR-010**: The system MUST capture Employee type (Employee / Temporary Worker / Permanent
   Contractor / Non-Permanent Contractor / Other), Recurrence (Yes/No), Comments and **Shared
-  with** (users of the event's plant who can see its pillar), plus a Disease(s) multi-select when
+  with** (a dropdown of users of the event's plant who can see its pillar; each choice shown as a
+  removable badge below it), plus a Disease(s) multi-select when
   the family is OH. *(US-CREATE-04, Clarification 2026-10-24, list/Kanban/form review)*
 - **FR-011**: Users MUST be able to add any number of immediate actions as repeatable cards, each
   with Description, Priority, Category, Completion date, KPI ID (optional) and Comments; each immediate action MUST be saved with status Completed (it records
@@ -339,7 +353,9 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
   each missing field next to it, show how many are missing, and scroll to the first one.
   *(US-CREATE-09, Clarification 2026-10-24, form review)*
 - **FR-015**: Save as Draft MUST store the event with status `Draft` and trigger nothing; Submit
-  MUST be possible only when no mandatory field is missing. *(US-CREATE-09)*
+  MUST be possible only when no mandatory field is missing. After any save (draft, submit, changes)
+  the event's view page MUST open with a confirmation banner (record number when submitted, and a
+  link to report another event). *(US-CREATE-09, Clarification 2026-10-24, header/list/form review)*
 - **FR-016**: On submit, the system MUST give the event a unique record number in the format
   `<FAMILY>-<YY>-<NNNN>` (family acronym TF / EVE / SRE / OH, last two digits of the year of
   submission, 4-digit sequence restarting at 0001 for each family and year, e.g., `EVE-26-0001`), set its status to `Open`, and create a My Alerts entry "Event submitted" for every Manager of
@@ -384,11 +400,12 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
 
 - **FR-026**: Events MUST list, for every role including User, all submitted events in the user's
   scope plus the user's own drafts (never other users' drafts),
-  sortable by date, type, level, status and reporter, with 20, 50 or 100 records per page.
+  sortable by date, type, level, status and reporter, 20 records per page (fixed, Clarification
+  2026-10-24, header/list/form review).
   *(US-LIB-01, Clarification 2026-10-24)*
 - **FR-027**: Clicking a List row or a Kanban card MUST expand it in place, vertically, showing
-  the description, key facts (location, reporter, date, risk question) and each immediate action
-  as a sub-card, with links to open the event and, when allowed, edit it; clicking again collapses
+  only what the row or card does not already show — the description, full location, event time,
+  shift, task type, risk-question answer, photos — and each immediate action as a sub-card, with links to open the event and, when allowed, edit it; clicking again collapses
   it. *(Clarification 2026-10-24, list/Kanban/form review; replaces the quick view)*
   *(US-LIB-01, SCR-DSK-02 FR-33)*
 - **FR-028**: Users MUST be able to show and hide columns, and their choice MUST be remembered.
@@ -416,8 +433,9 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
   priority, task type: Routine / Non-routine) MUST be shown as tappable chips; pillars show a
   color dot. The family is hidden and filled in when the pillar has only one. Levels MUST be
   compact badges (e.g., "TF1"); the chosen level's name and description MUST appear below them.
-- **FR-040**: The top bar MUST hold the app name, a search field, a notifications bell with an
-  unread dot and the user's avatar; the avatar opens a sheet with name, role, business, plant,
+- **FR-040**: The top bar MUST hold the app name (a link to the event list on every screen size),
+  a search field (an icon on phones), a Home icon to the entry screen (pillars), a notifications
+  bell with an unread dot and the user's avatar; the avatar opens a sheet with name, role, business, plant,
   pillar (with Change) and Switch user. On phones a bottom navigation MUST offer Home (entry
   screen), Events and a floating New button (hidden for roles that cannot create).
 - **FR-041**: Users MUST be able to switch the event list between a **Kanban** view (event cards

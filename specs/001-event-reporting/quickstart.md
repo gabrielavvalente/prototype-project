@@ -39,7 +39,8 @@ are placeholders for the ones defined in the sample data.
    attachment and no immediate action.
 5. Summary shows every section with no missing fields → **Submit**.
 
-Expected: confirmation with a record number like `TF-26-0001`; status `Open`; done in under
+Expected: the event's view page opens with a banner showing a record number like `TF-26-0001`;
+status `Open`; done in under
 3 minutes.
 
 ### 2. Required fields, optional photos and actions (FR-008, FR-012, FR-014, SC-006)
@@ -85,7 +86,7 @@ Expected: both submitted; the second shows the action as **Completed**. Try a 6 
 
 - Search, Filters, Columns and the Kanban / List buttons sit on one line (desktop width).
 - **List**: columns are record number, status, level, report date, title, department, reporter;
-  statuses are colored badges; set page size to 100; sort by each sortable column; search a record
+  statuses are colored badges; 20 rows per page; sort by each sortable column; search a record
   number (e.g., `TF-26-0003`) and a word of a title.
 - **Kanban**: one column per status (Draft, Open, In Progress, Closed, Archived) with a count; your
   drafts are in the Draft column.

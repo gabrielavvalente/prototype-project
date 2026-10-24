@@ -460,6 +460,27 @@ shows level badges, two task types, optional event time, dictation and Shared wi
 
 ---
 
+## Phase 5f: Review of header, list and form
+
+**Goal**: Apply the decisions of the spec Clarifications session "review of header, list and form"
+
+**Independent Test**: Home icon and app name navigate on every screen size; expanded rows and
+cards repeat nothing; 20 rows per page; dictation sits with the photo buttons; Shared with is a
+dropdown with badges; saving opens the event's view page with a banner
+
+- [ ] T080 Top bar in `src/shell/Header.jsx`: Home icon to `#/entry`; app name visible and linking
+  to `#/events` on phones too (search becomes an icon there)
+- [ ] T081 `src/events/EventExpanded.jsx`: drop level, date and title (shown on the row / card);
+  show event time only when given
+- [ ] T082 Remove the rows-per-page select (`EventTable.jsx`, `EventLibrary.jsx`); 20 rows fixed
+- [ ] T083 Move Dictate into the photo button row (`AttachmentInput.jsx`, `GeneralInfoSection.jsx`)
+- [ ] T084 Shared with as a dropdown plus removable badges (`DetailsSection.jsx`)
+- [ ] T085 After saving, open the event's view page with a confirmation banner (`EventForm.jsx`,
+  `EventDetail.jsx`); the Confirmation screen is removed
+- [ ] T086 Rerun quickstart scenarios 1–7 at 390px and desktop width with no console errors
+
+---
+
 ## Phase 6: Polish & Cross-Cutting Concerns
 
 **Purpose**: Documentation, accessibility, performance and the final end-to-end check
@@ -491,7 +512,8 @@ shows level badges, two task types, optional event time, dictation and Shared wi
 - **Review round (Phase 5c)**: Depends on Phase 5b
 - **Form review (Phase 5d)**: Depends on Phase 5c
 - **List/Kanban/form review (Phase 5e)**: Depends on Phase 5d
-- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b–5e)
+- **Header/list/form review (Phase 5f)**: Depends on Phase 5e
+- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b–5f)
 
 ### User Story Dependencies
 
