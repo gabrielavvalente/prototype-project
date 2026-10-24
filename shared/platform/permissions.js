@@ -26,6 +26,16 @@ export function plantsOverlap(plantIdsA, plantIdsB) {
   return plantIdsA.some((plantId) => plantIdsB.includes(plantId));
 }
 
+// Option A (FR-009): a workflow setting is changed only by people at the same level, covering
+// one of the setting's plants.
+export function canEditSetting(user, setting) {
+  const role = getRole(user, setting.pillarId);
+  if (!role || role.level !== setting.scopeLevel) {
+    return false;
+  }
+  return role.level === 'central' || plantsOverlap(role.plantIds, setting.plantIds);
+}
+
 // Every plant a user is linked to, for events or through a Control Panel role.
 function linkedPlantIds(user) {
   const eventPlants = user.access.map((entry) => entry.plantId);

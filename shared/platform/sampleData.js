@@ -275,5 +275,37 @@ export const users = [
   },
 ];
 
-// Starting workflow settings are added with User Story 1 (tasks T025).
-export const workflowSettings = [];
+// ---------------------------------------------------------------------------
+// Starting workflow settings (only Required ones are stored, research R5). Central requires a few
+// phases on each pillar; Eva Novak adds one for Lyon. TF4, TF5 and most other levels require
+// nothing, so their events close right after submission (FR-026).
+// ---------------------------------------------------------------------------
+
+const SEEDED_AT = '2026-10-20T09:00:00.000Z';
+
+function requiredSetting(pillarId, levelCode, phase, role, authorId, reviewerIds = []) {
+  return {
+    id: `setting-${pillarId}-${levelCode}-${phase}-${role.level}`,
+    pillarId,
+    levelCode,
+    phase,
+    scopeLevel: role.level,
+    plantIds: role.plantIds,
+    reviewerIds,
+    authorId,
+    updatedAt: SEEDED_AT,
+  };
+}
+
+const hsReviewers = ['user-carla', 'user-eva', 'user-felix', 'user-diego'];
+
+export const workflowSettings = [
+  requiredSetting('pillar-hs', 'TF1', 'review', central('pillar-hs'), 'user-ludovic', hsReviewers),
+  requiredSetting('pillar-hs', 'TF2', 'review', central('pillar-hs'), 'user-ludovic', hsReviewers),
+  requiredSetting('pillar-hs', 'TF1', 'actions', central('pillar-hs'), 'user-ludovic'),
+  requiredSetting('pillar-hs', 'TF1', 'validation', local('pillar-hs', 'plant-lyon'), 'user-eva'),
+  requiredSetting('pillar-env', 'EvE1', 'review', central('pillar-env'), 'user-ed', ['user-carla', 'user-felix', 'user-diego']),
+  requiredSetting('pillar-env', 'EvE1', 'actions', central('pillar-env'), 'user-ed'),
+  requiredSetting('pillar-ir', 'SRE1', 'rootCause', central('pillar-ir'), 'user-sergio'),
+  requiredSetting('pillar-ir', 'SRE2', 'rootCause', central('pillar-ir'), 'user-sergio'),
+];
