@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  applySipLevelRule,
+  getRequiredLocationLevels,
   getRiskQuestionType,
   validateEventForSubmit,
   validateFile,
@@ -45,6 +47,10 @@ function makeEvent(changes = {}) {
     shiftMoment: 'shiftMoment-1',
     description: 'A forklift almost hit a pedestrian.',
     employeeType: 'employeeType-1',
+    involvedPersonId: 'user-1',
+    involvedPersonName: '',
+    involvedActivity: '',
+    firstAidTreatmentId: '',
     recurrence: false,
     sharedWithIds: [],
     diseaseIds: [],
@@ -74,6 +80,18 @@ describe('getRiskQuestionType (FR-004)', () => {
   it('asks nothing for Occupational Health or before a level is chosen', () => {
     expect(getRiskQuestionType('OH', 'OH-SKIN')).toBeNull();
     expect(getRiskQuestionType('SRE', '')).toBeNull();
+  });
+});
+
+describe('applySipLevelRule (FR-048)', () => {
+  it('turns a TF5 with SIP = Yes into a TF4', () => {
+    expect(applySipLevelRule('TF5', { type: 'SIP', answer: true })).toEqual({ levelCode: 'TF4', changed: true });
+  });
+
+  it('leaves other combinations alone', () => {
+    expect(applySipLevelRule('TF5', { type: 'SIP', answer: false })).toEqual({ levelCode: 'TF5', changed: false });
+    expect(applySipLevelRule('TF5', { type: 'SIP', answer: null })).toEqual({ levelCode: 'TF5', changed: false });
+    expect(applySipLevelRule('TF4', { type: 'SIP', answer: true })).toEqual({ levelCode: 'TF4', changed: false });
   });
 });
 
@@ -145,9 +163,17 @@ describe('validateSection', () => {
     expect(validateSection('classification', event, options)).toEqual([]);
   });
 
-  it('requires a full location and the task type (FR-005)', () => {
-    const event = makeEvent({ location: { departmentId: 'd' }, taskTypeId: '' });
+  it('requires a full location and the task type for TF1-TF3 and other families (FR-005)', () => {
+    const event = makeEvent({ levelCode: 'TF2', firstAidTreatmentId: 'firstAidTreatment-1', location: { departmentId: 'd', workshopId: 'w' }, taskTypeId: '' });
     expect(fields(validateSection('location', event, options))).toEqual(['location', 'taskTypeId']);
+  });
+
+  it('only needs department and workshop for TF4 and TF5, task type optional', () => {
+    const areaOnly = makeEvent({ location: { departmentId: 'd', workshopId: 'w' }, taskTypeId: '' });
+    expect(validateSection('location', areaOnly, options)).toEqual([]);
+    const noWorkshop = makeEvent({ levelCode: 'TF5', location: { departmentId: 'd' }, taskTypeId: '' });
+    expect(validateSection('location', noWorkshop, options)[0].message).toMatch(/department and workshop/);
+    expect(getRequiredLocationLevels('SRE4')).toHaveLength(5);
   });
 
   it('checks title length, description length and future time (FR-006)', () => {
@@ -166,6 +192,21 @@ describe('validateSection', () => {
 
   it('does not require a photo or video at any level (FR-008)', () => {
     expect(validateSection('general', makeEvent({ levelCode: 'TF1' }), options)).toEqual([]);
+  });
+
+  it('asks the person involved according to the employee type (FR-010)', () => {
+    const employee = makeEvent({ involvedPersonId: '' });
+    expect(fields(validateSection('details', employee, options))).toEqual(['involvedPersonId']);
+    const contractor = makeEvent({ employeeType: 'employeeType-3', involvedPersonId: '', involvedPersonName: '' });
+    expect(fields(validateSection('details', contractor, options))).toEqual(['involvedPersonName']);
+    const named = { ...contractor, involvedPersonName: 'Sam Lee' };
+    expect(validateSection('details', named, options)).toEqual([]);
+  });
+
+  it('asks the first aid treatment for TF1-TF3 only (FR-047)', () => {
+    expect(fields(validateSection('details', makeEvent({ levelCode: 'TF3' }), options))).toEqual(['firstAidTreatmentId']);
+    expect(validateSection('details', makeEvent({ levelCode: 'TF3', firstAidTreatmentId: 'firstAidTreatment-2' }), options)).toEqual([]);
+    expect(validateSection('details', makeEvent({ levelCode: 'TF4' }), options)).toEqual([]);
   });
 
   it('checks event details and OH diseases (FR-010)', () => {
@@ -189,7 +230,8 @@ describe('validateEventForSubmit (FR-014, FR-015)', () => {
   });
 
   it('lists missing items with their section, in page order', () => {
-    const errors = validateEventForSubmit(makeEvent({ taskTypeId: '', title: '' }), { now });
+    const tf2 = { levelCode: 'TF2', firstAidTreatmentId: 'firstAidTreatment-1' };
+    const errors = validateEventForSubmit(makeEvent({ ...tf2, taskTypeId: '', title: '' }), { now });
     expect(errors.map((error) => `${error.section}:${error.field}`)).toEqual(['location:taskTypeId', 'general:title']);
   });
 });

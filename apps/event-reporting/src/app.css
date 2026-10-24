@@ -1850,3 +1850,7 @@ label.button:focus-within,
   justify-self: start;
   padding: 0;
 }
+
+.use-level {
+  margin: var(--space-2) 0;
+}

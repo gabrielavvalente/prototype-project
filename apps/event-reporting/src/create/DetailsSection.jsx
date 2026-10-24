@@ -1,13 +1,22 @@
 import { useApp } from '../AppContext.js';
 import { getShareableUsers } from '../logic/access.js';
 import { getReferenceList } from '../logic/lookups.js';
+import { EMPLOYEE_TYPE_EMPLOYEE, isFirstAidRequired } from '../logic/validation.js';
 import Icon from '../shell/Icon.jsx';
 import ChipGroup from './ChipGroup.jsx';
-import { YesNoField } from './fields.jsx';
+import { SelectField, TextField, YesNoField } from './fields.jsx';
 
-// Event details: who was involved, recurrence, comments, who it is shared with, diseases for OH (FR-010).
+// Event details: who was involved, first aid for TF1–TF3, recurrence, comments, who it is shared
+// with, diseases for OH (FR-010, FR-047).
 export default function DetailsSection({ event, update, errors }) {
   const { reference, users, user } = useApp();
+  const plantUsers = users.filter((person) => person.access.some((entry) => entry.plantId === event.plantId));
+  const isEmployee = event.employeeType === EMPLOYEE_TYPE_EMPLOYEE;
+
+  // A new employee type asks for the person again (a user, or a name and activity).
+  function chooseEmployeeType(employeeType) {
+    update({ employeeType, involvedPersonId: '', involvedPersonName: '', involvedActivity: '' });
+  }
   const diseases = getReferenceList(reference, 'disease');
   // People of this plant who can see the event's pillar, except the person reporting it.
   const shareable = event.pillarId ? getShareableUsers(users, event).filter((person) => person.id !== user.id) : [];
@@ -20,9 +29,49 @@ export default function DetailsSection({ event, update, errors }) {
         required
         value={event.employeeType}
         options={getReferenceList(reference, 'employeeType').map((item) => ({ value: item.id, label: item.label }))}
-        onChange={(value) => update({ employeeType: value })}
+        onChange={chooseEmployeeType}
         errors={errors}
       />
+      {event.employeeType && isEmployee && (
+        <SelectField
+          id="involvedPersonId"
+          label="Person involved"
+          required
+          value={event.involvedPersonId}
+          options={plantUsers.map((person) => ({ id: person.id, label: person.name }))}
+          onChange={(value) => update({ involvedPersonId: value })}
+          errors={errors}
+        />
+      )}
+      {event.employeeType && !isEmployee && (
+        <>
+          <TextField
+            id="involvedPersonName"
+            label="Name of the person involved"
+            required
+            value={event.involvedPersonName}
+            onChange={(value) => update({ involvedPersonName: value })}
+            errors={errors}
+          />
+          <TextField
+            id="involvedActivity"
+            label="What was the person doing? (optional)"
+            value={event.involvedActivity}
+            onChange={(value) => update({ involvedActivity: value })}
+          />
+        </>
+      )}
+      {isFirstAidRequired(event.levelCode) && (
+        <SelectField
+          id="firstAidTreatmentId"
+          label="What was the first aid treatment?"
+          required
+          value={event.firstAidTreatmentId}
+          options={getReferenceList(reference, 'firstAidTreatment')}
+          onChange={(value) => update({ firstAidTreatmentId: value })}
+          errors={errors}
+        />
+      )}
       <YesNoField
         id="recurrence"
         label="Has this happened before?"

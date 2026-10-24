@@ -90,6 +90,18 @@ export const reference = [
     'Other',
   ]),
   ...simpleList('shiftMoment', ['Day', 'Night', 'Afternoon']),
+  // Starting list for TF1–TF3 (FR-047); to be replaced by the official list.
+  ...simpleList('firstAidTreatment', [
+    'Wound cleaning and dressing',
+    'Plaster or bandage',
+    'Cold compress',
+    'Eye wash',
+    'Burn care',
+    'Splint or immobilisation',
+    'Removal of a splinter or foreign body',
+    'Rest and observation',
+    'Other',
+  ]),
   ...simpleList('actionPriority', ['Low', 'Medium', 'High']),
   ...actionCategories,
 ].map((item, index) => ({ ...item, sortOrder: index }));
@@ -316,6 +328,9 @@ const eventRows = [
   ['Plastic film waste in open skip', 'EVE', 'EvE5', 'plant-porto', 'user-gina', false, 'Open', '2026-10-10', '14:20', false],
 ];
 
+// Names of people involved who are not employees (contractors, temporary workers…).
+const outsideNames = ['Sam Lee', 'Noah Petit', 'Ines Duarte', 'Tom Baker'];
+
 const diseaseOfLevel = {
   'OH-RESP': ['disease-1'],
   'OH-SKIN': ['disease-2'],
@@ -374,6 +389,11 @@ function buildSampleEvents() {
       shiftMoment: `shiftMoment-${(index % 3) + 1}`,
       description: `${title}. Reported from the shop floor during the shift.`,
       employeeType: `employeeType-${(index % 5) + 1}`,
+      // Employee: the person is a user of the plant; otherwise a name and what they were doing.
+      involvedPersonId: index % 5 === 0 ? reporterId : '',
+      involvedPersonName: index % 5 === 0 ? '' : outsideNames[index % outsideNames.length],
+      involvedActivity: index % 5 === 0 ? '' : 'Moving pallets near the line',
+      firstAidTreatmentId: ['TF1', 'TF2', 'TF3'].includes(levelCode) ? `firstAidTreatment-${(index % 8) + 1}` : '',
       recurrence: index % 4 === 0,
       comments: '',
       sharedWithIds: [],

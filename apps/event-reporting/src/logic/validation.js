@@ -14,6 +14,34 @@ export const MAX_PERFORMERS = 5;
 const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'mp4', 'mov', 'webm'];
 export const LOCATION_LEVELS = ['departmentId', 'workshopId', 'jobId', 'workstationId', 'taskId'];
 
+// The "Employee" employee type: the person involved is then chosen among the plant's users.
+export const EMPLOYEE_TYPE_EMPLOYEE = 'employeeType-1';
+
+// Near misses and hazardous situations only need the area (FR-005, safety event rules).
+const AREA_ONLY_LEVELS = ['TF4', 'TF5'];
+
+export function getRequiredLocationLevels(levelCode) {
+  return AREA_ONLY_LEVELS.includes(levelCode) ? ['departmentId', 'workshopId'] : LOCATION_LEVELS;
+}
+
+export function isTaskTypeRequired(levelCode) {
+  return !AREA_ONLY_LEVELS.includes(levelCode);
+}
+
+export function isFirstAidRequired(levelCode) {
+  return ['TF1', 'TF2', 'TF3'].includes(levelCode);
+}
+
+// A hazardous situation (TF5) with serious incident potential is reported as a near miss (TF4)
+// (FR-048). Returns the level to use and whether it was changed.
+export function applySipLevelRule(levelCode, riskQuestion) {
+  const isSip = Boolean(riskQuestion && riskQuestion.type === 'SIP' && riskQuestion.answer === true);
+  if (levelCode === 'TF5' && isSip) {
+    return { levelCode: 'TF4', changed: true };
+  }
+  return { levelCode, changed: false };
+}
+
 // The follow-up question after the level (FR-004): SIP for Safety and Environment,
 // CRP for SRE1–SRE2 and SRP for SRE3–SRE5; none for Occupational Health.
 export function getRiskQuestionType(familyCode, levelCode) {
@@ -86,13 +114,18 @@ function validateClassification(event) {
   return errors;
 }
 
-// The location is chosen as a whole in the location picker (FR-005).
+// The location is chosen in the location picker; how deep depends on the level (FR-005).
 function validateLocation(event) {
   const errors = [];
-  if (LOCATION_LEVELS.some((level) => isBlank(event.location[level]))) {
-    errors.push(error('location', 'Choose the location down to the task.'));
+  const required = getRequiredLocationLevels(event.levelCode);
+  if (required.some((level) => isBlank(event.location[level]))) {
+    const message =
+      required.length === LOCATION_LEVELS.length ? 'Choose the location down to the task.' : 'Choose at least the department and workshop.';
+    errors.push(error('location', message));
   }
-  if (isBlank(event.taskTypeId)) errors.push(error('taskTypeId', 'Choose a task type.'));
+  if (isTaskTypeRequired(event.levelCode) && isBlank(event.taskTypeId)) {
+    errors.push(error('taskTypeId', 'Choose a task type.'));
+  }
   return errors;
 }
 
@@ -120,7 +153,16 @@ function validateGeneral(event, now) {
 
 function validateDetails(event) {
   const errors = [];
-  if (isBlank(event.employeeType)) errors.push(error('employeeType', 'Choose the employee type.'));
+  if (isBlank(event.employeeType)) {
+    errors.push(error('employeeType', 'Choose the employee type.'));
+  } else if (event.employeeType === EMPLOYEE_TYPE_EMPLOYEE) {
+    if (isBlank(event.involvedPersonId)) errors.push(error('involvedPersonId', 'Choose the person involved.'));
+  } else if (isBlank(event.involvedPersonName)) {
+    errors.push(error('involvedPersonName', 'Enter the name of the person involved.'));
+  }
+  if (isFirstAidRequired(event.levelCode) && isBlank(event.firstAidTreatmentId)) {
+    errors.push(error('firstAidTreatmentId', 'Choose the first aid treatment.'));
+  }
   if (event.recurrence !== true && event.recurrence !== false) {
     errors.push(error('recurrence', 'Say whether this has happened before.'));
   }

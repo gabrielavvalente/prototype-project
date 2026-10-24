@@ -488,18 +488,18 @@ FR-048)
 
 **Independent Test**: Quickstart scenario 3 "Safety rules" passes; rule functions are tested
 
-- [ ] T087 Rules with tests in `src/logic/validation.js`: person involved by employee type, first
+- [X] T087 Rules with tests in `src/logic/validation.js`: person involved by employee type, first
   aid treatment for TF1–TF3, location levels and Task Type by level (`getRequiredLocationLevels`),
   `applySipLevelRule` (TF5 + SIP Yes → TF4)
-- [ ] T088 `src/logic/locations.js` (+ tests): paths, search and QR codes down to a minimum level
+- [X] T088 `src/logic/locations.js` (+ tests): paths, search and QR codes down to a minimum level
   (workshop for TF4 / TF5, task otherwise); `locationFromNode`
-- [ ] T089 Location picker: "Use this workshop / job / station" while browsing when allowed, and
+- [X] T089 Location picker: "Use this workshop / job / station" while browsing when allowed, and
   search results at those levels (`LocationPicker.jsx`, `LocationSection.jsx`)
-- [ ] T090 Classification: apply the TF5 → TF4 rule with a warning (`ClassificationSection.jsx`)
-- [ ] T091 Event details: person involved (user dropdown or name + activity) and first aid
+- [X] T090 Classification: apply the TF5 → TF4 rule with a warning (`ClassificationSection.jsx`)
+- [X] T091 Event details: person involved (user dropdown or name + activity) and first aid
   treatment for TF1–TF3 (`DetailsSection.jsx`); first aid list and sample data
   (`sampleData.js`, database version 5); summary rows (`eventSummary.js`)
-- [ ] T092 Rerun quickstart scenarios 1–7 at 390px with no console errors
+- [X] T092 Rerun quickstart scenarios 1–7 at 390px with no console errors
 
 ---
 

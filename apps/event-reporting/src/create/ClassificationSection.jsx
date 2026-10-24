@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useApp } from '../AppContext.js';
 import { getPillarIdsForPlant } from '../logic/access.js';
 import { getPillarColorClass } from '../logic/display.js';
 import { getReferenceList } from '../logic/lookups.js';
-import { getRiskQuestionType } from '../logic/validation.js';
+import { applySipLevelRule, getRiskQuestionType, isFirstAidRequired } from '../logic/validation.js';
 import ChipGroup from './ChipGroup.jsx';
 import { YesNoField } from './fields.jsx';
 
@@ -31,6 +32,7 @@ export default function ClassificationSection({ event, update, errors, pillarLoc
   const levels = family ? getReferenceList(reference, 'level').filter((level) => level.familyId === family.id) : [];
   const chosenLevel = levels.find((level) => level.code === event.levelCode);
   const questionType = getRiskQuestionType(event.familyCode, event.levelCode);
+  const [levelNotice, setLevelNotice] = useState('');
 
   function choosePillar(pillarId) {
     const pillarFamilies = getReferenceList(reference, 'family').filter((item) => item.pillarId === pillarId);
@@ -40,14 +42,27 @@ export default function ClassificationSection({ event, update, errors, pillarLoc
     update({ pillarId, familyCode: onlyFamily, levelCode: '', riskQuestion: null, diseaseIds: [], sharedWithIds: [] });
   }
 
+  // Saves a level and risk answer, applying the TF5 + SIP = Yes → TF4 rule (FR-048).
+  function saveClassification(levelCode, riskQuestion) {
+    const rule = applySipLevelRule(levelCode, riskQuestion);
+    setLevelNotice(
+      rule.changed
+        ? 'A hazardous situation with serious incident potential is reported as a Near Miss: the level was changed from TF5 to TF4.'
+        : '',
+    );
+    update({
+      levelCode: rule.levelCode,
+      riskQuestion,
+      // The first aid treatment only belongs to TF1–TF3 (FR-047).
+      ...(isFirstAidRequired(rule.levelCode) ? {} : { firstAidTreatmentId: '' }),
+    });
+  }
+
   function chooseLevel(levelCode) {
     const type = getRiskQuestionType(event.familyCode, levelCode);
     // Changing the level clears an answer that belonged to another question (spec Edge Cases).
     const keepAnswer = event.riskQuestion && event.riskQuestion.type === type;
-    update({
-      levelCode,
-      riskQuestion: type ? { type, answer: keepAnswer ? event.riskQuestion.answer : null } : null,
-    });
+    saveClassification(levelCode, type ? { type, answer: keepAnswer ? event.riskQuestion.answer : null } : null);
   }
 
   return (
@@ -88,6 +103,11 @@ export default function ClassificationSection({ event, update, errors, pillarLoc
             }))}
             errors={errors}
           />
+          {levelNotice && (
+            <p className="message message--warning" role="alert">
+              {levelNotice}
+            </p>
+          )}
           {chosenLevel && (
             <p className="level-description" aria-live="polite">
               <strong>
@@ -104,7 +124,7 @@ export default function ClassificationSection({ event, update, errors, pillarLoc
           label={RISK_QUESTIONS[questionType].label}
           hint={RISK_QUESTIONS[questionType].hint}
           value={event.riskQuestion ? event.riskQuestion.answer : null}
-          onChange={(answer) => update({ riskQuestion: { type: questionType, answer } })}
+          onChange={(answer) => saveClassification(event.levelCode, { type: questionType, answer })}
           errors={errors}
         />
       )}

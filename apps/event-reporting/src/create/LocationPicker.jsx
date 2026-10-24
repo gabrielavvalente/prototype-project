@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../AppContext.js';
-import { buildLocationPaths, getAncestry, locationFromTask, resolveQrCode, searchLocations } from '../logic/locations.js';
+import { buildLocationPaths, getAncestry, LEVEL_TYPES, locationFromNode, resolveQrCode, searchLocations } from '../logic/locations.js';
 import { findById, getChildren } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
 import Sheet from '../shell/Sheet.jsx';
@@ -60,18 +60,27 @@ function QrScanner({ onCode }) {
   );
 }
 
+function capitalize(text) {
+  return text[0].toUpperCase() + text.slice(1);
+}
+
 // Choose a location by typing, browsing one level at a time, or scanning a station QR code (FR-005).
-export default function LocationPicker({ plantId, onSelect, onClose }) {
+// minType: the shallowest level that can be chosen ('task', or 'workshop' for TF4 / TF5).
+export default function LocationPicker({ plantId, minType = 'task', onSelect, onClose }) {
   const { organization } = useApp();
   const [query, setQuery] = useState('');
   const [browseNodeId, setBrowseNodeId] = useState(plantId);
   const [scanning, setScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState('');
-  const paths = useMemo(() => buildLocationPaths(organization, plantId), [organization, plantId]);
+  const paths = useMemo(() => buildLocationPaths(organization, plantId, minType), [organization, plantId, minType]);
   const results = searchLocations(paths, query).slice(0, MAX_RESULTS);
   const browseTrail = getAncestry(organization, browseNodeId);
   const children = getChildren(organization, browseNodeId);
   const plant = findById(organization, plantId);
+  const browseNode = findById(organization, browseNodeId);
+  // While browsing, the current level can be used when it is deep enough (e.g. a workshop for TF4).
+  const canUseBrowseNode =
+    browseNode.type !== 'plant' && LEVEL_TYPES.indexOf(browseNode.type) >= LEVEL_TYPES.indexOf(minType);
   // The latest callbacks, kept in refs so the camera does not restart when the form re-renders.
   const onSelectRef = useRef(onSelect);
   const onCloseRef = useRef(onClose);
@@ -85,7 +94,7 @@ export default function LocationPicker({ plantId, onSelect, onClose }) {
 
   function openNode(node) {
     if (node.type === 'task') {
-      choose(locationFromTask(organization, node.id));
+      choose(locationFromNode(organization, node.id));
     } else {
       setBrowseNodeId(node.id);
     }
@@ -94,19 +103,19 @@ export default function LocationPicker({ plantId, onSelect, onClose }) {
   const handleCode = useCallback(
     (code) => {
       setScanning(false);
-      const result = resolveQrCode(organization, plantId, code);
+      const result = resolveQrCode(organization, plantId, code, minType);
       if (result.location) {
         onSelectRef.current(result.location);
         onCloseRef.current();
       } else if (result.browseFrom) {
         setQuery('');
         setBrowseNodeId(result.browseFrom);
-        setScanMessage('QR code read. Choose the task below.');
+        setScanMessage('QR code read. Choose a deeper level below.');
       } else {
         setScanMessage(result.error);
       }
     },
-    [organization, plantId],
+    [organization, plantId, minType],
   );
 
   function startScan() {
@@ -150,7 +159,7 @@ export default function LocationPicker({ plantId, onSelect, onClose }) {
           </h3>
           <ul className="plain-list">
             {results.map((path) => (
-              <li key={path.taskId}>
+              <li key={path.nodeId}>
                 <button type="button" className="list-row" onClick={() => choose(path.location)}>
                   <Icon name="location" size={18} />
                   <span className="list-row-text">
@@ -182,13 +191,22 @@ export default function LocationPicker({ plantId, onSelect, onClose }) {
               </span>
             ))}
           </nav>
+          {canUseBrowseNode && (
+            <button
+              type="button"
+              className="button button--secondary button--block use-level"
+              onClick={() => choose(locationFromNode(organization, browseNode.id))}
+            >
+              <Icon name="check" size={18} /> Use this {browseNode.type}: {browseNode.name}
+            </button>
+          )}
           <ul className="plain-list">
             {children.map((node) => (
               <li key={node.id}>
                 <button type="button" className="list-row" onClick={() => openNode(node)}>
                   <span className="list-row-text">
                     <strong>{node.name}</strong>
-                    <small>{node.type === 'task' ? 'Task — select' : node.type[0].toUpperCase() + node.type.slice(1)}</small>
+                    <small>{node.type === 'task' ? 'Task — select' : capitalize(node.type)}</small>
                   </span>
                   <Icon name={node.type === 'task' ? 'check' : 'chevronRight'} size={18} />
                 </button>

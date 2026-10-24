@@ -52,6 +52,7 @@ export function describeEvent(event, lists, attachmentCount) {
     ],
     details: [
       { label: 'Employee type', value: getLabel(reference, event.employeeType) },
+      { label: 'Person involved', value: event.involvedPersonId ? getLabel(users, event.involvedPersonId) : event.involvedPersonName },
       { label: 'Has this happened before?', value: yesNo(event.recurrence) },
       { label: 'Comments', value: event.comments },
       { label: 'Shared with', value: listLabels(users, event.sharedWithIds) },
@@ -64,6 +65,12 @@ export function describeEvent(event, lists, attachmentCount) {
       label: `Could this be a ${event.riskQuestion.type}?`,
       value: yesNo(event.riskQuestion.answer),
     });
+  }
+  if (event.involvedActivity) {
+    rows.details.splice(2, 0, { label: 'What was the person doing?', value: event.involvedActivity });
+  }
+  if (event.firstAidTreatmentId) {
+    rows.details.push({ label: 'First aid treatment', value: getLabel(reference, event.firstAidTreatmentId) });
   }
   if (event.familyCode === 'OH') {
     rows.details.push({ label: 'Disease(s)', value: listLabels(reference, event.diseaseIds) });

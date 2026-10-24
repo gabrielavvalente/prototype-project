@@ -7,8 +7,9 @@ import * as sampleData from './sampleData.js';
 
 const DATABASE_NAME = 'event-reporting';
 // Version 2 renamed family codes and record numbers, version 3 renamed HPR to SIP, version 4
-// replaced feedback emails with Shared with (reviews of 2026-10-24); older demo data is replaced.
-const DATABASE_VERSION = 4;
+// replaced feedback emails with Shared with, version 5 added the person involved and first aid
+// (reviews of 2026-10-24); older demo data is replaced.
+const DATABASE_VERSION = 5;
 
 const STORES = [
   'events',
