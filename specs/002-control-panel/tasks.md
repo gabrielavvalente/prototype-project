@@ -119,22 +119,22 @@ Reporting, permissions, and the Control Panel shell
   `getAncestry`, `getPlantOf`, `getPillarIdsForPlant` from `shared/platform/organization.js`;
   `apps/event-reporting/src/shell/StartScreen.jsx` lists only users with an event role
   (`role !== null`); run `npm test` and the quickstart 001 scenario 1 through the launcher
-- [ ] T017 Build the Control Panel shell in `apps/control-panel/src/`: copy and adapt `Icon.jsx`
+- [X] T017 Build the Control Panel shell in `apps/control-panel/src/`: copy and adapt `Icon.jsx`
   and `Sheet.jsx` from Event Reporting into `shell/`; `App.jsx` with `createHashRouter` routes
   of [contracts/routes.md](contracts/routes.md) (placeholders for tabs), `AppContext` (`users`,
   `organization`, `reference`, `user`, `signIn`, `signOut`, `reloadPlatform`), session in
   `sessionStorage` key `control-panel.userId`
-- [ ] T018 [P] Create `apps/control-panel/src/shell/StartScreen.jsx` (route `#/`): demo users,
+- [X] T018 [P] Create `apps/control-panel/src/shell/StartScreen.jsx` (route `#/`): demo users,
   those without a Control Panel role disabled with "No Control Panel role"; **Reset demo data**
   button calling `resetPlatformData()`
-- [ ] T019 [P] Create `apps/control-panel/src/shell/Header.jsx` (app name link to `#/pillars`,
+- [X] T019 [P] Create `apps/control-panel/src/shell/Header.jsx` (app name link to `#/pillars`,
   bell placeholder, avatar with switch user), `NotAllowed.jsx` ("You don't have access to this
   page.", link to `#/pillars`, sets `document.title`) and `NotFound` handling
-- [ ] T020 Create `apps/control-panel/src/shell/PillarPicker.jsx` (route `#/pillars`) and
+- [X] T020 Create `apps/control-panel/src/shell/PillarPicker.jsx` (route `#/pillars`) and
   `PillarLayout.jsx` (routes `#/pillars/:pillarId/*`): cards for the pillars the user holds a role
   on with level badge and plants ("All plants", "Lyon, Porto"); context bar (pillar · level ·
   plants) and tabs Workflow · Master data · Audit; access check with `getRole` → `NotAllowed`
-- [ ] T021 Add Control Panel layout styles to `apps/control-panel/src/app.css` (header, context
+- [X] T021 Add Control Panel layout styles to `apps/control-panel/src/app.css` (header, context
   bar, tabs, cards, grid card with horizontal scroll from 320px, sheet) using only
   `shared/theme.css` variables
 
