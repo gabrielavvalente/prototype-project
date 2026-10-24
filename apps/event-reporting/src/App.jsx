@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createHashRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 import { AppContext, SIGNED_IN_USER_KEY, useApp } from './AppContext.js';
 import { getAll, getById, put, seedIfEmpty } from './data/db.js';
+import EventFormPage from './create/EventForm.jsx';
+import EventDetail from './events/EventDetail.jsx';
 import { canOpenRoute } from './logic/access.js';
 import Header from './shell/Header.jsx';
 import NotAllowed from './shell/NotAllowed.jsx';
@@ -43,9 +45,9 @@ const router = createHashRouter([
     children: [
       { path: 'entry', element: <RequireRoute name="entry"><Placeholder title="Choose where to start" /></RequireRoute> },
       { path: 'events', element: <RequireRoute name="events"><Placeholder title="Events" /></RequireRoute> },
-      { path: 'events/new', element: <RequireRoute name="events-new"><Placeholder title="Create Event" /></RequireRoute> },
-      { path: 'events/:id', element: <RequireRoute name="event-detail"><Placeholder title="Event" /></RequireRoute> },
-      { path: 'events/:id/edit', element: <RequireRoute name="event-edit"><Placeholder title="Edit Event" /></RequireRoute> },
+      { path: 'events/new', element: <RequireRoute name="events-new"><EventFormPage /></RequireRoute> },
+      { path: 'events/:id', element: <RequireRoute name="event-detail"><EventDetail /></RequireRoute> },
+      { path: 'events/:id/edit', element: <RequireRoute name="event-edit"><EventFormPage /></RequireRoute> },
       { path: '*', element: <NotAllowed reason="notFound" /> },
     ],
   },
@@ -113,13 +115,18 @@ export default function App() {
     setSettings(updated);
   }
 
+  // Kept as the same object until the context really changes, so pages do not reload their data.
+  const context = useMemo(
+    () =>
+      settings
+        ? { businessId: settings.businessId, plantId: settings.plantId, pillarId: settings.pillarId }
+        : null,
+    [settings?.businessId, settings?.plantId, settings?.pillarId],
+  );
+
   if (loading) {
     return <p className="page">Loading…</p>;
   }
-
-  const context = settings
-    ? { businessId: settings.businessId, plantId: settings.plantId, pillarId: settings.pillarId }
-    : null;
 
   const appState = {
     ...lists,

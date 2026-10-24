@@ -139,14 +139,14 @@ Manager of that plant and pillar has two new alerts in the `alerts` store (quick
 
 ### Tests for User Story 1
 
-- [ ] T015 [P] [US1] Create `apps/event-reporting/src/logic/validation.test.js` covering every rule
+- [X] T015 [P] [US1] Create `apps/event-reporting/src/logic/validation.test.js` covering every rule
   in the table "Validation rules summary" of [data-model.md](data-model.md)
-- [ ] T016 [P] [US1] Create `apps/event-reporting/src/logic/recordNumber.test.js`: `SAF`, 2026, 42
+- [X] T016 [P] [US1] Create `apps/event-reporting/src/logic/recordNumber.test.js`: `SAF`, 2026, 42
   → `SAF-2026-0042`; sequence 1 → `0001`; counter id `SAF-2026`
 
 ### Implementation for User Story 1
 
-- [ ] T017 [P] [US1] Create `apps/event-reporting/src/logic/validation.js` with plain functions:
+- [X] T017 [P] [US1] Create `apps/event-reporting/src/logic/validation.js` with plain functions:
   `getRiskQuestionType(pillarCode, levelCode)` → `'HPR'` for `H&S` and `ENV`, `'CRP'` for SRE1–SRE2,
   `'SRP'` for SRE3–SRE5, `null` for OH (FR-004); `isAttachmentRequired(levelCode)` → TF1, TF2, TF3
   (FR-008); `isImmediateActionRequired(levelCode)` → TF1–TF3 and SRE1–SRE3 (FR-012);
@@ -163,48 +163,48 @@ Manager of that plant and pillar has two new alerts in the `alerts` store (quick
   email "must look like an email address", diseases when family is OH, FR-010) and Immediate
   Actions (at least one when required, each valid); `validateEventForSubmit(event, now)` combining
   all sections
-- [ ] T018 [P] [US1] Create `apps/event-reporting/src/logic/recordNumber.js` with
+- [X] T018 [P] [US1] Create `apps/event-reporting/src/logic/recordNumber.js` with
   `getCounterId(familyCode, year)` and `formatRecordNumber(familyCode, year, sequence)` (4-digit,
   zero-padded, FR-016)
-- [ ] T019 [US1] Add to `apps/event-reporting/src/data/db.js`: `saveDraft(event, newFiles)` (status
+- [X] T019 [US1] Add to `apps/event-reporting/src/data/db.js`: `saveDraft(event, newFiles)` (status
   `Draft`, no record number, sets `createdBy/createdAt/updatedBy/updatedAt`, stores new files in
   `attachments`) and `submitEvent(event, newFiles, users)` doing everything in **one** readwrite
   transaction over `events`, `attachments`, `counters`, `alerts` (research R10): read and increment
   `counters[<FAMILY>-<YEAR>]`, set `recordNumber`, `status: 'Open'`, `submittedAt`, save files, and
   add one "Event submitted" alert per user from `getManagersToAlert`; both throw `StorageFullError`
   when storage is full
-- [ ] T020 [P] [US1] Create `apps/event-reporting/src/create/ClassificationSection.jsx`: pillar
+- [X] T020 [P] [US1] Create `apps/event-reporting/src/create/ClassificationSection.jsx`: pillar
   choice as large cards (hidden when `context.pillarId` is set, FR-037), then family, then level
   cards each showing its code, name and plain-language description (FR-003); the risk question from
   `getRiskQuestionType` as a Yes/No choice with a one-line definition (HPR, "Critical Risk
   Potential", "Serious Risk Potential"); changing pillar, family or level clears answers that no
   longer apply (spec Edge Cases)
-- [ ] T021 [P] [US1] Create `apps/event-reporting/src/create/LocationSection.jsx`: plant shown from
+- [X] T021 [P] [US1] Create `apps/event-reporting/src/create/LocationSection.jsx`: plant shown from
   the context (read-only); dependent selects Department → Workshop → Job → Workstation → Task, each
   filled with children of the selected parent via `organization.parentId`; changing a parent
   clears all levels below it; Task Type select (FR-005)
-- [ ] T022 [P] [US1] Create `apps/event-reporting/src/create/AttachmentInput.jsx`: "Add photo or
+- [X] T022 [P] [US1] Create `apps/event-reporting/src/create/AttachmentInput.jsx`: "Add photo or
   video" file input (`accept="image/*,video/*"`, multiple) and "Use camera" input with `capture`
   (FR-007); each file checked with `validateFile` and rejected with a clear message; thumbnails
   (images) or file name (videos) with a Remove button and `alt` text; shows "n of 5 files"
-- [ ] T023 [US1] Create `apps/event-reporting/src/create/GeneralInfoSection.jsx`: Title (max 120),
+- [X] T023 [US1] Create `apps/event-reporting/src/create/GeneralInfoSection.jsx`: Title (max 120),
   Reporter (select of users in the plant, enabled only when the signed-in user is a Manager,
   default the signed-in user), Report Date (today, read-only), Event Time, Shift Moment (Day / Night
   / Afternoon), Description (multi-line plain text, counter "x / 2000", research R8) and
   `AttachmentInput` with a "required for TF1–TF3" hint (FR-006–FR-008)
-- [ ] T024 [P] [US1] Create `apps/event-reporting/src/create/DetailsSection.jsx`: Employee type,
+- [X] T024 [P] [US1] Create `apps/event-reporting/src/create/DetailsSection.jsx`: Employee type,
   Recurrence Yes/No, Comments, Feedback email recipients (add/remove list) and, only for family OH,
   Disease(s) multi-select (FR-010)
-- [ ] T025 [P] [US1] Create `apps/event-reporting/src/create/ImmediateActionsSection.jsx`:
+- [X] T025 [P] [US1] Create `apps/event-reporting/src/create/ImmediateActionsSection.jsx`:
   repeatable action cards (Add action / Remove) with Description, Priority, Category, Subcategory
   (filtered by category), Action plan detail, Completion date, KPI ID (optional), Comments and
   "Performed by" multi-select limited to 5 people with the limit explained; each card shows status
   "Completed" (FR-011, FR-013); a "required for TF1–TF3 and SRE1–SRE3" hint
-- [ ] T026 [US1] Create `apps/event-reporting/src/create/SummarySection.jsx`: one block per section
+- [X] T026 [US1] Create `apps/event-reporting/src/create/SummarySection.jsx`: one block per section
   with its values, an **Edit** link back to that section, and the missing fields from
   `validateEventForSubmit` flagged next to their section; **Submit** disabled while anything is
   missing; **Save as Draft** always available (FR-014, FR-015)
-- [ ] T027 [US1] Create `apps/event-reporting/src/create/EventForm.jsx`: holds the event being
+- [X] T027 [US1] Create `apps/event-reporting/src/create/EventForm.jsx`: holds the event being
   edited in state (new event pre-filled with context business, plant, pillar, reporter = signed-in
   user, report date = today); sections Classification → Location → General Information → Event
   Details → Immediate Actions → Summary with a progress indicator "Section X of 6" and section
@@ -215,12 +215,12 @@ Manager of that plant and pillar has two new alerts in the `alerts` store (quick
   try again." and keeps everything typed; marks the form as dirty and asks "Save as draft, discard
   or stay?" before leaving with unsaved changes (spec Edge Cases); when opened with an `:id`, loads
   that event for editing if `canEditEvent` allows it (FR-017, FR-034)
-- [ ] T028 [US1] Create `apps/event-reporting/src/events/EventDetail.jsx`: loads the event by
+- [X] T028 [US1] Create `apps/event-reporting/src/events/EventDetail.jsx`: loads the event by
   record number or draft id; shows `NotAllowed` "Event not found." when missing or not
   `isEventVisible`; shows every field entered at creation grouped like the form, attachments
   (images displayed from their stored files with `alt` text, videos playable) and immediate actions
   with status Completed; **Edit** button only when `canEditEvent` (FR-033)
-- [ ] T029 [US1] Wire `/events/new`, `/events/:id` and `/events/:id/edit` in
+- [X] T029 [US1] Wire `/events/new`, `/events/:id` and `/events/:id/edit` in
   `apps/event-reporting/src/App.jsx` to `EventForm` and `EventDetail`; the Create Event link in the
   header opens the form in one tap (FR-001)
 

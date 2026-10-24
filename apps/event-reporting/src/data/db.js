@@ -1,6 +1,8 @@
 // Browser database (IndexedDB) for the app, see data-model.md and research R2.
 
 import { openDB } from 'idb';
+import { getManagersToAlert } from '../logic/access.js';
+import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 import * as sampleData from './sampleData.js';
 
 const DATABASE_NAME = 'event-reporting';
@@ -83,6 +85,90 @@ export async function getByIndex(storeName, indexName, value) {
 export async function put(storeName, item) {
   const db = await getDatabase();
   return withStorageCheck(() => db.put(storeName, item));
+}
+
+// Finds an event by record number (submitted events) or by internal id (drafts).
+export async function findEvent(idOrRecordNumber) {
+  const db = await getDatabase();
+  const byRecordNumber = await db.getFromIndex('events', 'recordNumber', idOrRecordNumber);
+  return byRecordNumber || (await db.get('events', idOrRecordNumber)) || null;
+}
+
+// Saves an event and its attachments in one transaction.
+// attachments: [{ id, fileName, mimeType, size, blob, isNew }] as kept by the form.
+// beforeSave(tx, event, now) may change the event (used by submit) inside the same transaction.
+async function writeEvent({ event, attachments, removedAttachmentIds = [], userId }, beforeSave) {
+  const db = await getDatabase();
+  return withStorageCheck(async () => {
+    const tx = db.transaction(['events', 'attachments', 'counters', 'alerts'], 'readwrite');
+    const now = new Date().toISOString();
+    const saved = {
+      ...event,
+      id: event.id || newId(),
+      attachmentIds: attachments.map((attachment) => attachment.id),
+      createdBy: event.createdBy || userId,
+      createdAt: event.createdAt || now,
+      updatedBy: userId,
+      updatedAt: now,
+    };
+    if (beforeSave) {
+      await beforeSave(tx, saved, now);
+    }
+    for (const attachment of attachments.filter((item) => item.isNew)) {
+      tx.objectStore('attachments').put({
+        id: attachment.id,
+        eventId: saved.id,
+        fileName: attachment.fileName,
+        mimeType: attachment.mimeType,
+        size: attachment.size,
+        blob: attachment.blob,
+        addedBy: userId,
+        addedAt: now,
+      });
+    }
+    for (const id of removedAttachmentIds) {
+      tx.objectStore('attachments').delete(id);
+    }
+    tx.objectStore('events').put(saved);
+    await tx.done;
+    return saved;
+  });
+}
+
+// Save as Draft: no record number, nobody is notified (FR-015).
+export function saveDraft(args) {
+  return writeEvent({ ...args, event: { ...args.event, status: 'Draft', recordNumber: null } });
+}
+
+// Saves changes to an already submitted event; it stays Open (FR-034).
+export function saveChanges(args) {
+  return writeEvent(args);
+}
+
+// Submit: gives the next record number, sets status Open and alerts the Managers (FR-016).
+// The counter is read and increased in the same transaction, so two events never share a number.
+export function submitEvent({ users, ...args }) {
+  return writeEvent(args, async (tx, event, now) => {
+    const counterId = getCounterId(event.familyCode, new Date().getFullYear());
+    const counters = tx.objectStore('counters');
+    const counter = await counters.get(counterId);
+    const sequence = (counter ? counter.lastSequence : 0) + 1;
+    counters.put({ id: counterId, lastSequence: sequence });
+
+    event.recordNumber = formatRecordNumber(event.familyCode, new Date().getFullYear(), sequence);
+    event.status = 'Open';
+    event.submittedAt = now;
+
+    for (const manager of getManagersToAlert(users, event)) {
+      tx.objectStore('alerts').put({
+        id: newId(),
+        recipientId: manager.id,
+        type: 'Event submitted',
+        eventId: event.id,
+        createdAt: now,
+      });
+    }
+  });
 }
 
 async function loadSampleData() {

@@ -1,0 +1,126 @@
+import { useApp } from '../AppContext.js';
+import { getPillarIdsForPlant } from '../logic/access.js';
+import { getReferenceList } from '../logic/lookups.js';
+import { getRiskQuestionType } from '../logic/validation.js';
+import { FieldError, YesNoField } from './fields.jsx';
+
+const RISK_QUESTIONS = {
+  HPR: {
+    label: 'Could this be an HPR?',
+    hint: 'High Potential Risk: under slightly different circumstances, could someone have been seriously injured?',
+  },
+  CRP: {
+    label: 'Could this be a CRP? (Critical Risk Potential)',
+    hint: 'Could this have led to a major fire, explosion or loss of the site?',
+  },
+  SRP: {
+    label: 'Could this be an SRP? (Serious Risk Potential)',
+    hint: 'Could this have led to serious damage or a long stop of operations?',
+  },
+};
+
+function ChoiceCards({ legend, items, selectedId, onSelect, errors, field }) {
+  return (
+    <fieldset className="field">
+      <legend className="field-label">{legend}</legend>
+      <ul className="card-list">
+        {items.map((item) => (
+          <li key={item.id}>
+            <button
+              type="button"
+              className="button choice-card"
+              aria-pressed={item.id === selectedId}
+              onClick={() => onSelect(item)}
+            >
+              <strong>{item.title}</strong>
+              {item.description && <small>{item.description}</small>}
+            </button>
+          </li>
+        ))}
+      </ul>
+      <FieldError errors={errors} field={field} />
+    </fieldset>
+  );
+}
+
+// Section 1: pillar → family → level, then the HPR / CRP / SRP question (FR-003, FR-004).
+export default function ClassificationSection({ event, update, errors, pillarLocked }) {
+  const { reference, user } = useApp();
+  const allowedPillarIds = getPillarIdsForPlant(user, event.plantId);
+  const pillars = getReferenceList(reference, 'pillar').filter((pillar) => allowedPillarIds.includes(pillar.id));
+  const families = getReferenceList(reference, 'family').filter((family) => family.pillarId === event.pillarId);
+  const family = families.find((item) => item.code === event.familyCode);
+  const levels = family ? getReferenceList(reference, 'level').filter((level) => level.familyId === family.id) : [];
+  const questionType = getRiskQuestionType(event.familyCode, event.levelCode);
+
+  function choosePillar(pillar) {
+    const pillarFamilies = getReferenceList(reference, 'family').filter((item) => item.pillarId === pillar.id);
+    // Each pillar has one family today, so choose it straight away to save a tap.
+    const onlyFamily = pillarFamilies.length === 1 ? pillarFamilies[0].code : '';
+    update({ pillarId: pillar.id, familyCode: onlyFamily, levelCode: '', riskQuestion: null, diseaseIds: [] });
+  }
+
+  function chooseFamily(item) {
+    update({ familyCode: item.code, levelCode: '', riskQuestion: null, diseaseIds: [] });
+  }
+
+  function chooseLevel(level) {
+    const type = getRiskQuestionType(event.familyCode, level.code);
+    // Changing the level clears an answer that belonged to another question (spec Edge Cases).
+    const keepAnswer = event.riskQuestion && event.riskQuestion.type === type;
+    update({
+      levelCode: level.code,
+      riskQuestion: type ? { type, answer: keepAnswer ? event.riskQuestion.answer : null } : null,
+    });
+  }
+
+  return (
+    <>
+      {!pillarLocked && (
+        <ChoiceCards
+          legend="Pillar"
+          items={pillars.map((pillar) => ({ id: pillar.id, title: pillar.label, item: pillar }))}
+          selectedId={event.pillarId}
+          onSelect={(card) => choosePillar(card.item)}
+          errors={errors}
+          field="pillarId"
+        />
+      )}
+      {event.pillarId && (
+        <ChoiceCards
+          legend="Family"
+          items={families.map((item) => ({ id: item.code, title: `${item.code} — ${item.label}`, item }))}
+          selectedId={event.familyCode}
+          onSelect={(card) => chooseFamily(card.item)}
+          errors={errors}
+          field="familyCode"
+        />
+      )}
+      {family && (
+        <ChoiceCards
+          legend={event.familyCode === 'OH' ? 'Disease type' : 'Level'}
+          items={levels.map((level) => ({
+            id: level.code,
+            title: `${level.code} — ${level.label}`,
+            description: level.description,
+            item: level,
+          }))}
+          selectedId={event.levelCode}
+          onSelect={(card) => chooseLevel(card.item)}
+          errors={errors}
+          field="levelCode"
+        />
+      )}
+      {questionType && (
+        <YesNoField
+          id="riskQuestion"
+          label={RISK_QUESTIONS[questionType].label}
+          hint={RISK_QUESTIONS[questionType].hint}
+          value={event.riskQuestion ? event.riskQuestion.answer : null}
+          onChange={(answer) => update({ riskQuestion: { type: questionType, answer } })}
+          errors={errors}
+        />
+      )}
+    </>
+  );
+}
