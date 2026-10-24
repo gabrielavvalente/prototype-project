@@ -5,20 +5,23 @@ and find them again in a Kanban board or a list. Prototype: demo users, data kep
 
 ## How to run
 
-Needs [Node.js](https://nodejs.org) (LTS).
+Needs [Node.js](https://nodejs.org) (LTS). Users, plants and the workflow come from the shared
+platform data, so open it through the launcher together with the Control Panel:
 
 ```bash
-cd apps/event-reporting
-npm install      # first time only
-npm run dev      # then open http://localhost:5173
+cd apps/event-reporting && npm install   # first time only
+cd ../../launcher && npm install         # first time only
+npm run dev                              # opens http://localhost:5173 → Event Reporting
 ```
+
+Running `npm run dev` here instead starts the app alone, with its own copy of the demo data.
 
 Pick a demo user on the start screen. **Reset demo data** on that screen restores the sample data.
 
 ## How to test
 
 ```bash
-npm test         # business rules (validation, access, record numbers, lists, locations)
+npm test         # business rules (validation, access, record numbers, lists, locations, status)
 npm run build    # production build in dist/
 ```
 
@@ -32,5 +35,7 @@ Then check by hand, at phone width and on desktop, with the browser console open
 4. Events: KPI chips, filters, search, Kanban columns (‹ ›), List view; clicking a row or card
    expands it.
 5. As a user of another plant → the event is "not found"; as Site Admin → no "New event".
+6. Submit a TF5 (SIP No) → "closed right away" when the Control Panel requires nothing else for
+   TF5; turn Review on for TF5 in the Control Panel → the next TF5 stays Open.
 
 Full scenarios: [specs/001-event-reporting/quickstart.md](../../specs/001-event-reporting/quickstart.md).
