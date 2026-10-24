@@ -2,8 +2,10 @@
 // Users, plants, pillars and levels are shared platform data (shared/platform/sampleData.js);
 // this file keeps the form lists and the sample events. All names are fictional.
 
-import { organization, users } from '../../../../shared/platform/sampleData.js';
+import { organization, users, workflowSettings } from '../../../../shared/platform/sampleData.js';
 import { getPlants } from '../../../../shared/platform/organization.js';
+import { workflowForEvent } from '../../../../shared/platform/workflow.js';
+import { getSubmittedStatus } from '../logic/submission.js';
 import { getManagersToAlert } from '../logic/access.js';
 import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 
@@ -163,6 +165,17 @@ function sampleImmediateAction(eventId, reporterId, reportDate) {
   };
 }
 
+// Submitted sample events keep the workflow of the starting Control Panel settings, and are
+// Closed when it requires nothing besides Submission (002 FR-012, FR-026).
+function withWorkflow(event) {
+  if (event.status === 'Draft') {
+    return event;
+  }
+  const workflow = { ...workflowForEvent(workflowSettings, users, event), computedAt: event.submittedAt };
+  const status = getSubmittedStatus(workflow);
+  return { ...event, workflow, status, closedAt: status === 'Closed' ? event.submittedAt : null };
+}
+
 function buildSampleEvents() {
   const sequences = {};
   const counters = {};
@@ -219,7 +232,7 @@ function buildSampleEvents() {
   });
 
   return {
-    events,
+    events: events.map(withWorkflow),
     counters: Object.entries(counters).map(([id, lastSequence]) => ({ id, lastSequence })),
   };
 }
@@ -232,7 +245,7 @@ export const counters = sample.counters;
 // A few "Event submitted" alerts: one per Manager for the two latest submitted events of each plant.
 export const alerts = getPlants(organization)
   .flatMap((plant) =>
-    events.filter((event) => event.status === 'Open' && event.plantId === plant.id).slice(-2),
+    events.filter((event) => event.status !== 'Draft' && event.plantId === plant.id).slice(-2),
   )
   .flatMap((event) =>
     getManagersToAlert(users, event).map((manager) => ({

@@ -276,9 +276,10 @@ export const users = [
 ];
 
 // ---------------------------------------------------------------------------
-// Starting workflow settings (only Required ones are stored, research R5). Central requires a few
-// phases on each pillar; Eva Novak adds one for Lyon. TF4, TF5 and most other levels require
-// nothing, so their events close right after submission (FR-026).
+// Starting workflow settings (only Required ones are stored, research R5). Central requires Review
+// on most levels of each pillar and a few more phases; Eva Novak adds Validation for TF1 at Lyon.
+// The lowest levels (TF5, EvE5, SRE5) require nothing, so their events close right after
+// submission (FR-026).
 // ---------------------------------------------------------------------------
 
 const SEEDED_AT = '2026-10-20T09:00:00.000Z';
@@ -297,15 +298,21 @@ function requiredSetting(pillarId, levelCode, phase, role, authorId, reviewerIds
   };
 }
 
-const hsReviewers = ['user-carla', 'user-eva', 'user-felix', 'user-diego'];
+// Managers and Site Admins of every plant, so each plant has someone to review.
+const reviewers = ['user-carla', 'user-eva', 'user-felix', 'user-diego'];
+
+function centralSettings(pillarId, authorId, phase, levelCodes) {
+  const ids = phase === 'review' ? reviewers : [];
+  return levelCodes.map((code) => requiredSetting(pillarId, code, phase, central(pillarId), authorId, ids));
+}
 
 export const workflowSettings = [
-  requiredSetting('pillar-hs', 'TF1', 'review', central('pillar-hs'), 'user-ludovic', hsReviewers),
-  requiredSetting('pillar-hs', 'TF2', 'review', central('pillar-hs'), 'user-ludovic', hsReviewers),
-  requiredSetting('pillar-hs', 'TF1', 'actions', central('pillar-hs'), 'user-ludovic'),
+  ...centralSettings('pillar-hs', 'user-ludovic', 'review', ['TF1', 'TF2', 'TF3', 'TF4']),
+  ...centralSettings('pillar-hs', 'user-ludovic', 'actions', ['TF1', 'TF2']),
   requiredSetting('pillar-hs', 'TF1', 'validation', local('pillar-hs', 'plant-lyon'), 'user-eva'),
-  requiredSetting('pillar-env', 'EvE1', 'review', central('pillar-env'), 'user-ed', ['user-carla', 'user-felix', 'user-diego']),
-  requiredSetting('pillar-env', 'EvE1', 'actions', central('pillar-env'), 'user-ed'),
-  requiredSetting('pillar-ir', 'SRE1', 'rootCause', central('pillar-ir'), 'user-sergio'),
-  requiredSetting('pillar-ir', 'SRE2', 'rootCause', central('pillar-ir'), 'user-sergio'),
+  ...centralSettings('pillar-env', 'user-ed', 'review', ['EvE1', 'EvE2', 'EvE3', 'EvE4']),
+  ...centralSettings('pillar-env', 'user-ed', 'actions', ['EvE1', 'EvE2']),
+  ...centralSettings('pillar-ir', 'user-sergio', 'review', ['SRE1', 'SRE2', 'SRE3', 'SRE4']),
+  ...centralSettings('pillar-ir', 'user-sergio', 'rootCause', ['SRE1', 'SRE2']),
+  ...centralSettings('pillar-ih', 'user-ludovic', 'review', ['OH-RESP', 'OH-SKIN', 'OH-MSD', 'OH-HEAR']),
 ];

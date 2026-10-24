@@ -31,11 +31,13 @@ function buildHistory(event, users) {
 }
 
 // Shown once, right after the event was saved from the form (FR-015).
-function SavedBanner({ saved, recordNumber, canCreate }) {
+function SavedBanner({ saved, recordNumber, status, canCreate }) {
   const messages = {
     submit: (
       <>
-        Event <strong>{recordNumber}</strong> was submitted. The Managers of this plant have been alerted.
+        Event <strong>{recordNumber}</strong> was submitted
+        {status === 'Closed' ? ' and closed right away (no other phase required)' : ''}. The Managers of this
+        plant have been alerted.
       </>
     ),
     draft: 'Your draft was saved on this device. Only you can see it.',
@@ -128,6 +130,7 @@ export default function EventDetail() {
         <SavedBanner
           saved={location.state.saved}
           recordNumber={location.state.recordNumber}
+          status={location.state.status}
           canCreate={getMenuItems(user.role).includes('create-event')}
         />
       )}

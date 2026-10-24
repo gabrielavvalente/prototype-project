@@ -4,6 +4,7 @@ import { openDB } from 'idb';
 import { resetPlatformData } from '../../../../shared/platform/platformData.js';
 import { getManagersToAlert } from '../logic/access.js';
 import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
+import { getSubmittedStatus } from '../logic/submission.js';
 import * as sampleData from './sampleData.js';
 
 const DATABASE_NAME = 'event-reporting';
@@ -152,15 +153,16 @@ export function saveDraft(args) {
   return writeEvent({ ...args, event: { ...args.event, status: 'Draft', recordNumber: null } });
 }
 
-// Saves changes to an already submitted event; it stays Open (FR-034).
+// Saves changes to an already submitted event; its status does not change (FR-034).
 export function saveChanges(args) {
   return writeEvent(args);
 }
 
-// Submit: gives the next record number, sets status Open and alerts the Managers and the
+// Submit: gives the next record number, keeps the workflow in force (002 FR-012), sets status Open
+// — or Closed when only Submission is required (002 FR-026) — and alerts the Managers and the
 // Shared with users (FR-016).
 // The counter is read and increased in the same transaction, so two events never share a number.
-export function submitEvent({ users, ...args }) {
+export function submitEvent({ users, workflow, ...args }) {
   return writeEvent(args, async (tx, event, now) => {
     const counterId = getCounterId(event.familyCode, new Date().getFullYear());
     const counters = tx.objectStore('counters');
@@ -169,8 +171,10 @@ export function submitEvent({ users, ...args }) {
     counters.put({ id: counterId, lastSequence: sequence });
 
     event.recordNumber = formatRecordNumber(event.familyCode, new Date().getFullYear(), sequence);
-    event.status = 'Open';
+    event.workflow = workflow;
+    event.status = getSubmittedStatus(workflow);
     event.submittedAt = now;
+    event.closedAt = event.status === 'Closed' ? now : null;
 
     const managerIds = getManagersToAlert(users, event).map((manager) => manager.id);
     const sharedIds = event.sharedWithIds.filter((id) => !managerIds.includes(id));

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useBlocker, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
+import { getWorkflowSettings } from '../../../../shared/platform/platformData.js';
+import { workflowForEvent } from '../../../../shared/platform/workflow.js';
 import { findEvent, getByIndex, saveChanges, saveDraft, StorageFullError, submitEvent } from '../data/db.js';
 import { canEditEvent, isEventVisible } from '../logic/access.js';
 import { SECTION_TITLES } from '../logic/eventSummary.js';
@@ -168,11 +170,12 @@ function EventForm() {
     if (!result) return;
     navigate(`/events/${result.event.recordNumber || result.event.id}`, {
       replace: true,
-      state: { saved: result.kind, recordNumber: result.event.recordNumber },
+      state: { saved: result.kind, recordNumber: result.event.recordNumber, status: result.event.status },
     });
   }, [result, navigate]);
 
-  const isSubmitted = event && event.status === 'Open';
+  // Open or Closed: already submitted, so it is edited instead of submitted again.
+  const isSubmitted = event && event.status !== 'Draft';
 
   useEffect(() => {
     document.title = `${isSubmitted ? 'Edit event' : 'New event'} — Event Reporting`;
@@ -217,7 +220,11 @@ function EventForm() {
     try {
       let saved;
       if (kind === 'draft') saved = await saveDraft(args);
-      else if (kind === 'submit') saved = await submitEvent({ ...args, users });
+      else if (kind === 'submit') {
+        // The workflow in force now, from the Control Panel settings (002 FR-012).
+        const workflow = workflowForEvent(await getWorkflowSettings(event.pillarId), users, event);
+        saved = await submitEvent({ ...args, users, workflow });
+      }
       else saved = await saveChanges(args);
       setDirty(false);
       if (!leaving) {
