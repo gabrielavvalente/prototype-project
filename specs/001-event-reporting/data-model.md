@@ -38,13 +38,13 @@ One event, from draft to submitted.
 | `title` | text | Required, 1–120 characters |
 | `reporterId` | text | Defaults to the current user; only a Manager may change it (FR-006) |
 | `reportDate` | date | Set to today when the draft is created; read-only |
-| `eventTime` | time | Required; not later than now when `reportDate` is today |
+| `eventTime` | time or empty | Optional; when given, not later than now when `reportDate` is today |
 | `shiftMoment` | `Day` \| `Night` \| `Afternoon` | Required |
 | `description` | text | Required, multi-line plain text, up to 2,000 characters |
 | `employeeType` | text | One of: Employee, Temporary Worker, Permanent Contractor, Non-Permanent Contractor, Other |
 | `recurrence` | true \| false | Required |
 | `comments` | text | Optional |
-| `feedbackEmails` | list of text | Optional; each must look like an email address; stored, never sent |
+| `sharedWithIds` | list of text | Optional; users of the event's plant who can see its pillar; each gets an alert on submit |
 | `diseaseIds` | list of text | Shown and required only when `familyCode` is `OH` |
 | `immediateActions` | list of ImmediateAction | See below; optional (FR-012) |
 | `attachmentIds` | list of text | 0–5 items; optional (FR-008) |
@@ -92,7 +92,7 @@ the form keeps everything already typed (spec Edge Cases).
 |---|---|---|
 | `id` | text | Generated |
 | `recipientId` | text | A user |
-| `type` | `Event submitted` | Only type in this MVP |
+| `type` | `Event submitted` \| `Event shared with you` | |
 | `eventId` | text | Source event; opening the alert opens it (FR-023) |
 | `createdAt` | date-time | Sorted newest first |
 | `readAt` | date-time or null | Set when the alert is opened or on "Mark all read" (FR-043) |
@@ -136,7 +136,7 @@ Every item has `id`, `list` and `label`; some have extra fields.
 | `family` | `code` (TF, EVE, SRE, OH), `pillarId` |
 | `level` | `code` (TF1…TF5, EvE1…EvE5, SRE1…SRE5), `familyId`, `description` (plain-language text, FR-003) |
 | `disease` | `familyId` (OH classifications and the Disease(s) list) |
-| `taskType`, `employeeType`, `shiftMoment`, `actionPriority` | — |
+| `taskType` (Routine, Non-routine), `employeeType`, `shiftMoment`, `actionPriority` | — |
 | `actionCategory` | — |
 
 ## counters
@@ -183,4 +183,4 @@ start screen; everything else lives in IndexedDB.
 | File type, extension, size ≤ 5 MB, ≤ 5 files | Every upload | FR-009 |
 | 1–5 performers per immediate action | Every immediate action | FR-013 |
 | Diseases chosen | Family OH | FR-010 |
-| Event time not in the future; completion date within report date…today | Always | Edge Cases |
+| Event time (when given) not in the future; completion date within report date…today | Always | Edge Cases |

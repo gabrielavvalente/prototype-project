@@ -94,6 +94,25 @@ screens to copy; product logo and name are not reused, and all text stays in Eng
 - Q: Which fields does an immediate action have? → A: Subcategory and Action plan detail are
   removed.
 
+### Session 2026-10-24 (review of the list, Kanban and form details)
+
+- Q: How are event details shown from the List and Kanban views? → A: Clicking a row or a card
+  **expands it in place, vertically**, showing the description, key facts and one sub-card per
+  immediate action, with links to open or edit the event. This replaces the eye icon and the
+  quick-view side panel.
+- Q: What do rows and cards show? → A: No SIP badge in the List level column; no severity bar on
+  Kanban cards (the level and SIP tags are enough). All Kanban columns must be reachable: they fit
+  side by side on wide screens, and scroll horizontally with ‹ › buttons on narrower ones.
+- Q: How are family and level chosen? → A: The family is hidden and filled in automatically when
+  the pillar has only one. Levels are compact badges (e.g., "TF1"); choosing one shows its name and
+  description.
+- Q: Which task types exist? → A: Routine and Non-routine only.
+- Q: Is the event time required? → A: No, it is optional.
+- Q: Can the description be dictated? → A: Yes, a microphone button transcribes speech into the
+  description where the browser supports it.
+- Q: What replaces "Feedback email recipients"? → A: **Shared with**: users of this plant (who can
+  see the event's pillar) chosen from a list; each gets an "Event shared with you" alert on submit.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Report an event from the shop floor (Priority: P1)
@@ -137,7 +156,7 @@ new alerts.
    scan a station's QR code, **Then** I end on a full location (Department → Workshop → Job →
    Workstation → Task in my plant), shown as one path in the form; Task Type is also required.
 5. **Given** I look at General Information, **When** the section renders, **Then** Title, Reporter
-   (pre-filled with me, editable only by a Manager), Report Date (today, read-only), Event Time,
+   (pre-filled with me, editable only by a Manager), Report Date (today, read-only), Event Time (optional),
    Shift Moment (Day / Night / Afternoon) and Description are captured.
 6. **Given** any level, **When** I submit without a photo or video, **Then** the event is
    accepted (photos and videos are optional).
@@ -146,7 +165,7 @@ new alerts.
 8. **Given** I upload a file of a type or size that is not allowed, **When** it is checked,
    **Then** it is rejected with a clear message and not attached.
 9. **Given** I look at Event Details, **When** the section renders, **Then** I choose an Employee
-   type, set Recurrence (Yes/No), enter Comments and Feedback email recipients; **and given** the
+   type, set Recurrence (Yes/No), enter Comments and choose who it is Shared with; **and given** the
    family is OH, **then** a Disease(s) multi-select is also shown.
 10. **Given** any level, **When** I submit without an immediate action, **Then** the event is
     accepted (immediate actions are optional).
@@ -210,22 +229,22 @@ header, navigation, visible events and My Alerts match each user's role and scop
 *Traces to: US-LIB-01, 02, 03, 04 (View / Edit), 06, 07.*
 
 A Manager arrives at the start of a shift and opens Events. KPI chips show All, My events, Open,
-With SIP and Drafts. They tap "With SIP" and the list narrows to those events. They search a record number someone mentioned in a meeting, open a quick view of the
-event without leaving the list, then open it to view or edit it. A Reporter turns on "My Events" to
+With SIP and Drafts. They tap "With SIP" and the list narrows to those events. They search a record number someone mentioned in a meeting, click its row to expand it in
+place and read the description and immediate actions, then open it to view or edit it. A Reporter turns on "My Events" to
 see only what they submitted.
 
 **Why this priority**: The library is how existing events are found and triaged, but it only has
 value once events are being reported (Story 1) inside a scoped frame (Story 2).
 
 **Independent Test**: Load the sample data, then check that the list, search, every filter, every
-KPI chip, the quick view, View and Edit all behave as described for a Manager and for a User.
+KPI chip, row and card expansion, View and Edit all behave as described for a Manager and for a User.
 
 **Acceptance Scenarios**:
 
 1. **Given** I open Events, **When** the list loads, **Then** it shows only events in my scope,
    sortable by date, type, level, status and reporter, with 20, 50 or 100 records per page.
-2. **Given** the list is displayed, **When** I select a row's quick view, **Then** a preview of the
-   event opens without leaving the list.
+2. **Given** the list or the Kanban board is displayed, **When** I click a row or a card, **Then**
+   it expands in place showing the description, key facts and the immediate actions as sub-cards.
 3. **Given** I show or hide columns, **When** I come back later, **Then** my column choices are kept.
 4. **Given** I type text or a record number in the search bar, **When** the list refreshes,
    **Then** it shows events whose title matches, or the event with that record number, combined
@@ -257,7 +276,7 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   explained.
 - **Completion date in the future**: an immediate action's completion date cannot be later than
   today, nor earlier than the event date.
-- **Event time in the future**: the event time cannot be later than the current time on the report
+- **Event time in the future**: when given, the event time cannot be later than the current time on the report
   date.
 - **Leaving the form**: leaving with unsaved changes asks whether to save a draft, discard or stay.
 - **Draft visibility**: drafts are visible only to their reporter, count only under "All",
@@ -293,8 +312,10 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   where the browser supports it. Task Type MUST also be chosen. *(US-CREATE-02, SCR-MOB-01 FR-5,
   Clarification 2026-10-24, form review)*
 - **FR-006**: The system MUST capture Title, Reporter (pre-filled with the current user, editable
-  only by a Manager), Report Date (today, read-only), Event Time, Shift Moment (Day / Night /
-  Afternoon) and Description with basic formatting. *(US-CREATE-03)*
+  only by a Manager), Report Date (today, read-only), Event Time (optional), Shift Moment (Day /
+  Night / Afternoon) and Description; a microphone button MUST transcribe speech into the
+  description where the browser supports it. *(US-CREATE-03, SCR-MOB-01 FR-8, Clarification
+  2026-10-24, list/Kanban/form review)*
 - **FR-007**: Users MUST be able to attach photos and videos, and capture them directly with the
   device camera on a phone. *(US-CREATE-03)*
 - **FR-008**: Photos and videos MUST be optional for every level. *(Clarification 2026-10-24,
@@ -303,8 +324,9 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   (common image and video formats, at most 5 MB per file and 5 files per event) and reject failing
   files with a clear message without attaching them. *(US-CREATE-11, Clarification 2026-10-24)*
 - **FR-010**: The system MUST capture Employee type (Employee / Temporary Worker / Permanent
-  Contractor / Non-Permanent Contractor / Other), Recurrence (Yes/No), Comments and Feedback email
-  recipients, plus a Disease(s) multi-select when the family is OH. *(US-CREATE-04)*
+  Contractor / Non-Permanent Contractor / Other), Recurrence (Yes/No), Comments and **Shared
+  with** (users of the event's plant who can see its pillar), plus a Disease(s) multi-select when
+  the family is OH. *(US-CREATE-04, Clarification 2026-10-24, list/Kanban/form review)*
 - **FR-011**: Users MUST be able to add any number of immediate actions as repeatable cards, each
   with Description, Priority, Category, Completion date, KPI ID (optional) and Comments; each immediate action MUST be saved with status Completed (it records
   containment already done at the scene) and its creation date set automatically.
@@ -321,7 +343,8 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 - **FR-016**: On submit, the system MUST give the event a unique record number in the format
   `<FAMILY>-<YY>-<NNNN>` (family acronym TF / EVE / SRE / OH, last two digits of the year of
   submission, 4-digit sequence restarting at 0001 for each family and year, e.g., `EVE-26-0001`), set its status to `Open`, and create a My Alerts entry "Event submitted" for every Manager of
-  the event's plant and pillar. *(US-CREATE-09, Core FR-1)*
+  the event's plant and pillar, and "Event shared with you" for each Shared with user not already
+  alerted. *(US-CREATE-09, Core FR-1, Clarification 2026-10-24, list/Kanban/form review)*
 - **FR-017**: A reporter MUST be able to reopen their own draft, continue it and submit it.
   *(US-CREATE-09)*
 
@@ -363,8 +386,10 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   scope plus the user's own drafts (never other users' drafts),
   sortable by date, type, level, status and reporter, with 20, 50 or 100 records per page.
   *(US-LIB-01, Clarification 2026-10-24)*
-- **FR-027**: Users MUST be able to open a quick view of an event without leaving the list, with
-  a single eye icon on each row and card; the quick view links to the full event.
+- **FR-027**: Clicking a List row or a Kanban card MUST expand it in place, vertically, showing
+  the description, key facts (location, reporter, date, risk question) and each immediate action
+  as a sub-card, with links to open the event and, when allowed, edit it; clicking again collapses
+  it. *(Clarification 2026-10-24, list/Kanban/form review; replaces the quick view)*
   *(US-LIB-01, SCR-DSK-02 FR-33)*
 - **FR-028**: Users MUST be able to show and hide columns, and their choice MUST be remembered.
   *(US-LIB-01)*
@@ -388,8 +413,9 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 
 - **FR-038**: *(Replaced by FR-002: one continuous page instead of a stepper.)*
 - **FR-039**: Choices with few options (pillar, shift moment, employee type, recurrence, action
-  priority, task type) MUST be shown as tappable chips; levels MUST show severity dots (4 dots =
-  level 1 … 1 dot = levels 4–5) and pillars a color dot.
+  priority, task type: Routine / Non-routine) MUST be shown as tappable chips; pillars show a
+  color dot. The family is hidden and filled in when the pillar has only one. Levels MUST be
+  compact badges (e.g., "TF1"); the chosen level's name and description MUST appear below them.
 - **FR-040**: The top bar MUST hold the app name, a search field, a notifications bell with an
   unread dot and the user's avatar; the avatar opens a sheet with name, role, business, plant,
   pillar (with Change) and Switch user. On phones a bottom navigation MUST offer Home (entry
@@ -399,7 +425,10 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   with columns record number, status, level, report date, title, department, reporter), using
   buttons with an icon and a word; Kanban is the default on phones and List on wider screens, and
   the choice MUST be remembered. Search, Filters and Columns MUST sit on one line, and statuses
-  MUST appear as colored badges. *(Clarification 2026-10-24, review)*
+  MUST appear as colored badges. Every Kanban column MUST be reachable: side by side on wide
+  screens, horizontal scrolling with ‹ › buttons otherwise. The List level column shows the level
+  only (no SIP badge) and Kanban cards show no severity bar. *(Clarification 2026-10-24, review;
+  list/Kanban/form review)*
 - **FR-042**: Filters MUST open in a bottom sheet (side sheet on wide screens) with chip groups
   and date fields, and apply only when the user taps Apply; a Filters button MUST show how many
   filters are active.
@@ -430,7 +459,7 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
   unique, assigned on submit), pillar, family, type and level,
   risk-question answer (SIP / CRP / SRP), location chain (Plant → Task) and Task Type, title,
   description, reporter, report date, event time, shift moment, employee type, recurrence,
-  comments, feedback recipients, diseases (OH only), status (`Draft` or `Open` in this MVP),
+  comments, shared-with users, diseases (OH only), status (`Draft` or `Open` in this MVP),
   created/updated by and at. Belongs to one business, plant and pillar.
 - **Immediate Action**: Containment already done at the scene, recorded at creation. Description,
   priority, category, completion date, KPI ID, comments, creation
@@ -485,10 +514,10 @@ KPI chip, the quick view, View and Edit all behave as described for a Manager an
 - From Event Creation: US-CREATE-07 First Causes; US-CREATE-08 External Reporting Platform health
   detail; proposed US-CREATE-13 (bottom sheets) and US-CREATE-14 (skip action steps); Section
   Mandatoriness Configuration (no section is mandatory by level in this MVP); type-specific fields from the event-type specs (e.g., First Aid Treatment for TF3).
-- From Detailed Screens: GPS location, photo mark-up, speech-to-text, report on behalf
+- From Detailed Screens: GPS location, photo mark-up, report on behalf
   of others with directory search, witness statements, offline drafts, safety broadcast feed.
-- Emails of any kind (assignment, feedback recipients, Manager notifications): feedback recipients
-  are captured but not sent; notifications appear only in My Alerts.
+- Emails of any kind (assignment, sharing, Manager notifications): notifications appear only in
+  My Alerts.
 - Virus/malware scanning and a secure document service for attachments.
 
 **Prototype simplifications**:

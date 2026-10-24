@@ -433,6 +433,33 @@ everywhere; photos and immediate actions are optional
 
 ---
 
+## Phase 5e: Review of the list, Kanban and form details
+
+**Goal**: Apply the decisions of the spec Clarifications session "review of the list, Kanban and
+form details"
+
+**Independent Test**: Rows and cards expand in place; every Kanban column is reachable; the form
+shows level badges, two task types, optional event time, dictation and Shared with
+
+- [ ] T073 Create `apps/event-reporting/src/events/EventExpanded.jsx` (description, key facts,
+  immediate actions as sub-cards, Open / Edit links); List rows expand in place on click
+  (`EventTable.jsx`, no SIP badge, no eye icon); Kanban cards expand in place on click
+  (`EventCard.jsx`, no severity dots); remove `QuickView.jsx`
+- [ ] T074 Kanban reachability in `KanbanBoard.jsx`: columns side by side on wide screens,
+  horizontal scroll with ‹ › buttons otherwise
+- [ ] T075 Classification: hide the family when the pillar has one; levels as badges with the
+  chosen level's name and description below (`ClassificationSection.jsx`)
+- [ ] T076 Task types Routine and Non-routine only (`sampleData.js`); event time optional
+  (`validation.js` + tests); bump the database version
+- [ ] T077 Dictation button for the description using the browser's speech recognition, with a
+  message where unavailable (`GeneralInfoSection.jsx`)
+- [ ] T078 Replace feedback emails with **Shared with** (`sharedWithIds`): chips of plant users who
+  can see the pillar (`DetailsSection.jsx`), summary row, "Event shared with you" alerts on submit
+  (`db.js`, `access.js` + tests)
+- [ ] T079 Rerun quickstart scenarios 1–7 at 390px and desktop width with no console errors
+
+---
+
 ## Phase 6: Polish & Cross-Cutting Concerns
 
 **Purpose**: Documentation, accessibility, performance and the final end-to-end check
@@ -463,7 +490,8 @@ everywhere; photos and immediate actions are optional
 - **UI/UX iteration (Phase 5b)**: Depends on User Stories 1–3
 - **Review round (Phase 5c)**: Depends on Phase 5b
 - **Form review (Phase 5d)**: Depends on Phase 5c
-- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b–5d)
+- **List/Kanban/form review (Phase 5e)**: Depends on Phase 5d
+- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b–5e)
 
 ### User Story Dependencies
 

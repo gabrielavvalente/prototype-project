@@ -93,7 +93,8 @@ Expected: both submitted; the second shows the action as **Completed**. Try a 6 
   match a manual count.
 - Tap **With SIP** → only SIP events are shown.
 - Hide a column, reload the page → it stays hidden; the chosen view (Kanban or List) is kept too.
-- Tap the eye icon on a row or card → the quick view opens and the list stays in place.
+- Click a row or a card → it expands in place with the description and immediate actions;
+  click again to close it. In Kanban, the ‹ › buttons reach every column.
 
 ### 8. Persistence (FR-036)
 
