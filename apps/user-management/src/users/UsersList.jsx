@@ -18,6 +18,7 @@ import { getPlantName, getPlants } from '../../../../shared/platform/organizatio
 import { canSeeUser, LEVEL_LABELS } from '../../../../shared/platform/permissions.js';
 import { eventPillarIds, eventPlantIds, getPillars, pillarCode, pillarColorKey, roleBadge } from '../shell/text.js';
 import Icon from '../shell/Icon.jsx';
+import PageTabs from '../shell/PageTabs.jsx';
 import PillarTag from '../shell/PillarTag.jsx';
 import UserDetail from './UserDetail.jsx';
 
@@ -96,6 +97,7 @@ export default function UsersList() {
             Read only
           </Badge>
         </Group>
+        <PageTabs />
 
         <Paper className="filter-panel" p="lg" radius="md" withBorder>
           <Group justify="space-between" mb="md">

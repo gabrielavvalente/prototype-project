@@ -36,6 +36,9 @@ Then check by hand, through the launcher, with the browser console open (no erro
    edit action anywhere.
 3. As Lucas Weber (Cluster Lyon, Porto) → Ben Okafor (Curitiba) is not listed and his page says
    "Not allowed".
+4. Groups tab → the investigation groups with pillars, plants and members (Lucas Weber sees only
+   those of Lyon and Porto); no edit action.
 
 Full scenarios: [specs/002-control-panel/quickstart.md](../../specs/002-control-panel/quickstart.md)
-(scenario 6).
+(scenario 6) and [specs/004-root-cause-analysis/quickstart.md](../../specs/004-root-cause-analysis/quickstart.md)
+(scenario 8).

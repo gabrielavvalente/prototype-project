@@ -7,6 +7,7 @@ import { hasControlPanelAccess } from '../../../shared/platform/permissions.js';
 import Header from './shell/Header.jsx';
 import NotAllowed from './shell/NotAllowed.jsx';
 import StartScreen from './shell/StartScreen.jsx';
+import GroupsList from './groups/GroupsList.jsx';
 import UsersList from './users/UsersList.jsx';
 
 // Every signed-in page: header on top, the page below. Only people holding a Control Panel role
@@ -31,6 +32,7 @@ const router = createHashRouter([
     children: [
       { path: 'users', element: <UsersList /> },
       { path: 'users/:userId', element: <UsersList /> },
+      { path: 'groups', element: <GroupsList /> },
       { path: '*', element: <NotAllowed reason="notFound" /> },
     ],
   },
