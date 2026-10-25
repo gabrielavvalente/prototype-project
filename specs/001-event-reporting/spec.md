@@ -141,6 +141,36 @@ screens to copy; product logo and name are not reused, and all text stays in Eng
   shows the chosen ones as selected in the list, and closes with Done, Escape or a click outside;
   the chosen people also appear as removable badges below it.
 
+### Session 2026-10-25 (review of form, filters and KPIs)
+
+- Q: How is the creation form laid out? → A: Two columns on wide screens: Classification,
+  Location and Event details on the left; General information and Immediate actions on the right
+  (one column on phones).
+- Q: Can the other sections be filled before the classification? → A: No. They are shown but
+  disabled until pillar, type and level are chosen.
+- Q: Is the form saved automatically? → A: Yes. Once classified, a draft saves itself a moment
+  after the last change and the title bar shows "Draft saved at HH:MM".
+- Q: What goes in General information? → A: Only Title, Description (a large text box, with
+  photos, videos and dictation under it), Employee type with the person involved, and the first
+  aid treatment. Reporter, report date, event time, shift moment, recurrence, Shared with and
+  diseases move to Event details. The event's Comments field is removed.
+- Q: How is the first aid treatment chosen? → A: Several treatments can be chosen; choosing
+  "Other" asks for a description (required).
+- Q: Which fields does an immediate action keep? → A: Description, Priority (Low, Medium, High,
+  **Urgent**), Comments and the people who performed it. Category, Completion date and KPI ID are
+  removed: the completion date is the report date and the category is the event's pillar, both
+  set when the event is saved. An X icon button at the top of the card removes the action.
+- Q: How are pillars shown in the form? → A: Each pillar chip is filled with its pillar's color
+  (not a small colored square), with dark text; the chosen one is stronger and outlined.
+- Q: Where are saved filters? → A: In the menu of the Filters button: choose filters, apply a
+  saved filter, save the current filters, delete the applied one. The filters in use appear as
+  removable badges under the toolbar; an applied saved filter appears as one badge with its name.
+- Q: How do the KPI chips look? → A: Compact, with the number and its word side by side in
+  proportion.
+- Q: What does the KPIs page show? → A: Three numbers — Events with SIP, Open actions (0 until
+  action plans exist) and Events in progress — and a stacked column chart of submitted events per
+  type (family), split by level, in pillar colors.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Report an event from the shop floor (Priority: P1)
@@ -193,16 +223,17 @@ new alerts.
    device camera.
 8. **Given** I upload a file of a type or size that is not allowed, **When** it is checked,
    **Then** it is rejected with a clear message and not attached.
-9. **Given** I look at Event Details, **When** the section renders, **Then** I choose an Employee
-   type, set Recurrence (Yes/No), enter Comments and choose who it is Shared with; **and given** the
-   family is OH, **then** a Disease(s) multi-select is also shown.
+9. **Given** I look at Event Details, **When** the section renders, **Then** I see the Reporter,
+   Report date, Event time and Shift moment, set Recurrence (Yes/No) and choose who it is Shared
+   with; **and given** the family is OH, **then** a Disease(s) multi-select is also shown. (Employee
+   type is in General information, Clarification 2026-10-25.)
 10. **Given** any level, **When** I submit without an immediate action, **Then** the event is
     accepted (immediate actions are optional).
 11. **Given** I add an immediate action, **When** the action card renders, **Then** I capture
-    Description, Priority, Category, Completion date, KPI ID (optional), Comments and 1 to 5
-    people who performed it; the action is saved with status
-    Completed and its creation date is set automatically; I can add more actions as repeatable
-    cards.
+    Description, Priority (Low, Medium, High, Urgent), Comments and 1 to 5 people who performed it;
+    the action is saved with status Completed, its creation date, the event's report date as
+    completion date and the event's pillar as category; I can add more actions as repeatable
+    cards and remove one with the X at the top of its card.
 12. **Given** something required is missing, **When** I tap Submit, **Then** nothing is saved,
     each missing field is flagged next to it, and the page scrolls to the first one.
 13. **Given** I choose Save as Draft, **When** it is saved, **Then** the event has status `Draft`
@@ -325,7 +356,18 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
   3 taps. *(US-CREATE-10, US-SHELL-08)*
 - **FR-002**: The creation form MUST be one continuous page with the sections Classification,
   Location, General Information, Event Details and Immediate Actions under headings, and a bar
-  fixed to the bottom with Save as Draft and Submit. *(Clarification 2026-10-24, form review)*
+  fixed to the bottom with Save as Draft and Submit. On wide screens it MUST use two columns:
+  Classification, Location and Event Details on the left, General Information and Immediate
+  Actions on the right. *(Clarification 2026-10-24, form review; Clarification 2026-10-25,
+  review)*
+- **FR-051**: Every section other than Classification MUST be disabled, with the hint "Choose the
+  classification first.", until pillar, type and level are chosen. *(Clarification 2026-10-25, review)*
+- **FR-052**: Once classified, a draft MUST save itself about 2 seconds after the last change,
+  without leaving the form, and the title bar MUST show the save state ("Draft saved at HH:MM",
+  "Saving…", or a message when it fails). Submitted events are not saved automatically. *(Clarification 2026-10-25, review)*
+- **FR-053**: Pillar choices in the form and the filters MUST be chips filled with their pillar's
+  color (dark text; the chosen one stronger and outlined), the same pillar colors as in every
+  app. *(Clarification 2026-10-25, review)*
 - **FR-003**: Users MUST classify the event by pillar (skipped and pre-set when the user entered
   through a pillar), then family, then type and level, using these catalogs, each level with a
   plain-language description: Health & Safety / TF: TF1 Lost Time Accident, TF2 Non-Lost Time Accident, TF3 First Aid, TF4 Near Miss, TF5 Hazardous
@@ -342,11 +384,12 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
   and TF5, where only Department and Workshop are required and the picker lets the user stop at
   the workshop (Clarification 2026-10-24, safety event rules). *(US-CREATE-02, SCR-MOB-01 FR-5,
   Clarification 2026-10-24, form review)*
-- **FR-006**: The system MUST capture Title, Reporter (pre-filled with the current user, editable
-  only by a Manager), Report Date (today, read-only), Event Time (optional), Shift Moment (Day /
-  Night / Afternoon) and Description; a Dictate button, on the same line as the photo and video
-  buttons, MUST transcribe speech into the description where the browser supports it. *(US-CREATE-03, SCR-MOB-01 FR-8, Clarification
-  2026-10-24, list/Kanban/form review)*
+- **FR-006**: General Information MUST capture Title and Description (a large text box); a Dictate
+  button, on the same line as the photo and video buttons under the description, MUST transcribe
+  speech into it where the browser supports it. Event Details MUST capture Reporter (pre-filled
+  with the current user, editable only by a Manager), Report Date (today, read-only), Event Time
+  (optional) and Shift Moment (Day / Night / Afternoon). *(US-CREATE-03, SCR-MOB-01 FR-8,
+  Clarification 2026-10-24, list/Kanban/form review; Clarification 2026-10-25, review)*
 - **FR-007**: Users MUST be able to attach photos and videos, and capture them directly with the
   device camera on a phone. *(US-CREATE-03)*
 - **FR-008**: Photos and videos MUST be optional for every level. *(Clarification 2026-10-24,
@@ -354,24 +397,30 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
 - **FR-009**: The system MUST check each file's type, extension and size against the allowed list
   (common image and video formats, at most 5 MB per file and 5 files per event) and reject failing
   files with a clear message without attaching them. *(US-CREATE-11, Clarification 2026-10-24)*
-- **FR-010**: The system MUST capture Employee type (Employee / Temporary Worker / Permanent
-  Contractor / Non-Permanent Contractor / Other) and the person involved — for Employee a user of
-  the plant (required); otherwise their name (required) and "What was the person doing?"
-  (optional) — Recurrence (Yes/No), Comments and **Shared
+- **FR-010**: General Information MUST capture, after the description, Employee type (Employee /
+  Temporary Worker / Permanent Contractor / Non-Permanent Contractor / Other) and the person
+  involved — for Employee a user of the plant, searchable (required); otherwise their name
+  (required) and "What was the person doing?" (optional). Event Details MUST capture Recurrence
+  (Yes/No) and **Shared
   with** (a multi-select dropdown of users of the event's plant who can see its pillar, which stays
   open while choosing and marks the chosen people as selected; each choice also shown as a
   removable badge below it), plus a Disease(s) multi-select when
-  the family is OH. *(US-CREATE-04, Clarification 2026-10-24, list/Kanban/form review)*
-- **FR-047**: For TF1, TF2 and TF3 the system MUST ask "What was the first aid treatment?" with a
-  choice from the first aid treatment list (required). *(safety-event source "First Aid
-  Treatment", Clarification 2026-10-24, safety event rules)*
+  the family is OH. There is no event Comments field. *(US-CREATE-04, Clarification 2026-10-24,
+  list/Kanban/form review; Clarification 2026-10-25, review)*
+- **FR-047**: For TF1, TF2 and TF3 the system MUST ask "What was the first aid treatment?" in
+  General Information, right after the person involved, with one or more choices from the first
+  aid treatment list (at least one required); choosing "Other" MUST ask for a description
+  (required). *(safety-event source "First Aid Treatment", Clarification 2026-10-24, safety event
+  rules; Clarification 2026-10-25, review)*
 - **FR-048**: When a TF5 event is answered "Could this be a SIP?" = Yes (in either order), the
   system MUST switch the level to TF4 and show a warning explaining the change. *(Clarification
   2026-10-24, safety event rules)*
 - **FR-011**: Users MUST be able to add any number of immediate actions as repeatable cards, each
-  with Description, Priority, Category, Completion date, KPI ID (optional) and Comments; each immediate action MUST be saved with status Completed (it records
-  containment already done at the scene) and its creation date set automatically.
-  *(US-CREATE-05, Clarification 2026-10-24)*
+  with Description, Priority (Low, Medium, High, Urgent) and Comments, and remove one with an X
+  icon button at the top of its card; each immediate action MUST be saved with status Completed
+  (it records containment already done at the scene), its creation date, the event's report date
+  as completion date and the event's pillar as category, all set automatically. *(US-CREATE-05,
+  Clarification 2026-10-24; Clarification 2026-10-25, review)*
 - **FR-012**: Immediate actions MUST be optional for every level. *(Clarification 2026-10-24,
   form review; replaces the TF1–TF3 / SRE1–SRE3 rule of US-CREATE-05)*
 - **FR-013**: Users MUST record 1 to 5 people who performed each immediate action; this creates no
@@ -443,19 +492,27 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
 - **FR-030**: Users MUST be able to filter by Type (and level), Time range, Organization
   (Department → Task), Reporter, SIP flag, Status (Draft / Open) and a My Events toggle; filters MUST update the list and
   the KPI counts. *(US-LIB-03)*
-- **FR-031**: Events MUST show a row of clickable KPI chips — All, My events, Open, With SIP,
-  Drafts — whose counts reflect the search and active filters; selecting a chip narrows the list
-  to it. "All" and "My events" include the user's own drafts; "Open" and "With SIP" count
-  submitted events only; "Drafts" counts the user's own drafts. *(US-LIB-06, Clarification 2026-10-24 UI/UX)*
+- **FR-031**: Events MUST show a row of compact clickable KPI chips — All, My events, Open, With
+  SIP, Drafts — with the number and its word side by side, whose counts reflect the search and
+  active filters; selecting a chip narrows the list to it. "All" and "My events" include the
+  user's own drafts; "Open" and "With SIP" count submitted events only ("Open" includes In
+  Progress, feature 003); "Drafts" counts the user's own drafts. *(US-LIB-06, Clarification
+  2026-10-24 UI/UX; Clarification 2026-10-25, review)*
 - **FR-049**: The event workspace MUST provide Events, KPIs and Reports pages and a Create Event
-  action for roles allowed to create events. The KPIs page MUST use only the five counts defined
-  by FR-031; Reports MUST be a record-by-record register of existing events, not an additional
+  action for roles allowed to create events. The KPIs page MUST show three numbers — Events with
+  SIP, Open actions (0 until action plans exist) and Events in progress, the first and last
+  opening the matching events — and a stacked column chart of submitted events per type, split by
+  level, in pillar colors, with details on hover and a table view; it follows the search and
+  filters. Reports MUST be a record-by-record register of existing events, not an additional
   analytics or export feature. Every page MUST apply the existing scope and draft-visibility
-  rules. *(Event workspace update, 2026-10-25)*
-- **FR-050**: Users MUST be able to save, apply and delete named personal filter presets. A preset
+  rules. *(Event workspace update, 2026-10-25; Clarification 2026-10-25, review)*
+- **FR-050**: Users MUST be able to save, apply and delete named personal filter presets from the
+  menu of the Filters button (which also opens the filter sheet). A preset
   MUST include the current text search, filter-sheet criteria and selected FR-031 KPI chip, and
   MUST be persisted in that user's settings. Applying a preset MUST evaluate it against the
-  events currently visible to that user. *(Event workspace update, 2026-10-25)*
+  events currently visible to that user. The filters in use MUST appear as removable badges under
+  the toolbar; an applied preset appears as one badge with its name, whose removal clears it.
+  *(Event workspace update, 2026-10-25; Clarification 2026-10-25, review)*
 - **FR-032**: Each row MUST offer View; Edit MUST be offered to the reporter of a draft and to
   Managers for any event in their scope. *(US-LIB-04)*
 - **FR-033**: The event detail view MUST show every field entered at creation, its attachments and
@@ -512,12 +569,13 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
 - **Event**: Something reported from the shop floor. Record number (`<FAMILY>-<YY>-<NNNN>`,
   unique, assigned on submit), pillar, family, type and level,
   risk-question answer (SIP / CRP / SRP), location chain (Plant → Task) and Task Type, title,
-  description, reporter, report date, event time, shift moment, employee type, recurrence,
-  comments, shared-with users, diseases (OH only), status (`Draft` or `Open` in this MVP),
+  description, reporter, report date, event time, shift moment, employee type, first aid
+  treatments (with the "Other" description), recurrence, shared-with users, diseases (OH only),
+  status (`Draft`, `Open`, `Closed`; In Progress and Archived come with feature 003),
   created/updated by and at. Belongs to one business, plant and pillar.
 - **Immediate Action**: Containment already done at the scene, recorded at creation. Description,
-  priority, category, completion date, KPI ID, comments, creation
-  date, 1–5 people who performed it; status is always Completed. Belongs to one event. In the later
+  priority (Low, Medium, High, Urgent), category (the event's pillar), completion date (the
+  report date), comments, creation date, 1–5 people who performed it; status is always Completed. Belongs to one event. In the later
   Action Plan phase these become part of the event's action plan alongside new actions with due
   dates and a status workflow.
 - **Attachment**: A photo or video on an event. File name, type, size, added by and when.

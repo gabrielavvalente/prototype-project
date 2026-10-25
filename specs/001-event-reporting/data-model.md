@@ -45,9 +45,9 @@ One event, from draft to submitted.
 | `involvedPersonId` | text | Required when `employeeType` is Employee: a user of the plant |
 | `involvedPersonName` | text | Required for the other employee types |
 | `involvedActivity` | text | Optional, other employee types: "What was the person doing?" |
-| `firstAidTreatmentId` | text | Required for TF1–TF3, from the `firstAidTreatment` list (FR-047) |
+| `firstAidTreatmentIds` | list of text | At least one for TF1–TF3, from the `firstAidTreatment` list (FR-047) |
+| `firstAidOther` | text | Required when the "Other" treatment is chosen (FR-047) |
 | `recurrence` | true \| false | Required |
-| `comments` | text | Optional |
 | `sharedWithIds` | list of text | Optional; users of the event's plant who can see its pillar; each gets an alert on submit |
 | `diseaseIds` | list of text | Shown and required only when `familyCode` is `OH` |
 | `immediateActions` | list of ImmediateAction | See below; optional (FR-012) |
@@ -63,10 +63,9 @@ Indexes: `plantId`, `status`, `reporterId`, `recordNumber` (unique when not null
 |---|---|---|
 | `id` | text | Generated |
 | `description` | text | Required |
-| `priority` | text | Required, from reference list |
-| `categoryId` | text | Required |
-| `completionDate` | date | Required; not after today, not before the event's report date |
-| `kpiId` | text | Optional |
+| `priority` | text | Required, from reference list (Low, Medium, High, Urgent) |
+| `pillarId` | text | Category of the action: the event's pillar, set when the event is saved (FR-011) |
+| `completionDate` | date | The event's report date, set when the event is saved (FR-011) |
 | `comments` | text | Optional |
 | `performedByIds` | list of text | 1–5 user ids (FR-013) |
 | `status` | `Completed` | Always `Completed` (Clarification 2026-10-24) |
@@ -141,7 +140,6 @@ Every item has `id`, `list` and `label`; some have extra fields.
 | `level` | `code` (TF1…TF5, EvE1…EvE5, SRE1…SRE5), `familyId`, `description` (plain-language text, FR-003) |
 | `disease` | `familyId` (OH classifications and the Disease(s) list) |
 | `taskType` (Routine, Non-routine), `employeeType`, `shiftMoment`, `actionPriority`, `firstAidTreatment` | — |
-| `actionCategory` | — |
 
 ## counters
 
