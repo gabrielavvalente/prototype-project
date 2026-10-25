@@ -1,6 +1,6 @@
 # Capability: Root cause analysis
 
-**Product**: Event Reporting (the step and the designation), User Management (Groups tab)
+**Product**: Event Reporting (the step and the designation)
 **Builds on**: [domain](../domain.md) (roles, visibility, workflow and steps),
 [platform data](platform-data.md) (people, groups, demo events), Event reporting (immediate
 actions), Event review (the review form and its decision)
@@ -11,7 +11,7 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 
 ## Scope
 
-- **In**: designation in the review, investigation groups (fixed sample data, read-only tab), the
+- **In**: designation in the review, investigation groups (fixed demo data), the
   Root cause analysis step (overview, immediate actions, 5W1H, 6M, 5 Why, actions, learnings),
   saving, completing, alerts, history.
 - **Out**: risk-assessment gap question, related hazards, attachments, Safety Alert / Warning,
@@ -40,8 +40,8 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 
 - **RCA-5** A group has a name, pillars, plants and members. The groups are fixed demo data
   ([platform data](platform-data.md)); nobody edits them.
-- **RCA-6** User Management has a read-only **Groups** tab next to Users: name, pillar tags,
-  plants, members with their event role; visibility as in the domain.
+- **RCA-6** User Management lists the groups read-only in its Groups tab
+  ([user management](user-management.md) UM-6).
 
 ### Who performs the analysis
 
@@ -192,10 +192,7 @@ From freshly reset [demo data](platform-data.md). Carla Mendes is a reviewer of 
 11. **Readers** — Lucas Weber (event access at Lyon and Porto; member only of the electrical
     team, which was not designated) opens the step while it is current: every
     field is read-only, but he can expand 5W1H and switch sections and themes. (RCA-7)
-12. **Groups tab** — In User Management, Ludovic Costa (Central) sees the 4 groups; Lucas Weber
-    (Cluster role on Lyon and Porto) sees the groups of Lyon and Porto only; nothing can be
-    edited. (RCA-6)
-13. **Phone and keyboard** — At 320px wide the 5W1H and 6M lists stack above their content and the
+12. **Phone and keyboard** — At 320px wide the 5W1H and 6M lists stack above their content and the
     5 Why tree scrolls sideways; every control works with Tab, Space and Enter. (Domain)
 
 ## Decisions
