@@ -50,6 +50,41 @@ export const reference = [
     'Other',
   ]),
   ...simpleList('actionPriority', ['Low', 'Medium', 'High', 'Urgent']),
+  // SIP types of safety events, from the safety event source ("HPR Type") (003 FR-024).
+  ...simpleList('sipTypeHs', [
+    'Entry to machine area without LOTO',
+    'Confined Space entry without permit',
+    'Any unsecured Confined Space',
+    'Unguarded access to the dangerous parts of equipment',
+    'Collision of vehicle or its load with another vehicle, a pedestrian or with a building',
+    'Roll over or tip-over of a vehicle',
+    'Loss of load or part of load from a vehicle',
+    'Collapse of a stacked material',
+    'Object falling or likely to fall from height',
+    'Failure of lifting equipment or falling load',
+    'Unsecured access point to permit required roof',
+    'Person working unsafely at height',
+    'Any unsafe electrical work or electrical equipment in poor conditions',
+    'Any Fire or Explosion',
+    'Any other incident that could cause a serious injury',
+  ]),
+  // PROVISIONAL: the environment source names "HPR Type (Environment)" without values (003 FR-025).
+  ...simpleList('sipTypeEnv', [
+    'Uncontrolled release to soil or water',
+    'Release to air above permitted limits',
+    'Spill of a hazardous substance outside its containment',
+    'Fire or explosion with environmental impact',
+    'Other event with serious environmental potential',
+  ]),
+  // PROVISIONAL: SPL types are not defined by the industrial risk source (003 FR-026).
+  ...simpleList('splType', [
+    'Fire or explosion',
+    'Loss of containment of a hazardous substance',
+    'Structural or major equipment failure',
+    'Loss of a critical utility (power, gas, water, IT)',
+    'Natural hazard (flood, storm, earthquake)',
+    'Other serious potential loss',
+  ]),
 ].map((item, index) => ({ ...item, sortOrder: index }));
 
 // ---------------------------------------------------------------------------
