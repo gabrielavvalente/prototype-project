@@ -3771,3 +3771,99 @@ a.step-link:hover {
   margin: 0;
   padding: 0;
 }
+
+/* Root cause analysis (004): overview, parts as cards, 5 Why legs side by side. */
+.rca-assigned {
+  margin: 0 0 8px;
+  font-size: var(--font-size-small);
+}
+
+.rca-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0 0 16px;
+  padding: 0;
+  font-size: var(--font-size-small);
+  list-style: none;
+}
+
+.rca-grid {
+  display: grid;
+  /* min() keeps one column inside the card on narrow phones. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 12px;
+}
+
+.rca-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rca-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-background);
+}
+
+.rca-card .field {
+  margin-bottom: 0;
+}
+
+.rca-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rca-part-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.rca-part-actions--column {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.five-why {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.five-why-leg {
+  flex: 0 0 260px;
+}
+
+.five-why-leg h4 {
+  margin: 0 0 8px;
+}
+
+.five-why-leg .rca-list {
+  display: grid;
+  gap: 8px;
+}
+
+.why-card--root {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.form-actions {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.five-why-leg {
+  max-width: 85vw;
+}

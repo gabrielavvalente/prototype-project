@@ -55,10 +55,10 @@ export function TextField({ id, label, value, onChange, errors = [], type = 'tex
   );
 }
 
-export function YesNoField({ id, label, value, onChange, errors = [], hint }) {
+export function YesNoField({ id, label, value, onChange, errors = [], hint, required = true }) {
   return (
     <fieldset className="field" id={id}>
-      <legend className="field-label required">{label}</legend>
+      <legend className={`field-label${required ? ' required' : ''}`}>{label}</legend>
       {hint && <span className="field-hint">{hint}</span>}
       <div className="chip-group">
         <Button type="button" variant={value === true ? 'light' : 'default'} aria-pressed={value === true} onClick={() => onChange(true)}>

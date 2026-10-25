@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { Alert, Button, MultiSelect, Textarea } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { availableValues, listsForPillar } from '../../../../shared/platform/masterData.js';
+import { groupsCovering } from '../../../../shared/platform/groups.js';
+import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
 import { getMasterData } from '../../../../shared/platform/platformData.js';
-import { saveReviewStep } from '../data/db.js';
+import { investigationGroups } from '../../../../shared/platform/sampleData.js';
+import { saveWorkflowStep } from '../data/db.js';
 import ChipGroup from '../create/ChipGroup.jsx';
 import { SelectField, YesNoField } from '../create/fields.jsx';
 import { getLabel, getReferenceList } from '../logic/lookups.js';
@@ -14,9 +17,11 @@ import {
   completeReview,
   INVALID_REASONS,
   isReviewer,
+  leadsToAnalysis,
   REASON_NEEDING_COMMENT,
   validateReview,
 } from '../logic/review.js';
+import { assigneeIds } from '../logic/rootCause.js';
 import { assessmentFor, criticalFlagsOf, typedFlag } from '../logic/severity.js';
 import SeverityMatrix from './SeverityMatrix.jsx';
 import SummaryList from './SummaryList.jsx';
@@ -70,7 +75,16 @@ function startingReview(event) {
     sipConfirmed: assessmentFor(event).sipQuestion ? submittedSip : null,
     criticalTypeId: '',
     furtherAnalysis: null,
+    rcaAssignees: { userIds: [], groupIds: [] },
   };
+}
+
+// "Ana Ribeiro, Lyon H&S investigation team" for a designation (004).
+export function describeAssignees(assignees, users) {
+  if (!assignees) return '';
+  const names = assignees.userIds.map((id) => getLabel(users, id));
+  const groups = assignees.groupIds.map((id) => investigationGroups.find((group) => group.id === id)?.name ?? id);
+  return [...names, ...groups].join(', ');
 }
 
 function describeRating(matrix, rating) {
@@ -106,6 +120,9 @@ function ReviewSummary({ event, masterData }) {
   if (review.criticalTypeId) rows.push({ label: `${typedFlag(event)} type`, value: getLabel(reference, review.criticalTypeId) });
   if (review.furtherAnalysis !== null && review.furtherAnalysis !== undefined) {
     rows.push({ label: 'Further analysis', value: review.furtherAnalysis ? 'Yes' : 'No' });
+  }
+  if (review.rcaAssignees) {
+    rows.push({ label: 'Root cause analysis by', value: describeAssignees(review.rcaAssignees, users) });
   }
   return <SummaryList rows={rows} />;
 }
@@ -221,6 +238,44 @@ function SeverityFields({ event, review, set, errorsFor }) {
   );
 }
 
+// Who will perform the root cause analysis: the plant's users who can see the pillar and the
+// groups covering the plant and pillar, in one multiple choice (004 FR-001).
+function AssigneesField({ event, review, set, errorsFor }) {
+  const { users } = useApp();
+  const people = users.filter((person) => getPillarIdsForPlant(person, event.plantId).includes(event.pillarId));
+  const groups = groupsCovering(investigationGroups, event);
+  const data = [
+    { group: 'Users', items: people.map((person) => ({ value: `user:${person.id}`, label: `${person.name} — ${person.role}` })) },
+    { group: 'Groups', items: groups.map((group) => ({ value: `group:${group.id}`, label: group.name })) },
+  ];
+  const assignees = review.rcaAssignees;
+  const value = [...assignees.userIds.map((id) => `user:${id}`), ...assignees.groupIds.map((id) => `group:${id}`)];
+
+  function change(values) {
+    const idsOf = (prefix) => values.filter((item) => item.startsWith(prefix)).map((item) => item.slice(prefix.length));
+    set({ rcaAssignees: { userIds: idsOf('user:'), groupIds: idsOf('group:') } });
+  }
+
+  return (
+    <div className="field">
+      <MultiSelect
+        id="rcaAssignees"
+        label="Who will perform the root cause analysis?"
+        description="They and the members of the chosen groups get an alert and fill in the analysis."
+        required
+        searchable
+        // Typing highlights the first match, so Enter picks it with the keyboard.
+        selectFirstOptionOnChange
+        clearable
+        data={data}
+        value={value}
+        error={errorsFor('rcaAssignees')[0]?.message}
+        onChange={change}
+      />
+    </div>
+  );
+}
+
 // A titled part of the review form.
 function ReviewSection({ title, children }) {
   return (
@@ -294,20 +349,23 @@ function ValidFields({ event, review, set, errorsFor, masterData }) {
           <SeverityFields event={event} review={review} set={set} errorsFor={errorsFor} />
         </ReviewSection>
       )}
-      {asksFurtherAnalysis(event) && (
+      {(asksFurtherAnalysis(event) || leadsToAnalysis(event, review)) && (
         <ReviewSection title="Next step">
-          <YesNoField
-            id="furtherAnalysis"
-            label="Do you want to further analyze?"
-            hint={
-              critical
-                ? 'Proposed for a critical event: Yes opens a root cause analysis.'
-                : 'Yes opens a root cause analysis; No goes on to the next required step.'
-            }
-            value={review.furtherAnalysis}
-            onChange={(furtherAnalysis) => set({ furtherAnalysis })}
-            errors={errorsFor('furtherAnalysis')}
-          />
+          {asksFurtherAnalysis(event) && (
+            <YesNoField
+              id="furtherAnalysis"
+              label="Do you want to further analyze?"
+              hint={
+                critical
+                  ? 'Proposed for a critical event: Yes opens a root cause analysis.'
+                  : 'Yes opens a root cause analysis; No goes on to the next required step.'
+              }
+              value={review.furtherAnalysis}
+              onChange={(furtherAnalysis) => set({ furtherAnalysis })}
+              errors={errorsFor('furtherAnalysis')}
+            />
+          )}
+          {leadsToAnalysis(event, review) && <AssigneesField event={event} review={review} set={set} errorsFor={errorsFor} />}
         </ReviewSection>
       )}
     </>
@@ -337,7 +395,7 @@ export default function ReviewStep({ event, onSaved }) {
   async function save(updated, alerts) {
     setSaving(true);
     try {
-      onSaved(await saveReviewStep({ ...updated, updatedBy: user.id, updatedAt: new Date().toISOString() }, alerts));
+      onSaved(await saveWorkflowStep({ ...updated, updatedBy: user.id, updatedAt: new Date().toISOString() }, alerts));
     } finally {
       setSaving(false);
     }
@@ -351,7 +409,10 @@ export default function ReviewStep({ event, onSaved }) {
     const alerts =
       reviewed.status === 'Archived'
         ? archiveRecipients(event, user.id).map((recipientId) => ({ recipientId, type: `Event archived (${review.invalidReason})` }))
-        : [];
+        : assigneeIds(reviewed, investigationGroups, users).map((recipientId) => ({
+            recipientId,
+            type: 'Root cause analysis assigned to you',
+          }));
     await save(reviewed, alerts);
   }
 

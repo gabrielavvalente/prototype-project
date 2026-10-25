@@ -48,6 +48,10 @@ Then check by hand, at phone width and on desktop, with the browser console open
    scored Severe × Medium term is SIP (red) and goes to Root cause analysis. Another reviewer sees
    who is reviewing. A Manager edits an Open event right in its Submission step; reviewed events
    are read-only. KPIs shows the archived events by reason.
+8. Root cause analysis: a review leading to it asks who performs it (users and groups); as one of
+   them, fill 6M, 5 Why (a classified root cause) and the learnings, Save, then Complete analysis
+   → the next required step; anyone else sees it read-only.
 
-Full scenarios: [specs/001-event-reporting/quickstart.md](../../specs/001-event-reporting/quickstart.md)
-and, for the review, [specs/003-event-review/quickstart.md](../../specs/003-event-review/quickstart.md).
+Full scenarios: [specs/001-event-reporting/quickstart.md](../../specs/001-event-reporting/quickstart.md);
+for the review, [specs/003-event-review/quickstart.md](../../specs/003-event-review/quickstart.md);
+for the root cause analysis, [specs/004-root-cause-analysis/quickstart.md](../../specs/004-root-cause-analysis/quickstart.md).

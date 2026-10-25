@@ -10,6 +10,7 @@ import NotAllowed from '../shell/NotAllowed.jsx';
 import { EventForm } from '../create/EventForm.jsx';
 import { EventHeadCard, EventHistory, EventSections, SavedBanner } from './EventDetail.jsx';
 import ReviewStep from './ReviewStep.jsx';
+import RootCauseStep from './RootCauseStep.jsx';
 
 const STATE_HINTS = { done: 'Done', current: 'Current step', upcoming: 'Not reached yet', skipped: 'Not required' };
 
@@ -136,7 +137,8 @@ export default function EventSteps() {
           {available && step === 'submission' && <SubmissionStep event={event} attachments={attachments} />}
           {/* A new form for each event: going from one event's steps to another's keeps this page. */}
           {available && step === 'review' && <ReviewStep key={event.id} event={event} onSaved={setEvent} />}
-          {available && !['submission', 'review'].includes(step) && (
+          {available && step === 'rootCause' && <RootCauseStep key={event.id} event={event} onSaved={setEvent} />}
+          {available && !['submission', 'review', 'rootCause'].includes(step) && (
             <Alert color="blue" variant="light">
               {STEP_LABELS[step]} comes in a later version of the prototype.
             </Alert>
