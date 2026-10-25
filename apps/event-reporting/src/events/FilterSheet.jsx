@@ -78,6 +78,15 @@ export default function FilterSheet({ filters, onApply, onClose }) {
           options={levels.map((level) => ({ value: level.code, label: level.code }))}
         />
       )}
+      <ChipGroup
+        id="filter-status"
+        label="Status"
+        hint="Archived events show only when you choose Archived."
+        allowEmpty
+        value={draft.status}
+        onChange={(value) => set({ status: value })}
+        options={['Draft', 'Open', 'In Progress', 'Closed', 'Archived'].map((status) => ({ value: status, label: status }))}
+      />
       <fieldset className="field filter-date-range">
         <legend className="field-label">Report date</legend>
         <TextInput type="date" label="From" value={draft.from} onChange={(e) => set({ from: e.target.value })} />

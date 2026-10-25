@@ -11,7 +11,7 @@ export const EMPTY_FILTERS = {
   location: {},
   reporterId: '',
   sip: '', // '' | 'yes' | 'no'
-  status: '', // '' | 'Draft' | 'Open'
+  status: '', // '' | a status; Archived events show only when asked for
   myEvents: false,
 };
 
@@ -47,6 +47,8 @@ export function applyFilters(events, filters, currentUserId) {
     if (filters.sip === 'yes' && !isSip(event)) return false;
     if (filters.sip === 'no' && isSip(event)) return false;
     if (filters.status && event.status !== filters.status) return false;
+    // Archived events leave the active workflow but stay findable (core FR-7).
+    if (!filters.status && event.status === 'Archived') return false;
     if (filters.myEvents && event.reporterId !== currentUserId && event.createdBy !== currentUserId) return false;
     return true;
   });
@@ -94,7 +96,7 @@ function isMine(event, userId) {
 const QUICK_FILTERS = {
   all: () => true,
   mine: (event, userId) => isMine(event, userId),
-  open: (event) => event.status === 'Open',
+  open: (event) => event.status === 'Open' || event.status === 'In Progress',
   sip: (event) => event.status !== 'Draft' && isSip(event),
   drafts: (event) => event.status === 'Draft',
 };
