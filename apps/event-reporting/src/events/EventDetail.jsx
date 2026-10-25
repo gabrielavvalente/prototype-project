@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Alert, Badge, Button, Paper, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { AttachmentPreview } from '../create/AttachmentInput.jsx';
@@ -9,7 +9,7 @@ import { isCritical } from '../logic/display.js';
 import CriticalBadges from './CriticalBadges.jsx';
 import { describeEvent, describeImmediateAction } from '../logic/eventSummary.js';
 import { findById, findLevelByCode, getLabel } from '../logic/lookups.js';
-import { canStartReview, currentStep } from '../logic/review.js';
+import { currentStep } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
 import { PillarTag, SeverityDots } from './EventCard.jsx';
@@ -20,20 +20,29 @@ function formatDateTime(isoText) {
   return isoText ? new Date(isoText).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : '';
 }
 
-// Created, submitted and last updated, oldest first.
+// Created, submitted, review taken and completed, and last updated, oldest first.
 function buildHistory(event, users) {
   const items = [{ label: `Created by ${getLabel(users, event.createdBy)}`, at: event.createdAt }];
   if (event.submittedAt) {
     items.push({ label: `Submitted — record number ${event.recordNumber}`, at: event.submittedAt });
   }
-  if (event.updatedAt && event.updatedAt !== event.createdAt && event.updatedAt !== event.submittedAt) {
+  const review = event.review;
+  if (review?.claimedAt) {
+    items.push({ label: `Review taken by ${getLabel(users, review.reviewerId)}`, at: review.claimedAt });
+  }
+  if (review?.reviewedAt) {
+    const outcome = review.decision === 'invalid' ? `archived (${review.invalidReason})` : 'valid';
+    items.push({ label: `Review completed — ${outcome}`, at: review.reviewedAt });
+  }
+  const known = items.map((item) => item.at);
+  if (event.updatedAt && !known.includes(event.updatedAt)) {
     items.push({ label: `Last updated by ${getLabel(users, event.updatedBy)}`, at: event.updatedAt });
   }
-  return items;
+  return items.sort((a, b) => a.at.localeCompare(b.at));
 }
 
 // Shown once, right after the event was saved from the form (FR-015).
-function SavedBanner({ saved, recordNumber, status, canCreate }) {
+export function SavedBanner({ saved, recordNumber, status, canCreate }) {
   const messages = {
     submit: (
       <>
@@ -74,114 +83,74 @@ function Collapsible({ title, open = false, children }) {
   );
 }
 
-// Everything entered at creation, its photos and videos, its immediate actions and its history (FR-033, FR-045).
-export default function EventDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const lists = useApp();
-  const { user, context, reference, organization, users } = lists;
-  const [state, setState] = useState({ status: 'loading', event: null, attachments: [] });
-
-  useEffect(() => {
-    async function load() {
-      const event = await findEvent(id);
-      // Missing, out of scope and someone else's draft all look the same (contracts/routes.md).
-      if (!event || !isEventVisible(user, context, event)) {
-        setState({ status: 'notFound', event: null, attachments: [] });
-        return;
-      }
-      const attachments = await getByIndex('attachments', 'eventId', event.id);
-      setState({ status: 'ready', event, attachments });
-    }
-    load();
-  }, [id, user, context]);
-
-  const { status, event, attachments } = state;
-
-  useEffect(() => {
-    if (event) {
-      document.title = `${event.recordNumber || 'Draft'} — Event Reporting`;
-    }
-  }, [event]);
-
-  if (status === 'loading') return <p className="page">Loading…</p>;
-  if (status === 'notFound') return <NotAllowed reason="notFound" />;
-
+// The event's header: pillar, level, status, critical badges, title and key facts.
+export function EventHeadCard({ event }) {
+  const { reference, organization, users } = useApp();
   const pillar = findById(reference, event.pillarId);
   const level = findLevelByCode(reference, event.levelCode);
   const reporter = findById(users, event.reporterId);
   const critical = isCritical(event);
-  const sections = describeEvent(event, lists, attachments.length).filter((section) => section.section !== 'classification');
   const locationPath = Object.values(event.location)
     .map((nodeId) => getLabel(organization, nodeId))
     .filter(Boolean)
     .join(' › ');
-  const editPath = `/events/${event.recordNumber || event.id}/edit`;
 
   return (
-    <main className="page page--with-bar">
-      <div className="detail-topbar">
-        <button type="button" className="icon-button" onClick={() => navigate('/events')}>
-          <Icon name="back" label="Back to events" />
-        </button>
-        <span>{event.recordNumber || 'Draft'}</span>
+    <Paper component="section" withBorder shadow="xs" radius="md" p="xl" className={`card detail-head${critical ? ' card--critical' : ''}`}>
+      <div className="tag-row">
+        <PillarTag pillar={pillar} />
+        <Badge variant="light" color="blue">{event.levelCode}</Badge>
+        <StatusBadge status={event.status} />
+        <CriticalBadges event={event} />
       </div>
-
-      {location.state?.saved && (
-        <SavedBanner
-          saved={location.state.saved}
-          recordNumber={location.state.recordNumber}
-          status={location.state.status}
-          canCreate={getMenuItems(user.role).includes('create-event')}
-        />
-      )}
-
-      <Paper component="section" withBorder shadow="xs" radius="md" p="xl" className={`card detail-head${critical ? ' card--critical' : ''}`}>
-        <div className="tag-row">
-          <PillarTag pillar={pillar} />
-          <Badge variant="light" color="blue">{event.levelCode}</Badge>
-          <StatusBadge status={event.status} />
-          <CriticalBadges event={event} />
+      <Title order={1}>{event.title || '(no title yet)'}</Title>
+      <dl className="facts-grid">
+        <div>
+          <dt className="section-label">Level</dt>
+          <dd>
+            <SeverityDots levelCode={event.levelCode} /> {level ? `${level.code} — ${level.label}` : '—'}
+          </dd>
         </div>
-        <Title order={1}>{event.title || '(no title yet)'}</Title>
-        <dl className="facts-grid">
+        <div>
+          <dt className="section-label">Reporter</dt>
+          <dd className="person">
+            <span className="avatar avatar--small" aria-hidden="true">
+              {reporter?.avatar}
+            </span>
+            {reporter?.name}
+          </dd>
+        </div>
+        <div>
+          <dt className="section-label">When</dt>
+          <dd>
+            {event.reportDate} {event.eventTime}
+          </dd>
+        </div>
+        {event.riskQuestion && (
           <div>
-            <dt className="section-label">Level</dt>
-            <dd>
-              <SeverityDots levelCode={event.levelCode} /> {level ? `${level.code} — ${level.label}` : '—'}
-            </dd>
+            <dt className="section-label">Could this be a {event.riskQuestion.type}?</dt>
+            <dd>{event.riskQuestion.answer ? 'Yes' : 'No'}</dd>
           </div>
-          <div>
-            <dt className="section-label">Reporter</dt>
-            <dd className="person">
-              <span className="avatar avatar--small" aria-hidden="true">
-                {reporter?.avatar}
-              </span>
-              {reporter?.name}
-            </dd>
-          </div>
-          <div>
-            <dt className="section-label">When</dt>
-            <dd>
-              {event.reportDate} {event.eventTime}
-            </dd>
-          </div>
-          {event.riskQuestion && (
-            <div>
-              <dt className="section-label">Could this be a {event.riskQuestion.type}?</dt>
-              <dd>{event.riskQuestion.answer ? 'Yes' : 'No'}</dd>
-            </div>
-          )}
-          <div className="facts-grid-wide">
-            <dt className="section-label">Location</dt>
-            <dd>
-              {getLabel(organization, event.plantId)} › {locationPath || '—'}
-            </dd>
-          </div>
-        </dl>
-      </Paper>
+        )}
+        <div className="facts-grid-wide">
+          <dt className="section-label">Location</dt>
+          <dd>
+            {getLabel(organization, event.plantId)} › {locationPath || '—'}
+          </dd>
+        </div>
+      </dl>
+    </Paper>
+  );
+}
 
+// Everything reported, section by section, with photos, immediate actions and the history.
+export function EventSections({ event, attachments }) {
+  const lists = useApp();
+  const { users } = lists;
+  const sections = describeEvent(event, lists, attachments.length).filter((section) => section.section !== 'classification');
+
+  return (
+    <>
       {sections.map((section, index) => (
         <Collapsible key={section.section} title={section.title} open={index < 2}>
           <SummaryList rows={section.rows} />
@@ -216,20 +185,81 @@ export default function EventDetail() {
           ))}
         </ol>
       </Collapsible>
+    </>
+  );
+}
+
+// Everything entered at creation, its photos and videos, its immediate actions and its history (FR-033, FR-045).
+export default function EventDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, context } = useApp();
+  const [state, setState] = useState({ status: 'loading', event: null, attachments: [] });
+
+  useEffect(() => {
+    async function load() {
+      const event = await findEvent(id);
+      // Missing, out of scope and someone else's draft all look the same (contracts/routes.md).
+      if (!event || !isEventVisible(user, context, event)) {
+        setState({ status: 'notFound', event: null, attachments: [] });
+        return;
+      }
+      const attachments = await getByIndex('attachments', 'eventId', event.id);
+      setState({ status: 'ready', event, attachments });
+    }
+    load();
+  }, [id, user, context]);
+
+  const { status, event, attachments } = state;
+
+  useEffect(() => {
+    if (event) {
+      document.title = `${event.recordNumber || 'Draft'} — Event Reporting`;
+    }
+  }, [event]);
+
+  if (status === 'loading') return <p className="page">Loading…</p>;
+  if (status === 'notFound') return <NotAllowed reason="notFound" />;
+
+  // A submitted event has one page: its workflow steps (003, third review). Right after a submit
+  // it opens on Submission, with the confirmation banner.
+  if (event.status !== 'Draft') {
+    const step = location.state?.saved ? 'submission' : currentStep(event) ?? 'submission';
+    return <Navigate to={`/events/${event.recordNumber}/steps/${step}`} replace state={location.state} />;
+  }
+
+  const editPath = `/events/${event.id}/edit`;
+
+  return (
+    <main className="page page--with-bar">
+      <div className="detail-topbar">
+        <button type="button" className="icon-button" onClick={() => navigate('/events')}>
+          <Icon name="back" label="Back to events" />
+        </button>
+        <span>{event.recordNumber || 'Draft'}</span>
+      </div>
+
+      {location.state?.saved && (
+        <SavedBanner
+          saved={location.state.saved}
+          recordNumber={location.state.recordNumber}
+          status={location.state.status}
+          canCreate={getMenuItems(user.role).includes('create-event')}
+        />
+      )}
+
+      <EventHeadCard event={event} />
+      <EventSections event={event} attachments={attachments} />
 
       <div className="bottom-bar">
         <Button component={Link} variant="default" to="/events">
           All events
         </Button>
-        {event.status !== 'Draft' && (
-          <Button component={Link} variant="default" to={`/events/${event.recordNumber}/steps/${currentStep(event) ?? 'submission'}`}>
-            {canStartReview(user, event) ? 'Review' : 'Workflow steps'}
-          </Button>
-        )}
         {canEditEvent(user, event) && (
           <Button component={Link} to={editPath}>
             <Icon name="edit" size={18} />
-            {event.status === 'Draft' ? 'Continue draft' : 'Edit'}
+            Continue draft
           </Button>
         )}
       </div>

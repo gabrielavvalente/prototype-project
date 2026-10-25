@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Alert, Paper, Title } from '@mantine/core';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Alert, Button, Paper, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
-import { findEvent } from '../data/db.js';
-import { isEventVisible } from '../logic/access.js';
-import { describeEvent } from '../logic/eventSummary.js';
+import { findEvent, getByIndex } from '../data/db.js';
+import { canEditEvent, getMenuItems, isEventVisible } from '../logic/access.js';
 import { STEP_LABELS, STEPS, stepStates } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
+import { EventHeadCard, EventSections, SavedBanner } from './EventDetail.jsx';
 import ReviewStep from './ReviewStep.jsx';
-import CriticalBadges from './CriticalBadges.jsx';
-import StatusBadge from './StatusBadge.jsx';
-import SummaryList from './SummaryList.jsx';
 
 const STATE_HINTS = { done: 'Done', current: 'Current step', upcoming: 'Not reached yet', skipped: 'Not required' };
 
@@ -57,17 +54,45 @@ function StepsMenu({ event, activeStep }) {
   );
 }
 
-// The event's workflow page (review 2026-10-25): the steps menu on one side, the chosen step on
-// the other. Submission shows what was reported; Review is done here; later steps come later.
+// What was reported, with photos, immediate actions and history, and Edit while it is allowed.
+function SubmissionStep({ event, attachments }) {
+  const { user } = useApp();
+  return (
+    <>
+      {canEditEvent(user, event) && (
+        <div className="step-actions">
+          <Button component={Link} variant="default" to={`/events/${event.recordNumber}/edit`} leftSection={<Icon name="edit" size={18} />}>
+            Edit
+          </Button>
+        </div>
+      )}
+      <EventSections event={event} attachments={attachments} />
+    </>
+  );
+}
+
+// The page of a submitted event (003): its header, then the steps menu beside the chosen step.
+// Submission shows what was reported; Review is done here; later steps come later. Every link to a
+// submitted event opens this page (third review), and Back returns to the event list.
 export default function EventSteps() {
   const { id, step } = useParams();
   const navigate = useNavigate();
-  const lists = useApp();
-  const { user, context } = lists;
+  const location = useLocation();
+  const { user, context } = useApp();
   const [event, setEvent] = useState(undefined);
+  const [attachments, setAttachments] = useState([]);
 
   useEffect(() => {
-    findEvent(id).then((found) => setEvent(found && found.status !== 'Draft' && isEventVisible(user, context, found) ? found : null));
+    async function load() {
+      const found = await findEvent(id);
+      if (!found || found.status === 'Draft' || !isEventVisible(user, context, found)) {
+        setEvent(null);
+        return;
+      }
+      setAttachments(await getByIndex('attachments', 'eventId', found.id));
+      setEvent(found);
+    }
+    load();
   }, [id, user, context]);
 
   useEffect(() => {
@@ -86,11 +111,19 @@ export default function EventSteps() {
         <button type="button" className="icon-button" onClick={() => navigate('/events')}>
           <Icon name="back" label="Back to events" />
         </button>
-        <Link to={`/events/${event.recordNumber}`}>{event.recordNumber}</Link>
-        <StatusBadge status={event.status} />
-        <CriticalBadges event={event} />
+        <span>{event.recordNumber}</span>
       </div>
-      <Title order={1} className="steps-title">{event.title}</Title>
+
+      {location.state?.saved && (
+        <SavedBanner
+          saved={location.state.saved}
+          recordNumber={location.state.recordNumber}
+          status={location.state.status}
+          canCreate={getMenuItems(user.role).includes('create-event')}
+        />
+      )}
+
+      <EventHeadCard event={event} />
 
       <div className="steps-layout">
         <StepsMenu event={event} activeStep={step} />
@@ -101,15 +134,7 @@ export default function EventSteps() {
               {state === 'skipped' ? 'This step is not required for this event.' : 'This step has not been reached yet.'}
             </Alert>
           )}
-          {available && step === 'submission' &&
-            describeEvent(event, lists, event.attachmentIds.length)
-              .filter((section) => section.section !== 'actions')
-              .map((section) => (
-                <div key={section.section} className="steps-section">
-                  <h3>{section.title}</h3>
-                  <SummaryList rows={section.rows} />
-                </div>
-              ))}
+          {available && step === 'submission' && <SubmissionStep event={event} attachments={attachments} />}
           {/* A new form for each event: going from one event's steps to another's keeps this page. */}
           {available && step === 'review' && <ReviewStep key={event.id} event={event} onSaved={setEvent} />}
           {available && !['submission', 'review'].includes(step) && (

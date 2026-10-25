@@ -86,14 +86,10 @@ export default function EventExpanded({ event }) {
             <Icon name="check" size={18} /> Review
           </Link>
         )}
-        <Link className={`button${canStartReview(user, event) ? '' : ' button--primary'}`} to={path}>
+        {/* A submitted event opens on its current workflow step; a draft opens its page. */}
+        <Link className={`button${canStartReview(user, event) ? '' : ' button--primary'}`} to={event.status === 'Draft' ? path : `${path}/steps/${currentStep(event) ?? 'submission'}`}>
           Open event
         </Link>
-        {event.status !== 'Draft' && !canStartReview(user, event) && (
-          <Link className="button" to={`${path}/steps/${currentStep(event) ?? 'submission'}`}>
-            Workflow steps
-          </Link>
-        )}
         {canEditEvent(user, event) && (
           <Link className="button" to={`${path}/edit`}>
             <Icon name="edit" size={18} /> {event.status === 'Draft' ? 'Continue draft' : 'Edit'}

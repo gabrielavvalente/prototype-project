@@ -3663,3 +3663,57 @@ a.step-link:hover {
   vertical-align: middle;
 }
 
+/* Review form in titled parts (third review): statement and lists, severity, next step. */
+.review-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.review-section > h3 {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+}
+
+/* One framed block per assessment (potential, actual, SIP question); the SIP / SPL type sits in
+   the block that makes the event critical. */
+.assessment-block {
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+}
+
+.assessment-block .severity-matrix th:first-child {
+  background: var(--color-background);
+}
+
+.assessment-block > .field:last-child,
+.assessment-block > .severity-matrix:last-child {
+  margin-bottom: 0;
+}
+
+/* The form's button on the far right; the Edit button of Submission likewise. */
+.form-actions,
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.step-actions {
+  margin: -8px 0 12px;
+}
+
+/* What was reported, inside the steps page: no second shadow inside the card. */
+.steps-content .collapsible {
+  box-shadow: none;
+}
+
+/* On the event page the header card spans the same width as the steps below it. */
+.steps-page .detail-head,
+.steps-page .detail-topbar {
+  max-width: none;
+}
+
