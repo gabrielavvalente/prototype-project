@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useBlocker, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useBlocker, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button, Paper, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { getWorkflowSettings } from '../../../../shared/platform/platformData.js';
@@ -114,7 +114,9 @@ function UnsavedChangesDialog({ canSaveDraft, onSaveDraft, onDiscard, onStay }) 
 }
 
 // The event form: one continuous page with every section (FR-002), used to create and to edit.
-function EventForm() {
+// embedded: shown inside the Submission step of a submitted event's page (003, third review), with
+// no title bar; the standalone page is only for new events and drafts.
+export function EventForm({ embedded = false }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, context, users, reference, setFormDirty } = useApp();
@@ -162,6 +164,12 @@ function EventForm() {
       const found = await findEvent(id);
       if (!found || !isEventVisible(user, context, found)) {
         setLoadState('notFound');
+        return;
+      }
+      // A submitted event is edited on its own page, not on a separate form page.
+      if (!embedded && found.status !== 'Draft') {
+        setEvent(found);
+        setLoadState('eventPage');
         return;
       }
       if (!canEditEvent(user, found)) {
@@ -223,11 +231,13 @@ function EventForm() {
   const isSubmitted = event && event.status !== 'Draft';
 
   useEffect(() => {
-    document.title = `${isSubmitted ? 'Edit event' : 'New event'} — Event Reporting`;
-  }, [isSubmitted]);
+    // Embedded, the event's page sets the title.
+    if (!embedded) document.title = `${isSubmitted ? 'Edit event' : 'New event'} — Event Reporting`;
+  }, [isSubmitted, embedded]);
 
   if (loadState === 'loading') return <p className="page">Loading…</p>;
   if (loadState === 'notFound') return <NotAllowed reason="notFound" />;
+  if (loadState === 'eventPage') return <Navigate to={`/events/${event.recordNumber}/steps/submission`} replace />;
   if (loadState === 'notAllowed') return <NotAllowed reason="permission" />;
   if (result) return <p className="page">Saving…</p>;
 
@@ -293,7 +303,8 @@ function EventForm() {
   }
 
   return (
-    <main className="page page--with-bar event-form-page">
+    <FormWrapper embedded={embedded}>
+      {!embedded && (
       <div className="form-titlebar">
         <button type="button" className="icon-button" onClick={() => navigate('/events')}>
           <Icon name="close" label="Close the form" />
@@ -308,6 +319,7 @@ function EventForm() {
           </span>
         )}
       </div>
+      )}
 
       {saveError && (
         <Alert color="red" variant="light" role="alert" mb="md">{saveError}</Alert>
@@ -370,7 +382,16 @@ function EventForm() {
           onStay={() => blocker.reset()}
         />
       )}
-    </main>
+    </FormWrapper>
+  );
+}
+
+// The form is a page of its own, or a part of the event's page.
+function FormWrapper({ embedded, children }) {
+  return embedded ? (
+    <div className="event-form-page event-form-embedded">{children}</div>
+  ) : (
+    <main className="page page--with-bar event-form-page">{children}</main>
   );
 }
 

@@ -35,8 +35,8 @@ Reporting").
 | Nobody took the review, user is a reviewer | "This event is waiting for a reviewer." + **Assign myself as reviewer** |
 | Nobody took the review, user is not a reviewer | Same message + the list of reviewers |
 | Taken by someone else | "<name> is reviewing this event." (+ "Only the assigned reviewer can complete the review." for a reviewer) |
-| Taken by the user | "You are the assigned reviewer for this event." + form: Is this a valid event? (Yes/No); No → reason chips Duplicated / Useless / Bad quality; Yes → Event statement (required) and one optional multi-select per list of the pillar; Comments (optional); button **Archive event** (No) or **Complete review** |
-| Decision saved | Read-only summary: reviewer, date, valid, reason or statement and lists, comments |
+| Taken by the user | "You are the assigned reviewer for this event." + form: Is this a valid event? (Yes/No). No → reason chips Duplicated / Useless / Bad quality, and a required comment for Bad quality; button **Archive event**. Yes → Event statement (pre-filled with the description), one multi-select per list of the pillar (required ones marked), then by pillar: safety Potential / Actual Severity matrices, Environment "Is this event a SIP?", Industrial Risk Potential / Actual Loss matrices; "Critical event: …" notice and the SIP / SPL type when critical; "Do you want to further analyze?" when the workflow does not require Root cause analysis (Yes proposed when critical); button **Complete review** |
+| Decision saved | Read-only summary: reviewer, date, valid, reason (and comment) or statement, lists, severities with score and band, SIP answer, critical flags and type, further analysis |
 
 Errors are shown next to the field; nothing is saved while one remains.
 
@@ -45,8 +45,12 @@ Errors are shown next to the field; nothing is saved while one remains.
 | Where | Shown to | Leads to |
 |---|---|---|
 | Expanded List row / Kanban card | A user who can start or continue the review | **Review** → `…/steps/review` (primary button) |
-| Expanded List row / Kanban card | Anyone else, submitted event | **Workflow steps** → current step, or Submission |
-| Event detail bottom bar | Anyone, submitted event | **Review** or **Workflow steps**, same rule |
+| Expanded List row / Kanban card | Anyone, submitted event | **Open event** → current step, or Submission |
+| `#/events/:id` (search, alerts, after a submit) | Anyone, submitted event | Redirect to the steps page (Submission after a submit) |
+| Expanded List row / Kanban card, draft | Its author | **Open event** → the draft's page (unchanged) |
+
+Third review: the steps page is the event's page — header card above the steps, Submission with
+sections, photos, immediate actions, history and Edit; Back → event list.
 
 ## List and filters
 
@@ -56,3 +60,16 @@ Errors are shown next to the field; nothing is saved while one remains.
 - Kanban columns: Draft, Open, In Progress, Closed (+ Archived when the Archived filter is on).
 - Edit button and `#/events/:id/edit`: only for Draft (author) and Open (Managers) events;
   otherwise "not allowed".
+
+## Critical events (second review)
+
+SIP, HCI, SPL and HCL show as red badges after the title in the List, on the Kanban card (red
+card), on the event page (red header) and next to the status on the steps page.
+
+## Fourth review
+
+- Submission step: editable form (Save changes) for whoever may edit the event, read-only
+  otherwise; no Edit button; `#/events/:id/edit` of a submitted event opens `…/steps/submission`.
+- The header card above the steps is compact.
+- KPIs page: fourth number "Archived events" (→ list with Status = Archived) and the chart
+  "Archived events by reason" (columns Duplicated / Useless / Bad quality, stacked by type).

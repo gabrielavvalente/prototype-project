@@ -88,3 +88,75 @@ follows.
 - **Decision**: The statement is refused when it contains the reporter's full name, ignoring case.
 - **Rationale**: Review and Governance FR-3; the full name is what the prototype knows. First or
   last name alone is not checked (could match ordinary words); noted as a limit.
+
+## R10. Severity and loss matrices (second review)
+
+- **Decision**: One clickable matrix component for both: Impact rows × Duration columns, each cell
+  showing its score (Impact weight × Duration weight) and colored by band — Low 2–15, Medium
+  20–30, High 50–100 — with the chosen cell outlined and the result written under it. Safety uses
+  the injury matrix of the safety source (Severe 5 / Significant 3 / Minor 1 × Minimal 2 / Short
+  term 5 / Medium term 10 / Long term 20). Industrial Risk uses a **provisional** loss matrix with
+  the same weights and bands and placeholder labels. Both live in `logic/severity.js`.
+- **Rationale**: The source asks for clickable matrices with a read-only score; one structure keeps
+  the Industrial Risk placeholder easy to replace. Writing the score in each cell means the band
+  is never told by color alone (constitution IV).
+- **Which matrices**: safety Potential TF1–TF4 and Actual TF1–TF3 (source; TF5 none, user's
+  choice); Industrial Risk Potential SRE1–SRE5 and Actual SRE1–SRE3 (user).
+
+## R11. Critical classification and types
+
+- **Decision**: Derived, never typed: safety Potential High → SIP, Actual High → HCI; Environment
+  "Is this event a SIP?" Yes → SIP (starting from the submission's answer); Industrial Risk
+  Potential High → SPL, Actual High → HCL. SIP and SPL need a type from a reference list:
+  `sipTypeHs` (the 15 "HPR Type" values of the safety source), `sipTypeEnv` and `splType`
+  (**provisional**). The flags are stored on the review (`criticalFlags`) so lists show them
+  without recomputing.
+- **Rationale**: User's rules (Red band = SIP / HCI); the types follow the source where it has
+  values. The review's assessment replaces the submission's SIP answer once reviewed.
+- **Alternatives considered**: SIP also from the submission's answer (rejected by the user).
+
+## R12. "Do you want to further analyze?"
+
+- **Decision**: Asked only when the workflow kept on the event does not require Root cause
+  analysis. It starts at Yes for a critical event (proposed) and must be answered otherwise. Yes
+  stores `furtherAnalysis = true`, which makes Root cause analysis a required step of that event;
+  No goes to the next required step, or Closed when none.
+- **Rationale**: User's choice (proposed, can be refused); the safety source makes Red mandatory,
+  the user preferred a proposal. Required steps stay computed (R2).
+
+## R13. Red display follows the review
+
+- **Decision**: `isCritical(event)` = the review's flags once reviewed; before review, the previous
+  rule (submission SIP answer or a serious level). `isSip` (filters, KPIs) uses the same source.
+- **Rationale**: Keeps the 001 behavior for events not yet reviewed, and lets the review decide.
+
+## R14. Form details
+
+- **Decision**: The statement starts from the description; Bad quality shows a required comment;
+  no review Comments; the form uses `noValidate` so the app's own messages show next to the
+  fields (browser validation of `required` fields hid them); the review form is recreated per
+  event (`key={event.id}`), so moving from one event's steps to another's never keeps answers.
+
+## R15. One page per submitted event (third review)
+
+- **Decision**: `#/events/:id` redirects a submitted event to its steps page (current step, or
+  Submission right after a submit, keeping the confirmation banner); Open event links there
+  directly. The header card, sections, photos, immediate actions and history of the former view
+  page are shared components (`EventHeadCard`, `EventSections` in `EventDetail.jsx`) shown above
+  the steps and in the Submission step. Drafts keep `EventDetail`. The history adds "Review taken
+  by" and "Review completed".
+- **Rationale**: The user wants no distinction between opening an event and its workflow; one
+  page also makes Back always return to the list.
+- **Alternatives considered**: only changing the Open event button (rejected: search, alerts and
+  the after-submit page would still show a second page).
+
+## R16. Editing in place, compact header, archived KPIs (fourth review)
+
+- **Decision**: `EventForm` gets an `embedded` mode (no title bar, full width of the step) shown in
+  the Submission step to those `canEditEvent` allows (Open events only, R8); its standalone page
+  stays for new events and drafts and sends a submitted event to its page. The header card has a
+  `compact` variant on the steps page. The KPIs page counts the Archived events of the current
+  search and filters (status forced to Archived) and draws them with the same stacked column
+  component as the events-by-type chart (`StackedColumnChart`).
+- **Rationale**: One place to read and edit an event; less vertical space; one chart component
+  for both charts.

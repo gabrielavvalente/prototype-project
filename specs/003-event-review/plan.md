@@ -17,6 +17,19 @@ computed from the event, never stored. Archived events leave the default list; r
 can no longer be edited from the form. No new package and no database version change. Details in
 [research.md](research.md).
 
+**Second review (2026-10-25)**: the valid review also rates severity — Potential / Actual Severity
+for safety (injury matrix of the source), Potential / Actual Loss for Industrial Risk (provisional
+loss matrix), a SIP answer for Environment — and derives the critical classification (SIP, HCI,
+SPL, HCL) shown in red; a SIP or SPL needs its type. "Do you want to further analyze?" (proposed
+Yes for critical events) adds Root cause analysis when the workflow does not require it. The
+statement starts from the description, Bad quality needs a comment, and the review's Comments field
+is gone (R10–R14).
+
+**Third review (2026-10-25)**: the review form in titled parts with framed Potential / Actual
+blocks (type inside the Potential block) and the button on the right; Environment requires Aspects
+and Impacts, Industrial Risk only its Categories; the steps page becomes the only page of a
+submitted event (R15).
+
 ## Technical Context
 
 **Language/Version**: JavaScript (ES2022, `.js` / `.jsx`), Node.js LTS for tooling
@@ -87,17 +100,24 @@ apps/event-reporting/src/
 ├── logic/
 │   ├── review.js            # NEW: steps, current step, claim, validation, decision (R2, R3)
 │   ├── review.test.js       # NEW
+│   ├── severity.js          # NEW (second review): matrices, bands, assessment per pillar,
+│   │                        #   critical classification (R10–R12)
+│   ├── severity.test.js     # NEW
+│   ├── display.js           # isCritical: red display decided by the review (R13)
 │   ├── access.js            # route "event-steps" for every role; edit only while Open (R8)
 │   ├── eventList.js         # Archived hidden unless asked for; "open" = Open + In Progress (R7)
 │   └── eventList.test.js
 ├── events/
 │   ├── EventSteps.jsx       # NEW: steps page #/events/:id/steps/:step (R3)
 │   ├── ReviewStep.jsx       # NEW: take the review, decision form, done summary (R4, R5, R6)
+│   ├── SeverityMatrix.jsx   # NEW (second review): clickable matrix, score and band
+│   ├── CriticalBadges.jsx   # NEW (second review): SIP / HCI / SPL / HCL in red
 │   ├── EventExpanded.jsx    # Review button or "Workflow steps" link
 │   ├── EventDetail.jsx      # Review / Workflow steps button
 │   ├── FilterSheet.jsx      # Status filter
 │   └── KanbanBoard.jsx      # Archived column only when Archived events are shown
 ├── data/db.js               # saveReviewStep: event + alerts in one transaction
+├── data/sampleData.js       # reference lists sipTypeHs, sipTypeEnv, splType (R11)
 ├── App.jsx                  # route
 └── app.css                  # steps page styles
 ```

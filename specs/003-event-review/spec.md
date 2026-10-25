@@ -52,7 +52,64 @@ event FR-012, master data per pillar).
 - Q: What is in this version of the review? → A: Valid / not valid with a reason, event
   statement, classification and comments. Owner, Final Reviewer, HPR, Risk / Cost / Ease and
   Attackability score, severity matrix, investigators, Safety Alert, Record Historian, Rework and
-  Final Review come later.
+  Final Review come later. (Severity and the critical classification were added in the second
+  review below.)
+
+### Session 2026-10-25 (second review: severity and critical events)
+
+- Q: What does a not valid event need? → A: A reason (Duplicated, Useless, Bad quality); a comment
+  is required when the reason is Bad quality and is not asked otherwise.
+- Q: Does the review keep its Comments field? → A: No, it is removed.
+- Q: How does the event statement start? → A: Pre-filled with the event's description from the
+  submission; the reviewer rewrites it (it still must not name the reporter).
+- Q: How do the steps of an Archived event look? → A: The steps after Review are disabled ("Not
+  reached"), never "Done".
+- Q: What does a Health & Safety reviewer assess? → A: The **Potential Severity** for TF1–TF4 and
+  the **Actual Severity** for TF1–TF3, each by clicking a cell of the severity matrix of the
+  safety source (Impact × Duration, bands Low / Medium / High). TF5 has no matrix (as in the
+  source). Potential High → **SIP**, then the SIP type is required (the 15 types of the source);
+  Actual High → **HCI**. Standards and Hazards are required for every valid safety event, Body
+  Parts and Injuries for TF1–TF3.
+- Q: What does an Environment reviewer assess? → A: Whether the event is actually a **SIP**
+  (Yes / No, starting from the submission's answer); Yes → the SIP type is required. The
+  Environment SIP types are **provisional** (the source names the list without values).
+- Q: What does an Industrial Risk reviewer assess? → A: The **Potential Loss** for SRE1–SRE5 and
+  the **Actual Loss** for SRE1–SRE3, with a loss matrix of the same structure as the safety one.
+  Potential High → **SPL**, then the SPL type is required; Actual High → **HCL**. The loss matrix,
+  its labels and the SPL types are **provisional**: the sources do not define them.
+- Q: What do SIP, HCI, SPL and HCL do? → A: They make the event **critical**: it is shown in red
+  with its classifications wherever it appears.
+- Q: When does the event go to Root cause analysis? → A: When the plant's workflow requires it,
+  always. Otherwise the reviewer answers "Do you want to further analyze?": for a critical event
+  the answer starts at Yes (proposed) and can be changed. Yes → Root cause analysis; No → the next
+  step the workflow requires (e.g., Actions), or Closed when none is required.
+
+### Session 2026-10-25 (third review: layout and one event page)
+
+- Q: How is the review form organized? → A: In titled parts — Event statement and classification;
+  Severity (Loss for Industrial Risk, Serious incident potential for Environment); Next step —
+  with the Potential and the Actual assessments each in its own framed block.
+- Q: Where is the SIP / SPL type asked? → A: Inside the Potential block (or the Environment SIP
+  block) that makes the event SIP or SPL.
+- Q: Where is the Complete review button? → A: On the far right.
+- Q: Which lists are required for Environment? → A: Aspects and Impacts.
+- Q: Which lists does an Industrial Risk review ask? → A: Only Categories, required; the Health &
+  Safety Standards and Hazards are no longer asked.
+- Q: Is there still a separate view page for an event? → A: No. For a submitted event the steps
+  page is the event's page: Open event, search results, alerts and the page after a submit all
+  open it (at the current step; on Submission right after a submit). Submission shows what the
+  view page showed (sections, photos, immediate actions, history) and Edit while allowed. Back
+  returns to the event list. Drafts keep their page.
+
+### Session 2026-10-25 (fourth review: compact header, archived KPIs, editing in place)
+
+- Q: How big is the event's header above the steps? → A: Compact: a smaller title and the facts
+  on one wrapping line.
+- Q: What does the KPIs page add? → A: An "Archived events" number (opening the list filtered on
+  Archived) and an "Archived events by reason" chart: one column per reason, stacked by type.
+- Q: How is a submitted event edited? → A: There is no Edit button. Whoever may edit it (a Manager
+  of its plant and pillar, while it is Open) sees the Submission step as the editable form, with
+  Save changes; the others see it read-only. Drafts keep Continue draft.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -64,7 +121,8 @@ opens the event's review page, which says "This event is waiting for a reviewer.
 **Assign myself as reviewer**: the event becomes **In Progress** and she is now its only
 reviewer. She answers "Is this a valid event?" with Yes, writes the event statement ("An
 operator saw a pallet fall from the racking; nobody was nearby."), picks the related Standard and
-Hazard and completes the review. Nothing else is required for TF4, so the event is **Closed**.
+Hazard, scores the potential severity, answers No to "Do you want to further analyze?" and
+completes the review. Nothing else is required for TF4, so the event is **Closed**.
 
 **Why this priority**: Review is the first control point after submission; without it every
 event stays Open and nothing tells whether it is valid.
@@ -85,8 +143,8 @@ whose workflow requires Review, assign yourself, record a valid review and check
    statement empty, **Then** the review is not saved and the statement is asked for.
 5. **Given** the reporter is Ana Ribeiro, **When** my event statement contains "Ana Ribeiro",
    **Then** the review is not saved and I am told not to name the reporter.
-6. **Given** a valid review and a workflow that requires nothing after Review, **When** I complete
-   the review, **Then** the event is Closed.
+6. **Given** a valid review, a workflow that requires nothing after Review and "further analyze"
+   answered No, **When** I complete the review, **Then** the event is Closed.
 7. **Given** a valid review and a workflow that also requires Actions, **When** I complete the
    review, **Then** the event stays In Progress and its current step is Actions.
 
@@ -190,6 +248,44 @@ Progress, Archived or Closed one.
 2. **Given** an In Progress, Archived or Closed event, **When** I view it, **Then** there is no
    Edit button and opening its edit address shows "not allowed".
 
+### User Story 6 - Assess severity and flag critical events (Priority: P1)
+
+Carla reviews a TF2 at Lyon as valid. The event statement already holds the reported description,
+which she rewrites. She picks the Standard, Hazard, Body Part and Injury, then clicks the cells of
+the two severity matrices: Actual "Significant × Short term" (15, Low) and Potential "Severe ×
+Medium term" (50, High). The potential is High, so the event is a **SIP** and she chooses its SIP
+type. The event is now critical: it shows in red with "SIP" in the list, the Kanban and its page.
+The plant requires Actions only, so the review proposes "Do you want to further analyze?" = Yes;
+she keeps it and the event goes to Root cause analysis.
+
+**Why this priority**: Severity drives the classification (SIP, HCI, SPL, HCL) and whether the
+event is investigated; without it critical events are not told apart.
+
+**Independent Test**: Review valid events of each pillar with low and high scores and check the
+classification, the red display, the required type and where the event goes next.
+
+**Acceptance Scenarios**:
+
+1. **Given** a valid TF1–TF3 event, **When** the review form renders, **Then** both severity
+   matrices are shown; a TF4 shows the Potential one only; a TF5 shows none.
+2. **Given** a displayed matrix, **When** I click Severe × Medium term, **Then** the cell is marked
+   and the result reads "50 — High".
+3. **Given** a High potential severity, **When** I complete the review without a SIP type, **Then**
+   it is refused; with a type, the event is saved as SIP and critical.
+4. **Given** a High actual severity, **When** I complete the review, **Then** the event is HCI and
+   critical.
+5. **Given** an Environment event, **When** I answer that it is a SIP and choose a type, **Then**
+   the event is SIP and critical; answering No makes it not critical.
+6. **Given** an SRE2 event, **When** I score a High potential loss and choose an SPL type, **Then**
+   the event is SPL and critical; a High actual loss makes it HCL.
+7. **Given** the workflow requires Root cause analysis, **When** I complete a valid review, **Then**
+   the event goes to Root cause analysis and "further analyze" is not asked.
+8. **Given** a critical event whose workflow does not require Root cause analysis, **When** the
+   form renders, **Then** "Do you want to further analyze?" starts at Yes; answering No sends it
+   to the next required step, or closes it when none is required.
+
+---
+
 ### Edge Cases
 
 - An event submitted before this feature, or whose workflow did not require Review: there is no
@@ -204,7 +300,12 @@ Progress, Archived or Closed one.
 - The reviewer changes their mind after answering No: the reason chips disappear when they answer
   Yes, and the statement fields appear; nothing is saved until they complete or archive.
 - A Body Part whose category is not available at the plant is not offered.
-- Industrial Hygiene events: the review asks only valid / not valid, statement and comments.
+- Industrial Hygiene events: the review asks only valid / not valid, the statement and "further
+  analyze"; they are never critical.
+- A reviewer changes a matrix cell: the score, band and classification follow the last cell; a
+  SIP or SPL type chosen earlier is dropped when the event stops being SIP or SPL.
+- A safety event answered SIP = Yes at submission but scored below High: it is not SIP after the
+  review (the review's assessment wins); for Environment the reviewer's answer wins the same way.
 
 ## Requirements *(mandatory)*
 
@@ -217,9 +318,10 @@ Progress, Archived or Closed one.
 - **FR-002**: The expanded List row and the expanded Kanban card MUST show a **Review** button to
   a reviewer of the event while its current step is Review and nobody else has taken it. The
   button opens the event's review page.
-- **FR-003**: Other people who can see a submitted event MUST be offered a link to its workflow
-  steps instead; the event's detail page MUST offer the same (labelled Review for a reviewer who
-  can review).
+- **FR-003**: Open event MUST open the steps page of a submitted event at its current step (or
+  Submission when the workflow is over); there is no separate "Workflow steps" link. Every other
+  link to a submitted event (search, alerts, after a submit) MUST open the same page; drafts keep
+  their own page. *(Clarification 2026-10-25, third review)*
 
 **Steps page**
 
@@ -227,11 +329,19 @@ Progress, Archived or Closed one.
   analysis, Actions and Validation, in that order.
 - **FR-005**: Each step MUST show one state: **Done**, **Current step**, **Not reached yet** or
   **Not required** (a step the event's workflow does not require). Done and current steps open;
-  the others are disabled and say why.
+  the others are disabled and say why. The steps after Review of an Archived event MUST be "Not
+  reached yet", never Done. *(Clarification 2026-10-25, second review)*
 - **FR-006**: The current step MUST be the first required step after Submission that is not done;
   an event that is Draft, Archived or Closed has no current step.
-- **FR-007**: The Submission step MUST show what was reported (classification, location, general
-  information, event details).
+- **FR-007**: The Submission step MUST show what was reported (general information with photos,
+  event details, immediate actions) and the history (created, submitted, review taken and
+  completed, last updated), with an Edit button while the event can be edited; the event's header
+  (pillar, level, status, critical badges, title, reporter, date, location) stays above the steps.
+  The page's Back button MUST return to the event list. The header MUST be compact (smaller
+  title, facts on one wrapping line). Whoever may edit the event MUST see Submission as the
+  editable form (Save changes), with the history under it; there is no Edit button anywhere for a
+  submitted event, and the old edit address opens the event's page. *(Clarification 2026-10-25, fourth review)*
+  *(Clarification 2026-10-25, third review)*
 - **FR-008**: Root cause analysis, Actions and Validation MUST say they come in a later version.
 
 **Taking the review**
@@ -247,19 +357,63 @@ Progress, Archived or Closed one.
 
 - **FR-011**: The assigned reviewer MUST answer "Is this a valid event?" (Yes / No).
 - **FR-012**: When the answer is No, the reviewer MUST choose exactly one reason: Duplicated,
-  Useless or Bad quality. Saving MUST set the status to **Archived** and send an alert "Event
+  Useless or Bad quality, and MUST write a comment when the reason is Bad quality (the comment is
+  not asked for the other reasons). *(Clarification 2026-10-25, second review)* Saving MUST set the status to **Archived** and send an alert "Event
   archived (reason)" to the reporter, the people the event was shared with and the other
   reviewers, never to the reviewer who archived it.
-- **FR-013**: When the answer is Yes, the reviewer MUST write an **event statement**, which MUST
-  NOT contain the reporter's name, and MAY classify the event with the Control Panel lists of its
+- **FR-013**: When the answer is Yes, the reviewer MUST write an **event statement**, pre-filled
+  with the event's description and which MUST NOT contain the reporter's name, and MAY classify
+  the event with the Control Panel lists of its
   pillar (values available at the event's plant only; Body Parts grouped by category; lists that
   only group another list are not offered on their own).
-- **FR-014**: The reviewer MAY add comments in both cases.
-- **FR-015**: Saving a valid review MUST move the event to its next required step with status In
-  Progress, or set it to **Closed** (with the closing time) when no other step is required.
+- **FR-014**: *(Removed: the review has no Comments field; (Clarification 2026-10-25, second review).)*
+- **FR-015**: Saving a valid review MUST move the event, with status In Progress, to Root cause
+  analysis when the workflow requires it or the reviewer answered Yes to "Do you want to further
+  analyze?" (FR-028); otherwise to the next step the workflow requires; or set it to **Closed**
+  (with the closing time) when no other step is required. *(Clarification 2026-10-25, second review)*
 - **FR-016**: A done review MUST show the reviewer, the date, the decision and, as applicable,
   the reason or the statement and classification, and the comments. It cannot be changed in this
   version.
+
+**Severity and critical events** *(Clarification 2026-10-25, second review)*
+
+- **FR-022**: For a valid Health & Safety event the reviewer MUST rate the **Potential Severity**
+  (TF1–TF4) and the **Actual Severity** (TF1–TF3) by clicking one cell of a matrix: Impact of the
+  injury (Severe 5, Significant 3, Minor 1, each with its definition) × Duration of the impact
+  (Minimal 2, Short term 5, Medium term 10, Long term / Permanent 20); score = Impact × Duration;
+  bands **Low** 2–15, **Medium** 20–30, **High** 50–100. The score and band are shown, never
+  typed. TF5 has no matrix.
+- **FR-023**: Standards and Hazards MUST be required for every valid Health & Safety event, and
+  Body Parts and Injuries for TF1–TF3; Aspects and Impacts for every valid Environment event; the
+  Category for every valid Industrial Risk event, which is the only list its review asks (the H&S
+  Standards and Hazards are not asked). *(Clarification 2026-10-25, third review)*
+- **FR-024**: A Health & Safety event MUST be **SIP** when its Potential Severity is High and
+  **HCI** when its Actual Severity is High. A SIP MUST have a SIP type from the source's list (15
+  types, e.g., "Entry to machine area without LOTO").
+- **FR-025**: For a valid Environment event the reviewer MUST answer "Is this event a SIP?"
+  (Yes / No, starting from the submission's answer); Yes MUST require a SIP type from the
+  Environment list (provisional values).
+- **FR-026**: For a valid Industrial Risk event the reviewer MUST rate the **Potential Loss**
+  (SRE1–SRE5) and the **Actual Loss** (SRE1–SRE3) with a loss matrix of the same structure, scores
+  and bands as FR-022 (provisional labels). The event MUST be **SPL** when its Potential Loss is
+  High and **HCL** when its Actual Loss is High; an SPL MUST have an SPL type (provisional list).
+- **FR-027**: An event that is SIP, HCI, SPL or HCL MUST be **critical**: shown in red with its
+  classifications (e.g., "SIP · HCI") in the List, the Kanban, the expanded row or card, the event
+  page and the steps page.
+- **FR-028**: When the workflow does not require Root cause analysis, the reviewer of a valid
+  event MUST answer "Do you want to further analyze?" (Yes / No); it starts at Yes for a critical
+  event and can be changed. When the workflow requires it, the question is not asked.
+- **FR-030**: The review form MUST be split into titled parts (statement and classification;
+  severity, loss or SIP; next step), each assessment (Potential, Actual, Environment SIP) in its own
+  framed block, the SIP / SPL type inside the block that makes the event SIP or SPL, and the
+  Complete review / Archive event button on the far right. *(Clarification 2026-10-25, third review)*
+- **FR-029**: A done review MUST also show the severities (score and band), the classifications,
+  the SIP or SPL type and the "further analyze" answer.
+
+- **FR-031**: The KPIs page MUST show an "Archived events" number — the Archived events matching
+  the search and the other filters — that opens the list filtered on Archived, and an "Archived
+  events by reason" chart: one column per reason (Duplicated, Useless, Bad quality), stacked by
+  type in pillar colors, with a legend, details on hover and a table view. *(Clarification 2026-10-25, fourth review)*
 
 **Statuses, list and editing**
 
@@ -279,8 +433,14 @@ Progress, Archived or Closed one.
 - **Event (extended)**: gains the statuses In Progress and Archived, the time it was archived and
   a **review**.
 - **Review**: the assigned reviewer, when they took it, the decision (valid / not valid), the
-  reason when not valid, the event statement, the chosen values per classification list, the
-  comments, and when it was completed.
+  reason when not valid (with its comment for Bad quality), the event statement, the chosen values
+  per classification list, the potential and actual severity or loss (impact, duration, score,
+  band), the SIP answer (Environment), the SIP or SPL type, the "further analyze" answer, and when
+  it was completed.
+- **Critical classification**: SIP, HCI, SPL, HCL, derived from the review and kept on the event
+  so lists can show it.
+- **Severity matrix**: impact rows and duration columns with weights, and the bands; one for
+  injuries (safety source) and one provisional for losses (Industrial Risk).
 - **Workflow step**: one of Submission, Review, Root cause analysis, Actions, Validation, with its
   state for an event, derived from the workflow kept on the event (002) and its review.
 - **Alert (extended)**: a new type "Event archived (reason)".
@@ -311,6 +471,8 @@ Progress, Archived or Closed one.
 - Alerts are the existing in-app alerts of Event Reporting; no email.
 - The demo data keeps its events Open or Closed; reviewers create In Progress and Archived events
   while testing, and Reset demo data puts everything back.
-- Out of scope: Owner, Final Reviewer, HPR and its category, Risk / Cost / Ease and Attackability
-  score, severity matrix, investigators, Safety Alert, Record Historian, Rework, Final Review, and
+- The Industrial Risk loss matrix, its labels, the SPL types and the Environment SIP types are
+  provisional placeholders until the business provides them; they are kept in one place so they
+  can be replaced.
+- Out of scope: Owner, Final Reviewer, Risk / Cost / Ease and Attackability score, investigators, Safety Alert, Record Historian, Rework, Final Review, and
   the content of Root cause analysis, Actions and Validation.

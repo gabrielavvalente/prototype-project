@@ -77,6 +77,11 @@ export default function EventLibrary() {
     [events, search, filters, user.id],
   );
   const kpis = computeKpis(filtered, user.id);
+  // The KPIs page also counts the Archived events matching the search and the other filters.
+  const archivedInScope = useMemo(
+    () => (events ? applyFilters(searchEvents(events, search), { ...filters, status: 'Archived' }, user.id) : []),
+    [events, search, filters, user.id],
+  );
   const shown = useMemo(() => applyQuickFilter(filtered, quickFilter, user.id), [filtered, quickFilter, user.id]);
   const sorted = useMemo(() => sortEvents(shown, sort.key, sort.direction, reporterNames), [shown, sort, reporterNames]);
   const paging = paginate(sorted, PAGE_SIZE, page);
@@ -244,9 +249,16 @@ export default function EventLibrary() {
         // The filters above the chart narrow it too.
         <KpiOverview
           events={filtered}
+          archived={archivedInScope}
           kpis={kpis}
           onOpen={(key) => {
-            changeQuickFilter(key);
+            // Archived events are found with the Status filter; the other numbers are quick filters.
+            if (key === 'archived') {
+              changeFilters({ ...filters, status: 'Archived' });
+              changeQuickFilter('all');
+            } else {
+              changeQuickFilter(key);
+            }
             navigate('/events');
           }}
         />

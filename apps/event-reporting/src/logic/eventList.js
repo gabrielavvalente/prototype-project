@@ -1,5 +1,7 @@
 // Search, filters, sorting, pages and KPI counts for the event library (FR-026 to FR-031).
 
+import { criticalLabels } from './severity.js';
+
 // Rows per page in the List view, fixed for now (Clarification 2026-10-24, header/list/form review).
 export const PAGE_SIZE = 20;
 
@@ -15,8 +17,9 @@ export const EMPTY_FILTERS = {
   myEvents: false,
 };
 
+// The submission's answer until the event is reviewed; then the review's classification.
 export function isSip(event) {
-  return Boolean(event.riskQuestion && event.riskQuestion.type === 'SIP' && event.riskQuestion.answer === true);
+  return criticalLabels(event).includes('SIP');
 }
 
 // Title contains the text, or the record number is exactly the text (ignoring case).
@@ -131,5 +134,18 @@ export function countByFamilyAndLevel(events, families, levels) {
         count: submitted.filter((event) => event.familyCode === family.code && event.levelCode === level.code).length,
       }));
     return { family, total: familyLevels.reduce((sum, item) => sum + item.count, 0), levels: familyLevels };
+  });
+}
+
+// Archived events per invalidation reason, split by type (family), for the KPIs page (003, third
+// review). reasons: the invalidation reasons in order. Returns [{ reason, total, families: [{ family, count }] }].
+export function countArchivedByReason(events, reasons, families) {
+  const archived = events.filter((event) => event.status === 'Archived');
+  return reasons.map((reason) => {
+    const byFamily = families.map((family) => ({
+      family,
+      count: archived.filter((event) => event.review?.invalidReason === reason && event.familyCode === family.code).length,
+    }));
+    return { reason, total: byFamily.reduce((sum, item) => sum + item.count, 0), families: byFamily };
   });
 }

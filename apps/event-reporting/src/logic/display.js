@@ -1,5 +1,14 @@
 // Small display rules from the design guideline (FR-039, FR-043).
 
+import { criticalLabels } from './severity.js';
+
+// Red display: the review's classification once reviewed; before that, the submission's SIP
+// answer or a serious level, as before.
+export function isCritical(event) {
+  if (event.review?.decision) return criticalLabels(event).length > 0;
+  return criticalLabels(event).length > 0 || getSeverityDots(event.levelCode) >= 3;
+}
+
 // Level 1 → 4 dots (critical) … levels 4 and 5 → 1 dot (low); disease types have no level.
 export function getSeverityDots(levelCode) {
   const match = /^(TF|EvE|SRE)([1-5])$/.exec(levelCode || '');

@@ -47,3 +47,42 @@ nothing on TF5. Lyon events are reviewed by Carla, Eva and Diego.
    event: Categories, Standards, Hazards; an Industrial Hygiene event: no list.
 10. **Phone and keyboard** — At 320px the steps menu is a horizontal strip; every step link, the
     Yes/No and reason chips and the buttons work with Tab and Enter.
+
+## Second review scenarios (severity and critical events)
+
+11. **Critical safety event** — As Carla, review `TF-26-0003` (TF2) as valid: the statement starts
+    with the description; pick a Standard, Hazard, Body Part and Injury; Potential = Severe ×
+    Medium term (50, High), Actual = Minor × Short term (5, Low) → "Critical event: SIP", choose a
+    SIP type; "Do you want to further analyze?" shows Yes → **Complete review**: In Progress, Root
+    cause analysis current, red "SIP" badge in the list and on the steps page.
+12. **Not critical, no analysis** — Review `TF-26-0006` (TF4): only the Potential matrix; Significant
+    × Short term (15, Low); "further analyze" must be answered; No → **Closed**.
+13. **Bad quality** — Answer No on `TF-26-0001`, choose Bad quality, archive without a comment →
+    "Explain what makes the report of bad quality."; with a comment → Archived; its steps after
+    Review are not Done.
+14. **Environment** — Review `EVE-26-0001`: "Is this event a SIP?" Yes → SIP type required, critical,
+    "further analyze" proposed Yes.
+15. **Industrial Risk** — Review `SRE-26-0004` (SRE2, Root cause analysis required by Central): no
+    "further analyze" question; Potential Loss Major × Long term and Actual Loss Significant × Long
+    term → "SPL · HCL", choose an SPL type → In Progress at Root cause analysis.
+
+## Third review scenarios (layout and one event page)
+
+16. **Layout** — Review a TF2: parts "Event statement and classification", "Severity", "Next step";
+    Potential and Actual in separate framed blocks; a High potential shows the SIP type inside the
+    Potential block; Complete review sits on the right.
+17. **Required lists** — Environment: Aspects and Impacts required; Industrial Risk: only Categories
+    (no Standards or Hazards), required.
+18. **One page** — Expand a submitted row: Open event → its current step (no Workflow steps link);
+    open `#/events/TF-26-0006`: redirected to the steps page; Submission shows photos, immediate
+    actions and history; Back (‹) → the event list. A draft's Open event still opens the draft page.
+
+## Fourth review scenarios
+
+19. **Edit in place** — As Diego Laurent (Manager, Lyon), open `TF-26-0006` (Open) → Submission:
+    the form is editable; change the title and Save changes → "Event TF-26-0006 was updated.", the
+    header shows the new title. As Ana Ribeiro the same step is read-only. `#/events/TF-26-0006/edit`
+    opens the event's page.
+20. **Archived KPIs** — Archive two events with Duplicated and one with Useless, open KPIs: "Archived
+    events" = 3; the "Archived events by reason" chart shows 2 and 1, stacked by type; clicking the
+    number opens the list with Status: Archived.

@@ -59,10 +59,24 @@ describe('review', () => {
   });
 
   it('needs a reason for an invalid event and a statement without the reporter name', () => {
-    expect(Object.keys(validateReview({}, 'Ana Ribeiro'))).toEqual(['decision']);
-    expect(Object.keys(validateReview({ decision: 'invalid' }, 'Ana Ribeiro'))).toEqual(['invalidReason']);
-    expect(validateReview({ decision: 'valid', statement: 'Ana Ribeiro slipped' }, 'Ana Ribeiro').statement).toMatch(/reporter/);
-    expect(validateReview({ decision: 'valid', statement: 'An operator slipped' }, 'Ana Ribeiro')).toEqual({});
+    const event = makeEvent(['review', 'rootCause']);
+    expect(Object.keys(validateReview({}, event, 'Ana Ribeiro'))).toEqual(['decision']);
+    expect(Object.keys(validateReview({ decision: 'invalid' }, event, 'Ana Ribeiro'))).toEqual(['invalidReason']);
+    expect(validateReview({ decision: 'valid', statement: 'Ana Ribeiro slipped' }, event, 'Ana Ribeiro').statement).toMatch(/reporter/);
+    expect(validateReview({ decision: 'valid', statement: 'An operator slipped' }, event, 'Ana Ribeiro')).toEqual({});
+  });
+
+  it('needs a comment for Bad quality only (second review)', () => {
+    const event = makeEvent(['review']);
+    expect(Object.keys(validateReview({ decision: 'invalid', invalidReason: 'Bad quality' }, event, ''))).toEqual(['invalidComment']);
+    expect(validateReview({ decision: 'invalid', invalidReason: 'Bad quality', invalidComment: 'No location' }, event, '')).toEqual({});
+    expect(validateReview({ decision: 'invalid', invalidReason: 'Duplicated' }, event, '')).toEqual({});
+  });
+
+  it('asks "further analyze" only when the workflow does not require Root cause analysis', () => {
+    const asked = makeEvent(['review']);
+    expect(Object.keys(validateReview({ decision: 'valid', statement: 'x' }, asked, ''))).toEqual(['furtherAnalysis']);
+    expect(validateReview({ decision: 'valid', statement: 'x' }, makeEvent(['review', 'rootCause']), '')).toEqual({});
   });
 
   it('archives an invalid event', () => {
@@ -72,11 +86,40 @@ describe('review', () => {
   });
 
   it('keeps only the fields of the decision taken', () => {
-    const changedMind = { decision: 'valid', invalidReason: 'Useless', statement: 'An operator slipped', classification: { standards: ['s1'] } };
+    const changedMind = { decision: 'valid', invalidReason: 'Useless', invalidComment: 'x', statement: 'An operator slipped', classification: { standards: ['s1'] }, furtherAnalysis: false };
     const valid = completeReview(makeEvent(['review']), changedMind, NOW).review;
-    expect(valid).toMatchObject({ invalidReason: '', statement: 'An operator slipped', classification: { standards: ['s1'] } });
+    expect(valid).toMatchObject({ statement: 'An operator slipped', classification: { standards: ['s1'] } });
+    expect(valid.invalidReason).toBeUndefined();
     const invalid = completeReview(makeEvent(['review']), { ...changedMind, decision: 'invalid' }, NOW).review;
-    expect(invalid).toMatchObject({ invalidReason: 'Useless', statement: '', classification: {} });
+    expect(invalid).toEqual({ reviewerId: undefined, claimedAt: undefined, decision: 'invalid', invalidReason: 'Useless', invalidComment: '', reviewedAt: NOW });
+  });
+
+  it('sends the event to Root cause analysis when the reviewer asks for it', () => {
+    const event = makeEvent(['review', 'actions']);
+    const analyzed = completeReview(event, { decision: 'valid', statement: 'x', furtherAnalysis: true }, NOW);
+    expect(analyzed.status).toBe('In Progress');
+    expect(currentStep(analyzed)).toBe('rootCause');
+    const notAnalyzed = completeReview(event, { decision: 'valid', statement: 'x', furtherAnalysis: false }, NOW);
+    expect(currentStep(notAnalyzed)).toBe('actions');
+  });
+
+  it('keeps the steps after Review disabled for an Archived event', () => {
+    const archived = completeReview(makeEvent(['review', 'actions']), { decision: 'invalid', invalidReason: 'Duplicated' }, NOW);
+    expect(stepStates(archived).map((item) => item.state)).toEqual(['done', 'done', 'skipped', 'upcoming', 'skipped']);
+  });
+
+  it('keeps the critical classification and the SIP type of a safety review', () => {
+    const tf2 = makeEvent(['review', 'rootCause'], { familyCode: 'TF', levelCode: 'TF2' });
+    const review = {
+      decision: 'valid',
+      statement: 'x',
+      potential: { impact: 'severe', duration: 'medium', score: 50, band: 'high' },
+      actual: { impact: 'minor', duration: 'short', score: 5, band: 'low' },
+      criticalTypeId: 'sipTypeHs-1',
+    };
+    expect(completeReview(tf2, review, NOW).review).toMatchObject({ criticalFlags: ['SIP'], criticalTypeId: 'sipTypeHs-1' });
+    const lowPotential = { ...review, potential: { ...review.potential, band: 'medium', score: 30 } };
+    expect(completeReview(tf2, lowPotential, NOW).review).toMatchObject({ criticalFlags: [], criticalTypeId: '' });
   });
 
   it('closes a valid event when nothing else is required, otherwise keeps it In Progress', () => {
