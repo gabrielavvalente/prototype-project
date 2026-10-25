@@ -24,7 +24,8 @@ the users and their access read-only from the same shared data. Details in [rese
 React 19.3.1, react-dom 19.3.1, react-router-dom 7.18.4, `@fontsource/poppins` 5.3.0; dev: Vite
 8.3.5, `@vitejs/plugin-react` 6.1.2, Vitest 5.0.5. No `idb` in the Control Panel (it reads and
 writes only through `shared/platform/`). Launcher: Vite 8.3.5 and `@vitejs/plugin-react` 6.1.2
-only. No new package anywhere.
+only. Added during the review of 2026-10-25: `@mantine/core` 9.7.3 and `@mantine/hooks` 9.7.3 in
+all three apps (see Complexity Tracking).
 
 **Storage**: Browser IndexedDB at the launcher's address — database `platform` (owned by
 `shared/platform/`) and database `event-reporting` (owned by the app, version 6) (R4)
@@ -40,7 +41,7 @@ plus submission status. Manual checks in [quickstart.md](quickstart.md).
 **Performance Goals**: Panels open and grids update instantly on the sample data (4 pillars,
 ≤ 20 levels × 5 phases, ≤ 50 values per list, 3 plants, ~12 users)
 
-**Constraints**: No server; no new dependencies; apps never import each other; data shared only
+**Constraints**: No server; no new dependencies besides Mantine (Complexity Tracking); apps never import each other; data shared only
 when opened through the launcher (R1)
 
 **Scale/Scope**: Control Panel ~8 screens (pillar choice, Workflow with 3 views, Master data,
@@ -54,7 +55,7 @@ changes (data source, submission)
 | Rule (v2.3.0) | Status | How this plan complies |
 |---|---|---|
 | I. Simple, readable code | ✅ | Rules are small pure functions (`resultingWorkflow`, `availableValues`, `canEditSetting`…); one tiny storage helper; no state library, no generic framework. |
-| I. No unjustified libraries | ✅ | Control Panel reuses Event Reporting's exact stack; `idb` deliberately not used in shared code (R2). |
+| I. No unjustified libraries | ⚠️ | Control Panel reuses Event Reporting's exact stack; `idb` deliberately not used in shared code (R2). Mantine added to the three apps: justified in Complexity Tracking. |
 | II. Isolated apps | ✅ | `apps/control-panel/`, `apps/user-management/` and `apps/event-reporting/` never import each other; both import only `shared/`. UI pieces are copied, not shared (R2). Each app still runs alone (own seed). |
 | II. `shared/` independent | ✅ | `shared/platform/` imports nothing from apps and no packages. |
 | III. Minimal tests | ✅ | Vitest on the platform rules and submission status; quickstart manual flow; console checked before each commit. |
@@ -64,7 +65,8 @@ changes (data source, submission)
 | Monorepo: shared platform data | ✅ | Users, plants, locations, roles, workflow settings, master data, rules and sample data in `shared/platform/`; stored once at the launcher's address. |
 | Stack, pinned versions, UTF-8, English, no secrets | ✅ | Exact versions above; all text in English; demo data only. |
 
-**Result**: PASS before research and after design. No exceptions — Complexity Tracking is empty.
+**Result**: PASS before research and after design. One exception since the review of 2026-10-25:
+the Mantine UI component library (Complexity Tracking).
 
 ## Project Structure
 
@@ -114,7 +116,7 @@ apps/control-panel/
     ├── shell/            # Header, StartScreen (demo users), PillarPicker, NotificationsPanel,
     │                     #   Sheet, Icon, NotAllowed (copied patterns from Event Reporting)
     ├── workflow/         # WorkflowTab, SettingsGrid, ResultGrid, CellDetails, EventPath,
-    │                     #   ComparePlants, ReviewersPicker
+    │                     #   ReviewersPicker
     ├── masterData/       # MasterDataTab, ValueList, ValueForm, ActivationToggle
     └── audit/            # AuditTab
 
@@ -141,4 +143,6 @@ data).
 
 ## Complexity Tracking
 
-No violations.
+| Exception | Why it is needed | Simpler alternative rejected because |
+|---|---|---|
+| UI component library `@mantine/core` + `@mantine/hooks` 9.7.3 (exact) in Event Reporting, Control Panel and User Management (constitution: Stack — no UI component library without justification) | The screens need accessible searchable selects, multi-selects grouped by category, menus, modals and tabs with keyboard support; Mantine gives them ready and identical in the three apps, which keeps the interface consistent (principle IV). Colors, fonts and spacing still come from `shared/theme.css`. | Hand-made components in each app would repeat the same complex keyboard and focus handling three times, with more code to read and more accessibility bugs. |
