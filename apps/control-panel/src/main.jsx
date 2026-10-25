@@ -5,6 +5,7 @@ import '@fontsource/poppins/400.css';
 import '@fontsource/poppins/500.css';
 import '@fontsource/poppins/600.css';
 import '../../../shared/theme.css';
+import '../../../shared/favicon.js';
 import './app.css';
 import { MantineProvider, createTheme } from '@mantine/core';
 import App from './App.jsx';
