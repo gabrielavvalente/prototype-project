@@ -6,6 +6,9 @@
 
 ### Review form (003, extended)
 
+After **Complete review**, a reviewer who is one of the designated people opens
+`#/events/:id/steps/rootCause`; others stay on the review summary.
+
 In the **Next step** part, when the analysis will happen (workflow requires it, or "Do you want to
 further analyze?" is Yes): **Who will perform the root cause analysis?** — required, searchable
 multiple choice with two option groups, *Users* ("Name — role") and *Groups* ("Group name").
@@ -15,10 +18,11 @@ A done review shows "Root cause analysis by: …".
 
 | Part | Content |
 |---|---|
-| Overview | "Assigned to: …"; Event statement and Immediate actions (text areas, pre-filled); status chips for 5W1H (optional), 6M, 5 Why, Learnings |
-| 5W1H (optional guide) | Who, What, When, Where, Why, How: Applies? Yes/No; Yes → answer |
-| 6M | Causes as cards (theme select, cause, "Why was … a possible cause?", remove); **Add cause** (disabled at 6, "At most 6 causes") |
-| 5 Why | Legs as columns: whys numbered 1–5 (answer, "Root cause" toggle, Behavioral / Conditional when on); **Add why** (up to 5), **Remove last why**, **Branch** (new leg), **Remove leg** |
+| Overview | "Assigned to: …"; status chips for 5W1H (optional), 6M, 5 Why, Learnings; Event statement (full width, pre-filled); Immediate actions as compact lines (description, priority, who did it) with edit / delete icons; **Add immediate action**; add and edit open a popup with the submission's card (**Create**, or Save when editing; only when complete) |
+| 5W1H (optional guide) | Collapsed title (expand to use; open when answered). Section list on the left (Who was injured?, What happened?, When?, Where?, Why did the event occur?, How did the event occur?); on the right "Is this section applicable to your event?" Yes/No and, when Yes, numbered questions with a text field each |
+| 6M | Intro text; theme list on the left (with the number of ticked causes) and the theme's guidance below it; on the right the theme's contributory causes as checkboxes (Other → name field), disabled at 6; then "Explain the reason why the contributory cause(s) happened": a C1, C2… card per ticked cause of the theme, "How did "…" contribute to the event occurrence?" + answer |
+| 5 Why | Collapsed and disabled with "Available once 6M is done…" until 6M is done, then open. One column per ticked 6M cause: the cause on top ("C1 · Lack of Resources", its 6M explanation in a disabled field), then a tree of why cards, numbered by depth (X icon to delete it with the whys below, confirmation when actions are lost; "N actions" badge; answer; "Root cause" toggle that highlights the card); per card **Add why** (no next why yet, depth < 5), **Branch** (alternative beside it), **Add action** (disabled until answered) |
+| Actions summary | Under 5 Why, compact lines like the immediate actions: the why's answer on one line; the action, priority, assignees and due date on the next; edit / delete icons. Modal "New action": the why's answer on top, then description, assignees 1–5, due date, priority; **Create** (Save when editing) |
 | Learnings | Required text |
 | Actions | **Save** and **Complete analysis** on the right (designated people only) |
 
@@ -26,7 +30,8 @@ A done review shows "Root cause analysis by: …".
 - Completed: read-only, "Completed by <name> on <date>".
 - Complete with something missing: nothing saved, each missing part flagged next to it.
 
-History (Submission step): "Root cause analysis completed".
+History (Submission step): "Immediate actions updated in the root cause analysis" and "Root cause
+analysis completed".
 
 ## User Management
 

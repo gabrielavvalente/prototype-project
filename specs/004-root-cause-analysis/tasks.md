@@ -86,7 +86,7 @@ own.
 
 **Goal**: Designated people fill, save and complete the analysis; others read it
 
-**Independent Test**: Quickstart scenarios 4–7
+**Independent Test**: Quickstart scenarios 4–9
 
 - [X] T010 [US2] Add `canPerformAnalysis(user, event, groups)` to
   `apps/event-reporting/src/logic/rootCause.js` (designated user or member; the reviewer when
@@ -116,7 +116,7 @@ own.
 
 **Goal**: A read-only Groups tab in User Management
 
-**Independent Test**: Quickstart scenario 8
+**Independent Test**: Quickstart scenario 10
 
 - [X] T017 [P] [US3] Create `apps/user-management/src/shell/PageTabs.jsx` (Users · Groups) and show
   it on `apps/user-management/src/users/UsersList.jsx`
@@ -138,6 +138,86 @@ own.
 
 ---
 
+## Phase 7: Review remarks (2026-10-25)
+
+**Goal**: Statement full width, immediate actions as shared cards, 5W1H and 6M as in the UI/UX
+designs, branching on any why, actions created from whys (spec FR-007 to FR-011a)
+
+**Independent Test**: Quickstart scenarios 4–9
+
+- [X] T022 In `apps/event-reporting/src/logic/rootCause.js`: `FIVE_W1H` sections with numbered
+  questions, `SIX_M_THEMES` (causes, guidance), the why tree (`newWhy(parentId)`, `whyDepth`,
+  `childrenOf`, `branchWhy`, `removeWhy` returning the removed ids), `normalizeAnalysis` for
+  analyses saved before (legs, single 5W1H answer, free-text causes); part status and validation
+  on the new shapes; tests in `rootCause.test.js` (R5, R8)
+- [X] T023 Create `apps/event-reporting/src/logic/actions.js`: `ACTION_PRIORITIES`, `MAX_ASSIGNEES`,
+  `emptyAction(whyId)`, `validateAction`; tests in `actions.test.js` (R5a)
+- [X] T024 [P] Rewrite `apps/event-reporting/src/events/FiveW1HPart.jsx`: section list, applicability
+  select, numbered questions
+- [X] T025 [P] Rewrite `apps/event-reporting/src/events/SixMPart.jsx`: intro, theme list with counts
+  and guidance, cause checkboxes (Other → name), C1… explanation cards, disabled at 6
+- [X] T026 [P] Rewrite `apps/event-reporting/src/events/FiveWhyPart.jsx` as a tree (Add why, Branch,
+  Add action, Remove with confirmation when actions are lost)
+- [X] T027 [P] Create `apps/event-reporting/src/events/ActionModal.jsx` and
+  `apps/event-reporting/src/events/ActionsSummary.jsx` (list with why, Edit / Delete)
+- [X] T028 In `apps/event-reporting/src/events/RootCauseStep.jsx`: statement full width; immediate
+  actions through `ImmediateActionsSection` (read-only mode added there) saved to
+  `event.immediateActions`, refused while incomplete; `event.actions` saved with the analysis; in
+  `EventDetail.jsx` the history entry "Immediate actions updated in the root cause analysis"
+- [X] T029 [P] Styles for the section/theme lists, the cause checkboxes and cards, the why tree and
+  the actions summary in `apps/event-reporting/src/app.css` (appended, theme variables only)
+- [X] T030 Run `npm test` and `npm run build` in `apps/event-reporting/`, then quickstart scenarios
+  4–9 and 11 from **Reset demo data**
+
+---
+
+## Phase 8: Review remarks, second round (2026-10-25)
+
+**Goal**: Reviewer who analyzes goes straight to the analysis; compact immediate actions; 5W1H
+collapsed; 5 Why starts from the 6M causes and opens once 6M is done; the action popup shows the
+why (spec FR-003a, FR-007a, FR-008, FR-010, FR-011a)
+
+**Independent Test**: Quickstart scenarios 1 and 4–7
+
+- [X] T031 In `apps/event-reporting/src/logic/rootCause.js`: first whys under their cause
+  (`syncWhysWithCauses`, `removeWhy` keeps a cause's only first why), `canDoFiveWhy`,
+  `normalizeAnalysis` puts loose whys under the first cause; tests in `rootCause.test.js`
+- [X] T032 [P] Create `apps/event-reporting/src/events/ImmediateActionsList.jsx` (compact lines,
+  popup with the submission's `ActionCard`, exported from `create/ImmediateActionsSection.jsx`)
+- [X] T033 [P] `FiveWhyPart.jsx`: one column per 6M cause with the cause as a disabled field on top
+- [X] T034 `RootCauseStep.jsx`: collapsible 5W1H and 5 Why (locked until 6M is done), unticking a
+  cause drops its whys and actions after confirmation, fields disabled for readers but parts and
+  section lists still usable; `ActionModal.jsx` shows the why's answer
+- [X] T035 `ReviewStep.jsx`: after Complete review, open `steps/rootCause` when the reviewer can
+  perform the analysis
+- [X] T036 [P] Styles for the compact lines, part toggles, cause cards and the popup's why in
+  `apps/event-reporting/src/app.css` (appended)
+- [X] T037 Run `npm test` and `npm run build` in `apps/event-reporting/`, then quickstart scenarios
+  1 and 4–9 from **Reset demo data**
+
+---
+
+## Phase 9: Review remarks, third round (2026-10-25)
+
+**Goal**: 5 Why columns show the 6M explanation; X icon to delete a why; actions only from answered
+whys; root cause without classification; Create buttons; compact actions list; action count on
+the why card (spec FR-010, FR-011, FR-011a)
+
+**Independent Test**: Quickstart scenarios 4–7
+
+- [X] T038 `logic/rootCause.js`: `rootCause` becomes true / false (no classification), 5 Why Done
+  and validation follow, `normalizeAnalysis` converts classified root causes; tests in
+  `rootCause.test.js`
+- [X] T039 [P] `FiveWhyPart.jsx`: cause column shows the 6M explanation; why card header with
+  "Why N", action count badge and X icon; plain Root cause toggle; Add action disabled until
+  answered
+- [X] T040 [P] `ActionsSummary.jsx` as compact lines (why line, action line, edit / delete icons);
+  `ActionModal.jsx` and `ImmediateActionsList.jsx` buttons **Create** (Save when editing)
+- [X] T041 Run `npm test` and `npm run build` in `apps/event-reporting/`, then quickstart scenarios
+  4–7
+
+---
+
 ## Dependencies & Execution Order
 
 - Setup → Foundational → US1 → US2; US3 needs only Foundational (T002–T003)
@@ -155,8 +235,8 @@ own.
 ## Implementation Strategy
 
 1. Foundational → US1 (designation) → validate scenarios 1–3
-2. US2 (analysis) → scenarios 4–7
-3. US3 (Groups tab) → scenario 8
+2. US2 (analysis) → scenarios 4–9
+3. US3 (Groups tab) → scenario 10
 4. Polish → full quickstart
 
 ## Notes

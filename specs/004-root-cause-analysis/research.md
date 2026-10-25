@@ -46,20 +46,27 @@ decisions.
 ## R5. Analysis content and completion
 
 - **Decision**:
-  - Statement pre-filled from `review.statement`; immediate actions from the descriptions of the
-    submission's immediate actions (one per line, "None recorded." when empty); both editable.
-  - 5W1H: six sections `{ applies: true | false | null, answer }`; optional.
-  - 6M: causes `{ id, theme, cause, why }`, themes Man, Machine, Method, Materials, Mother Nature,
-    Management; at most 6.
-  - 5 Why: legs `{ id, whys: [{ id, answer, rootCause: null | 'behavioral' | 'conditional' |
-    'unclassified' }] }`; a leg holds 1–5 whys; the first leg exists from the start.
-  - Part status: Not started (nothing filled), In progress, Done (6M: ≥1 complete cause; 5 Why:
-    ≥1 classified root cause with an answer; Learnings: text; 5W1H: every section answered No or
-    Yes with an answer).
+  - Statement pre-filled from `review.statement`, editable.
+  - Immediate actions: the step keeps a working copy of `event.immediateActions` and writes it back
+    on Save with the analysis (one transaction); the submission's `ImmediateActionsSection` is
+    reused, so fields and validation are identical.
+  - 5W1H and 6M content (sections, questions, themes, causes, guidance) are constants in
+    `logic/rootCause.js`, so the drafts are easy to correct.
+  - Part status: Not started (nothing filled), In progress, Done (6M: ≥1 cause, each explained;
+    5 Why: ≥1 root cause and every root cause answered; Learnings: text; 5W1H: every section No, or
+    Yes with every answer).
   - Complete requires 6M, 5 Why and Learnings Done; it stores `completedBy` / `completedAt` and
     moves the event like the review (next required step, or Closed).
-- **Rationale**: Investigation source FR-2 to FR-7 and the event-type RCA fields, with the user's
-  choices (5W1H optional, no risk gap).
+- **Rationale**: Investigation source FR-2 to FR-7, the event-type RCA fields and the UI/UX
+  designs, with the user's choices (5W1H optional, no risk gap).
+
+## R5a. Actions from whys live on the event
+
+- **Decision**: `event.actions` (not inside `event.rca`), each with its `whyId`; saved with the
+  analysis. Fields from the Action Plan source's corrective action (description, assignees ≤ 5,
+  due date, priority); created and edited in a modal, listed in a summary under 5 Why.
+- **Rationale**: The Action Plan feature will extend the same records in the Actions step; keeping
+  them outside the analysis avoids moving them later.
 
 ## R6. Steps after the analysis
 
@@ -77,8 +84,11 @@ decisions.
 
 ## R8. 5 Why layout
 
-- **Decision**: Legs as columns side by side (horizontal scroll on narrow screens), each why a
-  numbered card with its answer, a "Root cause" toggle and, when on, Behavioral / Conditional
-  chips; "Add why" under a leg (up to 5), "Branch" adds a leg after it; remove the last why or a
-  leg (not the only one).
-- **Rationale**: Readable without a diagram library; keyboard-usable controls.
+- **Decision**: The whys are a flat list with `parentId` (a tree). Drawn top-down: a why and its
+  only next why stack vertically; when a why has several next whys (or there are several first
+  whys) they sit in columns side by side, with horizontal scroll on narrow screens. Each why is a
+  card numbered by depth with its answer, a "Root cause" toggle (highlights the card), the
+  number of its actions, an X icon to delete it, and buttons: Add why (when it has no next why
+  and depth < 5), Branch (alternative answer beside it), Add action (once answered).
+- **Rationale**: Readable without a diagram library; keyboard-usable controls; a flat list keeps
+  updates simple.

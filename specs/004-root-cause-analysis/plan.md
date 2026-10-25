@@ -10,7 +10,7 @@ The review designates who performs the root cause analysis (users of the plant a
 investigation groups) whenever the analysis will happen; they get an alert. The Root cause
 analysis step of the event's page becomes real: an overview (statement, immediate actions, status
 of each part), an optional 5W1H, 6M (up to 6 causes in six themes), a 3-legged 5 Why with root
-causes classified Behavioral / Conditional, and Learnings; designated people save and complete it,
+causes marked on the whys, and Learnings; designated people save and complete it,
 everyone else reads it. Completing moves the event to its next required step or closes it. The
 sample groups live in `shared/platform/` and are listed read-only in a new Groups tab of User
 Management. No new package, no database version change. Details in [research.md](research.md).

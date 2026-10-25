@@ -36,13 +36,39 @@ A group is offered for an event when it covers the event's plant and pillar.
 | Field | Type | Rule |
 |---|---|---|
 | `statement` | text | Pre-filled from `review.statement` |
-| `immediateActions` | text | Pre-filled from the submission's immediate actions |
-| `fiveW1H` | `{ who, what, when, where, why, how }` each `{ applies: true \| false \| null, answer }` | Optional |
-| `causes` | `[{ id, theme, cause, why }]` | 0–6; theme ∈ Man, Machine, Method, Materials, Mother Nature, Management; Done needs ≥1 with cause and why |
-| `legs` | `[{ id, whys: [{ id, answer, rootCause }] }]` | ≥1 leg, 1–5 whys each; `rootCause` ∈ null, `unclassified`, `behavioral`, `conditional`; Done needs ≥1 root cause classified with an answer |
+| `fiveW1H` | `{ who, what, when, where, why, how }` each `{ applies: true \| false \| null, answers: { <question id>: text } }` | Optional; questions in `logic/rootCause.js` (`FIVE_W1H`) |
+| `causes` | `[{ id, theme, option, other, why }]` | 0–6; `theme` ∈ management, humanFactors, methods, machine, materials, environment; `option` is one of the theme's causes or `Other` (then `other` names it); Done needs ≥1, each with its why (and name for Other) |
+| `whys` | `[{ id, parentId, answer, rootCause }]` | A tree under the 6M causes: a first why's `parentId` is its cause's id, the others' the why above; each cause has ≥1 first why (added when ticked, removed when unticked); depth ≤ 5; siblings in array order; `rootCause` true / false; Done needs ≥1 root cause and every root cause answered |
 | `learnings` | text | Required to complete |
+| `immediateActionsChangedBy`, `immediateActionsChangedAt` | user id, date-time \| null | Last save that changed the immediate actions (history) |
 | `savedBy`, `savedAt` | user id, date-time | Last save |
 | `completedBy`, `completedAt` | user id, date-time \| null | Set by Complete analysis |
+
+Analyses saved before the remarks of 2026-10-25 (`legs`, a single 5W1H `answer`, free-text causes,
+whys without a cause, Behavioral / Conditional root causes) are converted when opened
+(`normalizeAnalysis`; loose whys go under the first cause; a classified root cause becomes
+`true`).
+
+5 Why can be filled in once 6M is done (`canDoFiveWhy`).
+
+## Immediate actions (submission, shared)
+
+The step edits `event.immediateActions` itself (same fields and validation as the submission);
+there is no copy in `event.rca`.
+
+## Action (`event.actions`)
+
+| Field | Type | Rule |
+|---|---|---|
+| `id` | text | |
+| `whyId` | why id | The why it was created from |
+| `description` | text | Required |
+| `assigneeIds` | user ids | 1–5; users of the event's plant who can see its pillar |
+| `dueDate` | date | Required |
+| `priority` | `Emergency` \| `High` \| `Medium` \| `Low` | Required |
+| `createdBy`, `createdAt` | user id, date-time | |
+
+Removing a why deletes the actions of that why and of the whys below it.
 
 ## Part status (computed)
 

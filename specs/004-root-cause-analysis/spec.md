@@ -37,11 +37,45 @@ Builds on [003 Event review](../003-event-review/spec.md) (steps page, "further 
   plant and the investigation groups.
 - Q: Where do the groups come from? → A: A few **fixed sample groups** in the shared data, with no
   editing screen, shown read-only in a new **Groups** tab of User Management.
-- Q: Which 6M themes? → A: Man, Machine, Method, Materials, Mother Nature, Management (the
-  Investigation source; Management replaces Measurement on purpose), at most 6 causes in total.
-  (SCR-DSK-04 lists Methods, Manpower, Milieu, Machinery, Materials, Measurement.)
-- Q: Is 5W1H required? → A: No, it is an optional guide. (Investigation makes it required; the
-  event-type sources make it optional.)
+- Q: Which 6M themes, and how are causes chosen? → A: The UI/UX design (`ui-ux/6m.png`):
+  Management, Human Factors, Methods, Machine / Tools & Equip., Materials, Environment. Each theme
+  has a fixed list of contributory causes to tick (plus Other) and guidance questions; each ticked
+  cause is explained in a question/answer card; at most 6 causes in total. (The Investigation
+  source lists Man, Machine, Method, Materials, Mother Nature, Management; SCR-DSK-04 lists
+  Methods, Manpower, Milieu, Machinery, Materials, Measurement.)
+- Q: What does 5W1H look like? → A: The UI/UX design (`ui-ux/5w1h.png`): six sections (Who was
+  injured?, What happened?, When?, Where?, Why did the event occur?, How did the event occur?),
+  each with "Is this section applicable to your event?" and, when Yes, numbered questions with a
+  text answer each. 5W1H stays optional. (Investigation makes it required; the event-type sources
+  make it optional.)
+- Q: Where do the 5W1H questions and the 6M cause lists come from? → A: The design gives "What
+  happened?" (13 questions) and the Management theme (causes and guidance); the other sections and
+  themes are **drafts written for this prototype, to be reviewed by the user**.
+- Q: Where does 5 Why start? → A: From the 6M causes: each ticked cause heads a column showing
+  the explanation given in 6M (not editable) with its first why below; ticking a cause adds that why, unticking it removes its
+  whys. 5 Why stays collapsed and disabled until 6M is done (every ticked cause explained), then
+  opens.
+- Q: What does Branch do in 5 Why? → A: Any why can be branched: Branch adds an alternative answer
+  to the same question, beside that why. Each path holds up to 5 whys below its cause.
+- Q: Can the immediate actions be changed during the analysis? → A: Yes. The analysis shows the
+  submission's immediate actions as compact lines, one below the other; the designated people can
+  add and edit them in a popup with the submission's card, and delete them; they are the same
+  data as the submission, so the change shows there too.
+- Q: Is a root cause classified Behavioral / Conditional? → A: No. Marking a why as a root cause
+  only highlights its card. (The Investigation source requires the classification; the user
+  decided against it.)
+- Q: When can an action be created from a why? → A: Once the why has an answer. Its card shows
+  how many actions it has; the actions are listed under 5 Why in compact lines like the immediate
+  actions (one line for the why, one for the action). The popups create with **Create**.
+- Q: Is 5W1H always open? → A: No, it is collapsed; the person expands it if they decide to use
+  it (it opens by itself when it already has answers).
+- Q: What happens after completing a review that leads to the analysis? → A: If the reviewer is
+  one of the designated people (directly or through a group), the page goes straight to the Root
+  cause analysis step; otherwise the review summary stays.
+- Q: Can actions be created from the analysis? → A: Yes, from any why: description, assignees
+  (up to 5), due date and priority (Emergency, High, Medium, Low), linked to that why (fields of
+  the Action Plan source). They are listed under 5 Why; the Actions step will show them with the
+  Action Plan feature.
 - Q: Is the risk-assessment gap question asked? → A: Not in this version (no risk assessment
   register exists yet; the Investigation source defers it too).
 
@@ -72,19 +106,22 @@ assignees; check the refusal, the saved assignees and the alerts.
 4. **Given** I designated a group and a user, **When** the review is saved, **Then** each
    designated user and each member of the designated group gets one alert (no duplicates, never
    the reviewer themself).
+5. **Given** I designated myself (or a group I belong to), **When** I complete the review,
+   **Then** the page opens the Root cause analysis step; otherwise the review summary stays.
 
 ---
 
 ### User Story 2 - Perform the root cause analysis (Priority: P1)
 
 Diego opens the event: its current step is Root cause analysis. The step shows an overview — the
-event recap (statement and immediate actions, pre-filled) and the status of each part — then the
-parts: 5W1H (optional guide), 6M, 5 Why and Learnings. He adds two 6M causes (Method: "No wet
-floor signage", Management: "Cleaning schedule overlaps the shift change"), each with why it was a
-possible cause; builds a 5 Why leg down to "The cleaning contract does not cover the night shift",
-marks it as a root cause and classifies it Conditional; branches a second leg; writes the
-learnings; saves; later completes the analysis. Actions is required next, so the event stays In
-Progress at Actions.
+event statement (pre-filled), the immediate actions as cards and the status of each part — then
+the parts: 5W1H (optional guide, collapsed), 6M, 5 Why (locked until 6M is done) and Learnings.
+He adds a missing immediate action. In 6M he ticks Management › Lack of Resources and Methods ›
+Procedure Unclear or Outdated and explains how each contributed; 5 Why opens with one column per
+cause; under Lack of Resources he builds a path down to "The cleaning contract does not cover
+the night shift", marks it as a root cause (its card is highlighted) and creates an action from
+it; branches the second why to record another reason; writes the learnings; saves; later
+completes the analysis. Actions is required next, so the event stays In Progress at Actions.
 
 **Why this priority**: The analysis is the reason the step exists; its root causes will anchor
 the action plan.
@@ -97,21 +134,31 @@ else, check the step is read-only.
 1. **Given** I am designated (directly or through a group), **When** I open the step, **Then** I
    can edit every part and save my work without completing it.
 2. **Given** I am not designated, **When** I open the step, **Then** I see the analysis read-only.
-3. **Given** the overview, **When** it renders, **Then** it shows the event statement and the
-   immediate actions (pre-filled, editable by the designated people) and each part as Not started,
-   In progress or Done (5W1H marked optional).
-4. **Given** 5W1H, **When** I set a section to Yes, **Then** its question field appears; No hides
-   it; nothing in 5W1H is required to complete.
-5. **Given** 6M, **When** I add causes, **Then** each has a theme (Man, Machine, Method,
-   Materials, Mother Nature, Management), a cause and "Why was [cause] a possible cause?"; after 6
-   causes in total no more can be added.
-6. **Given** 5 Why, **When** I add whys to a leg, **Then** it holds up to 5; Branch adds a new
-   parallel leg; I can remove a leg's last why or a whole leg (not the last leg).
-7. **Given** a why answer, **When** I mark it as a root cause, **Then** I must classify it
-   Behavioral or Conditional before completing.
-8. **Given** no 6M cause, no root cause or empty Learnings, **When** I complete, **Then** it is
+3. **Given** the overview, **When** it renders, **Then** it shows the event statement (full width,
+   pre-filled, editable by the designated people), the immediate actions as compact lines one
+   below the other, and each part as Not started, In progress or Done (5W1H marked optional).
+4. **Given** the immediate actions, **When** I add or edit one in its popup (kept only when
+   complete) or delete one, and save, **Then** the submission shows the same immediate actions.
+5. **Given** 5W1H, collapsed, **When** I expand it, pick a section and set it to Yes, **Then** its
+   numbered questions appear; No hides them; nothing in 5W1H is required to complete.
+6. **Given** 6M, **When** I pick a theme, **Then** I see its guidance and its contributory causes
+   to tick; each ticked cause gets a card "How did [cause] contribute to the event occurrence?";
+   after 6 causes in total no more can be ticked.
+7. **Given** 6M is not done, **When** I look at 5 Why, **Then** it is collapsed and disabled;
+   once 6M is done it opens with one column per ticked cause (shown, not editable), each with a
+   first why; I can add a why under another (up to 5 per path), Branch any why to add an
+   alternative answer beside it, and remove a why with the whys below it (not a cause's only
+   first why).
+8. **Given** a why answer, **When** I mark it as a root cause, **Then** its card is highlighted;
+   nothing else is asked.
+9. **Given** a why without an answer, **When** I look at Add action, **Then** it is disabled; once
+   answered, **When** I create an action from it, **Then** the action (description, assignees,
+   due date, priority) is linked to that why, the popup shows that why's answer, the why card
+   shows its number of actions, and the action is listed under 5 Why (why on one line, action on
+   the next), where I can edit or delete it.
+10. **Given** no 6M cause, no root cause or empty Learnings, **When** I complete, **Then** it is
    refused and each missing part is flagged.
-9. **Given** a complete analysis and a workflow requiring Actions, **When** I complete it,
+11. **Given** a complete analysis and a workflow requiring Actions, **When** I complete it,
    **Then** the event stays In Progress with Actions as current step; with nothing else required,
    the event is Closed.
 
@@ -141,8 +188,13 @@ that nothing can be edited.
 - The reviewer designates only themself: allowed; they then perform the analysis.
 - The workflow requires Root cause analysis but the review was completed before this feature
   (no assignees): the step is read-only for everyone except the reviewer, who can perform it.
-- 6M at 6 causes: the Add cause button is disabled and says why.
-- A root cause is unmarked: its classification is dropped.
+- 6M at 6 causes: the unticked causes are disabled and a hint says why.
+- A why with actions (itself or a why below it) is removed: after confirmation its actions are
+  deleted with it.
+- A 6M cause whose whys have answers or actions is unticked: after confirmation its whys and
+  their actions are deleted.
+- A new 6M cause is ticked but not yet explained: 6M is no longer done, so 5 Why is locked again
+  until it is explained (nothing is lost).
 - The event is Archived or Closed: the Root cause analysis step shows what was done, read-only.
 
 ## Requirements *(mandatory)*
@@ -160,6 +212,9 @@ that nothing can be edited.
   each designated user and each member of a designated group who can see the event, once, never
   the reviewer.
 - **FR-003**: A done review MUST show who was designated.
+- **FR-003a**: After completing a review that leads to the analysis, a reviewer who is one of the
+  designated people (directly or through a group) MUST be taken to the Root cause analysis step;
+  any other reviewer stays on the review summary.
 
 **Groups**
 
@@ -173,21 +228,43 @@ that nothing can be edited.
 - **FR-006**: The designated users, the members of the designated groups (and, for events
   reviewed without designation, the reviewer) MUST be able to edit and save the analysis while it
   is the current step; everyone else who can see the event MUST see it read-only.
-- **FR-007**: The step MUST start with an overview: event statement (pre-filled from the review)
-  and immediate actions (pre-filled from the submission's immediate actions), and the status of
-  5W1H (optional), 6M, 5 Why and Learnings — Not started, In progress or Done.
-- **FR-008**: 5W1H MUST offer Who, What, When, Where, Why and How, each with a Yes/No
-  applicability and, when Yes, a text answer; it never blocks completion.
-- **FR-009**: 6M MUST let the designated people add causes, each with a theme (Man, Machine,
-  Method, Materials, Mother Nature, Management), the cause and "Why was [cause] a possible
-  cause?", at most 6 in total, and remove them.
-- **FR-010**: 5 Why MUST show legs side by side, each with up to 5 successive whys; Branch MUST
-  add a parallel leg; the last why of a leg and a leg (except the last one) can be removed.
-- **FR-011**: Any why answer MUST be markable as a root cause, which then MUST be classified
-  Behavioral or Conditional.
+- **FR-007**: The step MUST start with an overview: the event statement (pre-filled from the
+  review, full width), the immediate actions, and the status of 5W1H (optional), 6M, 5 Why and
+  Learnings — Not started, In progress or Done.
+- **FR-007a**: The immediate actions MUST be the submission's own, shown as compact lines one
+  below the other (description, priority, who did it); the designated people MUST be able to add
+  and edit them in a popup with the submission's card (kept only when complete) and delete them;
+  the submission MUST show the result and the history "Immediate actions updated in the root
+  cause analysis".
+- **FR-008**: 5W1H MUST be collapsed until expanded (open when it already has answers) and MUST
+  offer six sections — Who was injured?, What happened?, When?, Where?, Why
+  did the event occur?, How did the event occur? — chosen from a list; each with "Is this section
+  applicable to your event?" (Yes/No) and, when Yes, its numbered questions with a text answer
+  each. It never blocks completion; it is Done when every section is No or Yes with every answer.
+- **FR-009**: 6M MUST offer six themes — Management, Human Factors, Methods, Machine / Tools &
+  Equip., Materials, Environment — chosen from a list, each with its guidance questions and its
+  contributory causes to tick (Other asks for a name). Each ticked cause MUST be explained in a
+  card "How did [cause] contribute to the event occurrence?", numbered C1, C2…; at most 6 causes
+  in total across themes.
+- **FR-010**: 5 Why MUST be collapsed and disabled until 6M is done, then open. It MUST show one
+  column per ticked 6M cause, headed by the explanation given in 6M (not editable), with whys
+  below it as a tree: a first why is added when the cause is ticked, up to 5 successive whys on
+  each path; Branch on any why MUST add an alternative answer beside it; a why can be deleted
+  with its X icon, with the whys below it, except a cause's only first why; unticking a cause
+  removes its whys (and their actions).
+- **FR-011**: Any why answer MUST be markable as a root cause, which highlights its card; there is
+  no classification.
+- **FR-011a**: The designated people MUST be able to create an action from any answered why — description,
+  1 to 5 assignees (users of the event's plant who can see its pillar), due date and priority
+  (Emergency, High, Medium, Low), all required — linked to that why, whose answer the popup
+  shows; the popup's button is **Create** (Save when editing). The why card MUST show its number
+  of actions. Under 5 Why, an actions summary MUST list every action in a compact line like the
+  immediate actions — one line for the why's answer, one for the action — and let them be edited
+  and deleted. Actions are
+  not required to complete the analysis.
 - **FR-012**: Learnings MUST be a required text.
 - **FR-013**: Save MUST keep the work without completing; Complete analysis MUST require at least
-  one 6M cause with its explanation, at least one classified root cause with its answer, and the
+  one 6M cause with its explanation, at least one root cause, every root cause answered, and the
   learnings, and MUST flag what is missing.
 - **FR-014**: Completing MUST move the event, In Progress, to the next step its workflow
   requires, or set it to Closed when none is required (as the review does).
@@ -200,10 +277,12 @@ that nothing can be edited.
 
 - **Investigation group**: name, pillars, plants, member users (fixed sample data).
 - **Review (extended)**: the designated users and groups for the analysis.
-- **Root cause analysis**: event statement, immediate actions summary, 5W1H (six sections with
-  applicability and answer), 6M causes (theme, cause, why), 5 Why legs (whys; each why may be a
-  root cause classified Behavioral / Conditional), learnings, who saved it last, and who completed
-  it and when.
+- **Root cause analysis**: event statement, 5W1H (six sections with applicability and an answer
+  per question), 6M causes (theme, ticked cause, explanation), 5 Why tree (whys; each why may be
+  a root cause), learnings, who saved it last, and who
+  completed it and when.
+- **Action**: description, assignees, due date, priority, the why it comes from; belongs to the
+  event, so the Actions step can use it later.
 
 ## Success Criteria *(mandatory)*
 
@@ -230,4 +309,5 @@ that nothing can be edited.
 - The Investigation source's "Event Owner", the risk-assessment gap question, Related Hazards,
   attachments, Safety Alert / Warning, the Record Historian and the export or print of the 5 Why
   diagram are out of scope.
-- Root causes will be linked to corrective actions by the Action Plan feature.
+- The Action Plan feature will show the actions in the Actions step, and add their status,
+  category and the rest of its fields.
