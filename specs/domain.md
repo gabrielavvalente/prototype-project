@@ -195,7 +195,7 @@ follows the dependencies.
 | Event reporting (create, draft, submit, edit) | Platform data, workflow settings | [event-reporting](capabilities/event-reporting.md) |
 | Event Reporting shell (context, header, navigation, alerts, search) | Platform data | [event-reporting-shell](capabilities/event-reporting-shell.md) |
 | Event library (list, Kanban, filters, KPIs, reports, event page) | Event reporting | [event-library](capabilities/event-library.md) |
-| Event review (incl. severity and critical events) | Event reporting, master data | 003 |
+| Event review (incl. severity and critical events) | Event reporting, master data | [event-review](capabilities/event-review.md) |
 | Root cause analysis | Event review | [root-cause-analysis](capabilities/root-cause-analysis.md) |
 | Action plan | Root cause analysis | not yet specified |
 | Validation | Action plan | not yet specified |
