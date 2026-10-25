@@ -294,3 +294,42 @@ Task: "Archived Kanban column only when shown"              (T020)
 ## Phase 9: Convergence
 
 - [X] T032 Keep only the fields of the decision taken in the saved review (not valid: `invalidReason`, no statement or classification; valid: statement and classification, no reason) in `completeReview` of `apps/event-reporting/src/logic/review.js`, with a test in `apps/event-reporting/src/logic/review.test.js`, per data-model "Review" (partial)
+
+## Phase 10: Second review — severity and critical events (User Story 6)
+
+**Goal**: Severity / loss and SIP answers at review, the critical classification in red, "further
+analyze" routing, and the form changes of the second review (spec Clarifications, second review)
+
+**Independent Test**: Quickstart scenarios 11–15
+
+- [X] T033 [P] [US6] Create `apps/event-reporting/src/logic/severity.js`: `BANDS` (Low 2–15, Medium
+  20–30, High 50–100), `INJURY_MATRIX` (safety source), provisional `LOSS_MATRIX`, `rate`,
+  `assessmentFor(event)` (safety Potential TF1–TF4 / Actual TF1–TF3 and required lists;
+  Environment SIP question; Industrial Risk Potential SRE1–SRE5 / Actual SRE1–SRE3),
+  `criticalFlagsOf`, `typedFlag`, `criticalLabels`; tests in `severity.test.js`
+- [X] T034 [US6] Extend `apps/event-reporting/src/logic/review.js`: `validateReview(review, event,
+  reporterName)` with the Bad quality comment, required lists, matrices, SIP answer, SIP / SPL type
+  and "further analyze"; `asksFurtherAnalysis`; Root cause analysis required when `furtherAnalysis`
+  is true; Archived steps after Review never Done; `completeReview` keeps only the decided fields
+  and `criticalFlags`; tests in `review.test.js`
+- [X] T035 [P] [US6] Add the reference lists `sipTypeHs` (15 source values), `sipTypeEnv` and
+  `splType` (provisional) to `apps/event-reporting/src/data/sampleData.js`
+- [X] T036 [P] [US6] Create `apps/event-reporting/src/events/SeverityMatrix.jsx` (clickable cells
+  with score, band colors, chosen cell, result line) and its styles in `apps/event-reporting/src/app.css`
+- [X] T037 [US6] Rework `apps/event-reporting/src/events/ReviewStep.jsx`: statement pre-filled
+  with the description; Bad quality comment; no Comments; per-pillar severity, SIP question,
+  critical notice and type; "further analyze" proposed Yes when critical; summary with severities,
+  flags and type; `noValidate` so the app's messages show
+- [X] T038 [P] [US6] Show the critical classification in red: `isCritical` in
+  `apps/event-reporting/src/logic/display.js`, `isSip` from the review in `logic/eventList.js`,
+  `apps/event-reporting/src/events/CriticalBadges.jsx` in the List title, Kanban card, event page and steps page
+- [X] T039 [US6] Recreate the review form per event (`key={event.id}`) in
+  `apps/event-reporting/src/events/EventSteps.jsx` so answers never carry over between events
+- [X] T040 Check `apps/event-reporting/src/events/SeverityMatrix.jsx` and the review form at 320px
+  and with the keyboard
+- [X] T041 Run `npm test` and `npm run build` in `apps/event-reporting/` and quickstart scenarios
+  11–15 from **Reset demo data**
+
+## Phase 11: Convergence
+
+- [X] T042 Describe the severity, critical events and Bad quality comment in the "How to test" of `apps/event-reporting/README.md` per Constitution V (partial)

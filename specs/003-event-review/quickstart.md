@@ -47,3 +47,21 @@ nothing on TF5. Lyon events are reviewed by Carla, Eva and Diego.
    event: Categories, Standards, Hazards; an Industrial Hygiene event: no list.
 10. **Phone and keyboard** — At 320px the steps menu is a horizontal strip; every step link, the
     Yes/No and reason chips and the buttons work with Tab and Enter.
+
+## Second review scenarios (severity and critical events)
+
+11. **Critical safety event** — As Carla, review `TF-26-0003` (TF2) as valid: the statement starts
+    with the description; pick a Standard, Hazard, Body Part and Injury; Potential = Severe ×
+    Medium term (50, High), Actual = Minor × Short term (5, Low) → "Critical event: SIP", choose a
+    SIP type; "Do you want to further analyze?" shows Yes → **Complete review**: In Progress, Root
+    cause analysis current, red "SIP" badge in the list and on the steps page.
+12. **Not critical, no analysis** — Review `TF-26-0006` (TF4): only the Potential matrix; Significant
+    × Short term (15, Low); "further analyze" must be answered; No → **Closed**.
+13. **Bad quality** — Answer No on `TF-26-0001`, choose Bad quality, archive without a comment →
+    "Explain what makes the report of bad quality."; with a comment → Archived; its steps after
+    Review are not Done.
+14. **Environment** — Review `EVE-26-0001`: "Is this event a SIP?" Yes → SIP type required, critical,
+    "further analyze" proposed Yes.
+15. **Industrial Risk** — Review `SRE-26-0004` (SRE2, Root cause analysis required by Central): no
+    "further analyze" question; Potential Loss Major × Long term and Actual Loss Significant × Long
+    term → "SPL · HCL", choose an SPL type → In Progress at Root cause analysis.
