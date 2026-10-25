@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../AppContext.js';
 import { getPillarIdsForPlant } from '../logic/access.js';
-import { getPillarColorClass } from '../logic/display.js';
+import { getPillarColorKey } from '../logic/display.js';
 import { getReferenceList } from '../logic/lookups.js';
 import { applySipLevelRule, getRiskQuestionType, isFirstAidRequired } from '../logic/validation.js';
 import ChipGroup from './ChipGroup.jsx';
@@ -54,7 +54,7 @@ export default function ClassificationSection({ event, update, errors, pillarLoc
       levelCode: rule.levelCode,
       riskQuestion,
       // The first aid treatment only belongs to TF1–TF3 (FR-047).
-      ...(isFirstAidRequired(rule.levelCode) ? {} : { firstAidTreatmentId: '' }),
+      ...(isFirstAidRequired(rule.levelCode) ? {} : { firstAidTreatmentIds: [], firstAidOther: '' }),
     });
   }
 
@@ -74,7 +74,7 @@ export default function ClassificationSection({ event, update, errors, pillarLoc
           required
           value={event.pillarId}
           onChange={choosePillar}
-          options={pillars.map((pillar) => ({ value: pillar.id, label: pillar.label, dotClass: getPillarColorClass(pillar.code) }))}
+          options={pillars.map((pillar) => ({ value: pillar.id, label: pillar.label, colorKey: getPillarColorKey(pillar.code) }))}
           errors={errors}
         />
       )}

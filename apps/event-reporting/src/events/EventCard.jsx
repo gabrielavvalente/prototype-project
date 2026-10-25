@@ -1,5 +1,6 @@
 import { useApp } from '../AppContext.js';
-import { getPillarColorClass, getSeverityDots } from '../logic/display.js';
+import { Badge, Card, Group, Text, Title } from '@mantine/core';
+import { getPillarTagClass, getSeverityDots } from '../logic/display.js';
 import { isSip } from '../logic/eventList.js';
 import { findById, getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
@@ -20,10 +21,7 @@ export function SeverityDots({ levelCode }) {
 
 export function PillarTag({ pillar }) {
   return (
-    <span className="tag tag--outline">
-      <span className={`pillar-dot ${getPillarColorClass(pillar?.code)}`} aria-hidden="true" />
-      {pillar?.label}
-    </span>
+    <span className={getPillarTagClass(pillar?.code)}>{pillar?.label}</span>
   );
 }
 
@@ -38,14 +36,14 @@ export default function EventCard({ event, expanded, onToggle }) {
   const detailsId = `card-details-${event.id}`;
 
   return (
-    <article className={`card event-card${critical ? ' card--critical' : ''}${expanded ? ' event-card--expanded' : ''}`}>
+    <Card component="article" withBorder shadow="xs" radius="md" padding="md" className={`card event-card${critical ? ' card--critical' : ''}${expanded ? ' event-card--expanded' : ''}`}>
       <div className="tag-row">
         <PillarTag pillar={pillar} />
-        <span className="tag tag--blue">{event.levelCode}</span>
-        {isSip(event) && <span className="tag tag--red">SIP</span>}
+        <Badge variant="light" color="blue">{event.levelCode}</Badge>
+        {isSip(event) && <Badge color="red">SIP</Badge>}
       </div>
-      <p className="event-card-number">{event.recordNumber || 'Draft — no record number yet'}</p>
-      <h2 className="event-card-title">
+      <Text className="event-card-number" size="sm" c="dimmed">{event.recordNumber || 'Draft — no record number yet'}</Text>
+      <Title order={2} size="h4" className="event-card-title">
         <button
           type="button"
           className="event-card-toggle"
@@ -55,7 +53,7 @@ export default function EventCard({ event, expanded, onToggle }) {
         >
           {event.title || '(no title yet)'}
         </button>
-      </h2>
+      </Title>
       {department && (
         <div className="tag-row">
           <span className="tag tag--outline">
@@ -63,23 +61,23 @@ export default function EventCard({ event, expanded, onToggle }) {
           </span>
         </div>
       )}
-      <div className="event-card-bottom">
+      <Group className="event-card-bottom" justify="space-between" wrap="wrap">
         <span className="person">
           <span className="avatar avatar--small" aria-hidden="true">
             {reporter?.avatar}
           </span>
           {reporter?.name}
         </span>
-        <span className="field-hint">
+        <Text size="sm" c="dimmed" className="field-hint">
           <Icon name="clock" size={14} /> {event.reportDate}
           <Icon name="chevronDown" size={16} />
-        </span>
-      </div>
+        </Text>
+      </Group>
       {expanded && (
         <div id={detailsId} className="event-card-details">
           <EventExpanded event={event} />
         </div>
       )}
-    </article>
+    </Card>
   );
 }

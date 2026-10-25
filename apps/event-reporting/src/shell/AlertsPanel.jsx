@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Button, Text } from '@mantine/core';
 import { formatRelativeTime } from '../logic/display.js';
 import Icon from './Icon.jsx';
 import Sheet from './Sheet.jsx';
@@ -21,15 +22,15 @@ export default function AlertsPanel({ items, onMarkRead, onClose }) {
       titleExtra={unread.length > 0 && <span className="count-badge">{unread.length}</span>}
       headerAction={
         unread.length > 0 && (
-          <button type="button" className="button button--link" onClick={() => onMarkRead(unread.map((item) => item.alert))}>
+          <Button type="button" variant="subtle" size="xs" onClick={() => onMarkRead(unread.map((item) => item.alert))}>
             Mark all read
-          </button>
+          </Button>
         )
       }
       onClose={onClose}
     >
       {items.length === 0 ? (
-        <p className="field-hint">No notifications yet.</p>
+        <Text c="dimmed">No notifications yet.</Text>
       ) : (
         <ul className="notification-list">
           {items.map((item) => (

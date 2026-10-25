@@ -505,6 +505,23 @@ FR-048)
 
 ---
 
+## Phase 5h: Event workspace pages and saved filters
+
+**Goal**: Add the Events, KPIs and Reports workspace pages without expanding analytics beyond
+the event counts and fields already specified.
+
+- [X] T094 Add Events, KPIs and Reports tabs and a role-appropriate Create Event action
+  (`src/events/EventLibrary.jsx`)
+- [X] T095 Align KPI tiles across List and Kanban layouts and provide the FR-031 counts on the
+  KPIs page (`src/events/KpiTiles.jsx`, `src/app.css`)
+- [X] T096 Save, apply and delete per-user filter presets containing search, filter-sheet criteria
+  and the selected KPI chip (`settings`, `src/events/EventLibrary.jsx`)
+- [X] T097 Provide Reports as a scoped event register using existing event records; update the
+  feature specification, data model, route contract and app README
+- [X] T098 Run Event Reporting tests and production build
+
+---
+
 ## Phase 6: Polish & Cross-Cutting Concerns
 
 **Purpose**: Documentation, accessibility, performance and the final end-to-end check
@@ -538,7 +555,8 @@ FR-048)
 - **List/Kanban/form review (Phase 5e)**: Depends on Phase 5d
 - **Header/list/form review (Phase 5f)**: Depends on Phase 5e
 - **Safety event rules (Phase 5g)**: Depends on Phase 5f
-- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b–5g)
+- **Event workspace update (Phase 5h)**: Depends on User Story 3 and the existing role/scope rules
+- **Polish (Phase 6)**: Depends on the user stories that are in the release (and Phases 5b–5h)
 
 ### User Story Dependencies
 

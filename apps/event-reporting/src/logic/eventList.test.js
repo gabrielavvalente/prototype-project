@@ -4,6 +4,7 @@ import {
   applyQuickFilter,
   computeKpis,
   countActiveFilters,
+  countByFamilyAndLevel,
   EMPTY_FILTERS,
   paginate,
   searchEvents,
@@ -139,5 +140,24 @@ describe('countActiveFilters (FR-042)', () => {
     expect(countActiveFilters(EMPTY_FILTERS)).toBe(0);
     expect(countActiveFilters({ ...EMPTY_FILTERS, familyCode: 'TF', from: '2026-01-01' })).toBe(2);
     expect(countActiveFilters({ ...EMPTY_FILTERS, location: { departmentId: 'd', workshopId: 'w' } })).toBe(1);
+  });
+});
+
+describe('countByFamilyAndLevel (review 2026-10-25)', () => {
+  const families = [
+    { id: 'family-tf', code: 'TF' },
+    { id: 'family-eve', code: 'EVE' },
+    { id: 'family-oh', code: 'OH' },
+  ];
+  const levels = [
+    { familyId: 'family-tf', code: 'TF3' },
+    { familyId: 'family-tf', code: 'TF4' },
+    { familyId: 'family-eve', code: 'EvE4' },
+  ];
+
+  it('counts submitted events per family and level, leaving drafts out', () => {
+    const result = countByFamilyAndLevel(events, families, levels);
+    expect(result.map((item) => [item.family.code, item.total])).toEqual([['TF', 1], ['EVE', 1], ['OH', 0]]);
+    expect(result[0].levels.map((item) => [item.level.code, item.count])).toEqual([['TF3', 0], ['TF4', 1]]);
   });
 });

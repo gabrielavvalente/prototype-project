@@ -5,6 +5,8 @@
 The app's external interface is its screens. Each screen has a hash URL so it can be opened by
 direct link (research R3). This contract fixes the URLs, who may open them and what happens when
 someone may not. Access rules are implemented once in `src/logic/access.js` (research R11).
+Events, KPIs and Reports are views within the Events route and share its role and event-scope
+restrictions. A Create Event action is shown only to User and Manager roles.
 
 ## Routes
 
@@ -13,6 +15,8 @@ someone may not. Access rules are implemented once in `src/logic/access.js` (res
 | `#/` | Start: pick a demo user, Reset demo data | any (not signed in) | | | R12 |
 | `#/entry` | Entry: choose a pillar or enter without one | ✓ | ✓ | ✓ | FR-037 |
 | `#/events` | Event library (KPI chips, filters, Kanban / List, quick view) | ✓ | ✓ | ✓ | FR-026–FR-031 |
+| `#/events?tab=kpis` | KPIs (the five event-library counts defined by FR-031) | ✓ | ✓ | ✓ | FR-049 |
+| `#/events?tab=reports` | Reports (scoped, record-by-record event register) | ✓ | ✓ | ✓ | FR-049 |
 | `#/events/new` | Event creation form | ✓ | ✓ | — | FR-001–FR-017 |
 | `#/search` | Full-screen search: recent searches and live results | ✓ | ✓ | ✓ | FR-044 |
 | `#/events/:id` | Event detail (`:id` = record number, or internal id for drafts) | ✓ ¹ | ✓ ¹ | ✓ ¹ | FR-033 |

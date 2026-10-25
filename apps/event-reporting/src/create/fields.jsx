@@ -1,3 +1,5 @@
+import { Button, Select, TextInput } from '@mantine/core';
+
 // Small form building blocks shared by the form sections.
 
 export function FieldError({ errors, field }) {
@@ -12,50 +14,43 @@ export function FieldError({ errors, field }) {
   );
 }
 
-export function SelectField({ id, label, value, options, onChange, errors = [], disabled = false, hint, required = false }) {
+export function SelectField({ id, label, value, options, onChange, errors = [], disabled = false, hint, required = false, searchable = false }) {
+  const error = errors.find((item) => item.field === id)?.message;
   return (
     <div className="field">
-      <label htmlFor={id} className={required ? 'required' : undefined}>
-        {label}
-      </label>
-      {hint && <span className="field-hint">{hint}</span>}
-      <select
+      <Select
         id={id}
-        value={value || ''}
+        label={label}
+        description={hint}
+        required={required}
+        value={value || null}
+        data={options.map((option) => ({ value: option.id, label: option.label || option.name }))}
         disabled={disabled}
-        onChange={(e) => onChange(e.target.value)}
-        aria-invalid={errors.some((item) => item.field === id)}
-        aria-required={required || undefined}
-      >
-        <option value="">Choose…</option>
-        {options.map((option) => (
-          <option key={option.id} value={option.id}>
-            {option.label || option.name}
-          </option>
-        ))}
-      </select>
-      <FieldError errors={errors} field={id} />
+        searchable={searchable}
+        placeholder="Choose…"
+        error={error}
+        onChange={(next) => onChange(next || '')}
+        comboboxProps={{ withinPortal: true }}
+      />
     </div>
   );
 }
 
 export function TextField({ id, label, value, onChange, errors = [], type = 'text', hint, required = false, ...rest }) {
+  const error = errors.find((item) => item.field === id)?.message;
   return (
     <div className="field">
-      <label htmlFor={id} className={required ? 'required' : undefined}>
-        {label}
-      </label>
-      {hint && <span className="field-hint">{hint}</span>}
-      <input
+      <TextInput
         id={id}
+        label={label}
+        description={hint}
         type={type}
         value={value || ''}
+        required={required}
         onChange={(e) => onChange(e.target.value)}
-        aria-invalid={errors.some((item) => item.field === id)}
-        aria-required={required || undefined}
+        error={error}
         {...rest}
       />
-      <FieldError errors={errors} field={id} />
     </div>
   );
 }
@@ -66,12 +61,12 @@ export function YesNoField({ id, label, value, onChange, errors = [], hint }) {
       <legend className="field-label required">{label}</legend>
       {hint && <span className="field-hint">{hint}</span>}
       <div className="chip-group">
-        <button type="button" className="chip" aria-pressed={value === true} onClick={() => onChange(true)}>
+        <Button type="button" variant={value === true ? 'light' : 'default'} aria-pressed={value === true} onClick={() => onChange(true)}>
           Yes
-        </button>
-        <button type="button" className="chip" aria-pressed={value === false} onClick={() => onChange(false)}>
+        </Button>
+        <Button type="button" variant={value === false ? 'light' : 'default'} aria-pressed={value === false} onClick={() => onChange(false)}>
           No
-        </button>
+        </Button>
       </div>
       <FieldError errors={errors} field={id} />
     </fieldset>

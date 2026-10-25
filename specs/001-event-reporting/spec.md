@@ -447,6 +447,15 @@ KPI chip, row and card expansion, View and Edit all behave as described for a Ma
   Drafts — whose counts reflect the search and active filters; selecting a chip narrows the list
   to it. "All" and "My events" include the user's own drafts; "Open" and "With SIP" count
   submitted events only; "Drafts" counts the user's own drafts. *(US-LIB-06, Clarification 2026-10-24 UI/UX)*
+- **FR-049**: The event workspace MUST provide Events, KPIs and Reports pages and a Create Event
+  action for roles allowed to create events. The KPIs page MUST use only the five counts defined
+  by FR-031; Reports MUST be a record-by-record register of existing events, not an additional
+  analytics or export feature. Every page MUST apply the existing scope and draft-visibility
+  rules. *(Event workspace update, 2026-10-25)*
+- **FR-050**: Users MUST be able to save, apply and delete named personal filter presets. A preset
+  MUST include the current text search, filter-sheet criteria and selected FR-031 KPI chip, and
+  MUST be persisted in that user's settings. Applying a preset MUST evaluate it against the
+  events currently visible to that user. *(Event workspace update, 2026-10-25)*
 - **FR-032**: Each row MUST offer View; Edit MUST be offered to the reporter of a draft and to
   Managers for any event in their scope. *(US-LIB-04)*
 - **FR-033**: The event detail view MUST show every field entered at creation, its attachments and

@@ -1,7 +1,9 @@
 import { FieldError } from './fields.jsx';
+import { Button } from '@mantine/core';
 
 // A group of pill-shaped choices (FR-039). Single choice by default; "multiple" lets several
 // be chosen; "allowEmpty" lets the chosen chip be tapped again to clear it (used by filters).
+// An option with a colorKey ("hs", "env"…) is shown in its pillar's color.
 export default function ChipGroup({
   id,
   label,
@@ -32,16 +34,16 @@ export default function ChipGroup({
       {hint && <span className="field-hint">{hint}</span>}
       <div className="chip-group">
         {options.map((option) => (
-          <button
+          <Button
             key={option.value}
             type="button"
-            className="chip"
+            variant={selected.includes(option.value) ? 'light' : 'default'}
+            className={option.colorKey ? `pillar-chip pillar-chip--${option.colorKey}` : undefined}
             aria-pressed={selected.includes(option.value)}
             onClick={() => choose(option.value)}
           >
-            {option.dotClass !== undefined && <span className={`pillar-dot ${option.dotClass}`} aria-hidden="true" />}
             {option.label}
-          </button>
+          </Button>
         ))}
       </div>
       <FieldError errors={errors} field={id} />

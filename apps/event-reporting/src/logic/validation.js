@@ -17,6 +17,9 @@ export const LOCATION_LEVELS = ['departmentId', 'workshopId', 'jobId', 'workstat
 // The "Employee" employee type: the person involved is then chosen among the plant's users.
 export const EMPLOYEE_TYPE_EMPLOYEE = 'employeeType-1';
 
+// The "Other" first aid treatment, which asks for a description (review 2026-10-25).
+export const FIRST_AID_OTHER = 'firstAidTreatment-9';
+
 // Near misses and hazardous situations only need the area (FR-005, safety event rules).
 const AREA_ONLY_LEVELS = ['TF4', 'TF5'];
 
@@ -81,16 +84,12 @@ function error(field, message) {
   return { field, message };
 }
 
-export function validateImmediateAction(action, reportDate, today) {
+// The category follows the event's pillar and the completion date is the report date, both set
+// when the event is saved (review 2026-10-25), so only these fields are asked.
+export function validateImmediateAction(action) {
   const errors = [];
   if (isBlank(action.description)) errors.push(error('description', 'Describe the action.'));
   if (isBlank(action.priority)) errors.push(error('priority', 'Choose a priority.'));
-  if (isBlank(action.categoryId)) errors.push(error('categoryId', 'Choose a category.'));
-  if (isBlank(action.completionDate)) {
-    errors.push(error('completionDate', 'Enter when the action was done.'));
-  } else if (action.completionDate > today || action.completionDate < reportDate) {
-    errors.push(error('completionDate', 'The date must be between the report date and today.'));
-  }
   const performers = action.performedByIds.length;
   if (performers < 1 || performers > MAX_PERFORMERS) {
     errors.push(error('performedByIds', `Choose 1 to ${MAX_PERFORMERS} people who did it.`));
@@ -129,7 +128,8 @@ function validateLocation(event) {
   return errors;
 }
 
-function validateGeneral(event, now) {
+// General information: what happened and to whom (review 2026-10-25).
+function validateGeneral(event) {
   const errors = [];
   const title = (event.title || '').trim();
   if (title.length === 0) {
@@ -137,22 +137,12 @@ function validateGeneral(event, now) {
   } else if (title.length > MAX_TITLE_LENGTH) {
     errors.push(error('title', `Keep the title under ${MAX_TITLE_LENGTH} characters.`));
   }
-  // The event time is optional; when given it cannot be in the future.
-  if (!isBlank(event.eventTime) && event.reportDate === toDateString(now) && event.eventTime > toTimeString(now)) {
-    errors.push(error('eventTime', 'The event time cannot be in the future.'));
-  }
-  if (isBlank(event.shiftMoment)) errors.push(error('shiftMoment', 'Choose the shift moment.'));
   const description = (event.description || '').trim();
   if (description.length === 0) {
     errors.push(error('description', 'Describe what happened.'));
   } else if (description.length > MAX_DESCRIPTION_LENGTH) {
     errors.push(error('description', `Keep the description under ${MAX_DESCRIPTION_LENGTH} characters.`));
   }
-  return errors;
-}
-
-function validateDetails(event) {
-  const errors = [];
   if (isBlank(event.employeeType)) {
     errors.push(error('employeeType', 'Choose the employee type.'));
   } else if (event.employeeType === EMPLOYEE_TYPE_EMPLOYEE) {
@@ -160,9 +150,25 @@ function validateDetails(event) {
   } else if (isBlank(event.involvedPersonName)) {
     errors.push(error('involvedPersonName', 'Enter the name of the person involved.'));
   }
-  if (isFirstAidRequired(event.levelCode) && isBlank(event.firstAidTreatmentId)) {
-    errors.push(error('firstAidTreatmentId', 'Choose the first aid treatment.'));
+  if (isFirstAidRequired(event.levelCode)) {
+    const treatments = event.firstAidTreatmentIds || [];
+    if (treatments.length === 0) {
+      errors.push(error('firstAidTreatmentIds', 'Choose at least one first aid treatment.'));
+    } else if (treatments.includes(FIRST_AID_OTHER) && isBlank(event.firstAidOther)) {
+      errors.push(error('firstAidOther', 'Describe the other first aid treatment.'));
+    }
   }
+  return errors;
+}
+
+// Event details: when, who reported it, recurrence, sharing and diseases.
+function validateDetails(event, now) {
+  const errors = [];
+  // The event time is optional; when given it cannot be in the future.
+  if (!isBlank(event.eventTime) && event.reportDate === toDateString(now) && event.eventTime > toTimeString(now)) {
+    errors.push(error('eventTime', 'The event time cannot be in the future.'));
+  }
+  if (isBlank(event.shiftMoment)) errors.push(error('shiftMoment', 'Choose the shift moment.'));
   if (event.recurrence !== true && event.recurrence !== false) {
     errors.push(error('recurrence', 'Say whether this has happened before.'));
   }
@@ -173,11 +179,10 @@ function validateDetails(event) {
 }
 
 // Immediate actions are optional (FR-012); the ones added must be complete.
-function validateActions(event, now) {
-  const today = toDateString(now);
+function validateActions(event) {
   return event.immediateActions
     .map((action, index) => ({ action, index }))
-    .filter(({ action }) => validateImmediateAction(action, event.reportDate, today).length > 0)
+    .filter(({ action }) => validateImmediateAction(action).length > 0)
     .map(({ index }) => error(`immediateActions.${index}`, `Complete immediate action ${index + 1}.`));
 }
 
@@ -190,11 +195,11 @@ export function validateSection(sectionName, event, options = {}) {
     case 'location':
       return validateLocation(event);
     case 'general':
-      return validateGeneral(event, now);
+      return validateGeneral(event);
     case 'details':
-      return validateDetails(event);
+      return validateDetails(event, now);
     case 'actions':
-      return validateActions(event, now);
+      return validateActions(event);
     default:
       return [];
   }

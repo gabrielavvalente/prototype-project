@@ -16,9 +16,8 @@ function makeAction(changes = {}) {
     id: 'a1',
     description: 'Area closed',
     priority: 'actionPriority-1',
-    categoryId: 'category-1',
+    pillarId: 'pillar-hs',
     completionDate: '2026-10-24',
-    kpiId: '',
     comments: '',
     performedByIds: ['user-1'],
     status: 'Completed',
@@ -50,7 +49,8 @@ function makeEvent(changes = {}) {
     involvedPersonId: 'user-1',
     involvedPersonName: '',
     involvedActivity: '',
-    firstAidTreatmentId: '',
+    firstAidTreatmentIds: [],
+    firstAidOther: '',
     recurrence: false,
     sharedWithIds: [],
     diseaseIds: [],
@@ -114,24 +114,17 @@ describe('validateFile (FR-009)', () => {
 
 describe('validateImmediateAction (FR-011, FR-013)', () => {
   it('accepts a complete action', () => {
-    expect(validateImmediateAction(makeAction(), '2026-10-20', '2026-10-24')).toEqual([]);
+    expect(validateImmediateAction(makeAction())).toEqual([]);
   });
 
-  it('requires description, priority and category', () => {
-    const errors = validateImmediateAction(makeAction({ description: ' ', priority: '', categoryId: '' }), '2026-10-20', '2026-10-24');
-    expect(fields(errors)).toEqual(['description', 'priority', 'categoryId']);
-  });
-
-  it('keeps the completion date between the report date and today', () => {
-    const future = validateImmediateAction(makeAction({ completionDate: '2026-10-25' }), '2026-10-20', '2026-10-24');
-    const early = validateImmediateAction(makeAction({ completionDate: '2026-10-19' }), '2026-10-20', '2026-10-24');
-    expect(fields(future)).toEqual(['completionDate']);
-    expect(fields(early)).toEqual(['completionDate']);
+  it('requires description and priority, not a category or date (review 2026-10-25)', () => {
+    const errors = validateImmediateAction(makeAction({ description: ' ', priority: '', categoryId: '', completionDate: '' }));
+    expect(fields(errors)).toEqual(['description', 'priority']);
   });
 
   it('needs 1 to 5 people who performed it', () => {
-    const none = validateImmediateAction(makeAction({ performedByIds: [] }), '2026-10-20', '2026-10-24');
-    const six = validateImmediateAction(makeAction({ performedByIds: ['1', '2', '3', '4', '5', '6'] }), '2026-10-20', '2026-10-24');
+    const none = validateImmediateAction(makeAction({ performedByIds: [] }));
+    const six = validateImmediateAction(makeAction({ performedByIds: ['1', '2', '3', '4', '5', '6'] }));
     expect(fields(none)).toEqual(['performedByIds']);
     expect(fields(six)).toEqual(['performedByIds']);
   });
@@ -164,7 +157,7 @@ describe('validateSection', () => {
   });
 
   it('requires a full location and the task type for TF1-TF3 and other families (FR-005)', () => {
-    const event = makeEvent({ levelCode: 'TF2', firstAidTreatmentId: 'firstAidTreatment-1', location: { departmentId: 'd', workshopId: 'w' }, taskTypeId: '' });
+    const event = makeEvent({ levelCode: 'TF2', firstAidTreatmentIds: ['firstAidTreatment-1'], location: { departmentId: 'd', workshopId: 'w' }, taskTypeId: '' });
     expect(fields(validateSection('location', event, options))).toEqual(['location', 'taskTypeId']);
   });
 
@@ -178,40 +171,49 @@ describe('validateSection', () => {
 
   it('checks title length, description length and future time (FR-006)', () => {
     const event = makeEvent({ title: 'x'.repeat(121), description: 'y'.repeat(2001), eventTime: '15:30' });
-    expect(fields(validateSection('general', event, options))).toEqual(['title', 'eventTime', 'description']);
+    expect(fields(validateSection('general', event, options))).toEqual(['title', 'description']);
+    expect(fields(validateSection('details', event, options))).toEqual(['eventTime']);
   });
 
   it('accepts an empty event time (optional)', () => {
-    expect(validateSection('general', makeEvent({ eventTime: '' }), options)).toEqual([]);
+    expect(validateSection('details', makeEvent({ eventTime: '' }), options)).toEqual([]);
   });
 
   it('allows any time on an earlier report date', () => {
     const event = makeEvent({ reportDate: '2026-10-23', eventTime: '23:00' });
-    expect(validateSection('general', event, options)).toEqual([]);
+    expect(validateSection('details', event, options)).toEqual([]);
   });
 
   it('does not require a photo or video at any level (FR-008)', () => {
-    expect(validateSection('general', makeEvent({ levelCode: 'TF1' }), options)).toEqual([]);
+    expect(validateSection('general', makeEvent({ levelCode: 'TF1', firstAidTreatmentIds: ['firstAidTreatment-1'] }), options)).toEqual([]);
   });
 
   it('asks the person involved according to the employee type (FR-010)', () => {
     const employee = makeEvent({ involvedPersonId: '' });
-    expect(fields(validateSection('details', employee, options))).toEqual(['involvedPersonId']);
+    expect(fields(validateSection('general', employee, options))).toEqual(['involvedPersonId']);
     const contractor = makeEvent({ employeeType: 'employeeType-3', involvedPersonId: '', involvedPersonName: '' });
-    expect(fields(validateSection('details', contractor, options))).toEqual(['involvedPersonName']);
+    expect(fields(validateSection('general', contractor, options))).toEqual(['involvedPersonName']);
     const named = { ...contractor, involvedPersonName: 'Sam Lee' };
-    expect(validateSection('details', named, options)).toEqual([]);
+    expect(validateSection('general', named, options)).toEqual([]);
   });
 
   it('asks the first aid treatment for TF1-TF3 only (FR-047)', () => {
-    expect(fields(validateSection('details', makeEvent({ levelCode: 'TF3' }), options))).toEqual(['firstAidTreatmentId']);
-    expect(validateSection('details', makeEvent({ levelCode: 'TF3', firstAidTreatmentId: 'firstAidTreatment-2' }), options)).toEqual([]);
-    expect(validateSection('details', makeEvent({ levelCode: 'TF4' }), options)).toEqual([]);
+    expect(fields(validateSection('general', makeEvent({ levelCode: 'TF3' }), options))).toEqual(['firstAidTreatmentIds']);
+    const two = makeEvent({ levelCode: 'TF3', firstAidTreatmentIds: ['firstAidTreatment-2', 'firstAidTreatment-3'] });
+    expect(validateSection('general', two, options)).toEqual([]);
+    expect(validateSection('general', makeEvent({ levelCode: 'TF4' }), options)).toEqual([]);
+  });
+
+  it('asks to describe the Other first aid treatment (review 2026-10-25)', () => {
+    const other = makeEvent({ levelCode: 'TF3', firstAidTreatmentIds: ['firstAidTreatment-9'], firstAidOther: ' ' });
+    expect(fields(validateSection('general', other, options))).toEqual(['firstAidOther']);
+    expect(validateSection('general', { ...other, firstAidOther: 'Ice pack' }, options)).toEqual([]);
   });
 
   it('checks event details and OH diseases (FR-010)', () => {
     const event = makeEvent({ employeeType: '', recurrence: null });
-    expect(fields(validateSection('details', event, options))).toEqual(['employeeType', 'recurrence']);
+    expect(fields(validateSection('general', event, options))).toEqual(['employeeType']);
+    expect(fields(validateSection('details', event, options))).toEqual(['recurrence']);
     const oh = makeEvent({ familyCode: 'OH', levelCode: 'OH-SKIN', diseaseIds: [] });
     expect(fields(validateSection('details', oh, options))).toEqual(['diseaseIds']);
   });
@@ -230,7 +232,7 @@ describe('validateEventForSubmit (FR-014, FR-015)', () => {
   });
 
   it('lists missing items with their section, in page order', () => {
-    const tf2 = { levelCode: 'TF2', firstAidTreatmentId: 'firstAidTreatment-1' };
+    const tf2 = { levelCode: 'TF2', firstAidTreatmentIds: ['firstAidTreatment-1'] };
     const errors = validateEventForSubmit(makeEvent({ ...tf2, taskTypeId: '', title: '' }), { now });
     expect(errors.map((error) => `${error.section}:${error.field}`)).toEqual(['location:taskTypeId', 'general:title']);
   });

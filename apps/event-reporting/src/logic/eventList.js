@@ -115,3 +115,19 @@ export function countActiveFilters(filters) {
   const location = Object.values(filters.location).some(Boolean) ? 1 : 0;
   return simple.length + location + (filters.myEvents ? 1 : 0);
 }
+
+// Submitted events per type (family) and level, for the KPIs chart (review 2026-10-25). Every
+// family and level in the reference data is listed, even with no event, in reference order.
+// Returns [{ family, total, levels: [{ level, count }] }].
+export function countByFamilyAndLevel(events, families, levels) {
+  const submitted = events.filter((event) => event.status !== 'Draft');
+  return families.map((family) => {
+    const familyLevels = levels
+      .filter((level) => level.familyId === family.id)
+      .map((level) => ({
+        level,
+        count: submitted.filter((event) => event.familyCode === family.code && event.levelCode === level.code).length,
+      }));
+    return { family, total: familyLevels.reduce((sum, item) => sum + item.count, 0), levels: familyLevels };
+  });
+}

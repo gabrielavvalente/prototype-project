@@ -2,32 +2,17 @@
 // from the workshop for TF4 / TF5), text search over the paths, and reading a station QR code.
 // A location is { departmentId, …, taskId }; levels below the chosen one stay empty.
 
+import { getAncestry, getPlantOf } from '../../../../shared/platform/organization.js';
 import { LOCATION_LEVELS } from './validation.js';
+
+// The hierarchy helpers are shared platform code; re-exported so screens keep one import.
+export { getAncestry, getPlantOf };
 
 // Node types of the location levels, from the top.
 export const LEVEL_TYPES = ['department', 'workshop', 'job', 'workstation', 'task'];
 
 function isDeepEnough(node, minType) {
   return LEVEL_TYPES.indexOf(node.type) >= LEVEL_TYPES.indexOf(minType);
-}
-
-// From a node up to (not including) the plant: [department, workshop, …, node].
-export function getAncestry(organization, nodeId) {
-  const chain = [];
-  let node = organization.find((item) => item.id === nodeId);
-  while (node && node.type !== 'plant' && node.type !== 'business') {
-    chain.unshift(node);
-    node = organization.find((item) => item.id === node.parentId);
-  }
-  return chain;
-}
-
-export function getPlantOf(organization, nodeId) {
-  let node = organization.find((item) => item.id === nodeId);
-  while (node && node.type !== 'plant') {
-    node = organization.find((item) => item.id === node.parentId);
-  }
-  return node || null;
 }
 
 // { departmentId, workshopId, jobId, workstationId, taskId } for a node; deeper levels stay empty.

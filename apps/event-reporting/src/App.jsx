@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createHashRouter, Navigate, Outlet, RouterProvider, useLocation } from 'react-router-dom';
 import { AppContext, ENTERED_KEY, SIGNED_IN_USER_KEY, useApp } from './AppContext.js';
+import { loadPlatform } from '../../../shared/platform/platformData.js';
 import { getAll, getById, put, seedIfEmpty } from './data/db.js';
 import EventFormPage from './create/EventForm.jsx';
 import EventDetail from './events/EventDetail.jsx';
@@ -80,14 +81,14 @@ export default function App() {
     return () => window.removeEventListener('beforeunload', warn);
   }, [formDirty]);
 
-  async function loadSignedInUser(userId) {
-    const signedInUser = await getById('users', userId);
+  async function loadSignedInUser(userId, users) {
+    const signedInUser = users.find((item) => item.id === userId && item.role);
     if (!signedInUser) {
       return;
     }
     let userSettings = await getById('settings', userId);
     if (!userSettings) {
-      userSettings = { id: userId, ...defaultContext(signedInUser), visibleColumns: null };
+      userSettings = { id: userId, ...defaultContext(signedInUser), visibleColumns: null, savedFilters: [] };
       await put('settings', userSettings);
     }
     setSettings(userSettings);
@@ -97,15 +98,17 @@ export default function App() {
   useEffect(() => {
     async function start() {
       await seedIfEmpty();
-      const [users, organization, reference] = await Promise.all([
-        getAll('users'),
-        getAll('organization'),
-        getAll('reference'),
-      ]);
-      setLists({ users, organization, reference });
+      // Users, plants, pillars and levels are shared platform data; the form lists are the app's.
+      const [platform, formLists] = await Promise.all([loadPlatform(), getAll('reference')]);
+      const loaded = {
+        users: platform.users,
+        organization: platform.organization,
+        reference: [...platform.reference, ...formLists],
+      };
+      setLists(loaded);
       const savedUserId = sessionStorage.getItem(SIGNED_IN_USER_KEY);
       if (savedUserId) {
-        await loadSignedInUser(savedUserId);
+        await loadSignedInUser(savedUserId, loaded.users);
       }
       setLoading(false);
     }
@@ -116,7 +119,7 @@ export default function App() {
     sessionStorage.setItem(SIGNED_IN_USER_KEY, userId);
     sessionStorage.removeItem(ENTERED_KEY);
     setEntered(false);
-    await loadSignedInUser(userId);
+    await loadSignedInUser(userId, lists.users);
   }
 
   function signOut() {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Alert, Badge, Button, Paper, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { AttachmentPreview } from '../create/AttachmentInput.jsx';
 import { findEvent, getByIndex } from '../data/db.js';
@@ -31,11 +32,13 @@ function buildHistory(event, users) {
 }
 
 // Shown once, right after the event was saved from the form (FR-015).
-function SavedBanner({ saved, recordNumber, canCreate }) {
+function SavedBanner({ saved, recordNumber, status, canCreate }) {
   const messages = {
     submit: (
       <>
-        Event <strong>{recordNumber}</strong> was submitted. The Managers of this plant have been alerted.
+        Event <strong>{recordNumber}</strong> was submitted
+        {status === 'Closed' ? ' and closed right away (no other phase required)' : ''}. The Managers of this
+        plant have been alerted.
       </>
     ),
     draft: 'Your draft was saved on this device. Only you can see it.',
@@ -46,15 +49,15 @@ function SavedBanner({ saved, recordNumber, canCreate }) {
     ),
   };
   return (
-    <div className="message message--success saved-banner" role="status">
+    <Alert color="green" variant="light" className="saved-banner" role="status">
       <Icon name="check" />
       <span>{messages[saved]}</span>
       {saved === 'submit' && canCreate && (
-        <Link className="button button--link" to="/events/new">
+        <Link className="saved-banner-link" to="/events/new">
           Report another event
         </Link>
       )}
-    </div>
+    </Alert>
   );
 }
 
@@ -128,18 +131,19 @@ export default function EventDetail() {
         <SavedBanner
           saved={location.state.saved}
           recordNumber={location.state.recordNumber}
+          status={location.state.status}
           canCreate={getMenuItems(user.role).includes('create-event')}
         />
       )}
 
-      <section className={`card detail-head${critical ? ' card--critical' : ''}`}>
+      <Paper component="section" withBorder shadow="xs" radius="md" p="xl" className={`card detail-head${critical ? ' card--critical' : ''}`}>
         <div className="tag-row">
           <PillarTag pillar={pillar} />
-          <span className="tag tag--blue">{event.levelCode}</span>
+          <Badge variant="light" color="blue">{event.levelCode}</Badge>
           <StatusBadge status={event.status} />
-          {isSip(event) && <span className="tag tag--red">SIP</span>}
+          {isSip(event) && <Badge color="red">SIP</Badge>}
         </div>
-        <h1>{event.title || '(no title yet)'}</h1>
+        <Title order={1}>{event.title || '(no title yet)'}</Title>
         <dl className="facts-grid">
           <div>
             <dt className="section-label">Level</dt>
@@ -175,7 +179,7 @@ export default function EventDetail() {
             </dd>
           </div>
         </dl>
-      </section>
+      </Paper>
 
       {sections.map((section, index) => (
         <Collapsible key={section.section} title={section.title} open={index < 2}>
@@ -191,12 +195,12 @@ export default function EventDetail() {
           )}
           {section.section === 'actions' &&
             event.immediateActions.map((action, actionIndex) => (
-              <div key={action.id} className="card card--flat">
-                <h3>
-                  Immediate action {actionIndex + 1} <span className="tag tag--teal">COMPLETED</span>
-                </h3>
+              <Paper key={action.id} withBorder radius="md" p="md" className="card card--flat">
+                <Title order={3} size="h4">
+                  Immediate action {actionIndex + 1} <Badge color="teal" variant="light">COMPLETED</Badge>
+                </Title>
                 <SummaryList rows={describeImmediateAction(action, lists)} />
-              </div>
+              </Paper>
             ))}
         </Collapsible>
       ))}
@@ -213,14 +217,14 @@ export default function EventDetail() {
       </Collapsible>
 
       <div className="bottom-bar">
-        <Link className="button" to="/events">
+        <Button component={Link} variant="default" to="/events">
           All events
-        </Link>
+        </Button>
         {canEditEvent(user, event) && (
-          <Link className="button button--primary" to={editPath}>
+          <Button component={Link} to={editPath}>
             <Icon name="edit" size={18} />
             {event.status === 'Draft' ? 'Continue draft' : 'Edit'}
-          </Link>
+          </Button>
         )}
       </div>
     </main>

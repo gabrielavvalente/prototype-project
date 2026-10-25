@@ -1,17 +1,20 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 2.1.0 → 2.2.0
-Bump rationale: MINOR — "Monorepo Structure → Stack" materially expanded: the stack chosen in the
-first /speckit-plan (React + Vite, plain JavaScript, browser-only) is now recorded, with rules
-for standalone app packages (no workspaces), Vitest for tests, and a plain-CSS shared theme.
+Version change: 2.2.0 → 2.3.0
+Bump rationale: MINOR — "Monorepo Structure" materially expanded so several apps can share one
+configuration (feature 002 Control Panel): a root `launcher/` folder opening every app from one
+address, and `shared/platform/` for the platform data all apps read. No rule removed or
+redefined.
 
-Modified principles: none
-Modified rules: Monorepo Structure → Stack (undefined → React + Vite, JavaScript)
+Modified principles: none (Principle II "Isolated Apps" unchanged: apps still never import each
+other; shared code lives only in `shared/`)
+Modified rules: Monorepo Structure → Root (launcher allowed); new bullet "Shared platform data";
+Stack → package.json rule now names the launcher as the only other place with its own setup
 Added sections: none
 Removed sections: none
 
-Deferred TODOs: none (stack TODO resolved).
+Deferred TODOs: none.
 -->
 
 # Prototype Project Constitution
@@ -94,15 +97,24 @@ Each app MUST have a short `README.md` at `apps/<app-name>/README.md`.
 
 ## Monorepo Structure
 
-- **Folders**: `apps/` (one subfolder per app), `shared/` (common resources, such as the visual
-  theme), `specs/` (Spec Kit artifacts) and `.specify/` (Spec Kit configuration).
-- **Root**: MAY contain a simple page that lists and links the apps; MUST NOT contain code from
-  any app.
+- **Folders**: `apps/` (one subfolder per app), `shared/` (common resources: the visual theme and
+  the platform data), `launcher/` (opens all apps from one address), `specs/` (Spec Kit artifacts)
+  and `.specify/` (Spec Kit configuration).
+- **Root**: MAY contain a `launcher/` folder that opens every app from one address (e.g.,
+  `…/event-reporting/` and `…/control-panel/`) and shows a page listing them. The launcher MAY have
+  its own `package.json` for that purpose only and MUST NOT contain app or business code. A
+  `package.json` directly at the repository root and npm workspaces remain forbidden.
+- **Shared platform data**: resources used by more than one app MAY live in `shared/` — the visual
+  theme and `shared/platform/`, the platform data every app reads (users, plants and locations,
+  roles, workflow settings, master data) with its rules and sample data. Shared code MUST NOT
+  depend on any app and MUST NOT bring dependencies that the apps using it do not already pin.
+  Data shared between apps MUST be stored once, in the browser, at the launcher's address.
 - **Stack**: React + Vite, written in plain JavaScript (`.js` / `.jsx`, no TypeScript), chosen in
   the first `/speckit-plan` (`specs/001-event-reporting/plan.md`, research R1). Apps run in the
   browser only, with no server.
-  - Each app MUST be standalone, with its own `package.json` inside `apps/<app-name>/`; a root
-    `package.json` and npm workspaces MUST NOT be used.
+  - Each app MUST be standalone, with its own `package.json` inside `apps/<app-name>/`; a
+    `package.json` at the repository root and npm workspaces MUST NOT be used (the `launcher/`
+    folder is the only other place with its own `package.json`).
   - Automated tests MUST use Vitest.
   - The shared visual theme MUST be plain CSS in `shared/theme.css` (CSS custom properties);
     UI component libraries and CSS frameworks MUST NOT be added without justification in
@@ -140,4 +152,4 @@ conflicts with it, the constitution wins unless it is amended.
 - **Compliance**: Every `plan.md` MUST pass the Constitution Check before and after design.
   Unjustified complexity MUST be rejected.
 
-**Version**: 2.2.0 | **Ratified**: 2026-10-24 | **Last Amended**: 2026-10-24
+**Version**: 2.3.0 | **Ratified**: 2026-10-24 | **Last Amended**: 2026-10-24
