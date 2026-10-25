@@ -193,6 +193,7 @@ follows the dependencies.
 | Master data | Control Panel workspace | [master-data](capabilities/master-data.md) |
 | User Management (users, groups) | Platform data | 002, 004 (part) |
 | Event reporting (create, draft, submit, edit) | Platform data, workflow settings | [event-reporting](capabilities/event-reporting.md) |
+| Event Reporting shell (context, header, navigation, alerts, search) | Platform data | [event-reporting-shell](capabilities/event-reporting-shell.md) |
 | Event library (list, Kanban, search, filters, KPIs, reports) | Event reporting | 001 |
 | Event review (incl. severity and critical events) | Event reporting, master data | 003 |
 | Root cause analysis | Event review | [root-cause-analysis](capabilities/root-cause-analysis.md) |

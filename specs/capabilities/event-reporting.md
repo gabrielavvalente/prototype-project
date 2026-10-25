@@ -26,8 +26,8 @@ needed; submitting gives it a record number, its workflow and alerts the plant's
 
 ### Classification
 
-- **ER-5** Pillar (pre-set and skipped when the person works in one pillar), then family, then
-  level, each level with its description (domain). Right after the level, the risk question of the
+- **ER-5** Pillar (pre-set and skipped when the person works in one pillar), then family (filled
+  in and hidden when the pillar has only one), then level, each level with its description (domain). Right after the level, the risk question of the
   domain with its definition, required:
   - "Could this be a SIP?" — "Serious Incident Potential: under slightly different
     circumstances, could this have caused a serious injury or serious harm?"
