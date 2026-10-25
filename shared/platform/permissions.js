@@ -10,6 +10,24 @@ export function getRole(user, pillarId) {
   return user.controlPanelRoles.find((role) => role.pillarId === pillarId) || null;
 }
 
+// A Site Admin of Event Reporting is a Local administrator in the Control Panel: one Local role
+// per pillar they see at their plant (review 2026-10-25). A user holds at most one role per
+// pillar, so a role already given wins, and with several plants the first plant wins.
+export function withSiteAdminRoles(user) {
+  if (user.role !== 'Site Admin') {
+    return user;
+  }
+  const roles = [...user.controlPanelRoles];
+  for (const entry of user.access) {
+    for (const pillarId of entry.pillarIds) {
+      if (!roles.some((role) => role.pillarId === pillarId)) {
+        roles.push({ pillarId, level: 'local', plantIds: [entry.plantId], fromSiteAdmin: true });
+      }
+    }
+  }
+  return { ...user, controlPanelRoles: roles };
+}
+
 export function hasControlPanelAccess(user) {
   return user.controlPanelRoles.length > 0;
 }

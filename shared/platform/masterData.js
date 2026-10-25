@@ -139,6 +139,57 @@ function sameScope(a, b) {
   return a.ownerLevel === b.ownerLevel && [...a.ownerPlantIds].sort().join() === [...b.ownerPlantIds].sort().join();
 }
 
+// Turns the rows of an imported file into values to add or change (review 2026-10-25).
+// rows: [{ code, name, description, category }] as read by parseCsv. A row changes the value of
+// the user's own level with the same code (or name, for lists without codes) and adds one
+// otherwise. A row matching someone else's value is skipped, so re-importing an exported file
+// never copies Central values. Returns { changes: [{ before, after }], skipped, errors }; the
+// caller saves nothing when errors is not empty.
+export function planImport(user, list, rows, values) {
+  const role = getRole(user, list.pillarId);
+  const scope = { ownerLevel: role.level, ownerPlantIds: role.level === 'central' ? [] : role.plantIds };
+  const keyOf = (item) => (list.hasCode ? item.code : item.name).trim().toLowerCase();
+  const categories = values.filter((item) => item.listId === list.parentListId);
+  const seen = visibleValues(user, list, values);
+  let known = [...values];
+  const keysInFile = new Set();
+  const result = { changes: [], skipped: [], errors: [] };
+
+  rows.forEach((row, index) => {
+    const line = index + 2; // line 1 is the header
+    const fields = { code: list.hasCode ? row.code || '' : '', name: row.name || '', description: row.description || '' };
+    if (list.parentListId) {
+      const category = categories.find((item) => item.name.toLowerCase() === (row.category || '').toLowerCase());
+      fields.parentId = category ? category.id : '';
+    }
+    if (keysInFile.has(keyOf(fields))) {
+      result.errors.push({ line, message: `${fields.code || fields.name} appears more than once in the file.` });
+      return;
+    }
+    keysInFile.add(keyOf(fields));
+    const sameKey = (item) => item.status !== 'Retired' && keyOf(item) === keyOf(fields);
+    const existing = known.find((item) => item.listId === list.id && sameScope(item, scope) && sameKey(item));
+    if (!existing && seen.some((item) => !sameScope(item, scope) && sameKey(item))) {
+      result.skipped.push({ line, message: `${fields.code || fields.name} belongs to another level and was left unchanged.` });
+      return;
+    }
+    if (existing && Object.keys(fields).every((field) => existing[field] === fields[field])) {
+      return;
+    }
+    const value = existing
+      ? { ...existing, ...fields }
+      : { id: crypto.randomUUID(), listId: list.id, parentId: '', ...fields, ...scope, status: 'Active' };
+    const problems = validateValue(list, value, known);
+    if (Object.keys(problems).length > 0) {
+      result.errors.push({ line, message: Object.values(problems).join(' ') });
+      return;
+    }
+    known = [...known.filter((item) => item.id !== value.id), value];
+    result.changes.push({ before: existing || null, after: value });
+  });
+  return result;
+}
+
 // Problems with a value before saving, as { field: message } (FR-019, FR-020).
 export function validateValue(list, value, existingValues) {
   const errors = {};

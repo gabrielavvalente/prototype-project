@@ -110,6 +110,151 @@ a {
   outline-offset: 2px;
 }
 
+/* Persistent navigation shared by the launcher and every application. */
+.module-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  align-items: center;
+  gap: clamp(16px, 2vw, 32px);
+  min-height: 72px;
+  padding: 10px clamp(20px, 3vw, 40px);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 2px 8px rgb(27 31 36 / 4%);
+}
+
+.module-header-brand,
+.module-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.module-header-home {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.module-header-home:hover {
+  background: var(--color-surface-muted);
+}
+
+.module-header-divider {
+  width: 1px;
+  height: 30px;
+  background: var(--color-border);
+}
+
+.module-header-name {
+  overflow: hidden;
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.module-header-search {
+  width: min(100%, 680px);
+  justify-self: center;
+}
+
+.module-header-search form {
+  width: 100%;
+}
+
+.module-header-search .mantine-TextInput-input {
+  min-height: 44px;
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+}
+
+.module-header-actions {
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.module-header-actions > .mantine-ActionIcon-root {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.module-header-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 240px;
+  min-height: 42px;
+  padding-inline: 8px;
+  color: var(--color-text);
+}
+
+.module-header-user > span,
+.module-header-user .mantine-Button-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.directory-notification {
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-surface);
+}
+
+.directory-notification--unread {
+  border-left: 3px solid var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+@media (max-width: 760px) {
+  .module-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 14px;
+    padding: 8px 16px;
+  }
+
+  .module-header-brand {
+    gap: 10px;
+  }
+
+  .module-header-search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+  }
+
+  .module-header-actions {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 8px;
+  }
+
+  .module-header-user {
+    max-width: 46px;
+    padding: 0;
+  }
+
+  .module-header-user > span,
+  .module-header-user .mantine-Button-label,
+  .module-header-user .signed-in-user,
+  .module-header-user .mantine-Button-root {
+    display: none;
+  }
+}
+
 .section-label {
   margin: 0 0 var(--space-2);
   font-size: var(--font-size-tiny);
@@ -238,9 +383,10 @@ input[type='radio'] {
   accent-color: var(--color-primary);
 }
 
+/* Mantine selects use a read-only input to open their list: they are not read-only fields. */
 input:disabled,
 select:disabled,
-input[readonly] {
+input[readonly]:not(.mantine-Select-input) {
   background: var(--color-surface-muted);
   color: var(--color-muted);
 }
@@ -453,6 +599,49 @@ textarea {
 
 .pillar-dot--ih {
   background: var(--color-pillar-ih);
+}
+
+/* Pillar tag: the pillar's name or code on a light tint of its color, the same in every app.
+   The text stays dark so it keeps its contrast whatever the pillar color. */
+
+.pillar-tag {
+  --pillar-color: var(--color-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pillar-color) 14%, var(--color-surface));
+  color: var(--color-text);
+  font-size: var(--font-size-tiny);
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.pillar-tag::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--pillar-color);
+  flex-shrink: 0;
+}
+
+.pillar-tag--hs {
+  --pillar-color: var(--color-pillar-hs);
+}
+
+.pillar-tag--env {
+  --pillar-color: var(--color-pillar-env);
+}
+
+.pillar-tag--ir {
+  --pillar-color: var(--color-pillar-ir);
+}
+
+.pillar-tag--ih {
+  --pillar-color: var(--color-pillar-ih);
 }
 
 /* Avatars */

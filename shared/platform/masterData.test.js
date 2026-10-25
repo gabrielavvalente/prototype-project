@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { masterValues } from './catalogs.js';
-import { allowedValueActions, availableValues, getList, listsForPillar, validateValue } from './masterData.js';
+import { allowedValueActions, availableValues, getList, listsForPillar, planImport, validateValue } from './masterData.js';
 import { users } from './sampleData.js';
 
 const byId = (id) => users.find((user) => user.id === id);
@@ -133,5 +133,48 @@ describe('validateValue (FR-019, FR-020)', () => {
     expect(validateValue(list, newValue('bodyParts', { name: 'Chin', parentId: 'bodyPartCategories-1' }), inactive)).toEqual({
       parentId: 'The category is not active, so this value cannot be active.',
     });
+  });
+});
+
+describe('planImport (review 2026-10-25)', () => {
+  const standards = getList('standards');
+
+  it('changes Central values for Central and adds new codes', () => {
+    const rows = [
+      { code: 'STD-01', name: 'Confined Space Entry', description: 'Updated' },
+      { code: 'STD-99', name: 'New standard', description: '' },
+    ];
+    const plan = planImport(byId('user-ludovic'), standards, rows, masterValues);
+    expect(plan.errors).toEqual([]);
+    expect(plan.changes.map((change) => [change.before?.id ?? null, change.after.code])).toEqual([
+      ['standards-1', 'STD-01'],
+      [null, 'STD-99'],
+    ]);
+  });
+
+  it('skips unchanged rows', () => {
+    const plan = planImport(byId('user-ludovic'), standards, [{ code: 'STD-01', name: 'Confined Space Entry' }], masterValues);
+    expect(plan.changes).toEqual([]);
+  });
+
+  it('never copies Central values for a Cluster', () => {
+    const rows = [{ code: 'STD-01', name: 'Confined Space Entry' }, { code: 'LY-1', name: 'Lyon rule' }];
+    const plan = planImport(byId('user-lucas'), standards, rows, masterValues);
+    expect(plan.skipped.map((item) => item.line)).toEqual([2]);
+    expect(plan.changes[0].after).toMatchObject({ code: 'LY-1', ownerLevel: 'cluster' });
+  });
+
+  it('reports each row with a problem by its line', () => {
+    const rows = [{ code: '', name: 'No code' }, { code: 'STD-98', name: 'A' }, { code: 'STD-98', name: 'B' }];
+    const plan = planImport(byId('user-ludovic'), standards, rows, masterValues);
+    expect(plan.errors.map((item) => item.line)).toEqual([2, 4]);
+    expect(plan.changes.map((change) => change.after.name)).toEqual(['A']);
+  });
+
+  it('finds the Body Part category by name', () => {
+    const rows = [{ name: 'Left ear', category: 'head' }, { name: 'Tail', category: 'Unknown' }];
+    const plan = planImport(byId('user-ludovic'), getList('bodyParts'), rows, masterValues);
+    expect(plan.changes).toHaveLength(1);
+    expect(plan.errors).toEqual([{ line: 3, message: 'Choose a category.' }]);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canSeeUser, coveredPlantIds, getRole, hasControlPanelAccess } from './permissions.js';
+import { canSeeUser, coveredPlantIds, getRole, hasControlPanelAccess, withSiteAdminRoles } from './permissions.js';
 import { organization, users } from './sampleData.js';
 
 const byId = (id) => users.find((user) => user.id === id);
@@ -38,5 +38,27 @@ describe('canSeeUser (FR-027)', () => {
     expect(canSeeUser(lucas, byId('user-ana'))).toBe(true);
     expect(canSeeUser(lucas, byId('user-gina'))).toBe(true);
     expect(canSeeUser(lucas, byId('user-ben'))).toBe(false);
+  });
+});
+
+describe('withSiteAdminRoles (review 2026-10-25)', () => {
+  it('gives a Site Admin a Local role on each pillar of their plant', () => {
+    const roles = byId('user-eva').controlPanelRoles;
+    expect(roles).toHaveLength(4);
+    expect(roles.every((role) => role.level === 'local' && role.plantIds[0] === 'plant-lyon')).toBe(true);
+  });
+
+  it('keeps a role the user already holds on a pillar', () => {
+    const admin = {
+      role: 'Site Admin',
+      access: [{ plantId: 'plant-porto', pillarIds: ['pillar-hs', 'pillar-env'] }],
+      controlPanelRoles: [{ pillarId: 'pillar-hs', level: 'cluster', plantIds: ['plant-lyon', 'plant-porto'] }],
+    };
+    const roles = withSiteAdminRoles(admin).controlPanelRoles;
+    expect(roles.map((role) => role.level)).toEqual(['cluster', 'local']);
+  });
+
+  it('gives nothing to other event roles', () => {
+    expect(byId('user-carla').controlPanelRoles).toHaveLength(1);
   });
 });

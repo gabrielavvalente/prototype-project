@@ -3,6 +3,8 @@
 // access and Control Panel roles. All names are fictional.
 // Shared code: imports no packages and nothing from apps/ (constitution v2.3.0).
 
+import { withSiteAdminRoles } from './permissions.js';
+
 // ---------------------------------------------------------------------------
 // Pillars, families and levels
 // ---------------------------------------------------------------------------
@@ -147,7 +149,8 @@ export const organization = [
 // role / access: event role and the plants and pillars they report and see (null / [] when the
 // person only uses the Control Panel).
 // controlPanelRoles: { pillarId, level, plantIds } — central: all plants; cluster: 2+ plants;
-// local: exactly one plant. At most one role per pillar per user.
+// local: exactly one plant. At most one role per pillar per user. Site Admins get their Local
+// roles from their event access (withSiteAdminRoles), so they are not written here.
 // ---------------------------------------------------------------------------
 
 const allPillars = ['pillar-hs', 'pillar-env', 'pillar-ir', 'pillar-ih'];
@@ -165,7 +168,7 @@ function local(pillarId, plantId) {
   return { pillarId, level: 'local', plantIds: [plantId] };
 }
 
-export const users = [
+const demoUsers = [
   {
     id: 'user-ana',
     name: 'Ana Ribeiro',
@@ -208,7 +211,7 @@ export const users = [
     avatar: 'EN',
     role: 'Site Admin',
     access: [{ businessId: 'biz-auto', plantId: 'plant-lyon', pillarIds: allPillars }],
-    controlPanelRoles: allPillars.map((pillarId) => local(pillarId, 'plant-lyon')),
+    controlPanelRoles: [],
   },
   {
     id: 'user-felix',
@@ -274,6 +277,8 @@ export const users = [
     controlPanelRoles: [cluster('pillar-hs', ['plant-lyon', 'plant-curitiba'])],
   },
 ];
+
+export const users = demoUsers.map(withSiteAdminRoles);
 
 // ---------------------------------------------------------------------------
 // Starting workflow settings (only Required ones are stored, research R5). Central requires Review

@@ -3,7 +3,7 @@
 // Shared code: imports no packages and nothing from apps/ (constitution v2.3.0).
 
 import { masterValues } from './catalogs.js';
-import { allowedValueActions, getList, ownActivation, validateValue } from './masterData.js';
+import { allowedValueActions, getList, ownActivation, planImport, validateValue } from './masterData.js';
 import { getPlantName } from './organization.js';
 import { getRole, LEVEL_LABELS } from './permissions.js';
 import * as sampleData from './sampleData.js';
@@ -303,6 +303,34 @@ export async function saveValue(user, listId, changes) {
     );
   });
   return value;
+}
+
+// Adds and changes the values of an imported file in one transaction, or nothing when a row has a
+// problem (review 2026-10-25). rows as read by parseCsv. Returns the plan of planImport.
+export async function importValues(user, listId, rows) {
+  const list = getList(listId);
+  if (!allowedValueActions(user, list, null).add) {
+    throw new Error('You are not allowed to import values into this list.');
+  }
+  const { values } = await getMasterData();
+  const plan = planImport(user, list, rows, values);
+  if (plan.errors.length > 0 || plan.changes.length === 0) {
+    return plan;
+  }
+  const now = new Date().toISOString();
+  const db = await openPlatform();
+  await runTransaction(db, ['masterValues', 'audit'], 'readwrite', (stores) => {
+    for (const { before, after } of plan.changes) {
+      const value = before
+        ? { ...after, updatedBy: user.id, updatedAt: now }
+        : { ...after, createdBy: user.id, createdAt: now, updatedBy: user.id, updatedAt: now };
+      stores.masterValues.put(value);
+      stores.audit.put(
+        auditEntry(user, list, value, before ? 'edit' : 'add', before ? describeValue(before) : '—', describeValue(value)),
+      );
+    }
+  });
+  return plan;
 }
 
 // The owner changes a value's status: Active ⇄ Inactive, or Retired (final).
