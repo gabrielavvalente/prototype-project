@@ -65,3 +65,11 @@ sections, photos, immediate actions, history and Edit; Back → event list.
 
 SIP, HCI, SPL and HCL show as red badges after the title in the List, on the Kanban card (red
 card), on the event page (red header) and next to the status on the steps page.
+
+## Fourth review
+
+- Submission step: editable form (Save changes) for whoever may edit the event, read-only
+  otherwise; no Edit button; `#/events/:id/edit` of a submitted event opens `…/steps/submission`.
+- The header card above the steps is compact.
+- KPIs page: fourth number "Archived events" (→ list with Status = Archived) and the chart
+  "Archived events by reason" (columns Duplicated / Useless / Bad quality, stacked by type).

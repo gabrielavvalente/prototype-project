@@ -101,6 +101,16 @@ event FR-012, master data per pillar).
   view page showed (sections, photos, immediate actions, history) and Edit while allowed. Back
   returns to the event list. Drafts keep their page.
 
+### Session 2026-10-25 (fourth review: compact header, archived KPIs, editing in place)
+
+- Q: How big is the event's header above the steps? → A: Compact: a smaller title and the facts
+  on one wrapping line.
+- Q: What does the KPIs page add? → A: An "Archived events" number (opening the list filtered on
+  Archived) and an "Archived events by reason" chart: one column per reason, stacked by type.
+- Q: How is a submitted event edited? → A: There is no Edit button. Whoever may edit it (a Manager
+  of its plant and pillar, while it is Open) sees the Submission step as the editable form, with
+  Save changes; the others see it read-only. Drafts keep Continue draft.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Review a submitted event (Priority: P1)
@@ -327,7 +337,11 @@ classification, the red display, the required type and where the event goes next
   event details, immediate actions) and the history (created, submitted, review taken and
   completed, last updated), with an Edit button while the event can be edited; the event's header
   (pillar, level, status, critical badges, title, reporter, date, location) stays above the steps.
-  The page's Back button MUST return to the event list. *(Clarification 2026-10-25, third review)*
+  The page's Back button MUST return to the event list. The header MUST be compact (smaller
+  title, facts on one wrapping line). Whoever may edit the event MUST see Submission as the
+  editable form (Save changes), with the history under it; there is no Edit button anywhere for a
+  submitted event, and the old edit address opens the event's page. *(Clarification 2026-10-25, fourth review)*
+  *(Clarification 2026-10-25, third review)*
 - **FR-008**: Root cause analysis, Actions and Validation MUST say they come in a later version.
 
 **Taking the review**
@@ -395,6 +409,11 @@ classification, the red display, the required type and where the event goes next
   Complete review / Archive event button on the far right. *(Clarification 2026-10-25, third review)*
 - **FR-029**: A done review MUST also show the severities (score and band), the classifications,
   the SIP or SPL type and the "further analyze" answer.
+
+- **FR-031**: The KPIs page MUST show an "Archived events" number — the Archived events matching
+  the search and the other filters — that opens the list filtered on Archived, and an "Archived
+  events by reason" chart: one column per reason (Duplicated, Useless, Bad quality), stacked by
+  type in pillar colors, with a legend, details on hover and a table view. *(Clarification 2026-10-25, fourth review)*
 
 **Statuses, list and editing**
 

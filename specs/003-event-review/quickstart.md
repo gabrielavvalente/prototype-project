@@ -76,3 +76,13 @@ nothing on TF5. Lyon events are reviewed by Carla, Eva and Diego.
 18. **One page** — Expand a submitted row: Open event → its current step (no Workflow steps link);
     open `#/events/TF-26-0006`: redirected to the steps page; Submission shows photos, immediate
     actions and history; Back (‹) → the event list. A draft's Open event still opens the draft page.
+
+## Fourth review scenarios
+
+19. **Edit in place** — As Diego Laurent (Manager, Lyon), open `TF-26-0006` (Open) → Submission:
+    the form is editable; change the title and Save changes → "Event TF-26-0006 was updated.", the
+    header shows the new title. As Ana Ribeiro the same step is read-only. `#/events/TF-26-0006/edit`
+    opens the event's page.
+20. **Archived KPIs** — Archive two events with Duplicated and one with Useless, open KPIs: "Archived
+    events" = 3; the "Archived events by reason" chart shows 2 and 1, stacked by type; clicking the
+    number opens the list with Status: Archived.

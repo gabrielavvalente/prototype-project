@@ -149,3 +149,14 @@ follows.
   page also makes Back always return to the list.
 - **Alternatives considered**: only changing the Open event button (rejected: search, alerts and
   the after-submit page would still show a second page).
+
+## R16. Editing in place, compact header, archived KPIs (fourth review)
+
+- **Decision**: `EventForm` gets an `embedded` mode (no title bar, full width of the step) shown in
+  the Submission step to those `canEditEvent` allows (Open events only, R8); its standalone page
+  stays for new events and drafts and sends a submitted event to its page. The header card has a
+  `compact` variant on the steps page. The KPIs page counts the Archived events of the current
+  search and filters (status forced to Archived) and draws them with the same stacked column
+  component as the events-by-type chart (`StackedColumnChart`).
+- **Rationale**: One place to read and edit an event; less vertical space; one chart component
+  for both charts.

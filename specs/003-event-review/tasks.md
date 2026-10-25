@@ -354,3 +354,18 @@ a submitted event (spec Clarifications, third review)
   banner after a submit, Submission with sections and Edit; Open event in `EventExpanded.jsx` opens
   the current step and the Workflow steps link is removed
 - [X] T047 Run `npm test`, `npm run build` and quickstart scenarios 16–18 in `apps/event-reporting/`
+
+## Phase 13: Fourth review — compact header, archived KPIs, editing in place
+
+**Independent Test**: Quickstart scenarios 19–20
+
+- [X] T048 [P] [US3] Compact header card (`compact` prop of `EventHeadCard` in
+  `apps/event-reporting/src/events/EventDetail.jsx`, styles in `app.css`) on the steps page
+- [X] T049 [P] Add `countArchivedByReason` to `apps/event-reporting/src/logic/eventList.js` with a
+  test; extract `apps/event-reporting/src/events/StackedColumnChart.jsx` from `EventsByTypeChart.jsx`;
+  add `ArchivedByReasonChart.jsx` and the "Archived events" number in `KpiOverview.jsx` and
+  `EventLibrary.jsx`
+- [X] T050 [US5] Embedded mode of `apps/event-reporting/src/create/EventForm.jsx` shown in the
+  Submission step of `events/EventSteps.jsx` for those who may edit, with `EventHistory`; no Edit
+  link in `events/EventExpanded.jsx`; the standalone edit page sends submitted events to their page
+- [X] T051 Run `npm test`, `npm run build` and quickstart scenarios 19–20 in `apps/event-reporting/`
