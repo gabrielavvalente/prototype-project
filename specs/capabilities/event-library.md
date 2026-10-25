@@ -32,9 +32,12 @@ with its workflow steps.
   marks it "Applied" in the menu and shows one badge "Saved filter: <name>" (removing it clears
   it); presets can be deleted. "No saved
   filters yet" when empty.
-- **EL-5** Search, filters and saved filters combine, and every count and chart follows them.
-- **EL-6** "SIP" means: the submission's SIP answer until the event is reviewed, then the review's
-  critical flags (domain Critical events). Critical flags show as red badges on cards, rows and
+- **EL-5** Search, filters and saved filters combine, and every count and chart follows them — the
+  Archived count and chart follow the search and every filter except Status.
+- **EL-6** "SIP" (the With SIP chip, the SIP filter, the Events with SIP number) means the SIP flag
+  only: the submission's "Could this be a SIP?" answer until the event is reviewed, then whether a
+  valid review flagged it SIP (an archived event is not SIP). HCI, SPL, HCL and the CRP / SRP
+  answers do not count. Critical flags show as red badges on cards, rows and
   the event page.
 
 ### Events page
@@ -61,7 +64,7 @@ with its workflow steps.
 
 - **EL-12** Four numbers: **Events with SIP** ("Submitted with serious incident potential"),
   **Open actions** (0, "Counted once action plans are available"), **Events in progress**
-  ("Submitted and not yet closed") and **Archived events** ("Reviewed as not valid"). Events with
+  ("Submitted and not yet closed": status Open or In Progress) and **Archived events** ("Reviewed as not valid"). Events with
   SIP, Events in progress and Archived events open the Events page narrowed to them.
 - **EL-13** **Reported events by type**: a stacked column per type (family), split by level in the
   pillar's color ("Darker shades are more serious levels."), every type and level listed even when

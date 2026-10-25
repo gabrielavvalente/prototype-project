@@ -35,17 +35,21 @@ needed; submitting gives it a record number, its workflow and alerts the plant's
     explosion or loss of the site?"
   - "Could this be a SRP? (Serious Risk Potential)" — "Could this have led to serious damage or a
     long stop of operations?"
-- **ER-6** A TF5 answered SIP = Yes (in either order) becomes TF4, with a warning explaining it.
-  Changing pillar or level clears the risk answer.
+- **ER-6** A TF5 answered SIP = Yes becomes TF4, with a warning explaining it — whether the answer
+  or the level comes last. Changing the pillar clears the risk answer; changing the level keeps it
+  when the question stays the same (e.g. TF4 → TF5 keeps the SIP answer) and clears it otherwise.
 
 ### Location
 
 - **ER-7** The location picker offers three ways: typing part of any level's name ("Type a
   department, workshop, station…", results with the full path; "No location matches — try
-  browsing below"), browsing one level at a time, and **Scan QR code** of a station where the
-  browser can ("QR code read. Choose a deeper level below."; otherwise "QR code scanning is not
-  available in this browser. Search or browse the location instead."; camera refused: "The camera
-  could not be opened. Allow camera access, or search or browse instead.").
+  browsing below"), browsing one level at a time, and **Scan QR code** where the browser can. A
+  station's QR code holds the identifier of a location node: a node deep enough for the level
+  fills the location; a higher node opens browsing there ("QR code read. Choose a deeper level
+  below."); otherwise "This QR code is not a known location." or "This QR code belongs to another
+  plant.". Without scanning support: "QR code scanning is not available in this browser. Search or
+  browse the location instead."; camera refused: "The camera could not be opened. Allow camera
+  access, or search or browse instead."
 - **ER-8** Required: the full path down to the task and a task type (Routine, Non-routine) —
   except TF4 and TF5, which need only department and workshop (task type optional).
 
@@ -58,8 +62,8 @@ needed; submitting gives it a record number, its workflow and alerts the plant's
   only (jpg, jpeg, png, gif, webp, heic, mp4, mov, webm). A refused file is not attached and says
   why: "You can attach at most 5 files." / "<name>" is not allowed. Only photos and videos can be
   attached." / "<name>" is larger than 5 MB.".
-- **ER-11** Employee type (Employee, Temporary Worker, Permanent Contractor, Non-Permanent
-  Contractor, Other) and the person involved: for Employee, a searchable user of the plant;
+- **ER-11** For every pillar and level: employee type (Employee, Temporary Worker, Permanent
+  Contractor, Non-Permanent Contractor, Other) and the person involved: for Employee, a searchable user of the plant;
   otherwise their name (required) and "What was the person doing?" (optional).
 - **ER-12** For TF1–TF3: "What was the first aid treatment?", one or more of: Wound cleaning and
   dressing, Plaster or bandage, Cold compress, Eye wash, Burn care, Splint or immobilisation,
@@ -103,7 +107,8 @@ needed; submitting gives it a record number, its workflow and alerts the plant's
 - **ER-18** A complete **Submit** gives the record number (domain), copies the workflow
   ([workflow settings](workflow-settings.md) WF-11), sets the status Open — or Closed when nothing
   besides Submission is required — and sends "Event submitted" to every Manager who can see the
-  event, and "Event shared with you" to each Shared with person not already alerted.
+  event (the reporting Manager included), and "Event shared with you" to each Shared with person
+  not already alerted.
 - **ER-19** After any save the event's page opens with a banner: "Event <record> was submitted. The
   Managers of this plant have been alerted." (with "and closed right away (no other phase
   required)" when Closed, and a **Report another event** link for those who can report) · "Your
@@ -113,7 +118,9 @@ needed; submitting gives it a record number, its workflow and alerts the plant's
 
 - **ER-20** The author reopens their draft from the list, continues and submits it.
 - **ER-21** A Manager who can see the event edits an **Open** event right in its Submission step,
-  with the same form and rules and a **Save changes** button (no draft, no automatic save). Once
+  with the same form and rules and a **Save changes** button (no draft, no automatic save). The
+  record number, the status and the workflow taken at submission do not change, even if the level
+  does; nobody is alerted. Once
   reviewed (In Progress, Archived, Closed) nobody edits the submission; the review corrects it.
 - **ER-22** Every event records who created it and when, and who last changed it and when.
 
@@ -121,7 +128,7 @@ needed; submitting gives it a record number, its workflow and alerts the plant's
 
 From freshly reset [demo data](platform-data.md), in the context Automotive Parts › Lyon.
 
-1. **Quick report** — Ana Ribeiro (User) creates an event in 3 taps: H&S, TF, TF4, SIP No,
+1. **Quick report** — Ana Ribeiro (User) creates an event in 3 taps: H&S, TF4, SIP No,
    department and workshop only, title, description, Employee = herself, shift, recurrence No →
    Submit. *Then* it is Open as `TF-26-0013`, the banner says "Event TF-26-0013 was submitted. The
    Managers of this plant have been alerted.", and Carla Mendes, Diego Laurent and Lucas Weber

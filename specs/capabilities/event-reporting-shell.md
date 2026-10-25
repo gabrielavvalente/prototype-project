@@ -43,15 +43,16 @@ The frame of Event Reporting: choosing where to work, the header and navigation,
 
 ### Alerts
 
-- **ES-9** The bell opens **Notifications**: the person's alerts, newest first, each with its event
+- **ES-9** The bell opens **Notifications**: the person's alerts about events of the current
+  context (the others show when the person switches to their plant or pillar), newest first, each with its event
   and type and a relative time ("just now", "5 min ago", "2h ago", "3d ago", then the date);
   unread ones are marked "Unread". Opening one opens its event and marks it read; **Mark all read**
   marks them all. Empty: "No notifications yet.".
 
 ### Search
 
-- **ES-10** Searching opens **Search events**: live results by title or record number within the
-  context ("No event matches your search"), each with its record number (or "Draft") and pillar;
+- **ES-10** Searching opens **Search events**: live results within the context — titles containing
+  the text, or the event whose record number is exactly the text (ignoring case) ("No event matches your search"), each with its record number (or "Draft") and pillar;
   pressing Enter on an exact record number opens that event. Without a search it shows the
   person's last 5 searches, kept on the device ("Your last searches will appear here."). **Cancel**
   goes back.
@@ -64,8 +65,8 @@ From freshly reset [demo data](platform-data.md).
    for Lyon and Browse all pillars. She chooses Environment: the list shows only Lyon
    Environment events; Create event opens with Environment and its only family already chosen,
    starting at the level. (ES-1, ES-3)
-2. **Remembered context** — Carla switches user and signs in again: she lands in Lyon,
-   Environment. (ES-2)
+2. **Remembered context** — Carla switches user and signs in again: the start screen is for Lyon
+   with Environment marked as her current pillar. (ES-1, ES-2)
 3. **Account** — Diego Laurent's Account offers Business (Automotive Parts, Packaging); choosing
    Packaging switches to Porto. Ana Ribeiro's Account shows no Business choice. (ES-6)
 4. **Role navigation** — Eva Novak (Site Admin) has no Create event, no New and a disabled bell;
