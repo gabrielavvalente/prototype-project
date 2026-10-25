@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { getPlantName } from '../../../../shared/platform/organization.js';
 import { validReviewers } from '../../../../shared/platform/workflow.js';
@@ -18,14 +19,14 @@ export default function ReviewersPicker({ pillarId, plantIds, levelCode, initial
   }
 
   const footer = (
-    <button
+    <Button
       type="button"
       className="button button--primary button--block"
       disabled={selectedIds.length === 0}
       onClick={() => onDone(selectedIds.filter((id) => candidates.some((user) => user.id === id)))}
     >
       {selectedIds.length === 0 ? 'Choose at least one reviewer' : `Done — ${selectedIds.length} selected`}
-    </button>
+    </Button>
   );
 
   return (

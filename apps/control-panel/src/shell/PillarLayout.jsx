@@ -1,4 +1,5 @@
-import { NavLink, Outlet, useParams } from 'react-router-dom';
+import { Tabs } from '@mantine/core';
+import { NavLink, Outlet, useLocation, useParams } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { getRole, LEVEL_LABELS } from '../../../../shared/platform/permissions.js';
 import NotAllowed from './NotAllowed.jsx';
@@ -14,6 +15,7 @@ const TABS = [
 // Pages below get the pillar and the user's role through the outlet context.
 export default function PillarLayout() {
   const { pillarId } = useParams();
+  const location = useLocation();
   const { user, organization, reference } = useApp();
   const pillar = getPillars(reference).find((item) => item.id === pillarId);
   if (!pillar) {
@@ -23,9 +25,14 @@ export default function PillarLayout() {
   if (!role) {
     return <NotAllowed />;
   }
+  const activeTab = location.pathname.includes('/master-data')
+    ? 'master-data'
+    : location.pathname.endsWith('/audit')
+      ? 'audit'
+      : 'workflow';
 
   return (
-    <>
+    <div className="pillar-workspace">
       <div className="context-bar">
         <span className="context-chip">
           <span className={pillarDotClass(pillar.id)} aria-hidden="true" />
@@ -34,14 +41,16 @@ export default function PillarLayout() {
           <span className="context-plants">{describePlants(role, organization)}</span>
         </span>
       </div>
-      <nav className="tabs" aria-label={`${pillar.label} sections`}>
-        {TABS.map((tab) => (
-          <NavLink key={tab.path} to={tab.path} className="tab">
-            {tab.label}
-          </NavLink>
-        ))}
-      </nav>
+      <Tabs value={activeTab} className="workspace-tabs">
+        <Tabs.List aria-label={`${pillar.label} sections`}>
+          {TABS.map((tab) => (
+            <Tabs.Tab key={tab.path} value={tab.path} component={NavLink} to={tab.path}>
+              {tab.label}
+            </Tabs.Tab>
+          ))}
+        </Tabs.List>
+      </Tabs>
       <Outlet context={{ pillar, role }} />
-    </>
+    </div>
   );
 }

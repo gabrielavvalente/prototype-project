@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { validateValue } from '../../../../shared/platform/masterData.js';
 import { saveValue } from '../../../../shared/platform/platformData.js';
@@ -47,9 +48,9 @@ export default function ValueForm({ list, value, values, onSaved, onClose }) {
   }
 
   const footer = (
-    <button type="submit" form="value-form" className="button button--primary button--block">
+    <Button type="submit" form="value-form" className="button button--primary button--block">
       {value ? 'Save changes' : 'Add value'}
-    </button>
+    </Button>
   );
 
   return (

@@ -1,19 +1,41 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { Button } from '@mantine/core';
+import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { allowedValueActions, isAvailable, visibleValues } from '../../../../shared/platform/masterData.js';
-import { setActivation, setValueStatus } from '../../../../shared/platform/platformData.js';
+import { parseCsv, toCsv } from '../../../../shared/platform/csv.js';
+import { importValues, setActivation, setValueStatus } from '../../../../shared/platform/platformData.js';
 import { getPlantName } from '../../../../shared/platform/organization.js';
 import { getRole } from '../../../../shared/platform/permissions.js';
+import Icon from '../shell/Icon.jsx';
 import { describePlants } from '../shell/roleText.js';
 
 const STATUS_TAGS = { Active: 'tag--teal', Inactive: 'tag--outline', Retired: 'tag--dark' };
 
+// Saves text as a file in the browser's downloads.
+function downloadFile(fileName, text) {
+  // The byte order mark lets Excel open accents correctly.
+  const url = URL.createObjectURL(new Blob(['﻿', text], { type: 'text/csv;charset=utf-8' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function countText(count, word) {
+  return `${count} ${word}${count === 1 ? '' : 's'}`;
+}
+
 // The values of one list: owner, status, availability at the chosen plant and the actions the
 // user may take (FR-015 to FR-018). Body Parts are grouped by category.
-export default function ValueList({ list, values, activations, plantId, onEdit, onChanged }) {
+export default function ValueList({ list, values, activations, plants, plantId, onPlantChange, canImport, onCreate, onEdit, onChanged }) {
   const { user, organization } = useApp();
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('q') || '');
   const [error, setError] = useState('');
+  const [importErrors, setImportErrors] = useState([]);
+  const fileInput = useRef(null);
   const role = getRole(user, list.pillarId);
   const myPlants = role ? describePlants(role, organization) : '';
   const plantName = getPlantName(organization, plantId);
@@ -31,6 +53,39 @@ export default function ValueList({ list, values, activations, plantId, onEdit, 
       onChanged(message);
     } catch (actionError) {
       setError(actionError.message);
+    }
+  }
+
+  // Every value shown, with the columns an import reads back (Code, Name, Description, Category).
+  function exportValues() {
+    const categoryName = (value) => values.find((item) => item.id === value.parentId)?.name ?? '';
+    const header = [...(list.hasCode ? ['Code'] : []), 'Name', 'Description', ...(list.parentListId ? ['Category'] : []), 'Owner', 'Status', `Available at ${plantName}`];
+    const rows = shown.map((value) => [
+      ...(list.hasCode ? [value.code] : []),
+      value.name,
+      value.description,
+      ...(list.parentListId ? [categoryName(value)] : []),
+      owner(value),
+      value.status,
+      isAvailable(value, values, activations, plantId) ? 'Yes' : 'No',
+    ]);
+    downloadFile(`${list.label.toLowerCase().replaceAll(' ', '-')}.csv`, toCsv([header, ...rows]));
+  }
+
+  async function importFile(file) {
+    setError('');
+    setImportErrors([]);
+    try {
+      const plan = await importValues(user, list.id, parseCsv(await file.text()));
+      if (plan.errors.length > 0) {
+        setImportErrors(plan.errors);
+        return;
+      }
+      const added = plan.changes.filter((change) => !change.before).length;
+      const skipped = plan.skipped.length > 0 ? `, ${plan.skipped.length} left unchanged (owned by another level)` : '';
+      onChanged(`Import done: ${countText(added, 'value')} added, ${plan.changes.length - added} updated${skipped}.`);
+    } catch (importError) {
+      setError(importError.message);
     }
   }
 
@@ -107,16 +162,76 @@ export default function ValueList({ list, values, activations, plantId, onEdit, 
 
   return (
     <>
-      <div className="field list-search">
-        <label className="field-label" htmlFor="value-search">
-          Search {list.label.toLowerCase()}
-        </label>
-        <input id="value-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} />
+      <div className="list-toolbar">
+        <div className="field list-search">
+          <label className="field-label" htmlFor="value-search">
+            Search {list.label.toLowerCase()}
+          </label>
+          <input id="value-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
+        <div className="field list-availability">
+          <label className="field-label" htmlFor="availability-plant">
+            Availability for
+          </label>
+          <select id="availability-plant" value={plantId} onChange={(e) => onPlantChange(e.target.value)}>
+            {plants.map((plant) => (
+              <option key={plant.id} value={plant.id}>
+                {plant.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="list-toolbar-actions">
+          <button type="button" className="button button--secondary" onClick={exportValues} disabled={shown.length === 0}>
+            Export CSV
+          </button>
+          {canImport && (
+            <>
+              <button type="button" className="button button--secondary" onClick={() => fileInput.current.click()}>
+                Import CSV
+              </button>
+              <input
+                ref={fileInput}
+                type="file"
+                accept=".csv,text/csv"
+                hidden
+                onChange={(e) => {
+                  if (e.target.files[0]) importFile(e.target.files[0]);
+                  e.target.value = '';
+                }}
+              />
+            </>
+          )}
+          {onCreate && (
+            <Button type="button" className="button button--primary" leftSection={<Icon name="plus" size={18} />} onClick={onCreate}>
+              Create {list.label}
+            </Button>
+          )}
+        </div>
       </div>
+      {canImport && (
+        <p className="field-hint">
+          Import reads the columns {list.hasCode && 'Code, '}Name, Description{list.parentListId && ', Category'}: a row
+          with the {list.hasCode ? 'code' : 'name'} of one of your values changes it, other rows add values. Export
+          first to get a file in the right format.
+        </p>
+      )}
       {error && (
         <p className="message message--error" role="alert">
           {error}
         </p>
+      )}
+      {importErrors.length > 0 && (
+        <div className="message message--error" role="alert">
+          <p>Nothing was imported. Fix these lines and import the file again:</p>
+          <ul>
+            {importErrors.map((item) => (
+              <li key={item.line}>
+                Line {item.line}: {item.message}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
       <p className="result-count">
         {shown.length} value{shown.length === 1 ? '' : 's'}

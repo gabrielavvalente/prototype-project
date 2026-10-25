@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Select } from '@mantine/core';
 import { useOutletContext } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { getList, listsForPillar } from '../../../../shared/platform/masterData.js';
@@ -49,32 +50,24 @@ export default function AuditTab() {
     <main className="page">
       <h1>Audit</h1>
       <div className="filter-row">
-        <div className="field">
-          <label className="field-label" htmlFor="audit-subject">
-            What
-          </label>
-          <select id="audit-subject" value={subject} onChange={(e) => setSubject(e.target.value)}>
-            <option value="">Everything</option>
-            {subjects.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="field">
-          <label className="field-label" htmlFor="audit-user">
-            Who
-          </label>
-          <select id="audit-user" value={userId} onChange={(e) => setUserId(e.target.value)}>
-            <option value="">Everyone</option>
-            {authors.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select
+          label="What"
+          value={subject || '__all__'}
+          onChange={(value) => setSubject(value === '__all__' ? '' : value ?? '')}
+          data={[{ value: '__all__', label: 'Everything' }, ...subjects.map((item) => ({ value: item.id, label: item.label }))]}
+          allowDeselect={false}
+          placeholder="Everything"
+          comboboxProps={{ withinPortal: true }}
+        />
+        <Select
+          label="Who"
+          value={userId || '__all__'}
+          onChange={(value) => setUserId(value === '__all__' ? '' : value ?? '')}
+          data={[{ value: '__all__', label: 'Everyone' }, ...authors.map((author) => ({ value: author.id, label: author.name }))]}
+          allowDeselect={false}
+          placeholder="Everyone"
+          comboboxProps={{ withinPortal: true }}
+        />
       </div>
       <p className="result-count">
         {shown.length} change{shown.length === 1 ? '' : 's'}

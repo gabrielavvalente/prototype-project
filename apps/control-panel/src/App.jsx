@@ -11,6 +11,7 @@ import PillarPicker from './shell/PillarPicker.jsx';
 import StartScreen from './shell/StartScreen.jsx';
 import MasterDataTab from './masterData/MasterDataTab.jsx';
 import WorkflowTab from './workflow/WorkflowTab.jsx';
+import SearchPage from './shell/SearchPage.jsx';
 
 // Every signed-in page: header on top, the page below. Only people holding a Control Panel role
 // get past it (FR-002).
@@ -33,6 +34,7 @@ const router = createHashRouter([
     element: <SignedInLayout />,
     children: [
       { path: 'pillars', element: <PillarPicker /> },
+      { path: 'search', element: <SearchPage /> },
       {
         path: 'pillars/:pillarId',
         element: <PillarLayout />,

@@ -4,6 +4,9 @@ Set, per pillar, which event workflow phases are required at each level (Central
 Local) and govern the master data lists (Standards, Hazards, Body Parts, Injuries, Aspects,
 Impacts, Industrial Risk Categories). Prototype: demo users, data kept in the browser and shared
 with the other apps.
+The desktop-first workspace uses Mantine components for navigation, dialogs, filters and primary
+actions while retaining the shared Poppins typography and product colors. Tables and controls adapt
+to smaller screens with contained horizontal scrolling and stacked layouts.
 
 ## How to run
 
@@ -31,7 +34,7 @@ Then check by hand, through the launcher, with the browser console open (no erro
 1. As Ludovic Costa (Central) → Health & Safety → Workflow: turn Review on for TF5 and pick a
    reviewer.
 2. As Lucas Weber (Cluster) the Review cells are locked; turn Root cause on for TF2. Result per
-   plant shows who requires each phase; Compare plants shows Lyon and Porto.
+   plant shows who requires each phase for a selected plant.
 3. As Carla Mendes (Local Lyon) switch off a setting Eva Novak made → Eva gets a notification.
 4. Master data: as Lucas add a Hazard and deactivate a Standard for his plants; as Eva only
    deactivate / reactivate. Audit lists every change.

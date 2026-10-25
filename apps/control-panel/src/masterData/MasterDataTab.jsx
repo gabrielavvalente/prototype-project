@@ -83,24 +83,6 @@ export default function MasterDataTab() {
             {!list.readOnly && !list.fixedGlobal && 'Central maintains global values; Clusters add their own; everyone can switch values off for their plants.'}
           </p>
         </div>
-        {canAdd && (
-          <button type="button" className="button button--primary" onClick={() => setForm({ value: null })}>
-            <Icon name="plus" size={18} /> Add value
-          </button>
-        )}
-      </div>
-
-      <div className="field field--inline">
-        <label className="field-label" htmlFor="availability-plant">
-          Availability for
-        </label>
-        <select id="availability-plant" value={plantId} onChange={(e) => setPlantId(e.target.value)}>
-          {plants.map((plant) => (
-            <option key={plant.id} value={plant.id}>
-              {plant.name}
-            </option>
-          ))}
-        </select>
       </div>
 
       {saved && (
@@ -114,7 +96,11 @@ export default function MasterDataTab() {
           list={list}
           values={data.values}
           activations={data.activations}
+          plants={plants}
           plantId={plantId}
+          onPlantChange={setPlantId}
+          canImport={canAdd}
+          onCreate={canAdd ? () => setForm({ value: null }) : null}
           onEdit={(value) => setForm({ value })}
           onChanged={handleChanged}
         />
