@@ -3772,7 +3772,7 @@ a.step-link:hover {
   padding: 0;
 }
 
-/* Root cause analysis (004): overview, parts as cards, 5 Why legs side by side. */
+/* Root cause analysis (004): overview, parts as cards, 5W1H/6M lists, 5 Why tree. */
 .rca-assigned {
   margin: 0 0 8px;
   font-size: var(--font-size-small);
@@ -3786,13 +3786,6 @@ a.step-link:hover {
   padding: 0;
   font-size: var(--font-size-small);
   list-style: none;
-}
-
-.rca-grid {
-  display: grid;
-  /* min() keeps one column inside the card on narrow phones. */
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-  gap: 12px;
 }
 
 .rca-list {
@@ -3814,45 +3807,6 @@ a.step-link:hover {
   margin-bottom: 0;
 }
 
-.rca-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.rca-part-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.rca-part-actions--column {
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.five-why {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-}
-
-.five-why-leg {
-  flex: 0 0 260px;
-}
-
-.five-why-leg h4 {
-  margin: 0 0 8px;
-}
-
-.five-why-leg .rca-list {
-  display: grid;
-  gap: 8px;
-}
-
 .why-card--root {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
@@ -3864,6 +3818,314 @@ a.step-link:hover {
   gap: 10px;
 }
 
-.five-why-leg {
-  max-width: 85vw;
+/* 5W1H and 6M (ui-ux designs): a list of sections or themes on the left, the content on the right;
+   stacked on phones. */
+.rca-split {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) 1fr;
+  gap: 20px;
+}
+
+.rca-nav {
+  padding-right: 16px;
+  border-right: 1px solid var(--color-border);
+}
+
+.rca-nav ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rca-nav-title {
+  margin: 0 0 8px;
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.rca-nav .rca-nav-title:not(:first-child) {
+  margin-top: 20px;
+}
+
+.rca-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rca-nav-item[aria-current='true'] {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.rca-nav-note {
+  margin-left: auto;
+  font-size: var(--font-size-small);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.rca-guidance {
+  padding-left: 18px !important;
+  list-style: disc !important;
+  font-size: var(--font-size-small);
+}
+
+.rca-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.rca-panel h4 {
+  margin: 0;
+  color: var(--color-primary-dark);
+}
+
+.rca-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rca-questions {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 24px;
+}
+
+.sixm-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: 10px 16px;
+  margin-top: 8px;
+}
+
+.rca-divider {
+  width: 100%;
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.rca-panel .rca-list {
+  display: grid;
+  gap: 10px;
+}
+
+/* A C1, C2… explanation card of 6M. */
+.qa-card {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.qa-card-number {
+  display: grid;
+  place-items: center;
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-weight: 700;
+}
+
+.qa-card-body {
+  padding: 10px 12px;
+}
+
+/* 5 Why tree: a why and its only next why stack; several next whys sit side by side. */
+.five-why {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.why-branches {
+  display: grid;
+  gap: 10px;
+}
+
+.why-branches--split {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.why-path {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+/* Cards keep one width; a path grows with the branches below it. */
+.why-path > .why-card {
+  width: 280px;
+  max-width: 80vw;
+}
+
+.why-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rca-subheading {
+  margin: 20px 0 8px;
+}
+
+.action-summary h4 {
+  margin: 0;
+}
+
+.action-summary-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin: 8px 0;
+  font-size: var(--font-size-small);
+}
+
+.action-summary-facts dt {
+  color: var(--color-muted);
+}
+
+.action-summary-facts dd {
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .rca-split {
+    grid-template-columns: 1fr;
+  }
+
+  .rca-nav {
+    padding-right: 0;
+    padding-bottom: 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+/* Immediate actions in the root cause analysis: one compact line each (004 FR-007a). */
+.immediate-compact {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+}
+
+.immediate-compact-list {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.immediate-compact-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 4px 4px 4px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: var(--font-size-small);
+}
+
+.immediate-compact-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.immediate-compact-meta {
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.immediate-compact-buttons {
+  display: flex;
+}
+
+/* A part title that opens and closes the part (5W1H, 5 Why). */
+.part-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.part-toggle:disabled {
+  color: var(--color-muted);
+  cursor: not-allowed;
+}
+
+/* The 6M cause heading a 5 Why column: shown, not edited. */
+.why-card--cause {
+  background: var(--color-surface-muted);
+}
+
+.action-modal-why {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--color-primary);
+  background: var(--color-surface-muted);
+}
+
+.action-modal-why p {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 479px) {
+  .immediate-compact-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .immediate-compact-meta {
+    grid-row: 2;
+    white-space: normal;
+  }
+}
+
+/* Actions under 5 Why: the why on its own line above the action (004 FR-011a). */
+.action-compact-why {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  color: var(--color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.why-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.why-card-remove {
+  margin-left: auto;
 }

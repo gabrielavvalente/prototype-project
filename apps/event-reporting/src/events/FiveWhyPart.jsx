@@ -1,73 +1,105 @@
-import { Button, Switch, Textarea } from '@mantine/core';
-import ChipGroup from '../create/ChipGroup.jsx';
-import { MAX_WHYS, newLeg, newWhy, ROOT_CAUSE_TYPES } from '../logic/rootCause.js';
+import { Badge, Button, Switch, Textarea } from '@mantine/core';
+import { addWhyBelow, branchWhy, causeName, childrenOf, MAX_WHYS, whyDepth } from '../logic/rootCause.js';
 import Icon from '../shell/Icon.jsx';
 
-// One why of a leg: the answer, and whether it is a root cause (then Behavioral or Conditional).
-function WhyCard({ why, number, onChange }) {
+// One why: the answer, whether it is a root cause (the card is highlighted), its actions and what
+// can be done from it. Actions need an answer first.
+function WhyCard({ why, depth, actionCount, canRemove, readOnly, onChange, onAddBelow, onBranch, onAddAction, onRemove }) {
   const isRoot = Boolean(why.rootCause);
+  const answered = Boolean(why.answer.trim());
   return (
-    <li className={`rca-card why-card${isRoot ? ' why-card--root' : ''}`}>
-      <Textarea label={`Why ${number}`} minRows={2} autosize value={why.answer} onChange={(e) => onChange({ answer: e.target.value })} />
-      <Switch
-        mt="xs"
-        label="Root cause"
-        checked={isRoot}
-        onChange={(e) => onChange({ rootCause: e.currentTarget.checked ? 'unclassified' : null })}
-      />
-      {isRoot && (
-        <ChipGroup
-          id={`why-${why.id}-type`}
-          label="Root cause type"
-          required
-          value={why.rootCause === 'unclassified' ? '' : why.rootCause}
-          options={ROOT_CAUSE_TYPES}
-          onChange={(rootCause) => onChange({ rootCause })}
-        />
+    <div className={`rca-card why-card${isRoot ? ' why-card--root' : ''}`}>
+      <div className="why-card-head">
+        <strong>Why {depth}</strong>
+        {actionCount > 0 && (
+          <Badge variant="light" size="sm">
+            {actionCount} action{actionCount > 1 ? 's' : ''}
+          </Badge>
+        )}
+        {!readOnly && canRemove && (
+          <button type="button" className="icon-button why-card-remove" onClick={onRemove}>
+            <Icon name="close" size={16} label={`Delete why ${depth}`} />
+          </button>
+        )}
+      </div>
+      <Textarea aria-label={`Why ${depth}`} minRows={2} autosize value={why.answer} onChange={(e) => onChange({ answer: e.target.value })} />
+      <Switch label="Root cause" checked={isRoot} onChange={(e) => onChange({ rootCause: e.currentTarget.checked })} />
+      {!readOnly && (
+        <div className="why-card-actions">
+          {onAddBelow && (
+            <Button type="button" variant="default" size="compact-xs" leftSection={<Icon name="plus" size={12} />} onClick={onAddBelow}>
+              Add why
+            </Button>
+          )}
+          <Button type="button" variant="default" size="compact-xs" onClick={onBranch} aria-label={`Branch why ${depth}: add an alternative answer`}>
+            Branch
+          </Button>
+          <Button
+            type="button"
+            variant="default"
+            size="compact-xs"
+            disabled={!answered}
+            title={answered ? undefined : 'Write the answer first'}
+            onClick={onAddAction}
+          >
+            Add action
+          </Button>
+        </div>
       )}
-    </li>
+    </div>
   );
 }
 
-// 3-legged 5 Why: legs side by side, up to 5 whys each, branching into a new parallel leg (004
-// FR-010, FR-011).
-export default function FiveWhyPart({ legs, onChange, readOnly }) {
-  const setLeg = (legId, whys) => onChange(legs.map((leg) => (leg.id === legId ? { ...leg, whys } : leg)));
-  const setWhy = (leg, whyId, changes) => setLeg(leg.id, leg.whys.map((why) => (why.id === whyId ? { ...why, ...changes } : why)));
-  const branch = (index) => onChange([...legs.slice(0, index + 1), newLeg(), ...legs.slice(index + 1)]);
+// 5 Why as a tree under the 6M causes (004 FR-010, FR-011): each cause heads a column with the
+// explanation given in 6M; a why and its only next why stack; several next whys sit side by side.
+// Branch on any why adds an alternative answer beside it.
+export default function FiveWhyPart({ causes, whys, onChange, actions, readOnly, onAddAction, onRemoveWhy }) {
+  const setWhy = (id, changes) => onChange(whys.map((why) => (why.id === id ? { ...why, ...changes } : why)));
+
+  // A plain function, not a component, so the cards keep their focus while typing.
+  function renderBranches(parentId) {
+    const children = childrenOf(whys, parentId);
+    if (children.length === 0) return null;
+    return (
+      <div className={`why-branches${children.length > 1 ? ' why-branches--split' : ''}`}>
+        {children.map((why) => {
+          const depth = whyDepth(whys, why);
+          const hasNext = childrenOf(whys, why.id).length > 0;
+          const isFirst = !whys.some((item) => item.id === why.parentId);
+          return (
+            <div key={why.id} className="why-path">
+              <WhyCard
+                why={why}
+                depth={depth}
+                actionCount={actions.filter((action) => action.whyId === why.id).length}
+                canRemove={!(isFirst && children.length === 1)}
+                readOnly={readOnly}
+                onChange={(changes) => setWhy(why.id, changes)}
+                onAddBelow={!hasNext && depth < MAX_WHYS ? () => onChange(addWhyBelow(whys, why.id)) : null}
+                onBranch={() => onChange(branchWhy(whys, why.id))}
+                onAddAction={() => onAddAction(why.id)}
+                onRemove={() => onRemoveWhy(why.id)}
+              />
+              {renderBranches(why.id)}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className="five-why">
-      {legs.map((leg, index) => (
-        <section key={leg.id} className="five-why-leg" aria-label={`Leg ${index + 1}`}>
-          <h4>Leg {index + 1}</h4>
-          <ol className="rca-list">
-            {leg.whys.map((why, whyIndex) => (
-              <WhyCard key={why.id} why={why} number={whyIndex + 1} onChange={(changes) => setWhy(leg, why.id, changes)} />
-            ))}
-          </ol>
-          {!readOnly && (
-            <div className="rca-part-actions rca-part-actions--column">
-              <Button type="button" variant="default" size="xs" leftSection={<Icon name="plus" size={14} />} disabled={leg.whys.length >= MAX_WHYS} onClick={() => setLeg(leg.id, [...leg.whys, newWhy()])}>
-                Add why
-              </Button>
-              {leg.whys.length > 1 && (
-                <Button type="button" variant="subtle" size="xs" onClick={() => setLeg(leg.id, leg.whys.slice(0, -1))}>
-                  Remove last why
-                </Button>
-              )}
-              <Button type="button" variant="default" size="xs" onClick={() => branch(index)}>
-                Branch
-              </Button>
-              {legs.length > 1 && (
-                <Button type="button" variant="subtle" color="red" size="xs" onClick={() => onChange(legs.filter((item) => item.id !== leg.id))}>
-                  Remove leg
-                </Button>
-              )}
+      <div className={`why-branches${causes.length > 1 ? ' why-branches--split' : ''}`}>
+        {causes.map((cause, index) => (
+          <div key={cause.id} className="why-path">
+            <div className="rca-card why-card why-card--cause">
+              <Textarea label={`C${index + 1} · ${causeName(cause)}`} value={cause.why} autosize minRows={1} disabled readOnly />
             </div>
-          )}
-        </section>
-      ))}
+            {renderBranches(cause.id)}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -8,10 +8,10 @@ import Icon from '../shell/Icon.jsx';
 import { FieldError } from './fields.jsx';
 
 // Low, Medium, High, Urgent shown with 1 to 4 severity dots, like the levels.
-const PRIORITY_DOTS_LEVEL = { Low: 'TF4', Medium: 'TF3', High: 'TF2', Urgent: 'TF1' };
+export const PRIORITY_DOTS_LEVEL = { Low: 'TF4', Medium: 'TF3', High: 'TF2', Urgent: 'TF1' };
 
 // The completion date and the category (the event's pillar) are added when the event is saved.
-function emptyAction() {
+export function emptyAction() {
   return {
     id: newId(),
     description: '',
@@ -24,7 +24,8 @@ function emptyAction() {
   };
 }
 
-function ActionCard({ action, index, plantUsers, onChange, onRemove, showErrors }) {
+// Also shown in a popup by the root cause analysis, without the remove button (004 FR-007a).
+export function ActionCard({ action, index, plantUsers, onChange, onRemove, showErrors, removable = true }) {
   const { reference } = useApp();
   const errors = showErrors ? validateImmediateAction(action) : [];
   // Field ids are unique per card so labels and errors match the right action.
@@ -45,9 +46,11 @@ function ActionCard({ action, index, plantUsers, onChange, onRemove, showErrors 
         <h3>
           Immediate action {index + 1} <span className="tag tag--teal">COMPLETED</span>
         </h3>
-        <button type="button" className="icon-button" onClick={onRemove}>
-          <Icon name="close" size={18} label={`Remove immediate action ${index + 1}`} />
-        </button>
+        {removable && (
+          <button type="button" className="icon-button" onClick={onRemove}>
+            <Icon name="close" size={18} label={`Remove immediate action ${index + 1}`} />
+          </button>
+        )}
       </div>
       <div className="field">
         <Textarea label="Description" required id={`${prefix}description`} minRows={3} autosize value={action.description} onChange={(e) => set({ description: e.target.value })} />

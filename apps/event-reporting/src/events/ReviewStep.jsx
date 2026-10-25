@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Alert, Button, MultiSelect, Textarea } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { availableValues, listsForPillar } from '../../../../shared/platform/masterData.js';
@@ -21,7 +22,7 @@ import {
   REASON_NEEDING_COMMENT,
   validateReview,
 } from '../logic/review.js';
-import { assigneeIds } from '../logic/rootCause.js';
+import { assigneeIds, canPerformAnalysis } from '../logic/rootCause.js';
 import { assessmentFor, criticalFlagsOf, typedFlag } from '../logic/severity.js';
 import SeverityMatrix from './SeverityMatrix.jsx';
 import SummaryList from './SummaryList.jsx';
@@ -377,6 +378,7 @@ function ValidFields({ event, review, set, errorsFor, masterData }) {
 // analysis (required or asked for), the next required step, or Closed.
 export default function ReviewStep({ event, onSaved }) {
   const { user, users } = useApp();
+  const navigate = useNavigate();
   const [masterData, setMasterData] = useState(null);
   const [review, setReview] = useState(() => startingReview(event));
   const [errors, setErrors] = useState({});
@@ -414,6 +416,11 @@ export default function ReviewStep({ event, onSaved }) {
             type: 'Root cause analysis assigned to you',
           }));
     await save(reviewed, alerts);
+    // A reviewer who also performs the analysis goes straight to it; others see the review summary
+    // (004 FR-003a).
+    if (canPerformAnalysis(user, reviewed, investigationGroups)) {
+      navigate(`/events/${event.recordNumber}/steps/rootCause`);
+    }
   }
 
   if (event.review?.decision) {
