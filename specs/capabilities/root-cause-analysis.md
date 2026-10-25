@@ -1,8 +1,9 @@
 # Capability: Root cause analysis
 
 **Product**: Event Reporting (the step and the designation), User Management (Groups tab)
-**Builds on**: [domain](../domain.md) (roles, visibility, workflow and steps), Event reporting
-(immediate actions), Event review (the review form and its decision)
+**Builds on**: [domain](../domain.md) (roles, visibility, workflow and steps),
+[platform data](platform-data.md) (people, groups, demo events), Event reporting (immediate
+actions), Event review (the review form and its decision)
 **Status**: built
 
 The reviewer designates who analyzes a valid event; the designated people find the root causes
@@ -37,8 +38,8 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 
 ### Investigation groups
 
-- **RCA-5** A group has a name, pillars, plants and members. The groups are fixed sample data (see
-  Sample data); nobody edits them.
+- **RCA-5** A group has a name, pillars, plants and members. The groups are fixed demo data
+  ([platform data](platform-data.md)); nobody edits them.
 - **RCA-6** User Management has a read-only **Groups** tab next to Users: name, pillar tags,
   plants, members with their event role; visibility as in the domain.
 
@@ -144,19 +145,11 @@ also offers **Other**.
 | Materials | Defective Material · Hazardous Substance · Inadequate Labelling · Inadequate Packaging · Inadequate Storage · Supplier Quality Problem · Wrong Material | Were the materials the right ones and in good condition? · Were hazardous substances identified and labelled? · Were they stored and handled correctly? |
 | Environment | Noise · Poor Housekeeping · Poor Lighting · Poor Ventilation · Restricted Space / Access · Slippery or Uneven Surface · Temperature / Weather | Was the work area clean and tidy? · Were lighting, noise and temperature suitable? · Was there enough space to work safely? · Did the weather play a part? |
 
-## Sample data
-
-| Group | Pillars | Plants | Members |
-|---|---|---|---|
-| Lyon H&S investigation team | Health & Safety | Lyon | Carla Mendes, Eva Novak, Ana Ribeiro |
-| Cluster electrical safety team | Health & Safety, Industrial Risk | Lyon, Porto | Diego Laurent, Lucas Weber, Gina Rossi |
-| Curitiba EHS team | all four | Curitiba | Felix Tanaka, Ben Okafor |
-| Porto environment team | Environment | Porto | Gina Rossi, Diego Laurent |
-
 ## Acceptance scenarios
 
-From freshly reset demo data. Carla Mendes is a reviewer at Lyon (Health & Safety); `TF-26-0003`
-is an Open TF2 at Lyon whose workflow requires Review and Actions; `TF-26-0006` is an Open TF4.
+From freshly reset [demo data](platform-data.md). Carla Mendes is a reviewer of the Lyon events;
+`TF-26-0003` (TF2) requires Review and Actions; `TF-26-0002` (TF3), `TF-26-0006` (TF4) and
+`EVE-26-0001` (EvE4) require Review only.
 
 1. **Designation required** — Carla reviews `TF-26-0003` as valid with Potential Severe × Medium
    term (SIP, type chosen), "further analyze" Yes. *Then* "Who will perform the root cause
@@ -166,8 +159,8 @@ is an Open TF2 at Lyon whose workflow requires Review and Actions; `TF-26-0006` 
    (RCA-1, RCA-3, RCA-4)
 2. **Alerts** — Eva Novak, Ana Ribeiro and Diego Laurent have one "Root cause analysis assigned to
    you" each; Carla has none. (RCA-2)
-3. **Reviewer stays on the summary** — Carla reviews another Lyon H&S event as valid, leading to
-   the analysis, and designates only Diego Laurent. *Then* she stays on the review summary.
+3. **Reviewer stays on the summary** — Carla reviews `TF-26-0002` as valid, "further analyze"
+   Yes, and designates only Diego Laurent. *Then* she stays on the review summary.
    (RCA-4)
 4. **Not asked** — Carla reviews `TF-26-0006` with "further analyze" No (workflow not requiring
    the analysis). *Then* the designation question is not shown. (RCA-1)
@@ -177,7 +170,8 @@ is an Open TF2 at Lyon whose workflow requires Review and Actions; `TF-26-0006` 
    Save. *Then* the Submission step lists the new immediate action and the history shows
    "Immediate actions updated in the root cause analysis by Diego Laurent". (RCA-8, RCA-9)
 6. **5W1H** — Expand 5W1H, open "What happened?", choose Yes. *Then* 13 numbered questions appear;
-   No hides them. On an Environment event there is no "Who was injured?". (RCA-10)
+   No hides them. Carla reviews `EVE-26-0001` as valid, "further analyze" Yes, designating
+   herself: its 5W1H has no "Who was injured?". (RCA-10)
 7. **6M and the 5 Why gate** — Tick Management › Lack of Resources. *Then* card C1 asks "How did
    "Lack of Resources" contribute to the event occurrence?" and 5 Why stays disabled; answer it.
    *Then* 5 Why opens with a column headed "C1 · Lack of Resources" and its answer (not editable)

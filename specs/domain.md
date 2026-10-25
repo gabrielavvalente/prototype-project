@@ -191,14 +191,14 @@ follows the dependencies.
 
 | Capability | Depends on | Spec |
 |---|---|---|
-| Platform data: organization, people, reference | — | 002 (part) |
+| Platform data: organization, people, reference, demo data | — | [platform-data](capabilities/platform-data.md) |
 | Workflow settings | Platform data | 002 |
 | Master data | Platform data | 002 |
 | User Management (users, groups) | Platform data | 002, 004 (part) |
 | Event reporting (create, draft, submit, edit) | Platform data, workflow settings | 001 |
 | Event library (list, Kanban, search, filters, KPIs, reports) | Event reporting | 001 |
 | Event review (incl. severity and critical events) | Event reporting, master data | 003 |
-| Root cause analysis | Event review | [root-cause-analysis](pilot/root-cause-analysis.md) |
+| Root cause analysis | Event review | [root-cause-analysis](capabilities/root-cause-analysis.md) |
 | Action plan | Root cause analysis | not yet specified |
 | Validation | Action plan | not yet specified |
 
