@@ -281,6 +281,42 @@ const demoUsers = [
 export const users = demoUsers.map(withSiteAdminRoles);
 
 // ---------------------------------------------------------------------------
+// Investigation groups (feature 004): fixed sample groups a reviewer can designate for a root
+// cause analysis. No screen edits them; User Management lists them read-only.
+// ---------------------------------------------------------------------------
+
+export const investigationGroups = [
+  {
+    id: 'group-lyon-hs',
+    name: 'Lyon H&S investigation team',
+    pillarIds: ['pillar-hs'],
+    plantIds: ['plant-lyon'],
+    memberIds: ['user-carla', 'user-eva', 'user-ana'],
+  },
+  {
+    id: 'group-electrical',
+    name: 'Cluster electrical safety team',
+    pillarIds: ['pillar-hs', 'pillar-ir'],
+    plantIds: ['plant-lyon', 'plant-porto'],
+    memberIds: ['user-diego', 'user-lucas', 'user-gina'],
+  },
+  {
+    id: 'group-curitiba-ehs',
+    name: 'Curitiba EHS team',
+    pillarIds: allPillars,
+    plantIds: ['plant-curitiba'],
+    memberIds: ['user-felix', 'user-ben'],
+  },
+  {
+    id: 'group-porto-env',
+    name: 'Porto environment team',
+    pillarIds: ['pillar-env'],
+    plantIds: ['plant-porto'],
+    memberIds: ['user-gina', 'user-diego'],
+  },
+];
+
+// ---------------------------------------------------------------------------
 // Starting workflow settings (only Required ones are stored, research R5). Central requires Review
 // on most levels of each pillar and a few more phases; Eva Novak adds Validation for TF1 at Lyon.
 // The lowest levels (TF5, EvE5, SRE5) require nothing, so their events close right after
