@@ -1,5 +1,7 @@
 // Search, filters, sorting, pages and KPI counts for the event library (FR-026 to FR-031).
 
+import { criticalLabels } from './severity.js';
+
 // Rows per page in the List view, fixed for now (Clarification 2026-10-24, header/list/form review).
 export const PAGE_SIZE = 20;
 
@@ -15,8 +17,9 @@ export const EMPTY_FILTERS = {
   myEvents: false,
 };
 
+// The submission's answer until the event is reviewed; then the review's classification.
 export function isSip(event) {
-  return Boolean(event.riskQuestion && event.riskQuestion.type === 'SIP' && event.riskQuestion.answer === true);
+  return criticalLabels(event).includes('SIP');
 }
 
 // Title contains the text, or the record number is exactly the text (ignoring case).

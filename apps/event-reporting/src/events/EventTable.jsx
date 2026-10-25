@@ -6,6 +6,7 @@ import { getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
 import { SeverityDots } from './EventCard.jsx';
 import EventExpanded from './EventExpanded.jsx';
+import CriticalBadges from './CriticalBadges.jsx';
 import StatusBadge from './StatusBadge.jsx';
 
 // List view columns, in the order agreed in the review (FR-041).
@@ -37,7 +38,11 @@ function Cell({ column, event, lists }) {
     case 'date':
       return event.reportDate;
     case 'title':
-      return event.title || '(no title yet)';
+      return (
+        <span className="cell-title">
+          {event.title || '(no title yet)'} <CriticalBadges event={event} />
+        </span>
+      );
     case 'department':
       return getLabel(lists.organization, event.location.departmentId);
     case 'reporter':

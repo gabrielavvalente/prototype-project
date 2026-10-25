@@ -1,7 +1,7 @@
 import { useApp } from '../AppContext.js';
 import { Badge, Card, Group, Text, Title } from '@mantine/core';
-import { getPillarTagClass, getSeverityDots } from '../logic/display.js';
-import { isSip } from '../logic/eventList.js';
+import { getPillarTagClass, getSeverityDots, isCritical } from '../logic/display.js';
+import CriticalBadges from './CriticalBadges.jsx';
 import { findById, getLabel } from '../logic/lookups.js';
 import Icon from '../shell/Icon.jsx';
 import EventExpanded from './EventExpanded.jsx';
@@ -31,7 +31,7 @@ export default function EventCard({ event, expanded, onToggle }) {
   const { reference, organization, users } = useApp();
   const pillar = findById(reference, event.pillarId);
   const reporter = findById(users, event.reporterId);
-  const critical = isSip(event) || getSeverityDots(event.levelCode) >= 3;
+  const critical = isCritical(event);
   const department = getLabel(organization, event.location.departmentId);
   const detailsId = `card-details-${event.id}`;
 
@@ -40,7 +40,7 @@ export default function EventCard({ event, expanded, onToggle }) {
       <div className="tag-row">
         <PillarTag pillar={pillar} />
         <Badge variant="light" color="blue">{event.levelCode}</Badge>
-        {isSip(event) && <Badge color="red">SIP</Badge>}
+        <CriticalBadges event={event} />
       </div>
       <Text className="event-card-number" size="sm" c="dimmed">{event.recordNumber || 'Draft — no record number yet'}</Text>
       <Title order={2} size="h4" className="event-card-title">

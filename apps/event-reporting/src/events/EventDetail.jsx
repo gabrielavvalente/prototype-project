@@ -5,8 +5,8 @@ import { useApp } from '../AppContext.js';
 import { AttachmentPreview } from '../create/AttachmentInput.jsx';
 import { findEvent, getByIndex } from '../data/db.js';
 import { canEditEvent, getMenuItems, isEventVisible } from '../logic/access.js';
-import { getSeverityDots } from '../logic/display.js';
-import { isSip } from '../logic/eventList.js';
+import { isCritical } from '../logic/display.js';
+import CriticalBadges from './CriticalBadges.jsx';
 import { describeEvent, describeImmediateAction } from '../logic/eventSummary.js';
 import { findById, findLevelByCode, getLabel } from '../logic/lookups.js';
 import { canStartReview, currentStep } from '../logic/review.js';
@@ -111,7 +111,7 @@ export default function EventDetail() {
   const pillar = findById(reference, event.pillarId);
   const level = findLevelByCode(reference, event.levelCode);
   const reporter = findById(users, event.reporterId);
-  const critical = isSip(event) || getSeverityDots(event.levelCode) >= 3;
+  const critical = isCritical(event);
   const sections = describeEvent(event, lists, attachments.length).filter((section) => section.section !== 'classification');
   const locationPath = Object.values(event.location)
     .map((nodeId) => getLabel(organization, nodeId))
@@ -142,7 +142,7 @@ export default function EventDetail() {
           <PillarTag pillar={pillar} />
           <Badge variant="light" color="blue">{event.levelCode}</Badge>
           <StatusBadge status={event.status} />
-          {isSip(event) && <Badge color="red">SIP</Badge>}
+          <CriticalBadges event={event} />
         </div>
         <Title order={1}>{event.title || '(no title yet)'}</Title>
         <dl className="facts-grid">
