@@ -76,7 +76,7 @@ A person has, independently:
    |---|---|
    | User | Report events, see the events of their access, receive alerts. |
    | Manager | As User, plus: edit Open events of their plant and pillars, report on behalf of someone else, receive "Event submitted" alerts, be a reviewer. |
-   | Site Admin | See the events of their access (no reporting, no editing), be a reviewer. |
+   | Site Admin | See the events of their access (no reporting, no editing), receive alerts, be a reviewer. |
 
 2. **Control Panel roles**: at most one per pillar, each Central (all plants), Cluster (two or more
    plants) or Local (one plant). A Site Admin automatically holds a Local role for every pillar
@@ -112,7 +112,7 @@ Draft ──submit──► Open ──a reviewer takes the review──► In P
 | Status | Meaning |
 |---|---|
 | Draft | Being written; no record number; only its author sees and edits it. |
-| Open | Submitted, waiting for review; Managers of its plant and pillar may still edit it. |
+| Open | Submitted and waiting for its first required step (normally Review); Managers of its plant and pillar may still edit it. |
 | In Progress | Reviewed as valid (or being reviewed) and going through its required steps. Not editable from the report form. |
 | Archived | Reviewed as not valid (with a reason). Final. Hidden unless the Status filter asks for it. |
 | Closed | Every required step is done. Final. |
@@ -131,6 +131,8 @@ and phase (except Submission, always required), a Control Panel level may mark t
 - A phase is required for a plant when at least one applying setting requires it; a higher level
   (Central > Cluster > Local) requiring it locks it for the lower levels.
 - A required Review comes with its reviewers (Managers or Site Admins).
+- Root cause analysis can be required only where Review is required too (Actions and Validation
+  can be required without Review).
 
 **On an event.** At submission the event takes a copy of its resulting workflow (required phases
 and reviewers for its plant, pillar and level). Later Control Panel changes never affect existing

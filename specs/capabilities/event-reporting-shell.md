@@ -39,7 +39,7 @@ The frame of Event Reporting: choosing where to work, the header and navigation,
   |---|:---:|:---:|:---:|
   | Events | ✓ | ✓ | ✓ |
   | Create event | ✓ | ✓ | — |
-  | Alerts (bell) | ✓ | ✓ | — |
+  | Alerts (bell) | ✓ | ✓ | ✓ |
 
 ### Alerts
 
@@ -69,8 +69,8 @@ From freshly reset [demo data](platform-data.md).
    with Environment marked as her current pillar. (ES-1, ES-2)
 3. **Account** — Diego Laurent's Account offers Business (Automotive Parts, Packaging); choosing
    Packaging switches to Porto. Ana Ribeiro's Account shows no Business choice. (ES-6)
-4. **Role navigation** — Eva Novak (Site Admin) has no Create event, no New and a disabled bell;
-   opening the new event address says "You do not have permission to open this page.". (ES-7,
+4. **Role navigation** — Eva Novak (Site Admin) has no Create event and no New, but has the bell
+   (she is a reviewer and gets alerts); opening the new event address says "You do not have permission to open this page.". (ES-7,
    ES-8)
 5. **Scope** — In Curitiba, Felix Tanaka opens the address of a Lyon event: "Event not found.".
    (ES-4)

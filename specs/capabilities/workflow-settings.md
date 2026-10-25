@@ -35,6 +35,13 @@ Reporting gives every new event the resulting workflow.
   top. A lower level's Required setting stays stored while a higher level requires the same cell
   and applies again when the higher one is switched off.
 
+- **WF-5a** Root cause analysis needs a review: a change that would leave Root cause analysis
+  required at a plant where Review is not required for the same level is refused — making Root
+  cause analysis Required first ("Make Review Required for <level> first: Root cause analysis
+  needs a review (missing at <plants>).") or making Review Optional while it is needed ("Review
+  stays Required for <level>: Root cause analysis is required at <plants> and needs a review."),
+  whatever the levels involved. Actions and Validation do not need Review.
+
 ### Reviewers
 
 - **WF-6** Making **Review** Required opens "Reviewers for <level>": the Managers and Site Admins
@@ -98,6 +105,11 @@ TF1–TF2 at Central by Ludovic Costa, Validation TF1 at Lyon by Eva Novak).
 9. **Cell details** — Ludovic opens Lyon TF1 Review: "Central", "Set by Ludovic Costa on 20 Oct
    2026", reviewers Carla Mendes, Eva Novak, Felix Tanaka ("Cannot see Lyon"), Diego
    Laurent. (WF-9)
+10. **Analysis needs Review** — In Environment, Lucas switches EvE5 Root cause analysis on (EvE5
+    has no Review): refused with "Make Review Required for EvE5 first: Root cause analysis needs a
+    review (missing at Lyon, Porto).". Sergio Martins switches SRE1 Review off: refused, "Review stays Required
+    for SRE1: Root cause analysis is required at Lyon, Curitiba, Porto and needs a review.".
+    (WF-5a)
 
 ## Decisions
 

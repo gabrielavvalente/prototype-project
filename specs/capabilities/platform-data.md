@@ -108,7 +108,7 @@ domain (— for Industrial Hygiene).
 | EVE-26-0001 | Oil leak under press 4 | EvE4 | Lyon | Carla Mendes | No | Open | 08 Sep 14:05 | |
 | TF-26-0003 | Worker slipped on wet floor and twisted ankle | TF2 | Lyon | Ana Ribeiro | Yes | Open | 10 Sep 06:50 | IA |
 | SRE-26-0001 | Sparks from grinder near cardboard boxes | SRE4 | Lyon | Diego Laurent | Yes | Open | 12 Sep 15:30 | |
-| TF-26-0004 | Missing guard on conveyor | TF5 | Lyon | Carla Mendes | Yes | Closed | 15 Sep 09:00 | |
+| TF-26-0004 | Missing guard on conveyor | TF4 | Lyon | Carla Mendes | Yes | Open | 15 Sep 09:00 | |
 | EVE-26-0002 | Chemical drum stored outside bunded area | EvE5 | Lyon | Ana Ribeiro | No | Closed | 18 Sep 11:20 | |
 | SRE-26-0002 | Small fire in electrical cabinet | SRE3 | Lyon | Carla Mendes | No | Open | 20 Sep 22:10 | IA |
 | OH-26-0001 | Operator reports wrist pain after long shifts | Musculoskeletal disorder | Lyon | Ana Ribeiro | — | Open | 22 Sep 13:00 | |
@@ -128,7 +128,7 @@ domain (— for Industrial Hygiene).
 | TF-26-0009 | Trolley wheel broke while loaded | TF4 | Curitiba | Ben Okafor | Yes | Open | 04 Oct 13:50 | |
 | TF-26-0010 | Burn from hot part out of oven | TF2 | Curitiba | Ben Okafor | Yes | Open | 12 Oct 07:20 | IA |
 | *(draft)* | Unlabelled waste container | EvE5 | Curitiba | Ben Okafor | No | Draft | 22 Oct 16:00 | |
-| TF-26-0011 | Stack of pallets leaning in aisle 7 | TF5 | Porto | Gina Rossi | Yes | Closed | 07 Sep 06:30 | |
+| TF-26-0011 | Stack of pallets leaning in aisle 7 | TF4 | Porto | Gina Rossi | Yes | Open | 07 Sep 06:30 | |
 | TF-26-0012 | Truck reversed into loading dock door | TF4 | Porto | Gina Rossi | Yes | Open | 17 Sep 05:55 | |
 | SRE-26-0006 | Shrink-wrap machine heater fire | SRE3 | Porto | Diego Laurent | No | Open | 25 Sep 23:10 | IA |
 | OH-26-0004 | Dust from cardboard cutting | Respiratory disease | Porto | Gina Rossi | — | Open | 02 Oct 11:45 | |
@@ -154,7 +154,7 @@ events of each plant.
    lists all 12 people, and only the 8 with a Control Panel role can be chosen (Eva Novak through
    her Site Admin roles). (PD-7)
 3. **Demo events** — As Carla at Lyon, all pillars: the list shows the 16 submitted Lyon events,
-   4 of them Closed, and her draft "Hydraulic oil drip from forklift"; Ana's drafts are not shown.
+   3 of them Closed, and her draft "Hydraulic oil drip from forklift"; Ana's drafts are not shown.
    (Demo data, domain Visibility)
 4. **Reset** — Change a workflow setting in the Control Panel and submit an event; Reset demo data
    in Event Reporting. *Then* the setting and the events are back to the demo data. (PD-5)

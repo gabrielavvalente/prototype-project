@@ -104,9 +104,9 @@ with its workflow steps.
 
 From freshly reset [demo data](platform-data.md), Carla Mendes at Lyon, all pillars.
 
-1. **Chips** — All 17, My events 7, Open 12, With SIP 6, Drafts 1. Choosing Drafts leaves "Hydraulic
+1. **Chips** — All 17, My events 7, Open 13, With SIP 6, Drafts 1. Choosing Drafts leaves "Hydraulic
    oil drip from forklift". (EL-1, EL-7)
-2. **Kanban** — Draft 1, Open 12, In Progress 0, Closed 4; on a phone the columns scroll with ‹ ›.
+2. **Kanban** — Draft 1, Open 13, In Progress 0, Closed 3; on a phone the columns scroll with ‹ ›.
    (EL-8)
 3. **List** — Hide Department: it stays hidden after reloading. Sort by level; 17 rows on one page.
    (EL-2, EL-9)
@@ -120,7 +120,7 @@ From freshly reset [demo data](platform-data.md), Carla Mendes at Lyon, all pill
    page and the KPIs page shows Archived events 1; Status = Archived lists it. (EL-3, EL-12, EL-14)
 7. **Expand** — Clicking `TF-26-0002` shows its description and its immediate action; Open event
    opens its Review step (current step). (EL-10, EL-17)
-8. **KPIs** — Events with SIP 6, Open actions 0, Events in progress 12, Archived events 0; the TF
+8. **KPIs** — Events with SIP 6, Open actions 0, Events in progress 13, Archived events 0; the TF
    column splits by level and the table view lists every type and level. (EL-12, EL-13)
 9. **Reports** — Event register lists the 17 events with the List columns. (EL-15)
 10. **Event page** — `TF-26-0003` shows the steps Submission Done, Review Current step, Root cause
