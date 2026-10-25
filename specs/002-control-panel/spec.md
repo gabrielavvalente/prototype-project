@@ -53,6 +53,18 @@ lifecycle phases from [core.md](../001-event-reporting/source/core.md).
 - Q: What happens to an event when only Submission is Required? → A: It is **Closed** right after
   submission.
 
+### Session 2026-10-25 (review)
+
+- Q: Does a Site Admin of Event Reporting hold a Control Panel role? → A: Yes. A Site Admin is
+  automatically a **Local** administrator for each pillar they see at their plant; a role already
+  held on a pillar wins. User Management shows these roles as coming from the event role.
+- Q: Are pillars shown in color? → A: Yes, with the same pillar colors in every app (User
+  Management tags and role badges included).
+- Q: How is the master data toolbar laid out? → A: Search, "Availability for", Export CSV, Import
+  CSV and Create on one line.
+- Q: Can master data be exported and imported? → A: Yes. Everyone can export the values shown as
+  CSV; those who can add values to the list can import a CSV with the same columns.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Set which workflow phases are required (Priority: P1)
@@ -242,7 +254,8 @@ match each demo user's access, and that a Cluster administrator only sees users 
 - **FR-001**: The system MUST support Control Panel roles held per pillar (Health & Safety,
   Environment, Industrial Risk, Industrial Hygiene), at one level — Central (all plants), Cluster (a
   chosen set of plants) or Local (one plant) — independent of the event roles (User, Manager, Site
-  Admin).
+  Admin), except that a **Site Admin** is automatically Local for each pillar they see at their
+  plant (a role already held on that pillar wins). *(Clarification 2026-10-25, review)*
 - **FR-002**: Only users holding at least one Control Panel role MUST see the Control Panel; each
   user MUST see only the pillars they hold a role on, with their level and plants displayed.
 - **FR-003**: A role on one pillar MUST grant no right on another pillar's workflow or master
@@ -307,13 +320,24 @@ match each demo user's access, and that a Cluster administrator only sees users 
 - **FR-021**: The Industrial Risk panel MUST show the Health & Safety Standards and Hazards
   read-only, marked as owned by Health & Safety; no configuration of another pillar's list is
   possible from it.
+- **FR-029**: The list screen MUST show search, the "Availability for" plant, Export CSV, Import
+  CSV and Create on one line (wrapping on narrow screens). *(Clarification 2026-10-25, review)*
+- **FR-030**: Anyone who sees a list MUST be able to export the values shown as a CSV file (code,
+  name, description, category, owner, status, availability at the chosen plant). Those allowed to
+  add values to the list MUST be able to import a CSV with the columns Code, Name, Description
+  (and Category for Body Parts): a row with the code (or name) of one of their own values changes
+  it, other rows add values, rows matching another level's value are skipped, and nothing is saved
+  when any row is invalid (each problem listed with its line). Imported changes are audited.
+  *(Clarification 2026-10-25, review)*
 
 **User management (read-only)**
 
 - **FR-027**: A separate **User Management** app MUST offer a read-only users list with name, event role,
   plants, pillars and Control Panel roles, searchable by name and filterable by plant, pillar and
   role; Central sees every user, Cluster and Local only users with access to at least one of their
-  plants. Only users holding a Control Panel role can open it (as in FR-002).
+  plants. Only users holding a Control Panel role can open it (as in FR-002). Pillars and roles
+  are shown in their pillar's color; roles coming from the Site Admin event role are marked as
+  such. *(Clarification 2026-10-25, review)*
 - **FR-028**: Opening a user MUST show their event access (plants and pillars), their Control
   Panel roles (pillar, level, plants) and the review groups they belong to; no edit action is
   offered.
