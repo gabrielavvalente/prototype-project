@@ -24,8 +24,9 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 - **RCA-1** When a valid review leads to Root cause analysis (the event's workflow requires it, or
   the reviewer answered Yes to "Do you want to further analyze?"), the review asks **Who will
   perform the root cause analysis?**: a required, searchable multiple choice in two groups —
-  *Users* (people of the event's plant who can see its pillar) and *Groups* (investigation groups
-  covering the event's plant and pillar). Otherwise the question is not shown.
+  *Users* (people of any event role whose access includes the event's plant and pillar, the
+  reviewer included) and *Groups* (investigation groups covering the event's plant and pillar).
+  Otherwise the question is not shown.
 - **RCA-2** Saving the review keeps the designated users and groups on the event and sends
   "Root cause analysis assigned to you" to each designated user and each member of a designated
   group who can see the event — once per person, never to the reviewer.
@@ -43,23 +44,27 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 
 ### Who performs the analysis
 
-- **RCA-7** The designated users and the members of the designated groups can edit and save the
-  analysis while Root cause analysis is the event's current step. Everyone else who can see the
+- **RCA-7** Only the designated users and the members of the designated groups can edit and save
+  the analysis, and only while Root cause analysis is the event's current step — not the reviewer,
+  a Manager or a Control Panel administrator unless designated. Everyone else who can see the
   event reads it (they can still open parts and switch sections). Once completed it is read-only
   for everyone.
 
 ### The step
 
 - **RCA-8 Overview**: "Assigned to: …", the status of each part (5W1H — optional, 6M, 5 Why,
-  Learnings: Not started, In progress or Done), the **event statement** (full width, starts from
-  the review's statement, editable).
+  Learnings): **Not started** while nothing is entered in it, **Done** as defined for each part,
+  **In progress** otherwise. Then the **event statement** (full width, editable), copied from the
+  review's statement when the analysis is first opened (the event's description if the review has
+  none), not kept in sync afterwards.
 - **RCA-9 Immediate actions**: the event's own immediate actions (the same list as the
   submission), one compact line each — description, priority, who did it — with edit and delete
   icons, and **Add immediate action**. Adding and editing open a popup with the submission's
   immediate action card (same fields and rules); its button is **Create** (Save when editing) and
-  it keeps only a complete action. Deleting asks for confirmation. After saving, the submission
-  shows the same immediate actions and its history "Immediate actions updated in the root cause
-  analysis by <name>".
+  refuses an incomplete action (with the card's messages). Deleting asks for confirmation. Changes
+  are stored with the step's **Save** (RCA-15); then the submission shows the same immediate
+  actions and the event history shows "Immediate actions updated in the root cause analysis by
+  <name>" (one entry, kept for the last save that changed them).
 - **RCA-10 5W1H** (optional guide): collapsed until the person expands it (open when it already
   has answers). Sections listed on the left, the chosen one on the right with "Is this section
   applicable to your event?" (Yes / No) and, when Yes, its numbered questions, each with a text
@@ -67,27 +72,32 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
   is No, or Yes with every answer. Never required.
 - **RCA-11 6M**: an introduction ("avoid selecting the max of six by default…"), the six themes
   listed on the left (with the number of causes ticked) and the chosen theme's guidance below
-  them; on the right the theme's contributory causes as checkboxes, plus **Other** (which asks for
-  a name). Each ticked cause gets a card **C1, C2…** "How did "<cause>" contribute to the event
-  occurrence?" with a required answer. At most **6 causes in total** across themes; then the other
-  checkboxes are disabled with a hint. Done when at least one cause is ticked and every ticked
-  cause is explained.
-- **RCA-12 5 Why**: collapsed and disabled ("Available once 6M is done…") until 6M is Done, then
-  open. One column per ticked cause, headed by the cause's name and its 6M explanation (shown, not
+  them; on the right the theme's contributory causes as checkboxes, plus one **Other** per theme
+  (which asks for a required name). Each ticked cause gets a card **C1, C2…** — numbered in the
+  order the causes were ticked, renumbered when one is unticked — "How did "<cause>" contribute
+  to the event occurrence?" with a required answer. At most **6 causes in total** across themes
+  (Other included); then the other checkboxes are disabled with a hint. Done when at least one
+  cause is ticked and every ticked cause is explained (and every Other named).
+- **RCA-12 5 Why**: collapsed and disabled ("Available once 6M is done…") whenever 6M is not Done
+  (what was entered is kept), open otherwise. One column per ticked cause, headed by the cause's name and its 6M explanation (shown, not
   editable), with whys below it as a tree:
   - Ticking a cause adds its first why; unticking a cause removes its whys and their actions
     (after confirmation when answers or actions would be lost).
   - A why card shows "Why N" (its depth), the number of its actions, an **X** to delete it, its
-    answer, a **Root cause** switch (a root cause card is highlighted, nothing else is asked), and
-    buttons **Add why** (only when it has no next why and N < 5), **Branch** (adds an alternative
-    answer to the same question beside it) and **Add action** (disabled until it has an answer).
+    answer, a **Root cause** switch, and buttons **Add why** (only when it has no next why and
+    N < 5), **Branch** (adds an alternative answer to the same question beside it; on a Why 1, a
+    second first why under the same cause) and **Add action** (disabled until it has an answer).
+  - A root cause only highlights its card: no classification is asked and every button stays
+    available. Any why can be a root cause, with or without whys below it.
   - Deleting a why deletes the whys below it (after confirmation when actions would be lost); a
     cause's only first why cannot be deleted.
   - Several next whys sit side by side; the area scrolls sideways on narrow screens.
-  - Done when at least one why is a root cause and every root cause has an answer.
+  - Done when at least one why (anywhere, not one per cause) is a root cause and every root cause
+    has an answer.
 - **RCA-13 Actions**: created from an answered why in a popup that shows the why's answer, with
-  description, assignees (1–5 people of the event's plant who can see its pillar), due date and
-  priority (Emergency, High, Medium, Low), all required; button **Create** (Save when editing).
+  description, assignees (1–5 people whose access includes the event's plant and pillar, chosen in
+  a searchable multiple choice), due date (any date) and priority (Emergency, High, Medium, Low),
+  all required; button **Create** (Save when editing). Deleting an action asks for confirmation.
   Under 5 Why, **Actions (n)** lists them in compact lines — the why's answer on one line; the
   description, priority, assignees and due date on the next — with edit and delete icons.
   Actions belong to the event (the Action plan capability will use them). They are not required to
@@ -99,7 +109,7 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 - **RCA-15** **Save** keeps everything (statement, immediate actions, parts, actions, learnings)
   without completing and shows "Saved at HH:MM".
 - **RCA-16** **Complete analysis** requires 6M Done, 5 Why Done and the learnings; otherwise
-  nothing is saved and each missing part shows its message. Completing records who and when and
+  nothing at all is saved (not even the other parts) and each missing part shows its message. Completing records who and when and
   moves the event to its next required step (In Progress), or closes it when none is left.
 - **RCA-17** A completed analysis shows "Completed by <name> on <date>"; the event history shows
   "Root cause analysis completed by <name>".
@@ -151,12 +161,13 @@ is an Open TF2 at Lyon whose workflow requires Review and Actions; `TF-26-0006` 
 1. **Designation required** — Carla reviews `TF-26-0003` as valid with Potential Severe × Medium
    term (SIP, type chosen), "further analyze" Yes. *Then* "Who will perform the root cause
    analysis?" is required: Complete review with it empty is refused next to the field. She picks
-   the Lyon H&S investigation team and Diego Laurent → current step Root cause analysis; the
-   review summary shows the designation; Carla stays on it. (RCA-1, RCA-3, RCA-4)
+   the Lyon H&S investigation team and Diego Laurent → current step Root cause analysis, and
+   Carla, a member of that team, is taken to it; the review step shows the designation.
+   (RCA-1, RCA-3, RCA-4)
 2. **Alerts** — Eva Novak, Ana Ribeiro and Diego Laurent have one "Root cause analysis assigned to
    you" each; Carla has none. (RCA-2)
-3. **Reviewer goes to the analysis** — Carla reviews another valid Lyon H&S event leading to the
-   analysis and designates herself. *Then* Complete review opens the Root cause analysis step.
+3. **Reviewer stays on the summary** — Carla reviews another Lyon H&S event as valid, leading to
+   the analysis, and designates only Diego Laurent. *Then* she stays on the review summary.
    (RCA-4)
 4. **Not asked** — Carla reviews `TF-26-0006` with "further analyze" No (workflow not requiring
    the analysis). *Then* the designation question is not shown. (RCA-1)
@@ -184,10 +195,12 @@ is an Open TF2 at Lyon whose workflow requires Review and Actions; `TF-26-0006` 
     analysis is refused with Learnings flagged. Write them → Complete. *Then* Actions is the
     current step, the step is read-only with "Completed by Diego Laurent on …", and the history
     shows "Root cause analysis completed by Diego Laurent". (RCA-14 to RCA-17)
-11. **Readers** — Lucas Weber (Lyon, not designated) opens the step while it is current: every
+11. **Readers** — Lucas Weber (event access at Lyon and Porto; member only of the electrical
+    team, which was not designated) opens the step while it is current: every
     field is read-only, but he can expand 5W1H and switch sections and themes. (RCA-7)
 12. **Groups tab** — In User Management, Ludovic Costa (Central) sees the 4 groups; Lucas Weber
-    (Lyon, Porto) sees the groups of Lyon and Porto only; nothing can be edited. (RCA-6)
+    (Cluster role on Lyon and Porto) sees the groups of Lyon and Porto only; nothing can be
+    edited. (RCA-6)
 13. **Phone and keyboard** — At 320px wide the 5W1H and 6M lists stack above their content and the
     5 Why tree scrolls sideways; every control works with Tab, Space and Enter. (Domain)
 

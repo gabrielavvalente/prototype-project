@@ -93,8 +93,8 @@ cannot open the Control Panel or User Management.
 |---|---|
 | A submitted event | People whose access includes the event's plant **and** pillar. |
 | A draft event | Only the person who created it. |
-| A user (User Management) | Central (on any pillar): everyone. Others: users linked to one of their plants (by access or by role). |
-| An investigation group | Central: all. Others: groups covering one of their plants. |
+| A user (User Management) | Central (on any pillar): everyone. Others: users linked, by event access or by Control Panel role, to a plant of one of the viewer's Control Panel roles. |
+| An investigation group | Central: all. Others: groups covering a plant of one of the viewer's Control Panel roles. |
 
 Event Reporting always works within a **context**: one business, one plant and either one pillar
 or all of the person's pillars at that plant. Lists, searches and KPIs show only events of the
@@ -198,7 +198,7 @@ follows the dependencies.
 | Event reporting (create, draft, submit, edit) | Platform data, workflow settings | 001 |
 | Event library (list, Kanban, search, filters, KPIs, reports) | Event reporting | 001 |
 | Event review (incl. severity and critical events) | Event reporting, master data | 003 |
-| Root cause analysis | Event review | [004](004-root-cause-analysis/spec.md) |
+| Root cause analysis | Event review | [root-cause-analysis](pilot/root-cause-analysis.md) |
 | Action plan | Root cause analysis | not yet specified |
 | Validation | Action plan | not yet specified |
 
