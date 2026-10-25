@@ -32,13 +32,19 @@ function isRequired(event, step) {
   return Boolean(event.workflow?.phases[step]?.required);
 }
 
+// Review is done once decided; Root cause analysis once completed (feature 004).
+function isDone(event, step) {
+  if (step === 'review') return Boolean(event.review?.decision);
+  if (step === 'rootCause') return Boolean(event.rca?.completedAt);
+  return false;
+}
+
 // The step the event is waiting for, or null when its workflow is over (Draft, Archived, Closed).
 export function currentStep(event) {
   if (!ACTIVE_STATUSES.includes(event.status)) {
     return null;
   }
-  const reviewDone = Boolean(event.review?.decision);
-  return STEPS.slice(1).find((step) => isRequired(event, step) && !(step === 'review' && reviewDone)) ?? null;
+  return STEPS.slice(1).find((step) => isRequired(event, step) && !isDone(event, step)) ?? null;
 }
 
 // One state per step for the steps menu: 'done' and 'current' can be opened; 'upcoming' (not
@@ -52,7 +58,7 @@ export function stepStates(event) {
     let state = 'upcoming';
     if (!isRequired(event, step)) state = 'skipped';
     else if (step === current) state = 'current';
-    else if (index < currentIndex || (step === 'review' && event.review?.decision)) state = 'done';
+    else if (index < currentIndex || isDone(event, step)) state = 'done';
     return { step, state };
   });
 }
@@ -61,6 +67,12 @@ export function stepStates(event) {
 // Root cause analysis.
 export function asksFurtherAnalysis(event) {
   return !event.workflow?.phases.rootCause?.required;
+}
+
+// Whether a valid review sends the event to Root cause analysis: required by the workflow, or
+// asked for with "further analyze" = Yes.
+export function leadsToAnalysis(event, review) {
+  return !asksFurtherAnalysis(event) || review.furtherAnalysis === true;
 }
 
 // The Review button: a configured reviewer, an event waiting for review, not taken by someone else.
@@ -103,10 +115,15 @@ function validateAssessment(review, event, errors) {
   if (asksFurtherAnalysis(event) && typeof review.furtherAnalysis !== 'boolean') {
     errors.furtherAnalysis = 'Say whether the event should be analyzed further.';
   }
+  const assignees = review.rcaAssignees;
+  if (leadsToAnalysis(event, review) && !(assignees?.userIds.length || assignees?.groupIds.length)) {
+    errors.rcaAssignees = 'Choose who will perform the root cause analysis.';
+  }
 }
 
 // review = { decision, invalidReason, invalidComment, statement, classification, potential,
-// actual, sipConfirmed, criticalTypeId, furtherAnalysis } — potential / actual are rated cells.
+// actual, sipConfirmed, criticalTypeId, furtherAnalysis, rcaAssignees: { userIds, groupIds } } —
+// potential / actual are rated cells.
 export function validateReview(review, event, reporterName) {
   const errors = {};
   if (review.decision !== 'valid' && review.decision !== 'invalid') {
@@ -146,6 +163,7 @@ function decidedFields(event, review) {
     criticalFlags,
     criticalTypeId: criticalFlags.includes(typedFlag(event)) ? review.criticalTypeId : '',
     furtherAnalysis: asksFurtherAnalysis(event) ? review.furtherAnalysis : null,
+    rcaAssignees: leadsToAnalysis(event, review) ? review.rcaAssignees : null,
   };
 }
 

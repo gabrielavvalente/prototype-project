@@ -189,9 +189,9 @@ export function submitEvent({ users, workflow, ...args }) {
   });
 }
 
-// Saves a review step (taking the review or the decision) with its alerts in one transaction.
-// alerts: [{ recipientId, type }]
-export async function saveReviewStep(event, alerts = []) {
+// Saves a workflow step (taking the review, the decision, the root cause analysis) with its
+// alerts in one transaction. alerts: [{ recipientId, type }]
+export async function saveWorkflowStep(event, alerts = []) {
   const db = await getDatabase();
   const tx = db.transaction(['events', 'alerts'], 'readwrite');
   tx.objectStore('events').put(event);

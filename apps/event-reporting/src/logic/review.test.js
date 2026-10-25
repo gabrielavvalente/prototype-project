@@ -63,7 +63,8 @@ describe('review', () => {
     expect(Object.keys(validateReview({}, event, 'Ana Ribeiro'))).toEqual(['decision']);
     expect(Object.keys(validateReview({ decision: 'invalid' }, event, 'Ana Ribeiro'))).toEqual(['invalidReason']);
     expect(validateReview({ decision: 'valid', statement: 'Ana Ribeiro slipped' }, event, 'Ana Ribeiro').statement).toMatch(/reporter/);
-    expect(validateReview({ decision: 'valid', statement: 'An operator slipped' }, event, 'Ana Ribeiro')).toEqual({});
+    const designated = { userIds: ['user-diego'], groupIds: [] };
+    expect(validateReview({ decision: 'valid', statement: 'An operator slipped', rcaAssignees: designated }, event, 'Ana Ribeiro')).toEqual({});
   });
 
   it('needs a comment for Bad quality only (second review)', () => {
@@ -76,7 +77,33 @@ describe('review', () => {
   it('asks "further analyze" only when the workflow does not require Root cause analysis', () => {
     const asked = makeEvent(['review']);
     expect(Object.keys(validateReview({ decision: 'valid', statement: 'x' }, asked, ''))).toEqual(['furtherAnalysis']);
-    expect(validateReview({ decision: 'valid', statement: 'x' }, makeEvent(['review', 'rootCause']), '')).toEqual({});
+    const designated = { userIds: [], groupIds: ['group-lyon-hs'] };
+    expect(validateReview({ decision: 'valid', statement: 'x', rcaAssignees: designated }, makeEvent(['review', 'rootCause']), '')).toEqual({});
+  });
+
+  it('requires who performs the analysis whenever it will happen (004)', () => {
+    const empty = { userIds: [], groupIds: [] };
+    const required = validateReview({ decision: 'valid', statement: 'x', rcaAssignees: empty }, makeEvent(['review', 'rootCause']), '');
+    expect(Object.keys(required)).toEqual(['rcaAssignees']);
+    const asked = validateReview({ decision: 'valid', statement: 'x', furtherAnalysis: true }, makeEvent(['review']), '');
+    expect(Object.keys(asked)).toEqual(['rcaAssignees']);
+    expect(validateReview({ decision: 'valid', statement: 'x', furtherAnalysis: false }, makeEvent(['review']), '')).toEqual({});
+  });
+
+  it('keeps the designation only when the analysis will happen (004)', () => {
+    const designated = { userIds: ['user-diego'], groupIds: [] };
+    const kept = completeReview(makeEvent(['review', 'rootCause']), { decision: 'valid', statement: 'x', rcaAssignees: designated }, NOW);
+    expect(kept.review.rcaAssignees).toEqual(designated);
+    const dropped = completeReview(makeEvent(['review']), { decision: 'valid', statement: 'x', furtherAnalysis: false, rcaAssignees: designated }, NOW);
+    expect(dropped.review.rcaAssignees).toBeNull();
+  });
+
+  it('moves past Root cause analysis once it is completed (004)', () => {
+    const analyzing = makeEvent(['review', 'rootCause', 'actions'], { status: 'In Progress', review: { decision: 'valid' } });
+    expect(currentStep(analyzing)).toBe('rootCause');
+    const completed = { ...analyzing, rca: { completedAt: NOW } };
+    expect(currentStep(completed)).toBe('actions');
+    expect(stepStates(completed).map((item) => item.state)).toEqual(['done', 'done', 'done', 'current', 'skipped']);
   });
 
   it('archives an invalid event', () => {

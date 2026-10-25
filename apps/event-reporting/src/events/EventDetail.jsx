@@ -34,6 +34,13 @@ function buildHistory(event, users) {
     const outcome = review.decision === 'invalid' ? `archived (${review.invalidReason})` : 'valid';
     items.push({ label: `Review completed — ${outcome}`, at: review.reviewedAt });
   }
+  if (event.rca?.immediateActionsChangedAt) {
+    const by = getLabel(users, event.rca.immediateActionsChangedBy);
+    items.push({ label: `Immediate actions updated in the root cause analysis by ${by}`, at: event.rca.immediateActionsChangedAt });
+  }
+  if (event.rca?.completedAt) {
+    items.push({ label: `Root cause analysis completed by ${getLabel(users, event.rca.completedBy)}`, at: event.rca.completedAt });
+  }
   const known = items.map((item) => item.at);
   if (event.updatedAt && !known.includes(event.updatedAt)) {
     items.push({ label: `Last updated by ${getLabel(users, event.updatedBy)}`, at: event.updatedAt });
