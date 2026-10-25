@@ -136,3 +136,16 @@ follows.
   no review Comments; the form uses `noValidate` so the app's own messages show next to the
   fields (browser validation of `required` fields hid them); the review form is recreated per
   event (`key={event.id}`), so moving from one event's steps to another's never keeps answers.
+
+## R15. One page per submitted event (third review)
+
+- **Decision**: `#/events/:id` redirects a submitted event to its steps page (current step, or
+  Submission right after a submit, keeping the confirmation banner); Open event links there
+  directly. The header card, sections, photos, immediate actions and history of the former view
+  page are shared components (`EventHeadCard`, `EventSections` in `EventDetail.jsx`) shown above
+  the steps and in the Submission step. Drafts keep `EventDetail`. The history adds "Review taken
+  by" and "Review completed".
+- **Rationale**: The user wants no distinction between opening an event and its workflow; one
+  page also makes Back always return to the list.
+- **Alternatives considered**: only changing the Open event button (rejected: search, alerts and
+  the after-submit page would still show a second page).

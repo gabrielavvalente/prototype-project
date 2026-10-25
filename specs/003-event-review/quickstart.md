@@ -65,3 +65,14 @@ nothing on TF5. Lyon events are reviewed by Carla, Eva and Diego.
 15. **Industrial Risk** — Review `SRE-26-0004` (SRE2, Root cause analysis required by Central): no
     "further analyze" question; Potential Loss Major × Long term and Actual Loss Significant × Long
     term → "SPL · HCL", choose an SPL type → In Progress at Root cause analysis.
+
+## Third review scenarios (layout and one event page)
+
+16. **Layout** — Review a TF2: parts "Event statement and classification", "Severity", "Next step";
+    Potential and Actual in separate framed blocks; a High potential shows the SIP type inside the
+    Potential block; Complete review sits on the right.
+17. **Required lists** — Environment: Aspects and Impacts required; Industrial Risk: only Categories
+    (no Standards or Hazards), required.
+18. **One page** — Expand a submitted row: Open event → its current step (no Workflow steps link);
+    open `#/events/TF-26-0006`: redirected to the steps page; Submission shows photos, immediate
+    actions and history; Back (‹) → the event list. A draft's Open event still opens the draft page.

@@ -45,8 +45,12 @@ Errors are shown next to the field; nothing is saved while one remains.
 | Where | Shown to | Leads to |
 |---|---|---|
 | Expanded List row / Kanban card | A user who can start or continue the review | **Review** → `…/steps/review` (primary button) |
-| Expanded List row / Kanban card | Anyone else, submitted event | **Workflow steps** → current step, or Submission |
-| Event detail bottom bar | Anyone, submitted event | **Review** or **Workflow steps**, same rule |
+| Expanded List row / Kanban card | Anyone, submitted event | **Open event** → current step, or Submission |
+| `#/events/:id` (search, alerts, after a submit) | Anyone, submitted event | Redirect to the steps page (Submission after a submit) |
+| Expanded List row / Kanban card, draft | Its author | **Open event** → the draft's page (unchanged) |
+
+Third review: the steps page is the event's page — header card above the steps, Submission with
+sections, photos, immediate actions, history and Edit; Back → event list.
 
 ## List and filters
 

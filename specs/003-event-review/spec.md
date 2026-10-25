@@ -84,6 +84,23 @@ event FR-012, master data per pillar).
   the answer starts at Yes (proposed) and can be changed. Yes → Root cause analysis; No → the next
   step the workflow requires (e.g., Actions), or Closed when none is required.
 
+### Session 2026-10-25 (third review: layout and one event page)
+
+- Q: How is the review form organized? → A: In titled parts — Event statement and classification;
+  Severity (Loss for Industrial Risk, Serious incident potential for Environment); Next step —
+  with the Potential and the Actual assessments each in its own framed block.
+- Q: Where is the SIP / SPL type asked? → A: Inside the Potential block (or the Environment SIP
+  block) that makes the event SIP or SPL.
+- Q: Where is the Complete review button? → A: On the far right.
+- Q: Which lists are required for Environment? → A: Aspects and Impacts.
+- Q: Which lists does an Industrial Risk review ask? → A: Only Categories, required; the Health &
+  Safety Standards and Hazards are no longer asked.
+- Q: Is there still a separate view page for an event? → A: No. For a submitted event the steps
+  page is the event's page: Open event, search results, alerts and the page after a submit all
+  open it (at the current step; on Submission right after a submit). Submission shows what the
+  view page showed (sections, photos, immediate actions, history) and Edit while allowed. Back
+  returns to the event list. Drafts keep their page.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Review a submitted event (Priority: P1)
@@ -291,9 +308,10 @@ classification, the red display, the required type and where the event goes next
 - **FR-002**: The expanded List row and the expanded Kanban card MUST show a **Review** button to
   a reviewer of the event while its current step is Review and nobody else has taken it. The
   button opens the event's review page.
-- **FR-003**: Other people who can see a submitted event MUST be offered a link to its workflow
-  steps instead; the event's detail page MUST offer the same (labelled Review for a reviewer who
-  can review).
+- **FR-003**: Open event MUST open the steps page of a submitted event at its current step (or
+  Submission when the workflow is over); there is no separate "Workflow steps" link. Every other
+  link to a submitted event (search, alerts, after a submit) MUST open the same page; drafts keep
+  their own page. *(Clarification 2026-10-25, third review)*
 
 **Steps page**
 
@@ -305,8 +323,11 @@ classification, the red display, the required type and where the event goes next
   reached yet", never Done. *(Clarification 2026-10-25, second review)*
 - **FR-006**: The current step MUST be the first required step after Submission that is not done;
   an event that is Draft, Archived or Closed has no current step.
-- **FR-007**: The Submission step MUST show what was reported (classification, location, general
-  information, event details).
+- **FR-007**: The Submission step MUST show what was reported (general information with photos,
+  event details, immediate actions) and the history (created, submitted, review taken and
+  completed, last updated), with an Edit button while the event can be edited; the event's header
+  (pillar, level, status, critical badges, title, reporter, date, location) stays above the steps.
+  The page's Back button MUST return to the event list. *(Clarification 2026-10-25, third review)*
 - **FR-008**: Root cause analysis, Actions and Validation MUST say they come in a later version.
 
 **Taking the review**
@@ -349,7 +370,9 @@ classification, the red display, the required type and where the event goes next
   bands **Low** 2–15, **Medium** 20–30, **High** 50–100. The score and band are shown, never
   typed. TF5 has no matrix.
 - **FR-023**: Standards and Hazards MUST be required for every valid Health & Safety event, and
-  Body Parts and Injuries for TF1–TF3.
+  Body Parts and Injuries for TF1–TF3; Aspects and Impacts for every valid Environment event; the
+  Category for every valid Industrial Risk event, which is the only list its review asks (the H&S
+  Standards and Hazards are not asked). *(Clarification 2026-10-25, third review)*
 - **FR-024**: A Health & Safety event MUST be **SIP** when its Potential Severity is High and
   **HCI** when its Actual Severity is High. A SIP MUST have a SIP type from the source's list (15
   types, e.g., "Entry to machine area without LOTO").
@@ -366,6 +389,10 @@ classification, the red display, the required type and where the event goes next
 - **FR-028**: When the workflow does not require Root cause analysis, the reviewer of a valid
   event MUST answer "Do you want to further analyze?" (Yes / No); it starts at Yes for a critical
   event and can be changed. When the workflow requires it, the question is not asked.
+- **FR-030**: The review form MUST be split into titled parts (statement and classification;
+  severity, loss or SIP; next step), each assessment (Potential, Actual, Environment SIP) in its own
+  framed block, the SIP / SPL type inside the block that makes the event SIP or SPL, and the
+  Complete review / Archive event button on the far right. *(Clarification 2026-10-25, third review)*
 - **FR-029**: A done review MUST also show the severities (score and band), the classifications,
   the SIP or SPL type and the "further analyze" answer.
 

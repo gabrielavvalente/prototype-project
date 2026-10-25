@@ -25,6 +25,11 @@ Yes for critical events) adds Root cause analysis when the workflow does not req
 statement starts from the description, Bad quality needs a comment, and the review's Comments field
 is gone (R10–R14).
 
+**Third review (2026-10-25)**: the review form in titled parts with framed Potential / Actual
+blocks (type inside the Potential block) and the button on the right; Environment requires Aspects
+and Impacts, Industrial Risk only its Categories; the steps page becomes the only page of a
+submitted event (R15).
+
 ## Technical Context
 
 **Language/Version**: JavaScript (ES2022, `.js` / `.jsx`), Node.js LTS for tooling
