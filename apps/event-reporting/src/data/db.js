@@ -189,6 +189,19 @@ export function submitEvent({ users, workflow, ...args }) {
   });
 }
 
+// Saves a review step (taking the review or the decision) with its alerts in one transaction.
+// alerts: [{ recipientId, type }]
+export async function saveReviewStep(event, alerts = []) {
+  const db = await getDatabase();
+  const tx = db.transaction(['events', 'alerts'], 'readwrite');
+  tx.objectStore('events').put(event);
+  for (const alert of alerts) {
+    tx.objectStore('alerts').put({ id: newId(), ...alert, eventId: event.id, createdAt: event.updatedAt });
+  }
+  await tx.done;
+  return event;
+}
+
 async function loadSampleData() {
   const db = await getDatabase();
   const tx = db.transaction(STORES, 'readwrite');

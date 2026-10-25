@@ -5,6 +5,7 @@ import { loadPlatform } from '../../../shared/platform/platformData.js';
 import { getAll, getById, put, seedIfEmpty } from './data/db.js';
 import EventFormPage from './create/EventForm.jsx';
 import EventDetail from './events/EventDetail.jsx';
+import EventSteps from './events/EventSteps.jsx';
 import EventLibrary from './events/EventLibrary.jsx';
 import { canOpenRoute } from './logic/access.js';
 import EntryScreen from './shell/EntryScreen.jsx';
@@ -51,6 +52,7 @@ const router = createHashRouter([
       { path: 'events/new', element: <RequireRoute name="events-new"><EventFormPage /></RequireRoute> },
       { path: 'events/:id', element: <RequireRoute name="event-detail"><EventDetail /></RequireRoute> },
       { path: 'events/:id/edit', element: <RequireRoute name="event-edit"><EventFormPage /></RequireRoute> },
+      { path: 'events/:id/steps/:step', element: <RequireRoute name="event-steps"><EventSteps /></RequireRoute> },
       { path: '*', element: <NotAllowed reason="notFound" /> },
     ],
   },

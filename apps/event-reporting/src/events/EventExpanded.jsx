@@ -5,6 +5,7 @@ import { AttachmentPreview } from '../create/AttachmentInput.jsx';
 import { getByIndex } from '../data/db.js';
 import { canEditEvent } from '../logic/access.js';
 import { getLabel } from '../logic/lookups.js';
+import { canStartReview, currentStep } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import SummaryList from './SummaryList.jsx';
 
@@ -80,9 +81,19 @@ export default function EventExpanded({ event }) {
         </ul>
       )}
       <div className="event-expanded-links">
-        <Link className="button button--primary" to={path}>
+        {canStartReview(user, event) && (
+          <Link className="button button--primary" to={`${path}/steps/review`}>
+            <Icon name="check" size={18} /> Review
+          </Link>
+        )}
+        <Link className={`button${canStartReview(user, event) ? '' : ' button--primary'}`} to={path}>
           Open event
         </Link>
+        {event.status !== 'Draft' && !canStartReview(user, event) && (
+          <Link className="button" to={`${path}/steps/${currentStep(event) ?? 'submission'}`}>
+            Workflow steps
+          </Link>
+        )}
         {canEditEvent(user, event) && (
           <Link className="button" to={`${path}/edit`}>
             <Icon name="edit" size={18} /> {event.status === 'Draft' ? 'Continue draft' : 'Edit'}
