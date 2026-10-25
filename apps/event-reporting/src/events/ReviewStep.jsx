@@ -21,10 +21,11 @@ import { assessmentFor, criticalFlagsOf, typedFlag } from '../logic/severity.js'
 import SeverityMatrix from './SeverityMatrix.jsx';
 import SummaryList from './SummaryList.jsx';
 
-// The pillar's lists, without lists that only group another one (Body Part Categories group Body
-// Parts, which are shown by category).
+// The pillar's own lists, without lists that only group another one (Body Part Categories group
+// Body Parts, which are shown by category). Lists shown read-only from another pillar (H&S
+// Standards and Hazards in Industrial Risk) are not asked (third review).
 function reviewLists(pillarId) {
-  const lists = listsForPillar(pillarId);
+  const lists = listsForPillar(pillarId).filter((list) => !list.readOnly);
   return lists.filter((list) => !lists.some((other) => other.parentListId === list.id));
 }
 
@@ -140,56 +141,99 @@ function InvalidFields({ review, set, errorsFor }) {
   );
 }
 
-// Severity or loss matrices, the Environment SIP question and the SIP / SPL type (003 FR-022 to
-// FR-027).
-function SeverityFields({ event, review, set, errorsFor }) {
+// The SIP / SPL type, asked inside the block that makes the event SIP or SPL (third review).
+function CriticalType({ event, review, set, errorsFor }) {
   const { reference } = useApp();
-  const assessment = assessmentFor(event);
-  const flags = criticalFlagsOf(event, review);
   const flag = typedFlag(event);
+  if (!flag || !criticalFlagsOf(event, review).includes(flag)) return null;
+  return (
+    <>
+      <p className="message message--error critical-notice" role="status">
+        Critical event: {flag}. Choose its type.
+      </p>
+      <SelectField
+        id="criticalTypeId"
+        label={`${flag} type`}
+        required
+        searchable
+        value={review.criticalTypeId}
+        options={getReferenceList(reference, assessmentFor(event).typeList)}
+        onChange={(criticalTypeId) => set({ criticalTypeId })}
+        errors={errorsFor('criticalTypeId')}
+      />
+    </>
+  );
+}
+
+// Severity or loss: one framed block for the potential (with the SIP / SPL type) and one for the
+// actual outcome; for Environment, the SIP question with its type (003 FR-022 to FR-027).
+function SeverityFields({ event, review, set, errorsFor }) {
+  const assessment = assessmentFor(event);
+  const actualHigh = assessment.actual && review.actual?.band === 'high';
   return (
     <>
       {assessment.potential && (
-        <SeverityMatrix id="potential" title={assessment.potentialTitle} matrix={assessment.matrix} value={review.potential} onChange={(potential) => set({ potential })} errors={errorsFor('potential')} />
+        <div className="assessment-block">
+          <SeverityMatrix
+            id="potential"
+            title={assessment.potentialTitle}
+            description="The credible worst case, had the circumstances been slightly different."
+            matrix={assessment.matrix}
+            value={review.potential}
+            onChange={(potential) => set({ potential })}
+            errors={errorsFor('potential')}
+          />
+          <CriticalType event={event} review={review} set={set} errorsFor={errorsFor} />
+        </div>
       )}
       {assessment.actual && (
-        <SeverityMatrix id="actual" title={assessment.actualTitle} matrix={assessment.matrix} value={review.actual} onChange={(actual) => set({ actual })} errors={errorsFor('actual')} />
+        <div className="assessment-block">
+          <SeverityMatrix
+            id="actual"
+            title={assessment.actualTitle}
+            description="What actually happened."
+            matrix={assessment.matrix}
+            value={review.actual}
+            onChange={(actual) => set({ actual })}
+            errors={errorsFor('actual')}
+          />
+          {actualHigh && (
+            <p className="message message--error critical-notice" role="status">
+              Critical event: {assessment.highActual}.
+            </p>
+          )}
+        </div>
       )}
       {assessment.sipQuestion && (
-        <YesNoField
-          id="sipConfirmed"
-          label="Is this event a SIP?"
-          hint="Serious Incident Potential: could it have caused serious harm under slightly different circumstances?"
-          value={review.sipConfirmed}
-          onChange={(sipConfirmed) => set({ sipConfirmed })}
-          errors={errorsFor('sipConfirmed')}
-        />
-      )}
-      {flags.length > 0 && (
-        <p className="message message--error critical-notice" role="status">
-          Critical event: {flags.join(' · ')}
-        </p>
-      )}
-      {flag && flags.includes(flag) && (
-        <SelectField
-          id="criticalTypeId"
-          label={`${flag} type`}
-          required
-          searchable
-          value={review.criticalTypeId}
-          options={getReferenceList(reference, assessment.typeList)}
-          onChange={(criticalTypeId) => set({ criticalTypeId })}
-          errors={errorsFor('criticalTypeId')}
-        />
+        <div className="assessment-block">
+          <YesNoField
+            id="sipConfirmed"
+            label="Is this event a SIP?"
+            hint="Serious Incident Potential: could it have caused serious harm under slightly different circumstances?"
+            value={review.sipConfirmed}
+            onChange={(sipConfirmed) => set({ sipConfirmed })}
+            errors={errorsFor('sipConfirmed')}
+          />
+          <CriticalType event={event} review={review} set={set} errorsFor={errorsFor} />
+        </div>
       )}
     </>
   );
 }
 
-// Statement, the pillar's lists, severity and "further analyze" of a valid event.
-function ValidFields({ event, review, set, errorsFor, masterData }) {
+// A titled part of the review form.
+function ReviewSection({ title, children }) {
+  return (
+    <section className="review-section">
+      <h3>{title}</h3>
+      {children}
+    </section>
+  );
+}
+
+// The statement and the pillar's master data lists (required ones marked).
+function ClassificationFields({ event, review, set, errorsFor, masterData }) {
   const assessment = assessmentFor(event);
-  const critical = criticalFlagsOf(event, review).length > 0;
   return (
     <>
       <div className="field">
@@ -225,20 +269,46 @@ function ValidFields({ event, review, set, errorsFor, masterData }) {
             </div>
           );
         })}
-      <SeverityFields event={event} review={review} set={set} errorsFor={errorsFor} />
+    </>
+  );
+}
+
+// Title of the severity part: injuries (safety), losses (industrial risk) or the SIP question.
+function severityTitle(assessment) {
+  if (assessment.sipQuestion) return 'Serious incident potential';
+  return assessment.highPotential === 'SPL' ? 'Loss' : 'Severity';
+}
+
+// A valid event, in titled parts: statement and lists, severity, and the next step.
+function ValidFields({ event, review, set, errorsFor, masterData }) {
+  const assessment = assessmentFor(event);
+  const critical = criticalFlagsOf(event, review).length > 0;
+  const hasSeverity = assessment.potential || assessment.actual || assessment.sipQuestion;
+  return (
+    <>
+      <ReviewSection title="Event statement and classification">
+        <ClassificationFields event={event} review={review} set={set} errorsFor={errorsFor} masterData={masterData} />
+      </ReviewSection>
+      {hasSeverity && (
+        <ReviewSection title={severityTitle(assessment)}>
+          <SeverityFields event={event} review={review} set={set} errorsFor={errorsFor} />
+        </ReviewSection>
+      )}
       {asksFurtherAnalysis(event) && (
-        <YesNoField
-          id="furtherAnalysis"
-          label="Do you want to further analyze?"
-          hint={
-            critical
-              ? 'Proposed for a critical event: Yes opens a root cause analysis.'
-              : 'Yes opens a root cause analysis; No goes on to the next required step.'
-          }
-          value={review.furtherAnalysis}
-          onChange={(furtherAnalysis) => set({ furtherAnalysis })}
-          errors={errorsFor('furtherAnalysis')}
-        />
+        <ReviewSection title="Next step">
+          <YesNoField
+            id="furtherAnalysis"
+            label="Do you want to further analyze?"
+            hint={
+              critical
+                ? 'Proposed for a critical event: Yes opens a root cause analysis.'
+                : 'Yes opens a root cause analysis; No goes on to the next required step.'
+            }
+            value={review.furtherAnalysis}
+            onChange={(furtherAnalysis) => set({ furtherAnalysis })}
+            errors={errorsFor('furtherAnalysis')}
+          />
+        </ReviewSection>
       )}
     </>
   );
@@ -340,9 +410,11 @@ export default function ReviewStep({ event, onSaved }) {
       {review.decision === 'valid' && (
         <ValidFields event={event} review={effective} set={set} errorsFor={errorsFor} masterData={masterData} />
       )}
-      <Button type="submit" disabled={saving}>
-        {review.decision === 'invalid' ? 'Archive event' : 'Complete review'}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={saving}>
+          {review.decision === 'invalid' ? 'Archive event' : 'Complete review'}
+        </Button>
+      </div>
     </form>
   );
 }

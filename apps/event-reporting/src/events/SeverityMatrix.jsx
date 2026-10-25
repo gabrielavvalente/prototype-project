@@ -5,10 +5,11 @@ const BAND_LABELS = Object.fromEntries(BANDS.map((band) => [band.key, band.label
 
 // A clickable severity (or loss) matrix: impact rows × duration columns; the cell clicked gives the
 // score and its band, never typed (003 FR-022, FR-026). value = a rated cell or null.
-export default function SeverityMatrix({ id, title, matrix, value, onChange, errors = [] }) {
+export default function SeverityMatrix({ id, title, description, matrix, value, onChange, errors = [] }) {
   return (
     <fieldset className="field severity-matrix" id={id}>
       <legend className="field-label required">{title}</legend>
+      {description && <span className="field-hint">{description}</span>}
       <div className="severity-matrix-scroll">
         <table>
           <thead>
