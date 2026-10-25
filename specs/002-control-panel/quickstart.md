@@ -49,8 +49,6 @@ Expected: "Saved — TF5 Review is now Required. Applies to new events."; done i
    Lyon TF1 = Review + Root cause (Cluster) + Actions (Central) + Validation (Local). Open a cell
    → author, date and reviewers shown. In Lucas's Environment pillar, choose EvE5 → every phase
    is crossed out and the path ends with "Closed after submission".
-4. Compare plants (Lucas, TF2): Lyon and Porto side by side. As Eva, Compare plants is not
-   offered and its address shows "Not allowed".
 
 ### 3. Same level change and notification (FR-009, FR-023)
 

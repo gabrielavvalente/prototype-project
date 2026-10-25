@@ -17,7 +17,7 @@ ISO strings (`2026-10-24`, `2026-10-24T14:30:00`).
 | `organization` | `id` | Businesses, plants and location nodes |
 | `reference` | `id` | Pillars, families, levels and other fixed lists |
 | `counters` | `id` | Last record-number sequence per family and year |
-| `settings` | `id` | Per-user choices (current context, visible columns) |
+| `settings` | `id` | Per-user choices (current context, visible columns and saved filters) |
 
 ## events
 
@@ -160,6 +160,10 @@ Every item has `id`, `list` and `label`; some have extra fields.
 | `visibleColumns` | list of text | Event list columns the user chose to show (FR-028) |
 | `listView` | `kanban` \| `list` \| null | Remembered view; null = Kanban on phones, List on wide screens (FR-041) |
 | `recentSearches` | list of text | The user's last 5 searches, newest first (FR-044) |
+| `savedFilters` | list of objects | Personal presets `{ id, name, search, filters, quickFilter }`; `filters` follows the `EMPTY_FILTERS` shape and `quickFilter` is an FR-031 key (FR-050) |
+
+The KPIs page reuses the five FR-031 counts. The Reports page is a register of visible event
+records; neither page introduces separate analytics data or an export store (FR-049).
 
 The id of the "signed-in" demo user is kept in `sessionStorage` so closing the tab returns to the
 start screen; everything else lives in IndexedDB.

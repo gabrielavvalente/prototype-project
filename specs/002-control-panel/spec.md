@@ -44,8 +44,7 @@ lifecycle phases from [core.md](../001-event-reporting/source/core.md).
   all apps are opened from one address so they see the same data on the device.
 - Q: How is the resulting workflow shown? → A: The Workflow tab has a **Settings** view (what my
   level sets) and a **Result per plant** view (what applies, with who requires each phase, cell
-  details and a preview of an event's path); Central and Cluster also get **Compare plants** for
-  one level.
+  details and a preview of an event's path).
 - Q: Is user management included? → A: Yes, **read-only** for now: a users list and a user detail
   with their access and Control Panel roles. Editing access is a later feature.
 - Q: Should user management be inside the Control Panel? → A: No. It is a **third app**, User
@@ -102,9 +101,7 @@ submitted.
    cell shows every level requiring it, who set it and when, and the reviewers for Review.
 10. **Given** I chose a level row in Result per plant, **When** I look under the grid, **Then** I see
     the path an event of that level takes at that plant, with skipped phases crossed out.
-11. **Given** I am Central or Cluster, **When** I open **Compare plants** and choose a level,
-    **Then** I see my plants side by side with each phase's result.
-12. **Given** only Submission is Required for a plant and level, **When** an event of that level is
+11. **Given** only Submission is Required for a plant and level, **When** an event of that level is
     submitted there, **Then** it is Closed right away.
 
 ---
@@ -276,8 +273,6 @@ match each demo user's access, and that a Cluster administrator only sees users 
   level × phase cell shows Required or Optional and, when Required, the level(s) requiring it;
   opening a cell shows every requiring setting with author, date and reviewers; choosing a level
   shows the path of an event of that level, with skipped phases crossed out.
-- **FR-025**: Central and Cluster users MUST also have a **Compare plants** view: for a chosen
-  level, their plants side by side with each phase's result.
 - **FR-012**: Workflow changes MUST apply only to events submitted after the change; each event
   MUST keep the workflow (required phases and reviewers) in force at its submission.
 - **FR-026**: When only Submission is Required for the event's plant and level, the event MUST be

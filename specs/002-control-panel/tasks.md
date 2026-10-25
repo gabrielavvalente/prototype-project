@@ -145,7 +145,7 @@ Panel signs in and offers each user's pillars
 
 ## Phase 3: User Story 1 - Set which workflow phases are required (Priority: P1) 🎯 MVP
 
-**Goal**: Settings, Result per plant and Compare plants views; settings combine per the rule;
+**Goal**: Settings and Result per plant views; settings combine per the rule;
 new events keep their workflow and close when only Submission is required
 
 **Independent Test**: Quickstart scenarios 1–4
@@ -196,8 +196,7 @@ new events keep their workflow and close when only Submission is required
   another person's setting ("<name> set this. They will be notified."); toast "Saved — applies to
   new events"; errors shown in place
 - [X] T029 [US1] Create `apps/control-panel/src/workflow/WorkflowTab.jsx` with the view switch
-  Settings · Result per plant · Compare plants (Compare only for Central and Cluster) and the
-  `document.title` per view
+  Settings · Result per plant and the `document.title` per view
 - [X] T030 [P] [US1] Create `apps/control-panel/src/workflow/ResultGrid.jsx` and
   `CellDetails.jsx` (route `…/workflow/result`): plant picker limited to `coveredPlantIds`;
   read-only grid with origin badge (highest level + "+n"); muted Optional cells; clicking a cell
@@ -205,9 +204,8 @@ new events keep their workflow and close when only Submission is required
 - [X] T031 [P] [US1] Create `apps/control-panel/src/workflow/EventPath.jsx`: for the chosen level
   row, phases in order with Optional ones crossed out (`<s>` with an accessible label "skipped"),
   ending with "Closed after submission" when only Submission is required
-- [X] T032 [P] [US1] Create `apps/control-panel/src/workflow/ComparePlants.jsx` (route
-  `…/workflow/compare`): level picker; rows = phases, columns = covered plants; cells Required
-  with origin badge or Optional
+- [X] T032 [US1] Remove the unused Compare plants view and its route from
+  `apps/control-panel/src/workflow/WorkflowTab.jsx`; unknown workflow views show "Not found"
 - [X] T033 [US1] Create `apps/control-panel/src/shell/NotificationsPanel.jsx` and add
   `getNotifications(userId)` / `markNotificationsRead(userId)` to
   `shared/platform/platformData.js`; bell count in `Header.jsx` (FR-023)
@@ -301,8 +299,7 @@ scenarios 1–5
   after
 - [X] T047 [US3] Check route guards in `apps/control-panel/src/App.jsx` against
   [contracts/routes.md](contracts/routes.md): no role → `NotAllowed` on every route except `#/`;
-  pillar without role → `NotAllowed`; Compare plants for Local → `NotAllowed`; unknown pillar or
-  user → "Not found"
+  pillar without role → `NotAllowed`; unknown workflow view, pillar or user → "Not found"
 - [X] T048 [US3] Run quickstart scenario 6 (access) and confirm every change made in scenarios 1–5
   appears in the audit trail with author, date, before and after (SC-005)
 
@@ -363,6 +360,53 @@ scenarios 1–5
 
 ---
 
+## Phase 8: Review remarks (2026-10-25)
+
+**Purpose**: Changes asked after reviewing the three apps
+
+- [X] T059 Site Admin = Local: `withSiteAdminRoles(user)` in `shared/platform/permissions.js` gives
+  every Event Reporting Site Admin a Local role per pillar of their plant (a role already held on
+  the pillar wins); `sampleData.js` derives Eva Novak's roles from it; User Management shows
+  "From the event role Site Admin"; tests in `permissions.test.js`
+- [X] T060 [P] Pillar colors everywhere: shared `.pillar-tag` in `shared/theme.css`; User
+  Management event access, pillars column, Control Panel role badges and review groups use the
+  pillar colors; Event Reporting's pillar tag uses the same style
+- [X] T061 Control Panel master data: search, "Availability for" and Export / Import CSV on one
+  line (`masterData/ValueList.jsx`); `shared/platform/csv.js` (`toCsv`, `parseCsv`),
+  `planImport` in `masterData.js` and `importValues` in `platformData.js` (one transaction,
+  nothing saved when a row has a problem, rows of another level's values skipped, audit
+  entries); Import shown only to who can add values; tests in `csv.test.js` and
+  `masterData.test.js`
+- [X] T062 Event Reporting filters: saved filters inside the Filters menu (`FiltersMenu.jsx`:
+  choose filters, apply a saved filter, save current, delete the applied one); filters in use
+  shown as removable badges, a saved filter as one badge with its name (`ActiveFilters.jsx`)
+- [X] T063 [P] Event Reporting KPI chips: number and word side by side on a compact chip
+- [X] T064 Event Reporting KPIs tab (`KpiOverview.jsx`, `EventsByTypeChart.jsx`): tiles Events
+  with SIP, Open actions (0 until action plans exist), Events in progress; stacked columns of
+  submitted events per type split by level, in pillar colors, with hover details and a table
+  view; `countByFamilyAndLevel` in `logic/eventList.js` with a test
+- [X] T065 Event Reporting form (`create/EventForm.jsx`): Classification, Location and Event
+  details on the left, General information and Immediate actions on the right; other sections
+  disabled until pillar, type and level are chosen; drafts save themselves 2 s after the last
+  change once classified, with the status shown in the title bar
+
+- [X] T066 Control Panel master data: "Create <list>" sits with Export / Import on the toolbar line
+- [X] T067 Event Reporting form: General information keeps Title, Description (a large text box),
+  Employee type and the first aid treatment; Reporter, dates, shift, recurrence, Shared with and
+  diseases move to Event details; the event Comments field is removed; pillar chips are filled
+  with their pillar's color
+- [X] T068 Event Reporting immediate actions: no KPI ID, completion date or category fields (on
+  save the completion date is the report date and the category is the event's pillar,
+  `completeImmediateActions` in `logic/submission.js` with a test); priority Urgent added; an X
+  icon button at the top of each action removes it
+
+- [X] T069 Selects no longer look disabled: the shared rule greying `input[readonly]` skips
+  Mantine selects (`shared/theme.css`); Person involved is searchable
+- [X] T070 First aid treatment is a multiple choice (`firstAidTreatmentIds`); "Other" asks for a
+  description (`firstAidOther`, `FIRST_AID_OTHER` in `logic/validation.js`, tests)
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -401,7 +445,7 @@ Task: "Create apps/control-panel/src/workflow/ReviewersPicker.jsx" (T027)
 # after WorkflowTab (T029):
 Task: "ResultGrid.jsx + CellDetails.jsx"                   (T030)
 Task: "EventPath.jsx"                                       (T031)
-Task: "ComparePlants.jsx"                                   (T032)
+Task: "Remove Compare plants view and route"                 (T032)
 ```
 
 ---

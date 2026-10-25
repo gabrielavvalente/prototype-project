@@ -22,7 +22,6 @@ through the launcher: `http://localhost:5173/apps/control-panel/`.
 | `#/pillars` | Pillar cards the user holds a role on, each with level and plants | any Control Panel role |
 | `#/pillars/:pillarId/workflow` | Workflow tab — Settings view (default) | role on the pillar |
 | `#/pillars/:pillarId/workflow/result` | Result per plant (plant picker limited to the role's plants) | role on the pillar |
-| `#/pillars/:pillarId/workflow/compare` | Compare plants for one level | Central or Cluster on the pillar |
 | `#/pillars/:pillarId/master-data` | Lists of the pillar (first list selected) | role on the pillar, except Industrial Hygiene ("Master data comes later") |
 | `#/pillars/:pillarId/master-data/:listId` | One list | role on the pillar; IR may open `standards` and `hazards` read-only |
 | `#/pillars/:pillarId/audit` | Audit trail of the pillar, newest first | role on the pillar |
@@ -62,11 +61,6 @@ Not allowed → the "You don't have access to this page." message with a link to
 - Clicking a level row shows the **event path** below: Submission → Review → … with Optional
   phases crossed out, ending in "Closed after submission" when only Submission is Required.
 
-## Workflow — Compare plants
-
-- Level picker. Table: rows = phases, columns = the role's plants; each cell Required (with
-  origin badge) or Optional.
-
 ## Master data
 
 - List selector (chips) — H&S: Standards, Hazards, Body Parts, Injuries; Environment: Aspects,
@@ -75,8 +69,8 @@ Not allowed → the "You don't have access to this page." message with a link to
 - Plant picker "Availability for: <plant>" (role's plants).
 - Table: code, name, owner (Central / Cluster Lyon + Porto), status badge, "Available at <plant>"
   yes/no, actions (only those allowed: Edit, Deactivate / Reactivate for my scope, Retire).
-- "Add value" button only when allowed; form sheet with code, name, description, category (Body
-  Parts); validation messages from `validateValue`.
+- "+ Create <list name>" button only when allowed; form sheet with code, name, description,
+  category (Body Parts); validation messages from `validateValue`.
 - Body Parts are grouped by category.
 
 ## Audit

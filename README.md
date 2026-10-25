@@ -3,6 +3,8 @@
 A monorepo of small prototype apps built with React + Vite, sharing one visual theme
 ([shared/theme.css](shared/theme.css)) and one set of platform data
 ([shared/platform/](shared/platform/): users, plants, roles, workflow settings, master data).
+The launcher and each app use a persistent header for returning to the app home, navigating to the
+current module, searching within it, and accessing notifications and the signed-in account.
 
 ## Apps
 
