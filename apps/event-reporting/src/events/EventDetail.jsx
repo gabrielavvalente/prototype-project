@@ -83,8 +83,9 @@ function Collapsible({ title, open = false, children }) {
   );
 }
 
-// The event's header: pillar, level, status, critical badges, title and key facts.
-export function EventHeadCard({ event }) {
+// The event's header: pillar, level, status, critical badges, title and key facts. compact: the
+// short version above the workflow steps (third review).
+export function EventHeadCard({ event, compact = false }) {
   const { reference, organization, users } = useApp();
   const pillar = findById(reference, event.pillarId);
   const level = findLevelByCode(reference, event.levelCode);
@@ -96,7 +97,14 @@ export function EventHeadCard({ event }) {
     .join(' › ');
 
   return (
-    <Paper component="section" withBorder shadow="xs" radius="md" p="xl" className={`card detail-head${critical ? ' card--critical' : ''}`}>
+    <Paper
+      component="section"
+      withBorder
+      shadow="xs"
+      radius="md"
+      p={compact ? 'md' : 'xl'}
+      className={`card detail-head${compact ? ' detail-head--compact' : ''}${critical ? ' card--critical' : ''}`}
+    >
       <div className="tag-row">
         <PillarTag pillar={pillar} />
         <Badge variant="light" color="blue">{event.levelCode}</Badge>
@@ -146,7 +154,6 @@ export function EventHeadCard({ event }) {
 // Everything reported, section by section, with photos, immediate actions and the history.
 export function EventSections({ event, attachments }) {
   const lists = useApp();
-  const { users } = lists;
   const sections = describeEvent(event, lists, attachments.length).filter((section) => section.section !== 'classification');
 
   return (
@@ -175,17 +182,25 @@ export function EventSections({ event, attachments }) {
         </Collapsible>
       ))}
 
-      <Collapsible title="History" open>
-        <ol className="timeline">
-          {buildHistory(event, users).map((item) => (
-            <li key={item.label}>
-              <span>{item.label}</span>
-              <span className="field-hint">{formatDateTime(item.at)}</span>
-            </li>
-          ))}
-        </ol>
-      </Collapsible>
+      <EventHistory event={event} />
     </>
+  );
+}
+
+// Created, submitted, review taken and completed, last updated.
+export function EventHistory({ event }) {
+  const { users } = useApp();
+  return (
+    <Collapsible title="History" open>
+      <ol className="timeline">
+        {buildHistory(event, users).map((item) => (
+          <li key={item.label}>
+            <span>{item.label}</span>
+            <span className="field-hint">{formatDateTime(item.at)}</span>
+          </li>
+        ))}
+      </ol>
+    </Collapsible>
   );
 }
 

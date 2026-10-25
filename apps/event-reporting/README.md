@@ -46,7 +46,8 @@ Then check by hand, at phone width and on desktop, with the browser console open
    statement and the potential severity, "further analyze" No → Closed; answer No with a reason
    (Bad quality needs a comment) → Archived, hidden unless Filters → Status = Archived. A TF2
    scored Severe × Medium term is SIP (red) and goes to Root cause analysis. Another reviewer sees
-   who is reviewing; reviewed events have no Edit.
+   who is reviewing. A Manager edits an Open event right in its Submission step; reviewed events
+   are read-only. KPIs shows the archived events by reason.
 
 Full scenarios: [specs/001-event-reporting/quickstart.md](../../specs/001-event-reporting/quickstart.md)
 and, for the review, [specs/003-event-review/quickstart.md](../../specs/003-event-review/quickstart.md).

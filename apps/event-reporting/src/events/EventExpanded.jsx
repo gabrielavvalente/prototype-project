@@ -90,9 +90,9 @@ export default function EventExpanded({ event }) {
         <Link className={`button${canStartReview(user, event) ? '' : ' button--primary'}`} to={event.status === 'Draft' ? path : `${path}/steps/${currentStep(event) ?? 'submission'}`}>
           Open event
         </Link>
-        {canEditEvent(user, event) && (
+        {event.status === 'Draft' && canEditEvent(user, event) && (
           <Link className="button" to={`${path}/edit`}>
-            <Icon name="edit" size={18} /> {event.status === 'Draft' ? 'Continue draft' : 'Edit'}
+            <Icon name="edit" size={18} /> Continue draft
           </Link>
         )}
       </div>

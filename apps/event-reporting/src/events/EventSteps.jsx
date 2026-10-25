@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Alert, Button, Paper, Title } from '@mantine/core';
+import { Alert, Paper, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { findEvent, getByIndex } from '../data/db.js';
 import { canEditEvent, getMenuItems, isEventVisible } from '../logic/access.js';
 import { STEP_LABELS, STEPS, stepStates } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
-import { EventHeadCard, EventSections, SavedBanner } from './EventDetail.jsx';
+import { EventForm } from '../create/EventForm.jsx';
+import { EventHeadCard, EventHistory, EventSections, SavedBanner } from './EventDetail.jsx';
 import ReviewStep from './ReviewStep.jsx';
 
 const STATE_HINTS = { done: 'Done', current: 'Current step', upcoming: 'Not reached yet', skipped: 'Not required' };
@@ -54,21 +55,19 @@ function StepsMenu({ event, activeStep }) {
   );
 }
 
-// What was reported, with photos, immediate actions and history, and Edit while it is allowed.
+// What was reported: editable in place by those who may edit it (while Open), read-only for the
+// others — there is no Edit button (third review).
 function SubmissionStep({ event, attachments }) {
   const { user } = useApp();
-  return (
-    <>
-      {canEditEvent(user, event) && (
-        <div className="step-actions">
-          <Button component={Link} variant="default" to={`/events/${event.recordNumber}/edit`} leftSection={<Icon name="edit" size={18} />}>
-            Edit
-          </Button>
-        </div>
-      )}
-      <EventSections event={event} attachments={attachments} />
-    </>
-  );
+  if (canEditEvent(user, event)) {
+    return (
+      <>
+        <EventForm key={event.id} embedded />
+        <EventHistory event={event} />
+      </>
+    );
+  }
+  return <EventSections event={event} attachments={attachments} />;
 }
 
 // The page of a submitted event (003): its header, then the steps menu beside the chosen step.
@@ -123,7 +122,7 @@ export default function EventSteps() {
         />
       )}
 
-      <EventHeadCard event={event} />
+      <EventHeadCard event={event} compact />
 
       <div className="steps-layout">
         <StepsMenu event={event} activeStep={step} />
