@@ -194,7 +194,7 @@ follows the dependencies.
 | User Management (users, groups) | Platform data | 002, 004 (part) |
 | Event reporting (create, draft, submit, edit) | Platform data, workflow settings | [event-reporting](capabilities/event-reporting.md) |
 | Event Reporting shell (context, header, navigation, alerts, search) | Platform data | [event-reporting-shell](capabilities/event-reporting-shell.md) |
-| Event library (list, Kanban, search, filters, KPIs, reports) | Event reporting | 001 |
+| Event library (list, Kanban, filters, KPIs, reports, event page) | Event reporting | [event-library](capabilities/event-library.md) |
 | Event review (incl. severity and critical events) | Event reporting, master data | 003 |
 | Root cause analysis | Event review | [root-cause-analysis](capabilities/root-cause-analysis.md) |
 | Action plan | Root cause analysis | not yet specified |
