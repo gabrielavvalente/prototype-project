@@ -26,6 +26,11 @@ describe('what the reviewer assesses', () => {
     expect(assessmentFor({ familyCode: 'TF', levelCode: 'TF4' }).requiredListIds).toEqual(['standards', 'hazards']);
   });
 
+  it('requires Aspects and Impacts for environment and the Category for industrial risk (third review)', () => {
+    expect(assessmentFor({ familyCode: 'EVE', levelCode: 'EvE4' }).requiredListIds).toEqual(['aspects', 'impacts']);
+    expect(assessmentFor({ familyCode: 'SRE', levelCode: 'SRE4' }).requiredListIds).toEqual(['irCategories']);
+  });
+
   it('asks Potential Loss for every SRE level and Actual Loss for SRE1–SRE3', () => {
     expect(assessmentFor({ familyCode: 'SRE', levelCode: 'SRE5' })).toMatchObject({ potential: true, actual: false });
     expect(assessmentFor({ familyCode: 'SRE', levelCode: 'SRE3' })).toMatchObject({ potential: true, actual: true });

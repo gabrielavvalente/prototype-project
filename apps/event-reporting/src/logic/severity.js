@@ -77,7 +77,7 @@ export function assessmentFor(event) {
     };
   }
   if (event.familyCode === 'EVE') {
-    return { sipQuestion: true, typeList: 'sipTypeEnv', requiredListIds: [] };
+    return { sipQuestion: true, typeList: 'sipTypeEnv', requiredListIds: ['aspects', 'impacts'] };
   }
   if (event.familyCode === 'SRE') {
     return {
@@ -89,7 +89,7 @@ export function assessmentFor(event) {
       highPotential: 'SPL',
       highActual: 'HCL',
       typeList: 'splType',
-      requiredListIds: [],
+      requiredListIds: ['irCategories'],
     };
   }
   return { requiredListIds: [] };
