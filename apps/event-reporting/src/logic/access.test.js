@@ -43,8 +43,8 @@ describe('getMenuItems', () => {
     expect(getMenuItems('Manager')).toEqual(['events', 'create-event', 'my-alerts']);
   });
 
-  it('gives Site Admin only events', () => {
-    expect(getMenuItems('Site Admin')).toEqual(['events']);
+  it('gives Site Admin events and alerts, no creation', () => {
+    expect(getMenuItems('Site Admin')).toEqual(['events', 'my-alerts']);
   });
 });
 
