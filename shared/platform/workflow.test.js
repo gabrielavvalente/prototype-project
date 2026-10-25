@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { users } from './sampleData.js';
 import {
+  analysisWithoutReview,
   canEditSetting,
   cellStateFor,
   isOnlySubmission,
@@ -91,5 +92,16 @@ describe('reviewers and the workflow kept on events (FR-010, FR-012, FR-026)', (
   it('closes an event when only Submission is required', () => {
     const event = { pillarId: 'pillar-hs', levelCode: 'TF5', plantId: 'plant-lyon' };
     expect(isOnlySubmission(workflowForEvent(settings, users, event))).toBe(true);
+  });
+
+  it('finds Root cause analysis required where Review is not (review 2026-10-25)', () => {
+    expect(analysisWithoutReview(settings, ALL)).toEqual([]);
+    const withoutReview = settings.filter((item) => item.id !== 'c-TF2');
+    expect(analysisWithoutReview(withoutReview, ALL)).toEqual([
+      { levelCode: 'TF2', plantId: 'plant-lyon' },
+      { levelCode: 'TF2', plantId: 'plant-porto' },
+    ]);
+    const centralAnalysis = [...settings, setting('c-TF4', 'TF4', 'rootCause', 'central', ALL, 'user-ludovic')];
+    expect(analysisWithoutReview(centralAnalysis, ALL).map((item) => item.plantId)).toEqual(ALL);
   });
 });

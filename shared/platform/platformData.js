@@ -8,7 +8,7 @@ import { getPlantName } from './organization.js';
 import { getRole, LEVEL_LABELS } from './permissions.js';
 import * as sampleData from './sampleData.js';
 import { getAll, getAllByIndex, openDatabase, runTransaction } from './storage.js';
-import { cellStateFor, PHASE_LABELS } from './workflow.js';
+import { analysisWithoutReview, cellStateFor, PHASE_LABELS } from './workflow.js';
 
 const DATABASE_NAME = 'platform';
 const DATABASE_VERSION = 1;
@@ -169,6 +169,20 @@ export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, re
       updatedAt: now,
     };
     changes.push({ before: null, after });
+  }
+
+  // Root cause analysis needs Review at the same plants: refuse a change that would break it.
+  const removedIds = changes.filter((change) => change.before).map((change) => change.before.id);
+  const next = [...settings.filter((item) => !removedIds.includes(item.id)), ...changes.map((change) => change.after).filter(Boolean)];
+  const plantIds = platform.organization.filter((node) => node.type === 'plant').map((node) => node.id);
+  const broken = analysisWithoutReview(next, plantIds).filter((item) => item.levelCode === levelCode);
+  if (broken.length > 0) {
+    const plants = broken.map((item) => getPlantName(platform.organization, item.plantId)).join(', ');
+    throw new Error(
+      phase === 'review'
+        ? `Review stays Required for ${levelCode}: Root cause analysis is required at ${plants} and needs a review.`
+        : `Make Review Required for ${levelCode} first: Root cause analysis needs a review (missing at ${plants}).`,
+    );
   }
 
   await runTransaction(db, ['workflowSettings', 'audit', 'notifications'], 'readwrite', (stores) => {
