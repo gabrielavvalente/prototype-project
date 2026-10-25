@@ -9,6 +9,7 @@ import { STEP_LABELS, STEPS, stepStates } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
 import ReviewStep from './ReviewStep.jsx';
+import CriticalBadges from './CriticalBadges.jsx';
 import StatusBadge from './StatusBadge.jsx';
 import SummaryList from './SummaryList.jsx';
 
@@ -87,6 +88,7 @@ export default function EventSteps() {
         </button>
         <Link to={`/events/${event.recordNumber}`}>{event.recordNumber}</Link>
         <StatusBadge status={event.status} />
+        <CriticalBadges event={event} />
       </div>
       <Title order={1} className="steps-title">{event.title}</Title>
 
@@ -108,7 +110,8 @@ export default function EventSteps() {
                   <SummaryList rows={section.rows} />
                 </div>
               ))}
-          {available && step === 'review' && <ReviewStep event={event} onSaved={setEvent} />}
+          {/* A new form for each event: going from one event's steps to another's keeps this page. */}
+          {available && step === 'review' && <ReviewStep key={event.id} event={event} onSaved={setEvent} />}
           {available && !['submission', 'review'].includes(step) && (
             <Alert color="blue" variant="light">
               {STEP_LABELS[step]} comes in a later version of the prototype.

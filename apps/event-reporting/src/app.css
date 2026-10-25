@@ -3535,3 +3535,131 @@ a.step-link:hover {
     white-space: nowrap;
   }
 }
+
+/* Severity and loss matrices of the review (003 FR-022, FR-026): click the cell that fits. Band
+   colors come from the theme's status colors; the score is written in every cell, so the band is
+   never shown by color alone. */
+.severity-matrix-scroll {
+  overflow-x: auto;
+}
+
+.severity-matrix table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: separate;
+  border-spacing: 4px;
+}
+
+.severity-matrix th {
+  padding: 6px;
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  text-align: left;
+  vertical-align: bottom;
+}
+
+.severity-matrix th small {
+  display: block;
+  color: var(--color-muted);
+  font-size: var(--font-size-tiny);
+  font-weight: 400;
+}
+
+.severity-matrix tbody th {
+  vertical-align: middle;
+}
+
+/* The impact names stay visible while the cells scroll sideways on phones. */
+.severity-matrix th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-surface);
+}
+
+/* On phones the matrix keeps names and scores only: the definitions would hide the cells. */
+@media (max-width: 767px) {
+  .severity-matrix table {
+    min-width: 400px;
+  }
+
+  .severity-matrix th:first-child {
+    width: 96px;
+  }
+
+  .severity-matrix th small,
+  .severity-matrix thead th:first-child span {
+    display: none;
+  }
+}
+
+.severity-cell {
+  width: 100%;
+  min-height: 44px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.severity-cell--low {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.severity-cell--medium {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.severity-cell--high {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.severity-cell:hover {
+  border-color: currentColor;
+}
+
+.severity-cell[aria-pressed='true'] {
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-text);
+}
+
+.severity-result {
+  margin: 4px 0 0;
+  font-size: var(--font-size-small);
+}
+
+.severity-band {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.severity-band--low {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.severity-band--medium {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.severity-band--high {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.critical-notice {
+  font-weight: 600;
+}
+
+/* Title cell of the List with the critical badges after the title. */
+.cell-title .mantine-Badge-root {
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
