@@ -101,6 +101,22 @@ export function workflowForEvent(settings, users, event) {
   return { computedAt: new Date().toISOString(), phases };
 }
 
+// Root cause analysis needs a review (review 2026-10-25): for each plant where a setting requires
+// Root cause analysis, Review must be Required for the same pillar and level. Returns the
+// { levelCode, plantId } pairs breaking that rule.
+export function analysisWithoutReview(settings, allPlantIds) {
+  const broken = [];
+  for (const setting of settings.filter((item) => item.phase === 'rootCause')) {
+    const plantIds = setting.scopeLevel === 'central' ? allPlantIds : setting.plantIds;
+    for (const plantId of plantIds) {
+      const result = resultingWorkflow(settings, { pillarId: setting.pillarId, levelCode: setting.levelCode, plantId });
+      const known = broken.some((item) => item.levelCode === setting.levelCode && item.plantId === plantId);
+      if (!result.review.required && !known) broken.push({ levelCode: setting.levelCode, plantId });
+    }
+  }
+  return broken;
+}
+
 // True when nothing besides Submission is Required: the event is Closed at once (FR-026).
 export function isOnlySubmission(workflow) {
   return CONFIGURABLE_PHASES.every((phase) => !workflow.phases[phase].required);

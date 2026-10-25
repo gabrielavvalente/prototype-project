@@ -9,7 +9,8 @@ export { getPillarIdsForPlant };
 const menuByRole = {
   User: ['events', 'create-event', 'my-alerts'],
   Manager: ['events', 'create-event', 'my-alerts'],
-  'Site Admin': ['events'],
+  // Site Admins review and can be designated, so they get alerts too (review 2026-10-25).
+  'Site Admin': ['events', 'my-alerts'],
 };
 
 const routesByRole = {

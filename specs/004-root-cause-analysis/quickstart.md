@@ -20,9 +20,8 @@ Start from **Reset demo data** (Event Reporting start screen).
 1. **Designate** — As Carla Mendes, review `TF-26-0003` (TF2) as valid, Potential Severe × Medium
    term (SIP, type), keep "further analyze" Yes: "Who will perform the root cause analysis?" is
    required; leave it empty → refused; choose "Lyon H&S investigation team" and Diego Laurent →
-   Complete review: current step Root cause analysis; the review shows the designation and Carla
-   stays on it. Repeat on another event designating Carla herself: Complete review opens the Root
-   cause analysis step.
+   Complete review: current step Root cause analysis, and Carla, a member of that team, is taken
+   to it. Repeat on another event designating only Diego: Carla stays on the review summary.
 2. **Alerts** — Eva Novak and Ana Ribeiro (team members) and Diego have "Root cause analysis assigned
    to you"; Carla (the reviewer, also a member) has none.
 3. **Not asked** — Review `TF-26-0006` (TF4) with "further analyze" No: the field is not shown.
