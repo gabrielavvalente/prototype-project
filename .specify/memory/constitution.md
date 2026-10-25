@@ -1,18 +1,21 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 2.2.0 → 2.3.0
-Bump rationale: MINOR — "Monorepo Structure" materially expanded so several apps can share one
-configuration (feature 002 Control Panel): a root `launcher/` folder opening every app from one
-address, and `shared/platform/` for the platform data all apps read. No rule removed or
-redefined.
+Version change: 2.3.0 → 2.4.0
+Bump rationale: MINOR — "Development Workflow" materially expanded for the capability spec format
+adopted after the pilot (branch docs/spec-format-pilot): specs/domain.md and specs/capabilities/
+become the living description of the product; each Spec Kit feature describes a change and ends
+by applying it to them. No principle removed or redefined.
 
-Modified principles: none (Principle II "Isolated Apps" unchanged: apps still never import each
-other; shared code lives only in `shared/`)
-Modified rules: Monorepo Structure → Root (launcher allowed); new bullet "Shared platform data";
-Stack → package.json rule now names the launcher as the only other place with its own setup
+Modified principles: none
+Modified rules: Monorepo Structure → Folders (`specs/` content described); Development Workflow →
+new bullets on capability specs, change specs, the closing task, rules written once, review
+remarks and acceptance scenarios
 Added sections: none
 Removed sections: none
+
+Templates: the Spec Kit templates are overridden in `.specify/templates/overrides/` (spec, plan,
+tasks) to follow this workflow; the core templates and commands are not modified.
 
 Deferred TODOs: none.
 -->
@@ -98,7 +101,8 @@ Each app MUST have a short `README.md` at `apps/<app-name>/README.md`.
 ## Monorepo Structure
 
 - **Folders**: `apps/` (one subfolder per app), `shared/` (common resources: the visual theme and
-  the platform data), `launcher/` (opens all apps from one address), `specs/` (Spec Kit artifacts)
+  the platform data), `launcher/` (opens all apps from one address), `specs/` (`domain.md` and `capabilities/`, the living description of the product, and one
+  `NNN-name/` Spec Kit folder per change)
   and `.specify/` (Spec Kit configuration).
 - **Root**: MAY contain a `launcher/` folder that opens every app from one address (e.g.,
   `…/event-reporting/` and `…/control-panel/`) and shows a page listing them. The launcher MAY have
@@ -129,8 +133,22 @@ Each app MUST have a short `README.md` at `apps/<app-name>/README.md`.
 
 ## Development Workflow
 
+- `specs/domain.md` (shared vocabulary, entities and rules) and `specs/capabilities/<name>.md`
+  (one per business capability) MUST describe the product as it behaves now: no history, no
+  technology, no file paths. They are the source of truth, and what a new project reuses.
 - Each feature MUST follow the Spec Kit flow: `/speckit-specify` → (`/speckit-clarify`) →
-  `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`.
+  `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`. Its `spec.md` describes a **change**:
+  the capabilities concerned, the rules it adds, changes or removes (full new text, with their
+  ids), the new or changed acceptance scenarios and the decisions taken.
+- The last task of every feature MUST apply the change to the capability files and the domain,
+  then check their acceptance scenarios. The `specs/NNN-name/` folders are the history of
+  changes and are not updated afterwards.
+- Each rule MUST be written once, with an id; other files refer to the id instead of repeating
+  the rule.
+- Review remarks MUST edit the feature's `spec.md` in place (no appended clarification sessions)
+  and become tasks in a new phase of `tasks.md`.
+- Acceptance scenarios MUST start from the demo data of `specs/capabilities/platform-data.md`,
+  with concrete people, events and counts.
 - Each spec MUST state which app it belongs to (or `shared/`).
 - Each `plan.md` MUST include the Constitution Check; any exception MUST be recorded with
   justification in the Complexity Tracking section.
@@ -152,4 +170,4 @@ conflicts with it, the constitution wins unless it is amended.
 - **Compliance**: Every `plan.md` MUST pass the Constitution Check before and after design.
   Unjustified complexity MUST be rejected.
 
-**Version**: 2.3.0 | **Ratified**: 2026-10-24 | **Last Amended**: 2026-10-24
+**Version**: 2.4.0 | **Ratified**: 2026-10-24 | **Last Amended**: 2026-10-25
