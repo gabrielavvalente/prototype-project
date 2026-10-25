@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Avatar, Button, Select, Stack, Text } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { getPillarIdsForPlant } from '../logic/access.js';
 import { findById, getLabel } from '../logic/lookups.js';
@@ -51,48 +52,32 @@ export default function AccountSheet({ onClose }) {
   return (
     <Sheet title="Account" onClose={onClose}>
       <div className="account-person">
-        <span className="avatar" aria-hidden="true">
-          {user.avatar}
-        </span>
-        <div>
-          <strong>{user.name}</strong>
-          <div className="field-hint">{user.role}</div>
-        </div>
+        <Avatar radius="xl" color="blue">{user.avatar}</Avatar>
+        <Stack gap={2}>
+          <Text fw={600}>{user.name}</Text>
+          <Text size="sm" c="dimmed">{user.role}</Text>
+        </Stack>
       </div>
       {businessIds.length > 1 && (
         <div className="field">
-          <label htmlFor="business-select">Business</label>
-          <select id="business-select" value={context.businessId} onChange={(e) => changeBusiness(e.target.value)}>
-            {businessIds.map((id) => (
-              <option key={id} value={id}>
-                {getLabel(organization, id)}
-              </option>
-            ))}
-          </select>
+          <Select label="Business" id="business-select" value={context.businessId} data={businessIds.map((id) => ({ value: id, label: getLabel(organization, id) }))} onChange={(value) => value && changeBusiness(value)} />
         </div>
       )}
       <div className="field">
-        <label htmlFor="plant-select">Plant</label>
-        <select id="plant-select" value={context.plantId} onChange={(e) => changePlant(e.target.value)}>
-          {plantsInBusiness.map((plant) => (
-            <option key={plant.id} value={plant.id}>
-              {plantOptionLabel(plant)}
-            </option>
-          ))}
-        </select>
+        <Select label="Plant" id="plant-select" value={context.plantId} data={plantsInBusiness.map((plant) => ({ value: plant.id, label: plantOptionLabel(plant) }))} onChange={(value) => value && changePlant(value)} />
       </div>
       <div className="field">
         <span className="field-label">Pillar</span>
         <div className="account-row">
-          <span>{context.pillarId ? getLabel(reference, context.pillarId) : 'All pillars'}</span>
-          <button type="button" className="button" onClick={changePillar}>
+          <Text>{context.pillarId ? getLabel(reference, context.pillarId) : 'All pillars'}</Text>
+          <Button type="button" variant="default" onClick={changePillar}>
             Change pillar
-          </button>
+          </Button>
         </div>
       </div>
-      <button type="button" className="button button--block" onClick={switchUser}>
+      <Button type="button" variant="light" fullWidth onClick={switchUser}>
         Switch user
-      </button>
+      </Button>
     </Sheet>
   );
 }

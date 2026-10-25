@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { Button, Group, Select, TextInput, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import ChipGroup from '../create/ChipGroup.jsx';
-import { getPillarColorClass } from '../logic/display.js';
+import { getPillarColorKey } from '../logic/display.js';
 import { EMPTY_FILTERS } from '../logic/eventList.js';
 import { findById, getChildren, getReferenceList } from '../logic/lookups.js';
 import Sheet from '../shell/Sheet.jsx';
@@ -45,14 +46,14 @@ export default function FilterSheet({ filters, onApply, onClose }) {
       title="Filters"
       onClose={onClose}
       footer={
-        <div className="sheet-actions">
-          <button type="button" className="button" onClick={() => setDraft(EMPTY_FILTERS)}>
+        <Group className="sheet-actions" grow>
+          <Button type="button" variant="default" onClick={() => setDraft(EMPTY_FILTERS)}>
             Clear all
-          </button>
-          <button type="button" className="button button--primary" onClick={apply}>
+          </Button>
+          <Button type="button" onClick={apply}>
             Apply filters
-          </button>
-        </div>
+          </Button>
+        </Group>
       }
     >
       <ChipGroup
@@ -64,7 +65,7 @@ export default function FilterSheet({ filters, onApply, onClose }) {
         options={families.map((item) => ({
           value: item.code,
           label: `${item.code} — ${item.label}`,
-          dotClass: getPillarColorClass(findById(reference, item.pillarId)?.code),
+          colorKey: getPillarColorKey(findById(reference, item.pillarId)?.code),
         }))}
       />
       {family && (
@@ -77,52 +78,30 @@ export default function FilterSheet({ filters, onApply, onClose }) {
           options={levels.map((level) => ({ value: level.code, label: level.code }))}
         />
       )}
-      <fieldset className="field">
+      <fieldset className="field filter-date-range">
         <legend className="field-label">Report date</legend>
-        <div className="date-range">
-          <label>
-            <span className="visually-hidden">From</span>
-            <input type="date" value={draft.from} onChange={(e) => set({ from: e.target.value })} />
-          </label>
-          <span className="field-hint">to</span>
-          <label>
-            <span className="visually-hidden">To</span>
-            <input type="date" value={draft.to} onChange={(e) => set({ to: e.target.value })} />
-          </label>
-        </div>
+        <TextInput type="date" label="From" value={draft.from} onChange={(e) => set({ from: e.target.value })} />
+        <TextInput type="date" label="To" value={draft.to} onChange={(e) => set({ to: e.target.value })} />
       </fieldset>
-      <p className="section-label">Location</p>
+      <Title order={3} size="h4" mt="md" mb="xs">Location</Title>
       {LOCATION_LEVELS.map((level, index) => {
         const parentId = index === 0 ? context.plantId : draft.location[LOCATION_LEVELS[index - 1].field];
         if (!parentId) return null;
         return (
           <div className="field" key={level.field}>
-            <label htmlFor={`filter-${level.field}`}>{level.label}</label>
-            <select
+            <Select
               id={`filter-${level.field}`}
-              value={draft.location[level.field] || ''}
-              onChange={(e) => setLocation(index, e.target.value)}
-            >
-              <option value="">Any {level.label.toLowerCase()}</option>
-              {getChildren(organization, parentId).map((node) => (
-                <option key={node.id} value={node.id}>
-                  {node.name}
-                </option>
-              ))}
-            </select>
+              label={level.label}
+              value={draft.location[level.field] || null}
+              placeholder={`Any ${level.label.toLowerCase()}`}
+              data={getChildren(organization, parentId).map((node) => ({ value: node.id, label: node.name }))}
+              onChange={(value) => setLocation(index, value || '')}
+            />
           </div>
         );
       })}
       <div className="field">
-        <label htmlFor="filter-reporter">Reporter</label>
-        <select id="filter-reporter" value={draft.reporterId} onChange={(e) => set({ reporterId: e.target.value })}>
-          <option value="">Any reporter</option>
-          {plantUsers.map((person) => (
-            <option key={person.id} value={person.id}>
-              {person.name}
-            </option>
-          ))}
-        </select>
+        <Select id="filter-reporter" label="Reporter" value={draft.reporterId || null} placeholder="Any reporter" data={plantUsers.map((person) => ({ value: person.id, label: person.name }))} onChange={(value) => set({ reporterId: value || '' })} />
       </div>
     </Sheet>
   );

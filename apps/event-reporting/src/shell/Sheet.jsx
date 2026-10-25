@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { ActionIcon, Group, Paper, Title } from '@mantine/core';
 import Icon from './Icon.jsx';
 
 // A panel over the page: from the bottom on phones, from the right on wide screens.
@@ -21,25 +22,29 @@ export default function Sheet({ title, titleExtra, headerAction, onClose, footer
 
   return (
     <div className="sheet-backdrop" onClick={onClose}>
-      <section
+      <Paper
+        component="section"
+        withBorder
+        shadow="xl"
+        radius="lg"
         className="sheet"
         role="dialog"
         aria-modal="true"
         aria-labelledby="sheet-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sheet-header">
-          <button type="button" className="icon-button" onClick={onClose}>
+        <Group className="sheet-header" wrap="nowrap">
+          <ActionIcon type="button" variant="subtle" color="gray" size="lg" aria-label="Close" onClick={onClose}>
             <Icon name="close" label="Close" />
-          </button>
-          <h2 id="sheet-title" tabIndex={-1} ref={headingRef}>
+          </ActionIcon>
+          <Title id="sheet-title" order={2} size="h3" tabIndex={-1} ref={headingRef}>
             {title} {titleExtra}
-          </h2>
+          </Title>
           {headerAction}
-        </div>
+        </Group>
         <div className="sheet-body">{children}</div>
         {footer && <div className="sheet-footer">{footer}</div>}
-      </section>
+      </Paper>
     </div>
   );
 }

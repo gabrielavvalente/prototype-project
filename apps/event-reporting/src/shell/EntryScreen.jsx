@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button, Card, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { getPillarIdsForPlant } from '../logic/access.js';
 import { getPillarColorClass } from '../logic/display.js';
@@ -23,32 +24,64 @@ export default function EntryScreen() {
   }
 
   return (
-    <main className="page page--with-nav">
-      <h1>Hello, {user.name.split(' ')[0]}</h1>
-      <p className="field-hint">
-        Choose the pillar you are reporting for in {getLabel(organization, context.plantId)}, or see every pillar you
-        can access.
-      </p>
-      <p className="section-label">Pillars</p>
-      <ul className="card-list">
-        {pillars.map((pillar) => (
-          <li key={pillar.id}>
-            <button
-              type="button"
-              className="button choice-card choice-card--row"
-              aria-pressed={context.pillarId === pillar.id}
-              onClick={() => choose(pillar.id)}
-            >
-              <span className={`pillar-dot pillar-dot--large ${getPillarColorClass(pillar.code)}`} aria-hidden="true" />
-              <strong>{pillar.label}</strong>
-              <Icon name="chevronRight" />
-            </button>
-          </li>
-        ))}
-      </ul>
-      <button type="button" className="button button--secondary button--block" onClick={() => choose(null)}>
-        Enter without a pillar
-      </button>
+    <main className="page page--with-nav entry-page">
+      <Stack className="entry-content" gap="xl">
+        <Stack gap="xs" className="entry-heading">
+          <Text className="entry-eyebrow" size="sm" fw={600}>
+            EVENT REPORTING
+          </Text>
+          <Title order={1}>Where would you like to start, {user.name.split(' ')[0]}?</Title>
+          <Text c="dimmed" size="lg">
+            Choose a pillar to see events for {getLabel(organization, context.plantId)}.
+          </Text>
+        </Stack>
+
+        <Stack component="section" gap="md" aria-labelledby="pillars-title">
+          <Title id="pillars-title" order={2} size="h3" mb={0}>
+            Your pillars
+          </Title>
+          <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
+            {pillars.map((pillar) => (
+              <Card
+                key={pillar.id}
+                component="button"
+                type="button"
+                withBorder
+                radius="md"
+                padding="md"
+                className="entry-pillar-card"
+                aria-pressed={context.pillarId === pillar.id}
+                onClick={() => choose(pillar.id)}
+              >
+                <Stack justify="space-between" gap="lg" className="entry-pillar-content">
+                  <Group justify="space-between" wrap="nowrap">
+                    <span
+                      className={`pillar-dot pillar-dot--large ${getPillarColorClass(pillar.code)}`}
+                      aria-hidden="true"
+                    />
+                    <Icon name="chevronRight" />
+                  </Group>
+                  <Text fw={600} ta="left" size="lg">
+                    {pillar.label}
+                  </Text>
+                </Stack>
+              </Card>
+            ))}
+          </SimpleGrid>
+        </Stack>
+
+        <Group className="entry-all-option" justify="space-between" align="center" wrap="wrap">
+          <Stack gap={2}>
+            <Text fw={600}>Need to see everything?</Text>
+            <Text size="sm" c="dimmed">
+              Browse events across all pillars you can access.
+            </Text>
+          </Stack>
+          <Button type="button" variant="default" onClick={() => choose(null)}>
+            Browse all pillars
+          </Button>
+        </Group>
+      </Stack>
     </main>
   );
 }

@@ -25,13 +25,6 @@ const diseases = [
   { id: 'disease-5', list: 'disease', label: 'Noise-induced hearing loss', familyId: 'family-oh' },
 ];
 
-const actionCategories = [
-  { id: 'category-1', list: 'actionCategory', label: 'Isolate the area' },
-  { id: 'category-2', list: 'actionCategory', label: 'Repair or secure equipment' },
-  { id: 'category-3', list: 'actionCategory', label: 'Clean up' },
-  { id: 'category-4', list: 'actionCategory', label: 'Care for people' },
-];
-
 // sortOrder keeps lists in the order written here (the database returns them sorted by id).
 export const reference = [
   ...diseases,
@@ -56,8 +49,7 @@ export const reference = [
     'Rest and observation',
     'Other',
   ]),
-  ...simpleList('actionPriority', ['Low', 'Medium', 'High']),
-  ...actionCategories,
+  ...simpleList('actionPriority', ['Low', 'Medium', 'High', 'Urgent']),
 ].map((item, index) => ({ ...item, sortOrder: index }));
 
 // ---------------------------------------------------------------------------
@@ -150,14 +142,14 @@ const diseaseOfLevel = {
   'OH-HEAR': ['disease-5'],
 };
 
-function sampleImmediateAction(eventId, reporterId, reportDate) {
+// The category of an immediate action is the event's pillar (review 2026-10-25).
+function sampleImmediateAction(eventId, reporterId, reportDate, pillarId) {
   return {
     id: `${eventId}-action-1`,
     description: 'Area made safe and people informed',
     priority: 'actionPriority-3',
-    categoryId: 'category-1',
+    pillarId,
     completionDate: reportDate,
-    kpiId: '',
     comments: '',
     performedByIds: [reporterId],
     status: 'Completed',
@@ -216,12 +208,12 @@ function buildSampleEvents() {
       involvedPersonId: index % 5 === 0 ? reporterId : '',
       involvedPersonName: index % 5 === 0 ? '' : outsideNames[index % outsideNames.length],
       involvedActivity: index % 5 === 0 ? '' : 'Moving pallets near the line',
-      firstAidTreatmentId: ['TF1', 'TF2', 'TF3'].includes(levelCode) ? `firstAidTreatment-${(index % 8) + 1}` : '',
+      firstAidTreatmentIds: ['TF1', 'TF2', 'TF3'].includes(levelCode) ? [`firstAidTreatment-${(index % 8) + 1}`] : [],
+      firstAidOther: '',
       recurrence: index % 4 === 0,
-      comments: '',
       sharedWithIds: [],
       diseaseIds: diseaseOfLevel[levelCode] || [],
-      immediateActions: needsAction ? [sampleImmediateAction(id, reporterId, reportDate)] : [],
+      immediateActions: needsAction ? [sampleImmediateAction(id, reporterId, reportDate, pillarOfFamily[familyCode])] : [],
       attachmentIds: [],
       createdBy: reporterId,
       createdAt: timestamp,

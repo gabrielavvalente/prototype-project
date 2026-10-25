@@ -20,7 +20,7 @@ function ActionSubCard({ action, index }) {
         <span className="tag tag--teal">COMPLETED</span>
       </div>
       <span className="field-hint">
-        {getLabel(reference, action.categoryId)} · {getLabel(reference, action.priority)} priority · Done on{' '}
+        {getLabel(reference, action.pillarId)} · {getLabel(reference, action.priority)} priority · Done on{' '}
         {action.completionDate}
       </span>
       {performers && <span className="field-hint">By {performers}</span>}

@@ -1,3 +1,5 @@
+import { Badge } from '@mantine/core';
+
 // The lifecycle statuses in order (core lifecycle plus Draft), each with its own badge color.
 export const STATUSES = ['Draft', 'Open', 'In Progress', 'Closed', 'Archived'];
 
@@ -7,5 +9,5 @@ export function statusClass(status) {
 
 // A colored badge for an event status (FR-041).
 export default function StatusBadge({ status }) {
-  return <span className={`status-badge ${statusClass(status)}`}>{status}</span>;
+  return <Badge variant="light" className={`status-badge ${statusClass(status)}`}>{status}</Badge>;
 }

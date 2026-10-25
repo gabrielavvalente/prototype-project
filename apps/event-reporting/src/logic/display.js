@@ -10,15 +10,30 @@ export function getSeverityDots(levelCode) {
   return Math.max(1, 5 - level);
 }
 
-const PILLAR_COLOR_CLASSES = {
-  'H&S': 'pillar-dot--hs',
-  ENV: 'pillar-dot--env',
-  IR: 'pillar-dot--ir',
-  IH: 'pillar-dot--ih',
+// Pillar colors come from shared/theme.css, so every app shows a pillar the same way.
+const PILLAR_COLOR_KEYS = {
+  'H&S': 'hs',
+  ENV: 'env',
+  IR: 'ir',
+  IH: 'ih',
 };
 
+// "hs", "env"… for the pillar classes of shared/theme.css and the pillar chips.
+export function getPillarColorKey(pillarCode) {
+  return PILLAR_COLOR_KEYS[pillarCode] || '';
+}
+
 export function getPillarColorClass(pillarCode) {
-  return PILLAR_COLOR_CLASSES[pillarCode] || '';
+  return PILLAR_COLOR_KEYS[pillarCode] ? `pillar-dot--${PILLAR_COLOR_KEYS[pillarCode]}` : '';
+}
+
+export function getPillarTagClass(pillarCode) {
+  return PILLAR_COLOR_KEYS[pillarCode] ? `pillar-tag pillar-tag--${PILLAR_COLOR_KEYS[pillarCode]}` : 'pillar-tag';
+}
+
+// The pillar's color as a CSS value, for charts.
+export function getPillarColor(pillarCode) {
+  return PILLAR_COLOR_KEYS[pillarCode] ? `var(--color-pillar-${PILLAR_COLOR_KEYS[pillarCode]})` : 'var(--color-muted)';
 }
 
 const MINUTE = 60 * 1000;

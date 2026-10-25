@@ -1,16 +1,32 @@
 import { useApp } from '../AppContext.js';
+import { Textarea } from '@mantine/core';
 import { getReferenceList } from '../logic/lookups.js';
-import { MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH } from '../logic/validation.js';
+import {
+  EMPLOYEE_TYPE_EMPLOYEE,
+  FIRST_AID_OTHER,
+  isFirstAidRequired,
+  MAX_DESCRIPTION_LENGTH,
+  MAX_TITLE_LENGTH,
+} from '../logic/validation.js';
 import AttachmentInput from './AttachmentInput.jsx';
 import ChipGroup from './ChipGroup.jsx';
 import DictationButton from './DictationButton.jsx';
 import { FieldError, SelectField, TextField } from './fields.jsx';
 
-// General information: the core facts and optional photos or videos (FR-006 to FR-008).
+// General information: what happened, with optional photos or videos, and who was involved
+// (FR-006 to FR-008, FR-010, FR-047). When and who reported it are in Event details (review
+// 2026-10-25).
 export default function GeneralInfoSection({ event, update, errors, attachments, setAttachments }) {
-  const { reference, users, user } = useApp();
+  const { reference, users } = useApp();
   const plantUsers = users.filter((person) => person.access.some((entry) => entry.plantId === event.plantId));
   const description = event.description || '';
+  const isEmployee = event.employeeType === EMPLOYEE_TYPE_EMPLOYEE;
+  const firstAidIds = event.firstAidTreatmentIds || [];
+
+  // A new employee type asks for the person again (a user, or a name and activity).
+  function chooseEmployeeType(employeeType) {
+    update({ employeeType, involvedPersonId: '', involvedPersonName: '', involvedActivity: '' });
+  }
 
   return (
     <>
@@ -23,46 +39,19 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
         onChange={(value) => update({ title: value })}
         errors={errors}
       />
-      <SelectField
-        id="reporterId"
-        label="Reporter"
-        value={event.reporterId}
-        options={plantUsers.map((person) => ({ id: person.id, label: person.name }))}
-        disabled={user.role !== 'Manager'}
-        hint={user.role === 'Manager' ? 'As a Manager you can report on behalf of someone else.' : undefined}
-        onChange={(value) => update({ reporterId: value })}
-        errors={errors}
-      />
-      <TextField id="reportDate" label="Report date" type="date" value={event.reportDate} readOnly onChange={() => {}} />
-      <TextField
-        id="eventTime"
-        label="Event time (optional)"
-        type="time"
-        value={event.eventTime}
-        onChange={(value) => update({ eventTime: value })}
-        errors={errors}
-      />
-      <ChipGroup
-        id="shiftMoment"
-        label="Shift moment"
-        required
-        value={event.shiftMoment}
-        options={getReferenceList(reference, 'shiftMoment').map((item) => ({ value: item.id, label: item.label }))}
-        onChange={(value) => update({ shiftMoment: value })}
-        errors={errors}
-      />
       <div className="field">
-        <label htmlFor="description" className="required">
-          Description
-        </label>
         <div className="composer">
-          <textarea
+          <Textarea
             id="description"
+            label="Description"
+            required
             value={description}
             maxLength={MAX_DESCRIPTION_LENGTH}
             placeholder="What happened? Describe it clearly and briefly."
             aria-describedby="description-count"
             onChange={(e) => update({ description: e.target.value })}
+            minRows={6}
+            autosize
           />
           <AttachmentInput
             attachments={attachments}
@@ -84,6 +73,70 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
         </span>
         <FieldError errors={errors} field="description" />
       </div>
+      <ChipGroup
+        id="employeeType"
+        label="Employee type"
+        required
+        value={event.employeeType}
+        options={getReferenceList(reference, 'employeeType').map((item) => ({ value: item.id, label: item.label }))}
+        onChange={chooseEmployeeType}
+        errors={errors}
+      />
+      {event.employeeType && isEmployee && (
+        <SelectField
+          id="involvedPersonId"
+          label="Person involved"
+          required
+          value={event.involvedPersonId}
+          options={plantUsers.map((person) => ({ id: person.id, label: person.name }))}
+          searchable
+          onChange={(value) => update({ involvedPersonId: value })}
+          errors={errors}
+        />
+      )}
+      {event.employeeType && !isEmployee && (
+        <>
+          <TextField
+            id="involvedPersonName"
+            label="Name of the person involved"
+            required
+            value={event.involvedPersonName}
+            onChange={(value) => update({ involvedPersonName: value })}
+            errors={errors}
+          />
+          <TextField
+            id="involvedActivity"
+            label="What was the person doing? (optional)"
+            value={event.involvedActivity}
+            onChange={(value) => update({ involvedActivity: value })}
+          />
+        </>
+      )}
+      {isFirstAidRequired(event.levelCode) && (
+        <ChipGroup
+          id="firstAidTreatmentIds"
+          label="What was the first aid treatment?"
+          hint="Choose all that apply."
+          required
+          multiple
+          value={firstAidIds}
+          options={getReferenceList(reference, 'firstAidTreatment').map((item) => ({ value: item.id, label: item.label }))}
+          // The description of "Other" goes with it.
+          onChange={(ids) => update({ firstAidTreatmentIds: ids, ...(ids.includes(FIRST_AID_OTHER) ? {} : { firstAidOther: '' }) })}
+          errors={errors}
+        />
+      )}
+      {isFirstAidRequired(event.levelCode) && firstAidIds.includes(FIRST_AID_OTHER) && (
+        <TextField
+          id="firstAidOther"
+          label="Describe the other first aid treatment"
+          required
+          value={event.firstAidOther}
+          maxLength={200}
+          onChange={(value) => update({ firstAidOther: value })}
+          errors={errors}
+        />
+      )}
     </>
   );
 }

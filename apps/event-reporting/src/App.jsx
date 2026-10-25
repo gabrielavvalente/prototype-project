@@ -88,7 +88,7 @@ export default function App() {
     }
     let userSettings = await getById('settings', userId);
     if (!userSettings) {
-      userSettings = { id: userId, ...defaultContext(signedInUser), visibleColumns: null };
+      userSettings = { id: userId, ...defaultContext(signedInUser), visibleColumns: null, savedFilters: [] };
       await put('settings', userSettings);
     }
     setSettings(userSettings);

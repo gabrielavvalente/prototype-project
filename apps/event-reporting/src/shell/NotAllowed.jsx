@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Alert, Button, Stack, Title } from '@mantine/core';
 
 const messages = {
   permission: 'You do not have permission to open this page.',
@@ -16,11 +17,13 @@ export default function NotAllowed({ reason = 'permission' }) {
 
   return (
     <main className="page">
-      <h1>{title}</h1>
-      <p className="message message--warning">{messages[reason]}</p>
-      <Link className="button button--secondary" to="/events">
-        Back to Events
-      </Link>
+      <Stack gap="md" className="not-allowed-page">
+        <Title order={1}>{title}</Title>
+        <Alert color="yellow" variant="light">{messages[reason]}</Alert>
+        <Button component={Link} variant="default" to="/events">
+          Back to Events
+        </Button>
+      </Stack>
     </main>
   );
 }

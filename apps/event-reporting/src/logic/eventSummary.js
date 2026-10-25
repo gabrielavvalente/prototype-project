@@ -43,18 +43,17 @@ export function describeEvent(event, lists, attachmentCount) {
     ],
     general: [
       { label: 'Title', value: event.title },
+      { label: 'Description', value: event.description },
+      { label: 'Photos and videos', value: String(attachmentCount) },
+      { label: 'Employee type', value: getLabel(reference, event.employeeType) },
+      { label: 'Person involved', value: event.involvedPersonId ? getLabel(users, event.involvedPersonId) : event.involvedPersonName },
+    ],
+    details: [
       { label: 'Reporter', value: getLabel(users, event.reporterId) },
       { label: 'Report date', value: event.reportDate },
       { label: 'Event time', value: event.eventTime },
       { label: 'Shift moment', value: getLabel(reference, event.shiftMoment) },
-      { label: 'Description', value: event.description },
-      { label: 'Photos and videos', value: String(attachmentCount) },
-    ],
-    details: [
-      { label: 'Employee type', value: getLabel(reference, event.employeeType) },
-      { label: 'Person involved', value: event.involvedPersonId ? getLabel(users, event.involvedPersonId) : event.involvedPersonName },
       { label: 'Has this happened before?', value: yesNo(event.recurrence) },
-      { label: 'Comments', value: event.comments },
       { label: 'Shared with', value: listLabels(users, event.sharedWithIds) },
     ],
     actions: [{ label: 'Immediate actions', value: String(event.immediateActions.length) }],
@@ -67,10 +66,11 @@ export function describeEvent(event, lists, attachmentCount) {
     });
   }
   if (event.involvedActivity) {
-    rows.details.splice(2, 0, { label: 'What was the person doing?', value: event.involvedActivity });
+    rows.general.push({ label: 'What was the person doing?', value: event.involvedActivity });
   }
-  if (event.firstAidTreatmentId) {
-    rows.details.push({ label: 'First aid treatment', value: getLabel(reference, event.firstAidTreatmentId) });
+  if (event.firstAidTreatmentIds?.length > 0) {
+    const treatments = listLabels(reference, event.firstAidTreatmentIds);
+    rows.general.push({ label: 'First aid treatment', value: event.firstAidOther ? `${treatments} (${event.firstAidOther})` : treatments });
   }
   if (event.familyCode === 'OH') {
     rows.details.push({ label: 'Disease(s)', value: listLabels(reference, event.diseaseIds) });
@@ -88,9 +88,8 @@ export function describeImmediateAction(action, lists) {
   return [
     { label: 'Description', value: action.description },
     { label: 'Priority', value: getLabel(reference, action.priority) },
-    { label: 'Category', value: getLabel(reference, action.categoryId) },
+    { label: 'Category', value: getLabel(reference, action.pillarId) },
     { label: 'Completion date', value: action.completionDate },
-    { label: 'KPI ID', value: action.kpiId },
     { label: 'Comments', value: action.comments },
     { label: 'Performed by', value: listLabels(users, action.performedByIds) },
     { label: 'Status', value: action.status },

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useBlocker, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Alert, Button, Paper, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { getWorkflowSettings } from '../../../../shared/platform/platformData.js';
 import { workflowForEvent } from '../../../../shared/platform/workflow.js';
@@ -7,7 +8,7 @@ import { findEvent, getByIndex, saveChanges, saveDraft, StorageFullError, submit
 import { canEditEvent, isEventVisible } from '../logic/access.js';
 import { SECTION_TITLES } from '../logic/eventSummary.js';
 import { getReferenceList, toDateString } from '../logic/lookups.js';
-import { SECTIONS, validateEventForSubmit, validateSection } from '../logic/validation.js';
+import { validateEventForSubmit, validateSection } from '../logic/validation.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
 import ClassificationSection from './ClassificationSection.jsx';
@@ -15,6 +16,24 @@ import DetailsSection from './DetailsSection.jsx';
 import GeneralInfoSection from './GeneralInfoSection.jsx';
 import ImmediateActionsSection from './ImmediateActionsSection.jsx';
 import LocationSection from './LocationSection.jsx';
+
+// Left column: what happened and where; right column: who and what was done (review 2026-10-25).
+const COLUMNS = [
+  ['classification', 'location', 'details'],
+  ['general', 'actions'],
+];
+
+// A draft saves itself this long after the last change (review 2026-10-25).
+const AUTO_SAVE_DELAY = 2000;
+
+// The other sections depend on the pillar, type and level, so they open once those are chosen.
+function isClassified(event) {
+  return Boolean(event.pillarId && event.familyCode && event.levelCode);
+}
+
+function formatTime(date) {
+  return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
 
 const SECTION_COMPONENTS = {
   classification: ClassificationSection,
@@ -49,9 +68,9 @@ function newEvent(user, context, reference) {
     involvedPersonId: '',
     involvedPersonName: '',
     involvedActivity: '',
-    firstAidTreatmentId: '',
+    firstAidTreatmentIds: [],
+    firstAidOther: '',
     recurrence: null,
-    comments: '',
     sharedWithIds: [],
     diseaseIds: [],
     immediateActions: [],
@@ -110,6 +129,9 @@ function EventForm() {
   const [saveError, setSaveError] = useState('');
   const [result, setResult] = useState(null);
   const [scrollToField, setScrollToField] = useState(null);
+  const [autoSave, setAutoSave] = useState({ state: 'idle', at: null }); // idle | saving | saved | error
+  // Counts changes, so an automatic save only clears "unsaved" when nothing changed meanwhile.
+  const changeCount = useRef(0);
 
   // Ask before leaving with unsaved changes (closing the tab is handled by the app).
   const blocker = useBlocker(
@@ -154,6 +176,29 @@ function EventForm() {
     load();
   }, [id, user, context]);
 
+  // Drafts save themselves a moment after the last change, once classified, and the form stays
+  // open. The event gets its id from the first save, so later saves update the same draft.
+  useEffect(() => {
+    if (!event || !dirty || saving || event.status !== 'Draft' || !isClassified(event)) return undefined;
+    const timer = setTimeout(async () => {
+      const changesSaved = changeCount.current;
+      setAutoSave({ state: 'saving', at: null });
+      try {
+        const saved = await saveDraft({ event, attachments, removedAttachmentIds, userId: user.id });
+        const { id: savedId, createdBy, createdAt, updatedBy, updatedAt } = saved;
+        setEvent((current) => ({ ...current, id: savedId, createdBy, createdAt, updatedBy, updatedAt }));
+        const savedAttachmentIds = attachments.map((item) => item.id);
+        setAttachments((current) => current.map((item) => (savedAttachmentIds.includes(item.id) ? { ...item, isNew: false } : item)));
+        setRemovedAttachmentIds((current) => current.filter((removedId) => !removedAttachmentIds.includes(removedId)));
+        if (changeCount.current === changesSaved) setDirty(false);
+        setAutoSave({ state: 'saved', at: new Date(updatedAt) });
+      } catch {
+        setAutoSave({ state: 'error', at: null });
+      }
+    }, AUTO_SAVE_DELAY);
+    return () => clearTimeout(timer);
+  }, [event, attachments, removedAttachmentIds, dirty, saving, user.id]);
+
   // After a refused Submit, bring the first missing field into view.
   useEffect(() => {
     if (!scrollToField) return;
@@ -193,6 +238,7 @@ function EventForm() {
   // (used by dictation, which adds to the latest description).
   function update(changes) {
     setEvent((previous) => ({ ...previous, ...(typeof changes === 'function' ? changes(previous) : changes) }));
+    changeCount.current += 1;
     setDirty(true);
   }
 
@@ -200,6 +246,7 @@ function EventForm() {
     const removed = attachments.filter((item) => !item.isNew && !list.some((kept) => kept.id === item.id));
     setRemovedAttachmentIds((previous) => [...previous, ...removed.map((item) => item.id)]);
     setAttachments(list);
+    changeCount.current += 1;
     setDirty(true);
   }
 
@@ -246,59 +293,72 @@ function EventForm() {
   }
 
   return (
-    <main className="page page--with-bar">
+    <main className="page page--with-bar event-form-page">
       <div className="form-titlebar">
         <button type="button" className="icon-button" onClick={() => navigate('/events')}>
           <Icon name="close" label="Close the form" />
         </button>
-        <h1>{isSubmitted ? `Edit ${event.recordNumber}` : 'New event'}</h1>
-        <span className="form-titlebar-spacer" />
+        <Title order={1}>{isSubmitted ? `Edit ${event.recordNumber}` : 'New event'}</Title>
+        {!isSubmitted && (
+          <span className="autosave-status" role="status">
+            {!isClassified(event) && 'Saves automatically once classified'}
+            {isClassified(event) && autoSave.state === 'saving' && 'Saving…'}
+            {isClassified(event) && autoSave.state === 'saved' && !dirty && `Draft saved at ${formatTime(autoSave.at)}`}
+            {isClassified(event) && autoSave.state === 'error' && 'Could not save automatically — use Save as draft'}
+          </span>
+        )}
       </div>
 
       {saveError && (
-        <p className="message message--error" role="alert">
-          {saveError}
-        </p>
+        <Alert color="red" variant="light" role="alert" mb="md">{saveError}</Alert>
       )}
       {missing.length > 0 && (
-        <p className="message message--error" role="alert">
+        <Alert color="red" variant="light" role="alert" mb="md">
           {missing.length === 1 ? '1 required field is' : `${missing.length} required fields are`} missing. They are
           marked below.
-        </p>
+        </Alert>
       )}
 
-      {SECTIONS.map((sectionName) => {
-        const Section = SECTION_COMPONENTS[sectionName];
-        return (
-          <section key={sectionName} className="card form-card" aria-labelledby={`section-${sectionName}`}>
-            <h2 id={`section-${sectionName}`}>{SECTION_TITLES[sectionName]}</h2>
-            <Section
-              event={event}
-              update={update}
-              errors={showErrors ? validateSection(sectionName, event, options) : []}
-              showErrors={showErrors}
-              pillarLocked={Boolean(context.pillarId)}
-              attachments={attachments}
-              setAttachments={changeAttachments}
-            />
-          </section>
-        );
-      })}
+      {COLUMNS.map((column) => (
+        <div key={column[0]} className="form-column">
+          {column.map((sectionName) => {
+            const Section = SECTION_COMPONENTS[sectionName];
+            const locked = sectionName !== 'classification' && !isClassified(event);
+            return (
+              <Paper key={sectionName} component="section" withBorder shadow="xs" radius="md" p="xl" className={`card form-card${locked ? ' form-card--locked' : ''}`} aria-labelledby={`section-${sectionName}`}>
+                <Title order={2} size="h3" id={`section-${sectionName}`}>{SECTION_TITLES[sectionName]}</Title>
+                {locked && <p className="field-hint">Choose the classification first.</p>}
+                <fieldset className="section-fieldset" disabled={locked}>
+                  <Section
+                    event={event}
+                    update={update}
+                    errors={showErrors ? validateSection(sectionName, event, options) : []}
+                    showErrors={showErrors}
+                    pillarLocked={Boolean(context.pillarId)}
+                    attachments={attachments}
+                    setAttachments={changeAttachments}
+                  />
+                </fieldset>
+              </Paper>
+            );
+          })}
+        </div>
+      ))}
 
       <div className="bottom-bar">
         {!isSubmitted && (
-          <button type="button" className="button" disabled={saving} onClick={() => save('draft')}>
+          <Button type="button" variant="default" disabled={saving || autoSave.state === 'saving'} onClick={() => save('draft')}>
             Save as draft
-          </button>
+          </Button>
         )}
         {isSubmitted ? (
-          <button type="button" className="button button--primary" disabled={saving} onClick={() => save('changes')}>
+          <Button type="button" disabled={saving} onClick={() => save('changes')}>
             <Icon name="check" size={18} /> Save changes
-          </button>
+          </Button>
         ) : (
-          <button type="button" className="button button--primary" disabled={saving} onClick={() => save('submit')}>
+          <Button type="button" disabled={saving || autoSave.state === 'saving'} onClick={() => save('submit')}>
             <Icon name="check" size={18} /> Submit
-          </button>
+          </Button>
         )}
       </div>
 

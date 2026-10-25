@@ -4,7 +4,7 @@ import { openDB } from 'idb';
 import { resetPlatformData } from '../../../../shared/platform/platformData.js';
 import { getManagersToAlert } from '../logic/access.js';
 import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
-import { getSubmittedStatus } from '../logic/submission.js';
+import { completeImmediateActions, getSubmittedStatus } from '../logic/submission.js';
 import * as sampleData from './sampleData.js';
 
 const DATABASE_NAME = 'event-reporting';
@@ -117,6 +117,7 @@ async function writeEvent({ event, attachments, removedAttachmentIds = [], userI
     const now = new Date().toISOString();
     const saved = {
       ...event,
+      immediateActions: completeImmediateActions(event),
       id: event.id || newId(),
       attachmentIds: attachments.map((attachment) => attachment.id),
       createdBy: event.createdBy || userId,

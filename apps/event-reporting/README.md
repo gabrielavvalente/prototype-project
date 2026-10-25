@@ -1,7 +1,10 @@
 # Event Reporting
 
 Report environmental, safety, industrial risk and industrial hygiene events from the shop floor,
-and find them again in a Kanban board or a list. Prototype: demo users, data kept in the browser.
+then review them in the Events, KPIs and Reports pages. The workspace includes Kanban and List
+views, personal saved filters, and a scoped event register. Prototype: demo users, data kept in
+the browser. The interface uses Mantine components with a desktop-first workspace and responsive
+phone layouts.
 
 ## How to run
 
@@ -32,8 +35,9 @@ Then check by hand, at phone width and on desktop, with the browser console open
 2. Submit empty → missing fields are flagged; TF2 asks the first aid treatment; TF5 + SIP = Yes
    becomes TF4; TF4 can stop the location at the workshop.
 3. As a Manager of the same plant → the bell shows the new alert; "Mark all read" clears it.
-4. Events: KPI chips, filters, search, Kanban columns (‹ ›), List view; clicking a row or card
-   expands it.
+4. Events: workspace tabs, Create Event action (User and Manager), aligned KPI chips, filters,
+   search, personal saved filters, Kanban columns (‹ ›), List view and the Reports event register;
+   clicking a row or card expands it.
 5. As a user of another plant → the event is "not found"; as Site Admin → no "New event".
 6. Submit a TF5 (SIP No) → "closed right away" when the Control Panel requires nothing else for
    TF5; turn Review on for TF5 in the Control Panel → the next TF5 stays Open.

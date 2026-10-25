@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Button, TextInput, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { buildLocationPaths, getAncestry, LEVEL_TYPES, locationFromNode, resolveQrCode, searchLocations } from '../logic/locations.js';
 import { findById, getChildren } from '../logic/lookups.js';
@@ -50,7 +51,7 @@ function QrScanner({ onCode }) {
   }, [onCode]);
 
   if (problem) {
-    return <p className="message message--warning">{problem}</p>;
+    return <Alert color="yellow" variant="light">{problem}</Alert>;
   }
   return (
     <div className="qr-scanner">
@@ -130,33 +131,32 @@ export default function LocationPicker({ plantId, minType = 'task', onSelect, on
   return (
     <Sheet title="Location" onClose={onClose}>
       <div className="location-search">
-        <label className="search-field search-field--small">
-          <Icon name="search" size={18} />
-          <span className="visually-hidden">Search a location</span>
-          <input
-            type="search"
-            placeholder="Type a department, workshop, station…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </label>
-        <button type="button" className="button" onClick={scanning ? () => setScanning(false) : startScan}>
-          <Icon name="qr" size={18} /> {scanning ? 'Stop scan' : 'Scan QR code'}
-        </button>
+        <TextInput
+          type="search"
+          className="location-search-input"
+          leftSection={<Icon name="search" size={18} />}
+          aria-label="Search a location"
+          placeholder="Type a department, workshop, station…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <Button type="button" variant="default" leftSection={<Icon name="qr" size={18} />} onClick={scanning ? () => setScanning(false) : startScan}>
+          {scanning ? 'Stop scan' : 'Scan QR code'}
+        </Button>
       </div>
 
       {scanMessage && (
-        <p className="message message--warning" role="status">
+        <Alert color="yellow" variant="light" role="status">
           {scanMessage}
-        </p>
+        </Alert>
       )}
       {scanning && <QrScanner onCode={handleCode} />}
 
       {!scanning && query.trim() && (
         <section aria-labelledby="location-results">
-          <h3 id="location-results" className="section-label" role="status">
+          <Title id="location-results" order={3} size="h4" role="status">
             {results.length === 0 ? 'No location matches — try browsing below' : `${results.length} locations`}
-          </h3>
+          </Title>
           <ul className="plain-list">
             {results.map((path) => (
               <li key={path.nodeId}>
@@ -175,30 +175,31 @@ export default function LocationPicker({ plantId, minType = 'task', onSelect, on
 
       {!scanning && (!query.trim() || results.length === 0) && (
         <section aria-labelledby="location-browse">
-          <h3 id="location-browse" className="section-label">
+          <Title id="location-browse" order={3} size="h4">
             Browse
-          </h3>
+          </Title>
           <nav className="breadcrumb" aria-label="Location levels">
-            <button type="button" className="button button--link" onClick={() => setBrowseNodeId(plantId)}>
+            <Button type="button" variant="subtle" size="xs" onClick={() => setBrowseNodeId(plantId)}>
               {plant.name}
-            </button>
+            </Button>
             {browseTrail.map((node) => (
               <span key={node.id}>
                 {' › '}
-                <button type="button" className="button button--link" onClick={() => setBrowseNodeId(node.id)}>
+                <Button type="button" variant="subtle" size="xs" onClick={() => setBrowseNodeId(node.id)}>
                   {node.name}
-                </button>
+                </Button>
               </span>
             ))}
           </nav>
           {canUseBrowseNode && (
-            <button
+            <Button
               type="button"
-              className="button button--secondary button--block use-level"
+              variant="light"
+              fullWidth
               onClick={() => choose(locationFromNode(organization, browseNode.id))}
             >
               <Icon name="check" size={18} /> Use this {browseNode.type}: {browseNode.name}
-            </button>
+            </Button>
           )}
           <ul className="plain-list">
             {children.map((node) => (

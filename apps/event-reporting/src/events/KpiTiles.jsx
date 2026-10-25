@@ -1,3 +1,5 @@
+import { Button } from '@mantine/core';
+
 const CHIPS = [
   { key: 'all', label: 'All' },
   { key: 'mine', label: 'My events' },
@@ -11,16 +13,17 @@ export default function KpiTiles({ kpis, selected, onSelect }) {
   return (
     <div className="kpi-row" role="group" aria-label="Quick filters">
       {CHIPS.map((chip) => (
-        <button
+        <Button
           key={chip.key}
           type="button"
+          variant={selected === chip.key ? 'light' : 'default'}
           className="chip chip--counter"
           aria-pressed={selected === chip.key}
           onClick={() => onSelect(chip.key)}
         >
           <strong>{kpis[chip.key]}</strong>
-          <span>{chip.label}</span>
-        </button>
+          <span className="kpi-label">{chip.label}</span>
+        </Button>
       ))}
     </div>
   );
