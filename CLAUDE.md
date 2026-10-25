@@ -84,10 +84,19 @@ earlier ones, so append overrides at the end.
 ## Conventions
 
 - Everything in English (UI, code, comments, docs, specs), even when the user writes in Portuguese.
+- **What the product does now** is in `specs/domain.md` and `specs/capabilities/*.md` (read the
+  capabilities concerned before changing a behavior; each rule has an id). They must stay true:
+  no history, technology or file paths in them.
 - Features follow Spec Kit: `/speckit-specify` → (`/speckit-clarify`) → `/speckit-plan` →
   `/speckit-tasks` → `/speckit-implement` → `/speckit-converge`, under `specs/NNN-name/`
-  (`.specify/feature.json` points to the active one and is git-ignored). Review remarks are
-  recorded as tasks/clarifications in the matching spec.
+  (`.specify/feature.json` points to the active one and is git-ignored). The project overrides
+  the spec, plan and tasks templates (`.specify/templates/overrides/`): a feature's spec is a
+  **change** to capabilities, and its last task applies it to the capability files (template for
+  a new one: `.specify/templates/capability-template.md`). `specs/001`–`004` predate this format.
+- Review remarks edit the feature's spec in place and become a new phase of tasks; never append
+  a clarification session.
+- Acceptance scenarios start from the demo data in `specs/capabilities/platform-data.md`; check
+  their names and counts against it.
 - The product sources in `specs/001-event-reporting/source/` contradict each other in places
   (status models, Rework, who reviews): list the open points and confirm with the user before
   building.
