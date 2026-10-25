@@ -123,18 +123,14 @@ Draft ──submit──► Open ──a reviewer takes the review──► In P
 
 ## Workflow
 
-**Configuring (Control Panel).** For each pillar, level and phase (except Submission, always
-required), a person may mark the phase **Required** for their perimeter at their role's level.
-Nothing marked means Optional. Rules:
+**Configuring** ([workflow settings](capabilities/workflow-settings.md)). For each pillar, level
+and phase (except Submission, always required), a Control Panel level may mark the phase
+**Required** for its plants; nothing marked means Optional.
 
 - A Central setting applies to every plant; a Cluster or Local setting to its plants.
-- A phase is required for a plant when at least one applying setting requires it.
-- A setting required at a higher level (Central > Cluster > Local) **locks** the lower levels: they
-  see it required and cannot change it.
-- A setting can be changed by anyone holding a role at the same level on the same pillar with an
-  overlapping perimeter; the previous author is notified.
-- Requiring **Review** also means choosing its reviewers: Managers or Site Admins who can see the
-  pillar at the setting's plants.
+- A phase is required for a plant when at least one applying setting requires it; a higher level
+  (Central > Cluster > Local) requiring it locks it for the lower levels.
+- A required Review comes with its reviewers (Managers or Site Admins).
 
 **On an event.** At submission the event takes a copy of its resulting workflow (required phases
 and reviewers for its plant, pillar and level). Later Control Panel changes never affect existing
@@ -192,8 +188,9 @@ follows the dependencies.
 | Capability | Depends on | Spec |
 |---|---|---|
 | Platform data: organization, people, reference, demo data | — | [platform-data](capabilities/platform-data.md) |
-| Workflow settings | Platform data | 002 |
-| Master data | Platform data | 002 |
+| Control Panel workspace (access, pillars, notifications, audit, search) | Platform data | [control-panel-workspace](capabilities/control-panel-workspace.md) |
+| Workflow settings | Control Panel workspace | [workflow-settings](capabilities/workflow-settings.md) |
+| Master data | Control Panel workspace | 002 |
 | User Management (users, groups) | Platform data | 002, 004 (part) |
 | Event reporting (create, draft, submit, edit) | Platform data, workflow settings | 001 |
 | Event library (list, Kanban, search, filters, KPIs, reports) | Event reporting | 001 |
