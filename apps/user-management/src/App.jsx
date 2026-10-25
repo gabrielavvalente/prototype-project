@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Center, Loader, Stack, Text } from '@mantine/core';
 import { createHashRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 import { AppContext, SIGNED_IN_USER_KEY, useApp } from './AppContext.js';
 import { getWorkflowSettings, loadPlatform } from '../../../shared/platform/platformData.js';
@@ -6,7 +7,6 @@ import { hasControlPanelAccess } from '../../../shared/platform/permissions.js';
 import Header from './shell/Header.jsx';
 import NotAllowed from './shell/NotAllowed.jsx';
 import StartScreen from './shell/StartScreen.jsx';
-import UserDetail from './users/UserDetail.jsx';
 import UsersList from './users/UsersList.jsx';
 
 // Every signed-in page: header on top, the page below. Only people holding a Control Panel role
@@ -30,7 +30,7 @@ const router = createHashRouter([
     element: <SignedInLayout />,
     children: [
       { path: 'users', element: <UsersList /> },
-      { path: 'users/:userId', element: <UserDetail /> },
+      { path: 'users/:userId', element: <UsersList /> },
       { path: '*', element: <NotAllowed reason="notFound" /> },
     ],
   },
@@ -58,7 +58,14 @@ export default function App() {
   }
 
   if (!platform) {
-    return <p className="page">Loading…</p>;
+    return (
+      <Center mih="100vh">
+        <Stack align="center" gap="sm">
+          <Loader color="blue" />
+          <Text c="dimmed">Loading user directory…</Text>
+        </Stack>
+      </Center>
+    );
   }
 
   const user = platform.users.find((item) => item.id === userId) || null;

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Alert, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';
 
 const messages = {
@@ -6,7 +7,6 @@ const messages = {
   notFound: 'This user does not exist.',
 };
 
-// Shown when a page or a user is outside the signed-in person's perimeter (FR-027).
 export default function NotAllowed({ reason = 'permission' }) {
   const title = reason === 'notFound' ? 'Not found' : 'Not allowed';
 
@@ -16,11 +16,20 @@ export default function NotAllowed({ reason = 'permission' }) {
 
   return (
     <main className="page">
-      <h1>{title}</h1>
-      <p className="message message--warning">{messages[reason]}</p>
-      <Link className="button button--secondary" to="/users">
-        Back to users
-      </Link>
+      <Paper className="message-panel" p="xl" radius="md" withBorder>
+        <Stack gap="md">
+          <div>
+            <Text className="eyebrow">USER MANAGEMENT</Text>
+            <Title order={1}>{title}</Title>
+          </div>
+          <Alert color={reason === 'notFound' ? 'blue' : 'yellow'} variant="light">
+            {messages[reason]}
+          </Alert>
+          <Button component={Link} to="/users" w="fit-content">
+            Back to users
+          </Button>
+        </Stack>
+      </Paper>
     </main>
   );
 }

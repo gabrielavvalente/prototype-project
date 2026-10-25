@@ -16,6 +16,11 @@ export function pillarCode(reference, pillarId) {
   return reference.find((item) => item.id === pillarId)?.code ?? pillarId;
 }
 
+// CSS modifier of the pillar colors in shared/theme.css ("pillar-hs" → "hs").
+export function pillarColorKey(pillarId) {
+  return pillarId.replace('pillar-', '');
+}
+
 export function describePlants(plantIds, organization, level) {
   if (level === 'central') {
     return 'All plants';
