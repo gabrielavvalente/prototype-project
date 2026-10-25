@@ -4,6 +4,7 @@ import {
   applyQuickFilter,
   computeKpis,
   countActiveFilters,
+  countArchivedByReason,
   countByFamilyAndLevel,
   EMPTY_FILTERS,
   paginate,
@@ -165,5 +166,20 @@ describe('countByFamilyAndLevel (review 2026-10-25)', () => {
     const result = countByFamilyAndLevel(events, families, levels);
     expect(result.map((item) => [item.family.code, item.total])).toEqual([['TF', 1], ['EVE', 1], ['OH', 0]]);
     expect(result[0].levels.map((item) => [item.level.code, item.count])).toEqual([['TF3', 0], ['TF4', 1]]);
+  });
+});
+
+describe('countArchivedByReason (third review)', () => {
+  it('counts archived events per reason and type', () => {
+    const families = [{ id: 'family-tf', code: 'TF' }, { id: 'family-eve', code: 'EVE' }];
+    const archived = [
+      makeEvent('a', { status: 'Archived', review: { invalidReason: 'Duplicated' } }),
+      makeEvent('b', { status: 'Archived', familyCode: 'EVE', review: { invalidReason: 'Duplicated' } }),
+      makeEvent('c', { status: 'Archived', review: { invalidReason: 'Useless' } }),
+      makeEvent('d', { status: 'Open' }),
+    ];
+    const result = countArchivedByReason(archived, ['Duplicated', 'Useless', 'Bad quality'], families);
+    expect(result.map((item) => [item.reason, item.total])).toEqual([['Duplicated', 2], ['Useless', 1], ['Bad quality', 0]]);
+    expect(result[0].families.map((item) => item.count)).toEqual([1, 1]);
   });
 });

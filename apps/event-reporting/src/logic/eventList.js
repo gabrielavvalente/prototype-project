@@ -136,3 +136,16 @@ export function countByFamilyAndLevel(events, families, levels) {
     return { family, total: familyLevels.reduce((sum, item) => sum + item.count, 0), levels: familyLevels };
   });
 }
+
+// Archived events per invalidation reason, split by type (family), for the KPIs page (003, third
+// review). reasons: the invalidation reasons in order. Returns [{ reason, total, families: [{ family, count }] }].
+export function countArchivedByReason(events, reasons, families) {
+  const archived = events.filter((event) => event.status === 'Archived');
+  return reasons.map((reason) => {
+    const byFamily = families.map((family) => ({
+      family,
+      count: archived.filter((event) => event.review?.invalidReason === reason && event.familyCode === family.code).length,
+    }));
+    return { reason, total: byFamily.reduce((sum, item) => sum + item.count, 0), families: byFamily };
+  });
+}
