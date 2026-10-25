@@ -190,7 +190,7 @@ follows the dependencies.
 | Platform data: organization, people, reference, demo data | — | [platform-data](capabilities/platform-data.md) |
 | Control Panel workspace (access, pillars, notifications, audit, search) | Platform data | [control-panel-workspace](capabilities/control-panel-workspace.md) |
 | Workflow settings | Control Panel workspace | [workflow-settings](capabilities/workflow-settings.md) |
-| Master data | Control Panel workspace | 002 |
+| Master data | Control Panel workspace | [master-data](capabilities/master-data.md) |
 | User Management (users, groups) | Platform data | 002, 004 (part) |
 | Event reporting (create, draft, submit, edit) | Platform data, workflow settings | 001 |
 | Event library (list, Kanban, search, filters, KPIs, reports) | Event reporting | 001 |
