@@ -192,7 +192,7 @@ follows the dependencies.
 | Workflow settings | Control Panel workspace | [workflow-settings](capabilities/workflow-settings.md) |
 | Master data | Control Panel workspace | [master-data](capabilities/master-data.md) |
 | User Management (users, groups) | Platform data | 002, 004 (part) |
-| Event reporting (create, draft, submit, edit) | Platform data, workflow settings | 001 |
+| Event reporting (create, draft, submit, edit) | Platform data, workflow settings | [event-reporting](capabilities/event-reporting.md) |
 | Event library (list, Kanban, search, filters, KPIs, reports) | Event reporting | 001 |
 | Event review (incl. severity and critical events) | Event reporting, master data | 003 |
 | Root cause analysis | Event review | [root-cause-analysis](capabilities/root-cause-analysis.md) |
@@ -207,5 +207,6 @@ follows the dependencies.
 
 ## Open points
 
-- The expansions of SIP, HCI, SPL, HCL, CRP and SRP are not given in the sources; the product uses
-  them only as the flags defined above.
+- SIP is "Serious Incident Potential", CRP "Critical Risk Potential" and SRP "Serious Risk
+  Potential" (as the report form explains them); the expansions of HCI, SPL and HCL are not given
+  in the sources, and the product uses them only as the flags defined above.
