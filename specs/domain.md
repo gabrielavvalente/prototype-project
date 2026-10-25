@@ -192,8 +192,8 @@ follows the dependencies.
 | Workflow settings | Control Panel workspace | [workflow-settings](capabilities/workflow-settings.md) |
 | Master data | Control Panel workspace | [master-data](capabilities/master-data.md) |
 | User Management (users, groups) | Platform data, workflow settings | [user-management](capabilities/user-management.md) |
-| Event reporting (create, draft, submit, edit) | Platform data, workflow settings | [event-reporting](capabilities/event-reporting.md) |
 | Event Reporting shell (context, header, navigation, alerts, search) | Platform data | [event-reporting-shell](capabilities/event-reporting-shell.md) |
+| Event reporting (create, draft, submit, edit) | Event Reporting shell, workflow settings | [event-reporting](capabilities/event-reporting.md) |
 | Event library (list, Kanban, filters, KPIs, reports, event page) | Event reporting | [event-library](capabilities/event-library.md) |
 | Event review (incl. severity and critical events) | Event reporting, master data | [event-review](capabilities/event-review.md) |
 | Root cause analysis | Event review | [root-cause-analysis](capabilities/root-cause-analysis.md) |
