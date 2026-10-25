@@ -3414,3 +3414,124 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Workflow steps page: the steps menu beside the chosen step; stacked on phones. */
+.steps-title {
+  margin: 8px 0 20px;
+}
+
+/* On phones the record number and the status badge wrap as a whole instead of being cut. */
+.steps-page .detail-topbar {
+  flex-wrap: wrap;
+}
+
+.steps-page .detail-topbar > a,
+.steps-page .detail-topbar .mantine-Badge-root {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.steps-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.steps-menu ol {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+a.step-link:hover {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.step-link[aria-current='step'] {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow);
+}
+
+.step-link[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.step-link--skipped strong {
+  text-decoration: line-through;
+}
+
+.step-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-marker {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: var(--font-size-small);
+  font-weight: 600;
+}
+
+.step-marker--done {
+  border-color: var(--color-success);
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.step-marker--current {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.steps-content > h2 {
+  margin: 0 0 16px;
+}
+
+.steps-section + .steps-section {
+  margin-top: 20px;
+}
+
+.steps-section h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+@media (max-width: 767px) {
+  .steps-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .steps-menu ol {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .step-link {
+    white-space: nowrap;
+  }
+}

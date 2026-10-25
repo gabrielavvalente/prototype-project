@@ -46,7 +46,7 @@ export default function KanbanBoard({ events, expandedId, onToggle }) {
         </div>
       )}
       <div className="kanban" ref={boardRef}>
-        {STATUSES.map((status) => {
+        {STATUSES.filter((status) => status !== 'Archived' || events.some((event) => event.status === 'Archived')).map((status) => {
           const columnEvents = events.filter((event) => event.status === status);
           return (
             <section key={status} className="kanban-column" aria-labelledby={`kanban-${statusClass(status)}`}>

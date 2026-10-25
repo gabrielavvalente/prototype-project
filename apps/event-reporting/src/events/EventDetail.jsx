@@ -9,6 +9,7 @@ import { getSeverityDots } from '../logic/display.js';
 import { isSip } from '../logic/eventList.js';
 import { describeEvent, describeImmediateAction } from '../logic/eventSummary.js';
 import { findById, findLevelByCode, getLabel } from '../logic/lookups.js';
+import { canStartReview, currentStep } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
 import { PillarTag, SeverityDots } from './EventCard.jsx';
@@ -220,6 +221,11 @@ export default function EventDetail() {
         <Button component={Link} variant="default" to="/events">
           All events
         </Button>
+        {event.status !== 'Draft' && (
+          <Button component={Link} variant="default" to={`/events/${event.recordNumber}/steps/${currentStep(event) ?? 'submission'}`}>
+            {canStartReview(user, event) ? 'Review' : 'Workflow steps'}
+          </Button>
+        )}
         {canEditEvent(user, event) && (
           <Button component={Link} to={editPath}>
             <Icon name="edit" size={18} />

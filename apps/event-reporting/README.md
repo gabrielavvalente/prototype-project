@@ -24,7 +24,7 @@ Pick a demo user on the start screen. **Reset demo data** on that screen restore
 ## How to test
 
 ```bash
-npm test         # business rules (validation, access, record numbers, lists, locations, status)
+npm test         # business rules (validation, access, record numbers, lists, locations, status, review)
 npm run build    # production build in dist/
 ```
 
@@ -41,5 +41,10 @@ Then check by hand, at phone width and on desktop, with the browser console open
 5. As a user of another plant → the event is "not found"; as Site Admin → no "New event".
 6. Submit a TF5 (SIP No) → "closed right away" when the Control Panel requires nothing else for
    TF5; turn Review on for TF5 in the Control Panel → the next TF5 stays Open.
+7. Review: as a reviewer configured in the Control Panel (e.g. Carla Mendes at Lyon), expand an
+   Open TF4 → **Review** → **Assign myself as reviewer** (In Progress) → valid with an event
+   statement → Closed; answer No with a reason → Archived, hidden unless Filters → Status =
+   Archived. Another reviewer sees who is reviewing; reviewed events have no Edit.
 
-Full scenarios: [specs/001-event-reporting/quickstart.md](../../specs/001-event-reporting/quickstart.md).
+Full scenarios: [specs/001-event-reporting/quickstart.md](../../specs/001-event-reporting/quickstart.md)
+and, for the review, [specs/003-event-review/quickstart.md](../../specs/003-event-review/quickstart.md).

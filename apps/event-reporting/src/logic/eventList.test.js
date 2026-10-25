@@ -71,6 +71,12 @@ describe('applyFilters (FR-030)', () => {
     expect(filter({ location: { departmentId: 'dep-1', workshopId: 'ws-1' } })).toEqual(['1', '2', '4']);
   });
 
+  it('hides Archived events unless the status filter asks for them', () => {
+    const archived = [...events, makeEvent('5', { status: 'Archived' })];
+    expect(ids(applyFilters(archived, EMPTY_FILTERS, 'user-1'))).toEqual(['1', '2', '3', '4']);
+    expect(ids(applyFilters(archived, { ...EMPTY_FILTERS, status: 'Archived' }, 'user-1'))).toEqual(['5']);
+  });
+
   it('filters by reporter, SIP and status', () => {
     expect(filter({ reporterId: 'user-2' })).toEqual(['2']);
     expect(filter({ sip: 'yes' })).toEqual(['1', '4']);

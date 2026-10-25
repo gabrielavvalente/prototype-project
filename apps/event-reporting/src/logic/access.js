@@ -13,9 +13,9 @@ const menuByRole = {
 };
 
 const routesByRole = {
-  User: ['entry', 'events', 'search', 'events-new', 'event-detail', 'event-edit'],
-  Manager: ['entry', 'events', 'search', 'events-new', 'event-detail', 'event-edit'],
-  'Site Admin': ['entry', 'events', 'search', 'event-detail'],
+  User: ['entry', 'events', 'search', 'events-new', 'event-detail', 'event-edit', 'event-steps'],
+  Manager: ['entry', 'events', 'search', 'events-new', 'event-detail', 'event-edit', 'event-steps'],
+  'Site Admin': ['entry', 'events', 'search', 'event-detail', 'event-steps'],
 };
 
 export function getMenuItems(role) {
@@ -50,6 +50,11 @@ export function canEditEvent(user, event) {
   }
   if (event.status === 'Draft') {
     return event.createdBy === user.id;
+  }
+  // Once reviewed (In Progress, Archived, Closed) the submission is no longer changed; the reviewer
+  // corrects it in the review (review 2026-10-25).
+  if (event.status !== 'Open') {
+    return false;
   }
   return user.role === 'Manager' && getPillarIdsForPlant(user, event.plantId).includes(event.pillarId);
 }
