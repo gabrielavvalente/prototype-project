@@ -6,15 +6,61 @@
     <title>Prototype apps</title>
     <script type="module" src="./main.js"></script>
     <style>
+      body {
+        min-height: 100vh;
+      }
+      .launcher-header-search {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-pill);
+        background: var(--color-background);
+        color: var(--color-muted);
+      }
+      .launcher-header-search input {
+        width: 100%;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--color-text);
+        font: inherit;
+      }
+      .launcher-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .launcher-header-button,
+      .launcher-user {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border: 1px solid var(--color-border);
+        border-radius: 50%;
+        background: var(--color-surface);
+        color: var(--color-muted);
+      }
+      .launcher-user {
+        border: 0;
+        background: var(--color-primary-light);
+        color: var(--color-primary-dark);
+        font-weight: 600;
+      }
       .launcher {
-        max-width: 720px;
+        max-width: 1440px;
         margin: 0 auto;
-        padding: var(--space-6, 32px) var(--space-4, 16px);
+        padding: 40px clamp(20px, 4vw, 56px);
       }
       .launcher-apps {
         display: grid;
-        gap: var(--space-4, 16px);
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 24px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         padding: 0;
         list-style: none;
       }
@@ -35,24 +81,68 @@
         align-self: flex-start;
         text-decoration: none;
       }
+      .launcher-app[hidden] {
+        display: none;
+      }
+      @media (max-width: 900px) {
+        .launcher-apps {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 600px) {
+        .launcher-header-search {
+          grid-column: 1 / -1;
+          grid-row: 2;
+        }
+        .launcher-apps {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
+    <header class="module-header">
+      <div class="module-header-brand">
+        <a class="module-header-home" href="/" aria-label="Home" title="All applications">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" />
+          </svg>
+        </a>
+        <span class="module-header-divider" aria-hidden="true"></span>
+        <a class="module-header-name" href="/">Applications</a>
+      </div>
+      <label class="module-header-search launcher-header-search" for="app-search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-4-4"></path>
+        </svg>
+        <input id="app-search" type="search" placeholder="Search applications" aria-label="Search applications" />
+      </label>
+      <div class="module-header-actions launcher-header-actions">
+        <button class="launcher-header-button" type="button" aria-label="No notifications" title="Sign in to an app to view notifications" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+        </button>
+        <span class="launcher-user" aria-label="Not signed in" title="Sign in within an app">?</span>
+      </div>
+    </header>
     <main class="launcher">
       <h1>Prototype apps</h1>
       <p>Open the apps from here so they share the same demo data on this device.</p>
       <ul class="launcher-apps">
-        <li class="launcher-app">
+        <li class="launcher-app" data-app-name="event reporting events">
           <h2>Event Reporting</h2>
           <p>Report health, safety, environment and industrial risk events, and find existing ones.</p>
           <a class="button button--primary" href="/apps/event-reporting/">Open</a>
         </li>
-        <li class="launcher-app">
+        <li class="launcher-app" data-app-name="control panel workflow master data">
           <h2>Control Panel</h2>
           <p>Set the event workflow and the master data of each pillar.</p>
           <a class="button button--primary" href="/apps/control-panel/">Open</a>
         </li>
-        <li class="launcher-app">
+        <li class="launcher-app" data-app-name="user management users directory">
           <h2>User Management</h2>
           <p>See users, their plants, pillars and Control Panel roles.</p>
           <a class="button button--primary" href="/apps/user-management/">Open</a>
