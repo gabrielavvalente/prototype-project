@@ -218,6 +218,14 @@ the why card (spec FR-010, FR-011, FR-011a)
 
 ---
 
+## Phase 10: Review remarks, fourth round (2026-10-25)
+
+- [X] T042 `logic/rootCause.js`: `fiveW1HSections(pillarId)` leaves "Who was injured?" out of
+  Environment events, and `partStatus` counts only the offered sections; `FiveW1HPart.jsx` and
+  `RootCauseStep.jsx` pass the event's pillar; test in `rootCause.test.js` (spec FR-008)
+
+---
+
 ## Dependencies & Execution Order
 
 - Setup → Foundational → US1 → US2; US3 needs only Foundational (T002–T003)

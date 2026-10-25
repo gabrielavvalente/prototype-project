@@ -11,11 +11,13 @@ export const MAX_WHYS = 5;
 const questions = (key, items) => items.map(([text, hint], index) => ({ id: `${key}-${index + 1}`, text, hint }));
 
 // 5W1H sections and questions (ui-ux/5w1h.png). Only "What happened?" comes from the design; the
-// other questions are drafts to be reviewed (spec Clarifications).
+// other questions are drafts until the user provides them (spec Clarifications). A section with
+// skipPillarIds is not offered for events of those pillars.
 export const FIVE_W1H = [
   {
     key: 'who',
     label: 'Who was injured?',
+    skipPillarIds: ['pillar-env'],
     questions: questions('who', [
       ['Who was injured or involved?', 'Job title and company: employee, contractor or visitor'],
       ['How long has the person been in this job and at this site?'],
@@ -192,6 +194,11 @@ export function canDoFiveWhy(analysis) {
   return sixMStatus(analysis.causes) === 'done';
 }
 
+// The 5W1H sections offered for an event's pillar (no "Who was injured?" for Environment).
+export function fiveW1HSections(pillarId) {
+  return FIVE_W1H.filter((section) => !section.skipPillarIds?.includes(pillarId));
+}
+
 function emptyFiveW1H() {
   return Object.fromEntries(FIVE_W1H.map((section) => [section.key, { applies: null, answers: {} }]));
 }
@@ -244,8 +251,8 @@ export function normalizeAnalysis(analysis) {
 
 const filled = (text) => Boolean((text || '').trim());
 
-function fiveW1HStatus(fiveW1H) {
-  const sections = FIVE_W1H.map((section) => ({ section, value: fiveW1H[section.key] }));
+function fiveW1HStatus(fiveW1H, pillarId) {
+  const sections = fiveW1HSections(pillarId).map((section) => ({ section, value: fiveW1H[section.key] }));
   if (sections.every(({ value }) => value.applies === null)) return 'notStarted';
   const answered = ({ section, value }) =>
     value.applies === false || (value.applies === true && section.questions.every((question) => filled(value.answers[question.id])));
@@ -266,10 +273,10 @@ function fiveWhyStatus(whys) {
   return marked.length > 0 && marked.every((why) => filled(why.answer)) ? 'done' : 'inProgress';
 }
 
-// notStarted | inProgress | done for each part (5W1H is optional).
-export function partStatus(analysis) {
+// notStarted | inProgress | done for each part (5W1H is optional and depends on the event's pillar).
+export function partStatus(analysis, pillarId) {
   return {
-    fiveW1H: fiveW1HStatus(analysis.fiveW1H),
+    fiveW1H: fiveW1HStatus(analysis.fiveW1H, pillarId),
     sixM: sixMStatus(analysis.causes),
     fiveWhy: fiveWhyStatus(analysis.whys),
     learnings: filled(analysis.learnings) ? 'done' : 'notStarted',

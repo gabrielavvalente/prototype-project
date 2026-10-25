@@ -32,7 +32,8 @@ Start from **Reset demo data** (Event Reporting start screen).
    showing that explanation (not editable) and a first why. Answer 3 whys, mark the third as root
    cause → its card is highlighted, nothing else asked; **Branch** the second why: a new why 2
    appears beside it; write Learnings; **Save**, leave and come back: unchanged. 5W1H starts
-   collapsed: expand it, open "What happened?", set Yes: 13 questions appear.
+   collapsed: expand it, open "What happened?", set Yes: 13 questions appear. On an Environment
+   event, 5W1H has no "Who was injured?" section.
 5. **Immediate actions** — **Add immediate action**: **Create** refuses an empty card; fill it and
    create it, then **Save** the analysis; open the Submission step: the new action is there
    and the history shows "Immediate actions updated in the root cause analysis".

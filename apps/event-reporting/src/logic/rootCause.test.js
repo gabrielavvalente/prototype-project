@@ -9,6 +9,7 @@ import {
   completeAnalysis,
   emptyAnalysis,
   FIVE_W1H,
+  fiveW1HSections,
   normalizeAnalysis,
   partStatus,
   removeWhy,
@@ -80,6 +81,16 @@ describe('root cause analysis (004)', () => {
     expect(partStatus(analysis).fiveW1H).toBe('inProgress');
     analysis.fiveW1H.what.answers = Object.fromEntries(FIVE_W1H[1].questions.map((question) => [question.id, 'Answered']));
     expect(partStatus(analysis).fiveW1H).toBe('done');
+  });
+
+  it('leaves "Who was injured?" out of Environment events', () => {
+    expect(fiveW1HSections('pillar-env').map((section) => section.key)).not.toContain('who');
+    expect(fiveW1HSections('pillar-hs').map((section) => section.key)).toContain('who');
+    const analysis = emptyAnalysis(makeEvent(['review', 'rootCause'], null));
+    for (const section of FIVE_W1H) analysis.fiveW1H[section.key].applies = false;
+    analysis.fiveW1H.who = { applies: true, answers: {} };
+    expect(partStatus(analysis, 'pillar-hs').fiveW1H).toBe('inProgress');
+    expect(partStatus(analysis, 'pillar-env').fiveW1H).toBe('done');
   });
 
   it('branches any why into an alternative beside it and removes a why with the whys below', () => {

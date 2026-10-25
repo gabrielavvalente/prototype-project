@@ -84,7 +84,7 @@ function CollapsiblePart({ id, title, opened, onToggle, disabled, note, error, c
 // The overview: who analyzes and where each part stands (004 FR-007).
 function Overview({ event, analysis }) {
   const { users } = useApp();
-  const status = partStatus(analysis);
+  const status = partStatus(analysis, event.pillarId);
   const assignees = event.review?.rcaAssignees;
   return (
     <>
@@ -115,7 +115,7 @@ export default function RootCauseStep({ event, onSaved }) {
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
-  const [fiveW1HOpened, setFiveW1HOpened] = useState(() => partStatus(analysis).fiveW1H !== 'notStarted');
+  const [fiveW1HOpened, setFiveW1HOpened] = useState(() => partStatus(analysis, event.pillarId).fiveW1H !== 'notStarted');
   const fiveWhyAvailable = canDoFiveWhy(analysis);
   const [fiveWhyOpened, setFiveWhyOpened] = useState(fiveWhyAvailable);
   // 5 Why opens by itself as soon as 6M is done.
@@ -252,7 +252,7 @@ export default function RootCauseStep({ event, onSaved }) {
           opened={fiveW1HOpened}
           onToggle={() => setFiveW1HOpened((opened) => !opened)}
         >
-          <FiveW1HPart value={analysis.fiveW1H} onChange={(fiveW1H) => set({ fiveW1H })} readOnly={readOnly} />
+          <FiveW1HPart pillarId={event.pillarId} value={analysis.fiveW1H} onChange={(fiveW1H) => set({ fiveW1H })} readOnly={readOnly} />
         </CollapsiblePart>
         <Part title="6M — contributory causes" error={errors.sixM}>
           <SixMPart causes={analysis.causes} onChange={changeCauses} readOnly={readOnly} />

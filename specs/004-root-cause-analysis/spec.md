@@ -49,8 +49,10 @@ Builds on [003 Event review](../003-event-review/spec.md) (steps page, "further 
   text answer each. 5W1H stays optional. (Investigation makes it required; the event-type sources
   make it optional.)
 - Q: Where do the 5W1H questions and the 6M cause lists come from? → A: The design gives "What
-  happened?" (13 questions) and the Management theme (causes and guidance); the other sections and
-  themes are **drafts written for this prototype, to be reviewed by the user**.
+  happened?" (13 questions) and the Management theme (causes and guidance). The other 5W1H
+  questions are **drafts until the user provides them**; the other 6M themes are drafts to be
+  reviewed by the user.
+- Q: Is "Who was injured?" asked for every event? → A: No, not for Environment events.
 - Q: Where does 5 Why start? → A: From the 6M causes: each ticked cause heads a column showing
   the explanation given in 6M (not editable) with its first why below; ticking a cause adds that why, unticking it removes its
   whys. 5 Why stays collapsed and disabled until 6M is done (every ticked cause explained), then
@@ -237,7 +239,7 @@ that nothing can be edited.
   the submission MUST show the result and the history "Immediate actions updated in the root
   cause analysis".
 - **FR-008**: 5W1H MUST be collapsed until expanded (open when it already has answers) and MUST
-  offer six sections — Who was injured?, What happened?, When?, Where?, Why
+  offer six sections (five for Environment events, without "Who was injured?") — Who was injured?, What happened?, When?, Where?, Why
   did the event occur?, How did the event occur? — chosen from a list; each with "Is this section
   applicable to your event?" (Yes/No) and, when Yes, its numbered questions with a text answer
   each. It never blocks completion; it is Done when every section is No or Yes with every answer.

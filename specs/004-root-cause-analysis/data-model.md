@@ -36,7 +36,7 @@ A group is offered for an event when it covers the event's plant and pillar.
 | Field | Type | Rule |
 |---|---|---|
 | `statement` | text | Pre-filled from `review.statement` |
-| `fiveW1H` | `{ who, what, when, where, why, how }` each `{ applies: true \| false \| null, answers: { <question id>: text } }` | Optional; questions in `logic/rootCause.js` (`FIVE_W1H`) |
+| `fiveW1H` | `{ who, what, when, where, why, how }` each `{ applies: true \| false \| null, answers: { <question id>: text } }` | Optional; questions in `logic/rootCause.js` (`FIVE_W1H`); sections offered by pillar (`fiveW1HSections`: no `who` for Environment), and only those count for its status |
 | `causes` | `[{ id, theme, option, other, why }]` | 0–6; `theme` ∈ management, humanFactors, methods, machine, materials, environment; `option` is one of the theme's causes or `Other` (then `other` names it); Done needs ≥1, each with its why (and name for Other) |
 | `whys` | `[{ id, parentId, answer, rootCause }]` | A tree under the 6M causes: a first why's `parentId` is its cause's id, the others' the why above; each cause has ≥1 first why (added when ticked, removed when unticked); depth ≤ 5; siblings in array order; `rootCause` true / false; Done needs ≥1 root cause and every root cause answered |
 | `learnings` | text | Required to complete |

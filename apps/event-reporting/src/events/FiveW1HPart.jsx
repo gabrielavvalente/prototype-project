@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NativeSelect, Textarea } from '@mantine/core';
-import { FIVE_W1H } from '../logic/rootCause.js';
+import { fiveW1HSections } from '../logic/rootCause.js';
 import RcaNav from './RcaNav.jsx';
 
 const APPLIES = [
@@ -20,9 +20,10 @@ function sectionNote(section, value) {
 
 // 5W1H, an optional guide (ui-ux/5w1h.png, 004 FR-008): pick a section, say whether it applies,
 // then answer its numbered questions.
-export default function FiveW1HPart({ value, onChange, readOnly }) {
-  const [currentKey, setCurrentKey] = useState(FIVE_W1H[0].key);
-  const section = FIVE_W1H.find((item) => item.key === currentKey);
+export default function FiveW1HPart({ pillarId, value, onChange, readOnly }) {
+  const sections = fiveW1HSections(pillarId);
+  const [currentKey, setCurrentKey] = useState(sections[0].key);
+  const section = sections.find((item) => item.key === currentKey);
   const current = value[currentKey];
   const set = (changes) => onChange({ ...value, [currentKey]: { ...current, ...changes } });
   const setAnswer = (questionId, text) => set({ answers: { ...current.answers, [questionId]: text } });
@@ -31,7 +32,7 @@ export default function FiveW1HPart({ value, onChange, readOnly }) {
     <div className="rca-split">
       <RcaNav
         title="Checklists"
-        items={FIVE_W1H.map((item) => ({ key: item.key, label: item.label, note: sectionNote(item, value[item.key]) }))}
+        items={sections.map((item) => ({ key: item.key, label: item.label, note: sectionNote(item, value[item.key]) }))}
         current={currentKey}
         onSelect={setCurrentKey}
       />
