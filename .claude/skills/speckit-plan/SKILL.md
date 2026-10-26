@@ -112,6 +112,13 @@ Command ends after Phase 1 design. Report branch, IMPL_PLAN path, and generated 
 
 ### Phase 0: Outline & Research
 
+<!-- Project patch (see .specify/memory/skill-patches.md): research.md, data-model.md and contracts/
+     are written only when they have something to say; the quickstart refers to the spec's
+     acceptance scenarios instead of copying them. -->
+
+0. **Skip when empty**: write `research.md` only for technical decisions that are not obvious;
+   with none, omit the file. Dispatch research agents only for real NEEDS CLARIFICATION items.
+
 1. **Extract unknowns from Technical Context** above:
    - For each NEEDS CLARIFICATION → research task
    - For each dependency → best practices task
@@ -137,25 +144,29 @@ Command ends after Phase 1 design. Report branch, IMPL_PLAN path, and generated 
 
 **Prerequisites:** `research.md` complete
 
-1. **Extract entities from feature spec** → `data-model.md`:
+1. **Extract entities from feature spec** → `data-model.md` (only the data shapes this change adds
+   or changes; omit the file when none change):
    - Entity name, fields, relationships
    - Validation rules from requirements
    - State transitions if applicable
 
-2. **Define interface contracts** (if project has external interfaces) → `/contracts/`:
+2. **Define interface contracts** (only when screens, routes or other interfaces are added or
+   changed) → `/contracts/`:
    - Identify what interfaces the project exposes to users or other systems
    - Document the contract format appropriate for the project type
    - Examples: public APIs for libraries, command schemas for CLI tools, endpoints for web services, grammars for parsers, UI contracts for applications
    - Skip if project is purely internal (build scripts, one-off tools, etc.)
 
 3. **Create quickstart validation guide** → `quickstart.md`:
-   - Document runnable validation scenarios that prove the feature works end-to-end
+   - The validation scenarios are the spec's acceptance scenarios: refer to them (order, starting
+     data) instead of copying them
+   - Document how to run them end-to-end
    - Include prerequisites, setup commands, test/run commands, and expected outcomes
    - Use links or references to contracts and data model details instead of duplicating them
    - Do not include full implementation code, model/service/controller bodies, migrations, or complete test suites
    - Keep this artifact as a validation/run guide; implementation details belong in `tasks.md` and the implementation phase
 
-**Output**: data-model.md, /contracts/*, quickstart.md
+**Output**: quickstart.md, and data-model.md / contracts/* when they apply
 
 ## Key rules
 
