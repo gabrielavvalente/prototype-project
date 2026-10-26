@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assessmentFor, bandOf, criticalFlagsOf, criticalLabels, INJURY_MATRIX, rate } from './severity.js';
+import { assessmentFor, bandLabel, bandOf, criticalFlagsOf, criticalLabels, INJURY_MATRIX, rate, typedFlag } from './severity.js';
 
 const high = { band: 'high' };
 const low = { band: 'low' };
@@ -31,18 +31,32 @@ describe('what the reviewer assesses', () => {
     expect(assessmentFor({ familyCode: 'SRE', levelCode: 'SRE4' }).requiredListIds).toEqual(['irCategories']);
   });
 
-  it('asks Potential Loss for every SRE level and Actual Loss for SRE1–SRE3', () => {
-    expect(assessmentFor({ familyCode: 'SRE', levelCode: 'SRE5' })).toMatchObject({ potential: true, actual: false });
-    expect(assessmentFor({ familyCode: 'SRE', levelCode: 'SRE3' })).toMatchObject({ potential: true, actual: true });
+  it('asks HCL for SRE1–SRE3 and SPL for SRE4–SRE5, without a matrix (006 review remarks)', () => {
+    expect(['SRE1', 'SRE2', 'SRE3', 'SRE4', 'SRE5'].map((levelCode) => assessmentFor({ familyCode: 'SRE', levelCode }).flagQuestion.label)).toEqual([
+      'Is this event an HCL?',
+      'Is this event an HCL?',
+      'Is this event an HCL?',
+      'Is this event an SPL?',
+      'Is this event an SPL?',
+    ]);
+    expect(assessmentFor({ familyCode: 'SRE', levelCode: 'SRE3' })).not.toHaveProperty('matrix');
   });
 });
 
 describe('critical classification', () => {
-  it('gives SIP / HCI for safety, SIP for environment and SPL / HCL for industrial risk', () => {
+  it('gives SIP / HCI for safety, SIP for environment and HCL or SPL for industrial risk', () => {
     expect(criticalFlagsOf({ familyCode: 'TF', levelCode: 'TF1' }, { potential: high, actual: high })).toEqual(['SIP', 'HCI']);
     expect(criticalFlagsOf({ familyCode: 'TF', levelCode: 'TF4' }, { potential: low, actual: high })).toEqual([]);
-    expect(criticalFlagsOf({ familyCode: 'EVE', levelCode: 'EvE3' }, { sipConfirmed: true })).toEqual(['SIP']);
-    expect(criticalFlagsOf({ familyCode: 'SRE', levelCode: 'SRE2' }, { potential: high, actual: high })).toEqual(['SPL', 'HCL']);
+    expect(criticalFlagsOf({ familyCode: 'EVE', levelCode: 'EvE3' }, { flagConfirmed: true })).toEqual(['SIP']);
+    expect(criticalFlagsOf({ familyCode: 'SRE', levelCode: 'SRE2' }, { flagConfirmed: true })).toEqual(['HCL']);
+    expect(criticalFlagsOf({ familyCode: 'SRE', levelCode: 'SRE4' }, { flagConfirmed: true })).toEqual(['SPL']);
+    expect(criticalFlagsOf({ familyCode: 'SRE', levelCode: 'SRE4' }, { flagConfirmed: false })).toEqual([]);
+  });
+
+  it('asks a type for SIP only', () => {
+    expect(typedFlag({ familyCode: 'TF', levelCode: 'TF2' })).toBe('SIP');
+    expect(typedFlag({ familyCode: 'EVE', levelCode: 'EvE3' })).toBe('SIP');
+    expect(typedFlag({ familyCode: 'SRE', levelCode: 'SRE2' })).toBeNull();
   });
 
   it('is critical only from a valid review, never from the submission answer', () => {
@@ -51,5 +65,18 @@ describe('critical classification', () => {
     expect(criticalLabels({ ...answeredSip, review: { decision: 'valid', criticalFlags: ['SIP'] } })).toEqual(['SIP']);
     expect(criticalLabels({ ...answeredSip, review: { decision: 'valid', criticalFlags: [] } })).toEqual([]);
     expect(criticalLabels({ ...answeredSip, review: { decision: 'invalid' } })).toEqual([]);
+  });
+
+  it('names the bands Moderate, Critical and Very Critical (006)', () => {
+    expect([2, 19, 20, 30, 49, 50, 100].map((score) => bandLabel(bandOf(score).key))).toEqual([
+      'Moderate',
+      'Moderate',
+      'Critical',
+      'Critical',
+      'Critical',
+      'Very Critical',
+      'Very Critical',
+    ]);
+    expect(INJURY_MATRIX.durations.find((item) => item.key === 'short').hint).toBe('Recovery will take between 1 week and 3 months');
   });
 });

@@ -14,6 +14,7 @@ import {
   normalizeAnalysis,
   partStatus,
   removeWhy,
+  SIX_M_THEMES,
   syncWhysWithCauses,
   validateAnalysis,
   whyDepth,
@@ -84,8 +85,10 @@ describe('root cause analysis (004)', () => {
     expect(partStatus(analysis).fiveW1H).toBe('done');
   });
 
-  it('leaves "Who was injured?" out of Environment events', () => {
+  it('offers "Who was injured?" for Health & Safety events only (006)', () => {
     expect(fiveW1HSections('pillar-env').map((section) => section.key)).not.toContain('who');
+    expect(fiveW1HSections('pillar-ir').map((section) => section.key)).not.toContain('who');
+    expect(fiveW1HSections('pillar-ih').map((section) => section.key)).not.toContain('who');
     expect(fiveW1HSections('pillar-hs').map((section) => section.key)).toContain('who');
     const analysis = emptyAnalysis(makeEvent(['review', 'rootCause'], null));
     for (const section of FIVE_W1H) analysis.fiveW1H[section.key].applies = false;
@@ -169,5 +172,12 @@ describe('root cause analysis (004)', () => {
   it('alerts each designated person who can see the event once, never the reviewer', () => {
     const event = makeEvent(['review', 'rootCause'], { userIds: ['user-diego', 'user-ana'], groupIds: ['group-lyon-hs'] });
     expect(assigneeIds(event, investigationGroups, users)).toEqual(['user-diego', 'user-ana', 'user-eva']);
+  });
+
+  it('holds the content of the support documents (006)', () => {
+    const counts = Object.fromEntries(FIVE_W1H.map((section) => [section.key, section.questions.length]));
+    expect(counts).toEqual({ who: 7, what: 13, when: 6, where: 4, why: 7, how: 7 });
+    expect(SIX_M_THEMES.map((theme) => theme.label)).toEqual(['Management', 'Man Power', 'Methods', 'Machines/Tools/Equipment', 'Materials', 'Environment']);
+    expect(SIX_M_THEMES.map((theme) => theme.causes.length)).toEqual([7, 13, 9, 9, 6, 10]);
   });
 });

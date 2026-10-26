@@ -10,20 +10,21 @@ export const MAX_WHYS = 5;
 
 const questions = (key, items) => items.map(([text, hint], index) => ({ id: `${key}-${index + 1}`, text, hint }));
 
-// 5W1H sections and questions (ui-ux/5w1h.png). Only "What happened?" comes from the design; the
-// other questions are drafts until the user provides them (spec Clarifications). A section with
-// skipPillarIds is not offered for events of those pillars.
+// 5W1H sections and questions, from the Analysis Checklist (006; obvious typos and cut-off
+// sentences fixed). A section with onlyPillarIds is offered only for events of those pillars.
 export const FIVE_W1H = [
   {
     key: 'who',
     label: 'Who was injured?',
-    skipPillarIds: ['pillar-env'],
+    onlyPillarIds: ['pillar-hs'],
     questions: questions('who', [
-      ['Who was injured or involved?', 'Job title and company: employee, contractor or visitor'],
-      ['How long has the person been in this job and at this site?'],
-      ['What training and qualifications did the person have for the task?'],
-      ['Who witnessed the event?'],
-      ['Who was in charge of the work?'],
+      ['Name'],
+      ['Age'],
+      ['Length of service'],
+      ['Experience/training'],
+      ['Occupation'],
+      ['Who else was involved?', 'Other victims, witnesses, contractors, colleagues, public'],
+      ['Obtain statements from witnesses/other victims', 'List document references'],
     ]),
   },
   {
@@ -31,15 +32,15 @@ export const FIVE_W1H = [
     label: 'What happened?',
     questions: questions('what', [
       ['What are the details of the event?', 'Brief description'],
-      ['What were working environment conditions?', 'i.e. lighting, inside/outside work, temperature, climate conditions (wind, snow, rain)'],
+      ['What were working environment conditions?', 'Lighting, inside/outside work, temperature, climate conditions: wind, snow, rain'],
       ['Summary of injury and how sustained'],
-      ['Details of work activity carried out.'],
-      ['What was being done immediately before and also 10 minutes before the incident?'],
+      ['Details of work activity carried out'],
+      ['What was being done immediately before and also 10 minutes before the event?'],
       ['Who was the direct supervisor at the time of the incident?'],
       ["What was the victim's supervisor doing at the time of the event and 10 minutes beforehand?"],
-      ['What other events or persons were in the area at the time of the incident? Anything unusual about the working condition?'],
-      ['What applicable standard procedures and/or instructions were in place for the operations being undertaken around the incident?', 'Risk assessments, method statements etc.'],
-      ["What communications had been given by the victim's supervisor that were relevant to work being carried out?"],
+      ['What other events or people were in the area at the time of the incident? Anything unusual about the working condition?'],
+      ['What applicable standard procedures and/or instructions were in place for the operations being undertaken around the event?', 'Risk assessments, method statements, etc.'],
+      ["What communications had been given by the victim's supervisor that were relevant to the work being carried out?"],
       ['What is the process for approval of method statements or SOPs in this particular work?'],
       ['What qualifications or experience did the author have who prepared Permits to work or method statements?'],
       ['What other hazards contributed to the event?'],
@@ -49,82 +50,90 @@ export const FIVE_W1H = [
     key: 'when',
     label: 'When?',
     questions: questions('when', [
-      ['On which date and at what time did the event happen?'],
-      ['How many hours into the shift did it happen?'],
-      ['During which phase of the task or of production did it happen?'],
-      ['When was the event reported, and to whom?'],
+      ['When did the event occur?', 'Date and time'],
+      ['When was the victim asked to perform the job/task/activity undertaken?'],
+      ['When was the last review of the risk assessment or SOP?'],
+      ['When was the last record of any site/work/plant inspection?'],
+      ['When and to whom was the event reported?', 'Refer to witness reports'],
+      ['When were emergency procedures/actions implemented?', 'Refer to witness reports and official reports'],
     ]),
   },
   {
     key: 'where',
     label: 'Where?',
     questions: questions('where', [
-      ['Where exactly did the event happen?', 'Building, line, equipment'],
-      ['What were the conditions of the area?', 'Access, layout, housekeeping'],
-      ['Was the area restricted or marked?'],
-      ['Is this the usual place for this task?'],
+      ['Did the event occur within the site boundaries? If not, give details of the incident origin'],
+      ['Where did the event occur? What other parts of the site were affected by the event?'],
+      ['Where was the victim positioned/located at the time of the event?'],
+      ['Where were the witnesses/other victims located at the time of the event?'],
     ]),
   },
   {
     key: 'why',
     label: 'Why did the event occur?',
     questions: questions('why', [
-      ['What were the direct causes of the event?'],
-      ['Were there earlier signs or similar events?'],
-      ['Why were the existing controls not effective?'],
-      ['Were the people doing the work under pressure?', 'Time, production, cost'],
+      ['Comment'],
+      ['Has this event occurred or almost occurred previously on the site or in the company?', 'Review all site records for near misses, event reports and SHEAR warnings to determine any trends'],
+      ['Were there any previously identified hazards omitted from the risk assessments or SOPs?'],
+      ['Is there any reason why the hazards now identified were not part of the risk assessment?'],
+      ['Why was the injured person close to the hazard?'],
+      ['Did the victim carry out any unsafe or poor CHEAR behaviours? Why?'],
+      ['Any other relevant information', 'E.g. breakdown in communication, lack of signage, fatigue, ill health, production pressures'],
     ]),
   },
   {
     key: 'how',
     label: 'How did the event occur?',
     questions: questions('how', [
-      ['How did the event unfold, step by step?'],
-      ['How was the injury or damage caused?', 'Contact, energy, movement'],
-      ['How was the situation made safe afterwards?'],
-      ['How could the event have been prevented?'],
+      ['Review the documentation'],
+      ['A flow diagram may be useful to identify key gaps or critical points'],
+      ['Have you received the witness reports?'],
+      ['Were work activity procedures followed?'],
+      ['How did any new hazards get updated into the assessment of SOPs?'],
+      ['How was the emergency response for the event managed?', 'Details of emergency procedures/actions'],
+      ['Have the witness statements and/or other reports highlighted any contributing factors? If yes, explain'],
     ]),
   },
 ];
 
-// 6M themes, contributory causes and guidance (ui-ux/6m.png). Only Management comes from the
-// design; the other themes are drafts to be reviewed (spec Clarifications).
+// 6M themes, failure causes and guidance, from the 6M document (006; keys kept so saved analyses
+// stay readable).
 export const SIX_M_THEMES = [
   {
     key: 'management',
     label: 'Management',
-    causes: ['Communication Problem', 'Information Problem', 'Lack of Resources', 'Lack of Supervision', 'Non-Application of Standards/Procedures', 'Organization of Work', 'Training', 'Working Long Hours'],
-    guidance: ['Is the work organized?', 'Are the resources adequate?', 'Are rules and procedures communicated and maintained?', 'Have the staff been trained and informed?', 'Are the staff supervised effectively?'],
+    causes: ['Organization of Work', 'Lack of Supervision', 'Non-application of standards/procedures', 'Communication / information problem', 'Working long hours', 'Lack of Resources', 'Training'],
+    guidance: ['Is the work organized?', 'Are the resources adequate?', 'Are rules and procedures communicated and maintained?', 'Has the staff been trained or informed?', 'Are the staff supervised effectively?'],
   },
   {
     key: 'humanFactors',
-    label: 'Human Factors',
-    causes: ['Distraction / Inattention', 'Fatigue', 'Inadequate Risk Perception', 'Lack of Knowledge or Skill', 'Non-Use of PPE', 'Physical Capability', 'Rushing / Shortcut', 'Stress / Workload'],
-    guidance: ['Was the person fit for the task?', 'Did they know the task and its risks?', 'Were they under time pressure or distracted?', 'Was the right PPE worn?'],
+    label: 'Man Power',
+    causes: ['Short cut', 'Fatigue', 'Mind/eye not on the task', 'Bad habit/over-confidence', 'Distraction', 'In the line of fire', 'Loss of balance, traction or grip', 'Not applying standards or procedures', 'Lack of skills or knowledge', 'Negligence', 'Manual handling/ergonomics', 'Not aware of hazard/consequences', 'Mistake/error'],
+    guidance: ['Is communication (information, training, warning) available and sufficient?', 'Is competence tested and validated?', 'Is behaviour monitored?', 'Are operators coached (skill, behaviour, attitude)?', 'Is there evidence of praise or discipline used?', 'Is medical or HR advice required?', 'Is specialist health and safety advice required?'],
   },
   {
     key: 'methods',
     label: 'Methods',
-    causes: ['Inadequate Change Management', 'Inadequate Risk Assessment', 'Permit to Work Not Applied', 'Poor Work Sequence', 'Procedure Missing', 'Procedure Not Adapted to the Task', 'Procedure Unclear or Outdated'],
-    guidance: ['Is there a procedure for this task?', 'Is it up to date and adapted to the task?', 'Was the risk assessed before the work?', 'Were changes to the task managed?'],
+    causes: ['No written procedure', 'Inadequate procedure', 'Contractor control', 'Work permit', 'Inadequate emergency procedure', 'Procedure not applied', 'LOTO', 'Management of change', 'Seconds to think'],
+    guidance: ['Is the procedure suitable and sufficient?', 'Did the risk assessment identify the hazard?', 'Was a pre-start risk assessment done?', 'Were all requirements of legal and company standards in place?', 'Were procedures followed?'],
   },
   {
     key: 'machine',
-    label: 'Machine / Tools & Equip.',
-    causes: ['Defective Tool', 'Design / Ergonomics Problem', 'Equipment Failure', 'Inadequate Guarding', 'Inadequate Maintenance', 'Missing Safety Device', 'Wrong Tool for the Task'],
-    guidance: ['Was the equipment suitable for the task?', 'Was it maintained and inspected?', 'Were guards and safety devices in place and working?'],
+    label: 'Machines/Tools/Equipment',
+    causes: ['Unsafe equipment', 'Poor maintenance', 'Operating ergonomics', 'Machine condition', 'Building condition', 'PPE not suitable', 'Unsuitable tools', 'Tools not available', 'PPE not available'],
+    guidance: ['Consider the condition of materials, equipment, facilities, buildings, tools, PPE and storage.', 'What system is in place for checking?'],
   },
   {
     key: 'materials',
     label: 'Materials',
-    causes: ['Defective Material', 'Hazardous Substance', 'Inadequate Labelling', 'Inadequate Packaging', 'Inadequate Storage', 'Supplier Quality Problem', 'Wrong Material'],
-    guidance: ['Were the materials the right ones and in good condition?', 'Were hazardous substances identified and labelled?', 'Were they stored and handled correctly?'],
+    causes: ['Hazardous substances', 'Explosive dust/vapours', 'Contact with energy source', 'Shape, size, weight', 'Raw materials', 'Materials containment'],
+    guidance: ['Are controls in place to prevent exposure to hazardous materials or energy sources?', 'Are materials and products stored in a safe condition?', 'Are the materials or products in an abnormal condition?'],
   },
   {
     key: 'environment',
     label: 'Environment',
-    causes: ['Noise', 'Poor Housekeeping', 'Poor Lighting', 'Poor Ventilation', 'Restricted Space / Access', 'Slippery or Uneven Surface', 'Temperature / Weather'],
-    guidance: ['Was the work area clean and tidy?', 'Were lighting, noise and temperature suitable?', 'Was there enough space to work safely?', 'Did the weather play a part?'],
+    causes: ['Confined space', 'Storage conditions', 'Warning devices', 'Lighting', 'Noise', 'Excessive heat or cold', 'Fumes, smoke, dust', 'Climatic conditions', 'Humidity', 'Work at height'],
+    guidance: ['Did the climatic or workplace conditions cause or contribute to the cause of the incident?'],
   },
 ];
 export const OTHER_CAUSE = 'Other';
@@ -194,9 +203,9 @@ export function canDoFiveWhy(analysis) {
   return sixMStatus(analysis.causes) === 'done';
 }
 
-// The 5W1H sections offered for an event's pillar (no "Who was injured?" for Environment).
+// The 5W1H sections offered for an event's pillar ("Who was injured?" for Health & Safety only).
 export function fiveW1HSections(pillarId) {
-  return FIVE_W1H.filter((section) => !section.skipPillarIds?.includes(pillarId));
+  return FIVE_W1H.filter((section) => !section.onlyPillarIds || section.onlyPillarIds.includes(pillarId));
 }
 
 function emptyFiveW1H() {

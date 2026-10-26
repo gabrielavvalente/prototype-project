@@ -32,6 +32,9 @@ made in one product is seen by the others.
 | **Designated people** | The users and investigation groups chosen in the review to perform the root cause analysis. |
 | **Investigation group** | A named set of people covering some pillars and plants, who can be designated together. |
 | **Critical event** | An event flagged SIP, HCI, SPL or HCL by its review (see Critical events). |
+| **HCI** | High Consequence Injury: a Health & Safety event whose actual severity is Very Critical. |
+| **HCL** | High Consequence Loss: an Industrial Risk event with real, actual consequences (a major loss for the Group). |
+| **SPL** | Serious Potential Loss: an Industrial Risk near miss or moderate event whose potential severity is serious (a weak signal before a major loss). |
 | **Immediate action** | Something done at the scene right away to make the situation safe; recorded with the event, always completed. |
 | **Action plan** | One per event: all its actions — the immediate actions and the corrective actions. |
 | **Corrective action** | An action of the plan with assignees, a due date, a priority and a status (Planned, On Going, To Complete, Completed, Cancelled). |
@@ -160,14 +163,14 @@ A review can flag an event as critical:
 
 | Flag | Pillar | Raised when |
 |---|---|---|
-| SIP | Health & Safety | Potential severity is High |
-| HCI | Health & Safety | Actual severity is High |
+| SIP | Health & Safety | Potential severity is Very Critical |
+| HCI | Health & Safety | Actual severity is Very Critical |
 | SIP | Environment | The reviewer confirms "Is this event a SIP?" |
-| SPL | Industrial Risk | Potential loss is High |
-| HCL | Industrial Risk | Actual loss is High |
+| HCL | Industrial Risk (SRE1–SRE3) | The reviewer answers Yes to "Is this event an HCL?" |
+| SPL | Industrial Risk (SRE4–SRE5) | The reviewer answers Yes to "Is this event an SPL?" |
 
-High means a score of 50 or more. Only the review makes an event critical: before it, no event is
-red, whatever the reporter answered. A SIP or SPL needs a type. Critical events show red badges
+Very Critical means a score of 50 or more on the injury matrix (Critical 20–49, Moderate 2–19).
+Only the review makes an event critical: before it, no event is red, whatever the reporter answered. A SIP needs a type. Critical events show red badges
 wherever the event appears and are the only ones asked "Do you want to further analyze?".
 
 ## Master data
@@ -218,5 +221,4 @@ follows the dependencies.
 ## Open points
 
 - SIP is "Serious Incident Potential", CRP "Critical Risk Potential" and SRP "Serious Risk
-  Potential" (as the report form explains them); the expansions of HCI, SPL and HCL are not given
-  in the sources, and the product uses them only as the flags defined above.
+  Potential" (as the report form explains them).

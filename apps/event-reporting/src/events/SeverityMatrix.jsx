@@ -65,6 +65,7 @@ export default function SeverityMatrix({ id, title, description, matrix, value, 
           'Click the cell that fits.'
         )}
       </p>
+      {matrix.note && <p className="field-hint">{matrix.note}</p>}
       <FieldError errors={errors} field={id} />
     </fieldset>
   );
