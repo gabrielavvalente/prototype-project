@@ -46,16 +46,19 @@ describe('validation (005)', () => {
   it('closes the event when effective and tells the reporter', () => {
     const { event, alerts } = completeValidation(atValidation(), { effective: true, reason: 'ignored' }, 'user-carla', NOW, ['user-carla']);
     expect(event).toMatchObject({ status: 'Closed', closedAt: NOW, validations: [{ effective: true, reason: '', by: 'user-carla', at: NOW }] });
-    expect(alerts).toEqual([{ recipientId: 'user-carla', type: 'Event closed' }]);
+    expect(alerts.map((alert) => [alert.recipientId, alert.type])).toEqual([[event.reporterId, 'Event closed']]);
     expect(currentStep(event)).toBeNull();
   });
 
-  it('sends the plan back to Actions when not effective and tells the owners', () => {
+  it('sends the plan back to Actions when not effective and tells the owners and the reporter', () => {
     const { event, alerts } = completeValidation(atValidation(), { effective: false, reason: ' Still unfixed ' }, 'user-carla', NOW, ['user-diego']);
     expect(event.status).toBe('In Progress');
     expect(event.actionPlan.completedAt).toBeNull();
     expect(event.validations[0]).toMatchObject({ effective: false, reason: 'Still unfixed' });
     expect(currentStep(event)).toBe('actions');
-    expect(alerts).toEqual([{ recipientId: 'user-diego', type: 'Action plan not effective' }]);
+    expect(alerts.map((alert) => [alert.recipientId, alert.type, alert.work])).toEqual([
+      ['user-diego', 'Action plan not effective', true],
+      [event.reporterId, 'Action plan not effective', false],
+    ]);
   });
 });

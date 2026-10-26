@@ -1,0 +1,92 @@
+// The alerts of the event lifecycle (feature 007): each stage lists its candidates (NT-3) and
+// deliverAlerts keeps the ones to raise (NT-1, NT-2, research R2).
+// A candidate is { recipientId, key, type, work }: key is the catalogue name (settings, stage
+// order), type the stored text ("Event archived (Duplicated)").
+
+import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
+import { ruleRecipientIds, settingFor, STAGE_ORDER } from '../../../../shared/platform/notifications.js';
+import { getManagersToAlert } from './access.js';
+
+const information = (ids, key, type = key) => ids.filter(Boolean).map((recipientId) => ({ recipientId, key, type, work: false }));
+const work = (ids, key) => ids.filter(Boolean).map((recipientId) => ({ recipientId, key, type: key, work: true }));
+
+const reviewerIdsOf = (event) => (event.workflow?.phases.review?.required ? event.workflow.phases.review.reviewerIds || [] : []);
+
+// "Event closed" to the reporter and the Shared with people (NT-3).
+export function closedCandidates(event) {
+  return event.status === 'Closed' ? information([event.reporterId, ...(event.sharedWithIds || [])], 'Event closed') : [];
+}
+
+// Submission: the reviewers, the other Managers, the rules' people, the reporter when someone else
+// reported, the Shared with people. Closing at submission raises no "Event closed" (NT-3, NT-9).
+export function submissionCandidates(event, users, rules) {
+  const reviewerIds = reviewerIdsOf(event);
+  const managerIds = getManagersToAlert(users, event)
+    .map((user) => user.id)
+    .filter((id) => !reviewerIds.includes(id));
+  return [
+    ...work(reviewerIds, 'Event to review'),
+    ...information([...managerIds, ...ruleRecipientIds(rules, event)], 'Event submitted'),
+    ...(event.createdBy && event.createdBy !== event.reporterId ? information([event.reporterId], 'Event reported on your behalf') : []),
+    ...information(event.sharedWithIds || [], 'Event shared with you'),
+  ];
+}
+
+// A completed review: archived, or valid (with the analysts to alert and a possible closure).
+export function reviewCandidates(event, analystIds = []) {
+  if (event.status === 'Archived') {
+    const otherReviewers = reviewerIdsOf(event).filter((id) => id !== event.review?.reviewerId);
+    return information(
+      [event.reporterId, ...(event.sharedWithIds || []), ...otherReviewers],
+      'Event archived',
+      `Event archived (${event.review.invalidReason})`,
+    );
+  }
+  return [
+    ...information([event.reporterId], 'Your event was reviewed'),
+    ...work(analystIds, 'Root cause analysis assigned to you'),
+    ...closedCandidates(event),
+  ];
+}
+
+export function analysisCompletedCandidates(event) {
+  return [...information([event.reporterId, event.review?.reviewerId], 'Root cause analysis completed'), ...closedCandidates(event)];
+}
+
+export function planDeployedCandidates(event) {
+  return information([event.reporterId, event.review?.reviewerId], 'Action plan deployed');
+}
+
+// A plan that completed by itself: Validation next, or closed (AP-12).
+export function planCompletedCandidates(event, validatorIds) {
+  if (event.status === 'Closed') return closedCandidates(event);
+  return [...work(validatorIds, 'Action plan ready for validation'), ...information([event.reporterId], 'Action plan completed')];
+}
+
+// Effective: closed. Not effective: the owners must act, the reporter is told (VAL-3, VAL-4).
+export function validationCandidates(event, ownerIds) {
+  if (event.status === 'Closed') return closedCandidates(event);
+  return [...work(ownerIds, 'Action plan not effective'), ...information([event.reporterId], 'Action plan not effective')];
+}
+
+const stageOf = (candidate) => STAGE_ORDER.indexOf(candidate.key);
+
+// Keeps people who can see the event; drops information alerts to the person who acted ("Event
+// submitted" excepted) or turned off; one alert per person: work first, then the latest stage.
+// Returns [{ recipientId, type }] (NT-1, NT-2).
+export function deliverAlerts(candidates, { event, actorId, users, settings = [] }) {
+  const kept = new Map();
+  for (const candidate of candidates) {
+    const person = users.find((user) => user.id === candidate.recipientId);
+    if (!person?.role || !getPillarIdsForPlant(person, event.plantId).includes(event.pillarId)) continue;
+    if (!candidate.work) {
+      if (candidate.recipientId === actorId && candidate.key !== 'Event submitted') continue;
+      if (!settingFor(settings, candidate.recipientId, candidate.key).on) continue;
+    }
+    const current = kept.get(candidate.recipientId);
+    const better =
+      !current || (candidate.work && !current.work) || (candidate.work === current.work && stageOf(candidate) > stageOf(current));
+    if (better) kept.set(candidate.recipientId, candidate);
+  }
+  return [...kept.values()].map(({ recipientId, type }) => ({ recipientId, type }));
+}

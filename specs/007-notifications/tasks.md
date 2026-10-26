@@ -22,19 +22,19 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Purpose**: The pure functions and their tests
 
-- [ ] T001 [P] In `shared/platform/notifications.js`: the alert catalogue (type, kind work /
+- [X] T001 [P] In `shared/platform/notifications.js`: the alert catalogue (type, kind work /
   information, stage order, hint of NT-4), `settingValue(settings, userId, type)` (no record = on,
   research R3), `canManagePlant(user, plantId)` (Site Admin whose access includes the plant),
   `canChangeSetting(actor, person, type)` (R7), `validateRule(rule)` ("Choose at least one level.",
   "Choose at least one person."), `matchingRules(rules, event)` (R4), `describeRule(rule, …)`
   ("Levels: TF1, TF2 · Departments: Logistics · People: Ana Ribeiro"); tests in
   `shared/platform/notifications.test.js` (NT-2, NT-4, NT-5, NT-6, NT-7, NT-9)
-- [ ] T002 [P] In `apps/event-reporting/src/logic/notifications.js`: candidates per stage
+- [X] T002 [P] In `apps/event-reporting/src/logic/notifications.js`: candidates per stage
   (submission, review taken, valid, archived, analysis assigned / completed, plan deployed /
   completed, not effective, closed; NT-3) and `deliverAlerts(candidates, { event, actorId, users,
   settings })` (NT-1, NT-2, research R2); tests in `apps/event-reporting/src/logic/notifications.test.js`
   (NT-1, NT-2, NT-3)
-- [ ] T003 In `apps/event-reporting/src/logic/actionPlan.js` and `planValidation.js`: drop "Action
+- [X] T003 In `apps/event-reporting/src/logic/actionPlan.js` and `planValidation.js`: drop "Action
   assigned to you"; return the NT-3 candidates of deployment, completion and validation; update
   `actionPlan.test.js` and `planValidation.test.js` (AP-9, AP-12, VAL-3, VAL-4)
 
