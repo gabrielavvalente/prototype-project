@@ -93,6 +93,8 @@ earlier ones, so append overrides at the end.
   the spec, plan and tasks templates (`.specify/templates/overrides/`): a feature's spec is a
   **change** to capabilities, and its last task applies it to the capability files (template for
   a new one: `.specify/templates/capability-template.md`). `specs/001`–`004` predate this format.
+  The specify, plan and tasks skills are patched to match (`.specify/memory/skill-patches.md`);
+  re-apply the patches after upgrading Spec Kit.
 - Review remarks edit the feature's spec in place and become a new phase of tasks; never append
   a clarification session.
 - Acceptance scenarios start from the demo data in `specs/capabilities/platform-data.md`; check
