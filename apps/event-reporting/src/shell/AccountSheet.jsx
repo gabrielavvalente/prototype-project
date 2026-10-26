@@ -43,6 +43,11 @@ export default function AccountSheet({ onClose }) {
     navigate('/entry');
   }
 
+  function openNotifications() {
+    onClose();
+    navigate('/notifications');
+  }
+
   function switchUser() {
     onClose();
     signOut();
@@ -75,6 +80,9 @@ export default function AccountSheet({ onClose }) {
           </Button>
         </div>
       </div>
+      <Button type="button" variant="default" fullWidth onClick={openNotifications}>
+        My notifications
+      </Button>
       <Button type="button" variant="light" fullWidth onClick={switchUser}>
         Switch user
       </Button>

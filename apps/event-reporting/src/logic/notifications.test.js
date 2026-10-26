@@ -82,6 +82,9 @@ describe('delivery (NT-1, NT-2)', () => {
   it('gives one alert per person: the latest stage (a closing review gives "Event closed")', () => {
     const event = makeEvent({ status: 'Closed', review: { reviewerId: 'user-carla', decision: 'valid' } });
     expect(deliver(reviewCandidates(event), event, 'user-carla')).toEqual([{ recipientId: 'user-ana', type: 'Event closed' }]);
+    // With "Event closed" turned off, the earlier "Your event was reviewed" does not replace it.
+    const off = [{ userId: 'user-ana', type: 'Event closed', on: false }];
+    expect(deliver(reviewCandidates(event), event, 'user-carla', off)).toEqual([]);
   });
 });
 

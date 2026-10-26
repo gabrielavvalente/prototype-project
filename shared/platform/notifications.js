@@ -131,3 +131,11 @@ export function describeRule(rule, { organization, users }) {
     `People: ${rule.userIds.map((id) => name(users, id, 'name')).join(', ')}`,
   ].join(' · ');
 }
+
+// "Set by Eva Novak on 26 Oct 2026" when someone else made the last change, else null (NT-5).
+export function setByLine(setting, personId, users) {
+  if (!setting.setById || setting.setById === personId) return null;
+  const name = users.find((user) => user.id === setting.setById)?.name ?? 'someone';
+  const date = new Date(setting.setAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  return `Set by ${name} on ${date}`;
+}

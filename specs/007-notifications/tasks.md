@@ -86,10 +86,10 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Scenarios**: 9, 10 (Event Reporting part)
 
-- [ ] T009 New `apps/event-reporting/src/shell/MyNotifications.jsx` and route `#/notifications` in
+- [X] T009 New `apps/event-reporting/src/shell/MyNotifications.jsx` and route `#/notifications` in
   `apps/event-reporting/src/App.jsx`: Always on and Information parts, switches with hints,
   "Saved.", "Set by <name> on <date>"; `document.title` "My notifications" (NT-4, NT-5)
-- [ ] T010 [P] In `apps/event-reporting/src/shell/AccountSheet.jsx`: **My notifications** entry
+- [X] T010 [P] In `apps/event-reporting/src/shell/AccountSheet.jsx`: **My notifications** entry
   (ES-6)
 
 **Checkpoint**: Scenario 9 passes
@@ -102,15 +102,15 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Scenarios**: 10–12, 14
 
-- [ ] T011 In `apps/control-panel/src/shell/PillarPicker.jsx`: one "Notifications · <plant>" card
+- [X] T011 In `apps/control-panel/src/shell/PillarPicker.jsx`: one "Notifications · <plant>" card
   per plant for Site Admins (CPW-2, NT-6)
-- [ ] T012 New `apps/control-panel/src/notifications/NotificationsPage.jsx` (tabs, permission
+- [X] T012 New `apps/control-panel/src/notifications/NotificationsPage.jsx` (tabs, permission
   message) and routes in `apps/control-panel/src/App.jsx` (contracts/routes.md) (NT-6)
-- [ ] T013 New `apps/control-panel/src/notifications/RulesTab.jsx` and `RuleForm.jsx`: rules per
+- [X] T013 New `apps/control-panel/src/notifications/RulesTab.jsx` and `RuleForm.jsx`: rules per
   pillar, Add rule, edit, delete with "Delete this rule?", messages next to the fields (NT-7, NT-8)
-- [ ] T014 New `apps/control-panel/src/notifications/PeopleTab.jsx` and `PersonSettings.jsx`: the
+- [X] T014 New `apps/control-panel/src/notifications/PeopleTab.jsx` and `PersonSettings.jsx`: the
   people of the plant and one person's switches, Always on read-only (NT-10)
-- [ ] T015 New `apps/control-panel/src/notifications/ChangesTab.jsx`: the changes, newest first
+- [X] T015 New `apps/control-panel/src/notifications/ChangesTab.jsx`: the changes, newest first
   (NT-11)
 
 **Checkpoint**: Scenarios 10–12 and 14 pass

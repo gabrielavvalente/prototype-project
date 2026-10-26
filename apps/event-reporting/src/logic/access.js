@@ -14,9 +14,9 @@ const menuByRole = {
 };
 
 const routesByRole = {
-  User: ['entry', 'events', 'search', 'events-new', 'event-detail', 'event-edit', 'event-steps'],
-  Manager: ['entry', 'events', 'search', 'events-new', 'event-detail', 'event-edit', 'event-steps'],
-  'Site Admin': ['entry', 'events', 'search', 'event-detail', 'event-steps'],
+  User: ['entry', 'events', 'search', 'events-new', 'event-detail', 'event-edit', 'event-steps', 'notifications'],
+  Manager: ['entry', 'events', 'search', 'events-new', 'event-detail', 'event-edit', 'event-steps', 'notifications'],
+  'Site Admin': ['entry', 'events', 'search', 'event-detail', 'event-steps', 'notifications'],
 };
 
 export function getMenuItems(role) {

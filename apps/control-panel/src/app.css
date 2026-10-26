@@ -1276,3 +1276,78 @@
     width: 100%;
   }
 }
+
+/* Notifications (007): the always-on list, the switches and their "Set by" line. */
+.notifications-section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.notifications-always {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--color-text);
+}
+
+.notifications-switch {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.notifications-set-by {
+  margin: var(--space-1) 0 0;
+  padding-left: calc(var(--space-6) + var(--space-3));
+}
+
+.rules-section {
+  margin-top: var(--space-5);
+}
+
+.rules-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rules-section-header h2 {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin: 0;
+}
+
+.rules-list {
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rules-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-surface);
+  overflow-wrap: anywhere;
+}
+
+.rules-row + .rules-row {
+  margin-top: var(--space-2);
+}
+
+.rules-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-1);
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--space-3);
+  color: var(--color-primary);
+}

@@ -99,8 +99,8 @@ cannot decide who hears about the events of their plant.
 - **NT-6** A **Site Admin** (event role) manages the notifications of each plant of their access:
   on the Control Panel start screen, below the pillars, one card **Notifications** per plant
   ("Notifications · Lyon") opens the plant's **Notifications** page with three tabs: **Submission
-  rules**, **People**, **Changes**. Nobody else sees the cards; the page opened by link says "You do
-  not have permission to open this page.".
+  rules**, **People**, **Changes**. Nobody else sees the cards; the page opened by link says "You don't
+  have access to this page." (CPW-1).
 - **NT-7** **Submission rules**: one section per pillar the Site Admin sees at the plant, listing
   its rules ("Levels: TF1, TF2 · Departments: Logistics · People: Ana Ribeiro") with edit and
   delete icons, and **Add rule**. A rule has **Levels** (one or more of the pillar's levels; disease
@@ -208,8 +208,8 @@ From freshly reset demo data (`specs/capabilities/platform-data.md`), in order.
     Carla submits a TF2 in Logistics: Ana gets "Event submitted"; a TF2 in Assembly or a TF4 in
     Logistics gives her nothing. (NT-7, NT-8, NT-9)
 12. **Who can configure** — Carla (Local H&S Lyon, a Manager) has no Notifications card in the
-    Control Panel; opening the Lyon notifications page by link says "You do not have permission to
-    open this page.". (NT-6, CPW-2)
+    Control Panel; opening the Lyon notifications page by link says "You don't have access to this
+    page.". (NT-6, CPW-2)
 13. **Drafts** — Ana saves a draft: nobody gets an alert. (NT-1)
 14. **Reset** — Reset demo data in Event Reporting. *Then* Eva's Lyon rule is gone, Ana's switches
     are all on without "Set by", and Changes is empty. (PD-3, PD-5)

@@ -12,6 +12,11 @@ import StartScreen from './shell/StartScreen.jsx';
 import MasterDataTab from './masterData/MasterDataTab.jsx';
 import WorkflowTab from './workflow/WorkflowTab.jsx';
 import SearchPage from './shell/SearchPage.jsx';
+import ChangesTab from './notifications/ChangesTab.jsx';
+import NotificationsPage from './notifications/NotificationsPage.jsx';
+import PeopleTab from './notifications/PeopleTab.jsx';
+import PersonSettings from './notifications/PersonSettings.jsx';
+import RulesTab from './notifications/RulesTab.jsx';
 
 // Every signed-in page: header on top, the page below. Only people holding a Control Panel role
 // get past it (FR-002).
@@ -43,6 +48,17 @@ const router = createHashRouter([
           { path: 'workflow/*', element: <WorkflowTab /> },
           { path: 'master-data/*', element: <MasterDataTab /> },
           { path: 'audit', element: <AuditTab /> },
+        ],
+      },
+      {
+        path: 'notifications/:plantId',
+        element: <NotificationsPage />,
+        children: [
+          { index: true, element: <Navigate to="rules" replace /> },
+          { path: 'rules', element: <RulesTab /> },
+          { path: 'people', element: <PeopleTab /> },
+          { path: 'people/:userId', element: <PersonSettings /> },
+          { path: 'changes', element: <ChangesTab /> },
         ],
       },
       { path: '*', element: <NotAllowed reason="notFound" /> },

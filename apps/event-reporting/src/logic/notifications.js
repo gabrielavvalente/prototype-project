@@ -72,21 +72,21 @@ export function validationCandidates(event, ownerIds) {
 const stageOf = (candidate) => STAGE_ORDER.indexOf(candidate.key);
 
 // Keeps people who can see the event; drops information alerts to the person who acted ("Event
-// submitted" excepted) or turned off; one alert per person: work first, then the latest stage.
-// Returns [{ recipientId, type }] (NT-1, NT-2).
+// submitted" excepted); keeps one alert per person — work first, then the latest stage — and only
+// then drops it when the person turned it off, so a turned-off "Event closed" is not replaced by
+// an earlier stage. Returns [{ recipientId, type }] (NT-1, NT-2).
 export function deliverAlerts(candidates, { event, actorId, users, settings = [] }) {
   const kept = new Map();
   for (const candidate of candidates) {
     const person = users.find((user) => user.id === candidate.recipientId);
     if (!person?.role || !getPillarIdsForPlant(person, event.plantId).includes(event.pillarId)) continue;
-    if (!candidate.work) {
-      if (candidate.recipientId === actorId && candidate.key !== 'Event submitted') continue;
-      if (!settingFor(settings, candidate.recipientId, candidate.key).on) continue;
-    }
+    if (!candidate.work && candidate.recipientId === actorId && candidate.key !== 'Event submitted') continue;
     const current = kept.get(candidate.recipientId);
     const better =
       !current || (candidate.work && !current.work) || (candidate.work === current.work && stageOf(candidate) > stageOf(current));
     if (better) kept.set(candidate.recipientId, candidate);
   }
-  return [...kept.values()].map(({ recipientId, type }) => ({ recipientId, type }));
+  return [...kept.values()]
+    .filter((candidate) => candidate.work || settingFor(settings, candidate.recipientId, candidate.key).on)
+    .map(({ recipientId, type }) => ({ recipientId, type }));
 }

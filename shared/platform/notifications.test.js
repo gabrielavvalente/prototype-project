@@ -8,6 +8,7 @@ import {
   peopleOfPlant,
   ruleRecipientIds,
   ruleRecipientOptions,
+  setByLine,
   settingFor,
   validateRule,
   WORK_ALERTS,
@@ -28,6 +29,13 @@ describe('settings (NT-5)', () => {
     expect(settingFor([], 'user-ana', 'Event closed')).toEqual({ on: true, setById: null, setAt: null });
     const settings = [{ userId: 'user-ana', type: 'Event closed', on: false, setById: 'user-eva', setAt: 'x' }];
     expect(settingFor(settings, 'user-ana', 'Event closed')).toEqual({ on: false, setById: 'user-eva', setAt: 'x' });
+  });
+
+  it('says who set it when it was someone else', () => {
+    const byEva = { on: false, setById: 'user-eva', setAt: '2026-10-26T10:00:00.000Z' };
+    expect(setByLine(byEva, 'user-ana', users)).toBe('Set by Eva Novak on 26 Oct 2026');
+    expect(setByLine({ ...byEva, setById: 'user-ana' }, 'user-ana', users)).toBeNull();
+    expect(setByLine({ on: true, setById: null }, 'user-ana', users)).toBeNull();
   });
 
   it('lets the person and a Site Admin of their plant change information alerts only (research R7)', () => {
