@@ -64,7 +64,7 @@ Each level has a one-sentence plain-language description shown when choosing it.
 
 | When | Question | Effect of Yes |
 |---|---|---|
-| Health & Safety, Environment | SIP? | The event shows as SIP until reviewed. A TF5 answered Yes becomes TF4 (with a warning). |
+| Health & Safety, Environment | SIP? | Recorded as the reporter's view (it never makes the event critical). A TF5 answered Yes becomes TF4 (with a warning). |
 | Industrial Risk SRE1–SRE2 | CRP? | Recorded with the event. |
 | Industrial Risk SRE3–SRE5 | SRP? | Recorded with the event. |
 
@@ -166,8 +166,9 @@ A review can flag an event as critical:
 | SPL | Industrial Risk | Potential loss is High |
 | HCL | Industrial Risk | Actual loss is High |
 
-A SIP or SPL needs a type. Critical events show red badges wherever the event appears and propose
-further analysis.
+High means a score of 50 or more. Only the review makes an event critical: before it, no event is
+red, whatever the reporter answered. A SIP or SPL needs a type. Critical events show red badges
+wherever the event appears and are the only ones asked "Do you want to further analyze?".
 
 ## Master data
 

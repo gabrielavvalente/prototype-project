@@ -34,11 +34,11 @@ with its workflow steps.
   filters yet" when empty.
 - **EL-5** Search, filters and saved filters combine, and every count and chart follows them — the
   Archived count and chart follow the search and every filter except Status.
-- **EL-6** "SIP" (the With SIP chip, the SIP filter, the Events with SIP number) means the SIP flag
-  only: the submission's "Could this be a SIP?" answer until the event is reviewed, then whether a
-  valid review flagged it SIP (an archived event is not SIP). HCI, SPL, HCL and the CRP / SRP
-  answers do not count. Critical flags show as red badges on cards, rows and
-  the event page.
+- **EL-6** "SIP" (the With SIP chip, the SIP filter, the Events with SIP number) means that a valid
+  review flagged the event SIP; HCI, SPL and HCL do not count. The reporter's "Could this be a
+  SIP?" answer is only the reporter's view: it is shown with the event's facts and never makes it
+  SIP or red. Only the review's critical flags (domain Critical events) show as red badges on
+  cards, rows and the event page.
 
 ### Events page
 
@@ -62,7 +62,7 @@ with its workflow steps.
 
 ### KPIs page
 
-- **EL-12** Five numbers: **Events with SIP** ("Submitted with serious incident potential"), **Open
+- **EL-12** Five numbers: **Events with SIP** ("Reviewed as a serious incident potential"), **Open
   actions** ("Deployed and not yet completed": actions of the [action plans](action-plan.md) that
   are deployed and not Completed or Cancelled), **Overdue actions** ("Past their due date", AP-5),
   **Events in progress** ("Submitted and not yet closed": status Open or In Progress) and **Archived
@@ -109,7 +109,7 @@ with its workflow steps.
 
 From freshly reset [demo data](platform-data.md), Carla Mendes at Lyon, all pillars.
 
-1. **Chips** — All 17, My events 7, Open 13, With SIP 6, Drafts 1. Choosing Drafts leaves "Hydraulic
+1. **Chips** — All 17, My events 7, Open 13, With SIP 0 (no event is reviewed yet), Drafts 1. Choosing Drafts leaves "Hydraulic
    oil drip from forklift". (EL-1, EL-7)
 2. **Kanban** — Draft 1, Open 13, In Progress 0, Closed 3; on a phone the columns scroll with ‹ ›.
    (EL-8)
@@ -125,7 +125,7 @@ From freshly reset [demo data](platform-data.md), Carla Mendes at Lyon, all pill
    page and the KPIs page shows Archived events 1; Status = Archived lists it. (EL-3, EL-12, EL-14)
 7. **Expand** — Clicking `TF-26-0002` shows its description and its immediate action; Open event
    opens its Review step (current step). (EL-10, EL-17)
-8. **KPIs** — Events with SIP 6, Open actions 0, Overdue actions 0, Events in progress 13,
+8. **KPIs** — Events with SIP 0, Open actions 0, Overdue actions 0, Events in progress 13,
    Archived events 0; the TF column splits by level and the table view lists every type and level.
    After [action plan](action-plan.md) scenario 3 (two deployed actions on `TF-26-0005`, one
    overdue): Open actions 2, Overdue actions 1; Overdue actions opens the Events page with

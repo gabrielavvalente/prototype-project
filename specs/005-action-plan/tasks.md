@@ -200,6 +200,16 @@ action popup; the analyst lands on Actions
 
 ---
 
+## Phase 6d: Review remarks, third round (2026-10-26)
+
+- [X] T032 In `apps/event-reporting/src/logic/severity.js` and `display.js`: only a valid review makes
+  an event critical (red); the reporter's SIP answer is information only; the KPI hint; tests in
+  `severity.test.js` and `eventList.test.js` (EL-6, EL-12, Domain)
+- [X] T033 Update `specs/domain.md` (risk question, Critical events) and
+  `specs/capabilities/event-library.md` (EL-6, EL-12, scenarios 1 and 8)
+
+---
+
 ## Phase 7: Apply the change to the capabilities
 
 - [X] T019 Create `specs/capabilities/action-plan.md` (and `specs/capabilities/validation.md`) from `.specify/templates/capability-template.md`

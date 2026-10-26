@@ -13,8 +13,8 @@ user on 2026-10-26.
 changed:
 `specs/capabilities/event-review.md` (RV-6, RV-10, RV-11),
 `specs/capabilities/root-cause-analysis.md` (RCA-12, RCA-13, RCA-16),
-`specs/capabilities/event-library.md` (EL-12, EL-17, EL-18, EL-19), `specs/domain.md` (Steps,
-Glossary, capability map)
+`specs/capabilities/event-library.md` (EL-6, EL-12, EL-17, EL-18, EL-19), `specs/domain.md` (Steps,
+Glossary, capability map, risk question, Critical events)
 
 ## Why
 
@@ -39,6 +39,7 @@ only say they come later, and the actions created in the analysis go nowhere.
 | Action plan when Actions is not required | The step stays visible as optional for the owner until the event closes; once the plan has an action, the event goes through Actions | Sources: the plant may choose an action plan; no rule given |
 | Key learnings | Stay in the root cause analysis | Action Plan US-AP-01 (in the plan) |
 | Further analysis | Asked only for a critical (red) event whose workflow does not require the analysis | User's remark (was asked for every event) |
+| What makes an event red | Only the review: Potential or Actual severity (or loss) of 50 or more, or a confirmed Environment SIP; the reporter's SIP answer is information only | User's remark (the reporter's answer used to show it red until reviewed) |
 | Standards and Hazards in the review | One value each | User's remark |
 | Location of an action | The event's location, not asked | Safety FR-22 (department and workshop, adjustable) |
 
@@ -150,9 +151,13 @@ only say they come later, and the actions created in the analysis go nowhere.
 - **RV-11** *(one message)* A missing Standard or Hazard says "Choose a value."; the other lists
   still say "Choose at least one value.". *(was: "Choose at least one value." for every list)*
 - **EL-12** **Open actions** counts the deployed actions not Completed or Cancelled, and a fifth
-  number **Overdue actions** counts those that are Overdue (AP-5), both in the events of the
+  number **Overdue actions** counts those that are Overdue (AP-5) (Events with SIP now reads
+  "Reviewed as a serious incident potential", EL-6), both in the events of the
   context and following the search and filters; each opens the Events page narrowed to their
   events. *(was: Open actions always 0)*
+- **EL-6** "SIP" counts only events a valid review flagged SIP; the reporter's "Could this be a
+  SIP?" answer is information only and never makes an event SIP or red; only the review's flags
+  are red. *(was: the reporter's answer counted and showed red until the review)*
 - **EL-17** Each step of the steps menu is Done, Current step, Not reached yet, Not required or
   **Optional** (AP-3). *(was: without Optional)*
 - **EL-18** The Actions and Validation steps are described by their capabilities. *(was: Actions
@@ -232,6 +237,10 @@ Novak and Diego Laurent.
     value; leaving Standards empty says "Choose a value.". (RV-6, RV-11)
 17. **On to Actions** — When Diego completes the analysis of `TF-26-0003`, the page opens its
     Actions step. (RCA-16)
+
+18. **Red only from the review** — Before any review, Carla's Events page shows With SIP 0 and no
+    red badge, though several reporters answered SIP Yes; `TF-26-0003` reviewed with Potential
+    Severe × Medium term (50) becomes SIP and red, and With SIP shows 1. (EL-6, Domain)
 
 ## Out of scope
 
