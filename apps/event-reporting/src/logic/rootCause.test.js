@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { investigationGroups, users } from '../../../../shared/platform/sampleData.js';
+import { currentStep } from './review.js';
 import {
   addWhyBelow,
   assigneeIds,
@@ -141,6 +142,13 @@ describe('root cause analysis (004)', () => {
     expect(withActions.rca).toMatchObject({ completedBy: 'user-diego', completedAt: NOW });
     const nothingElse = completeAnalysis(makeEvent(['review', 'rootCause'], null), completeAnalysisData(), 'user-diego', NOW);
     expect(nothingElse.status).toBe('Closed');
+  });
+
+  it('goes to Actions instead of closing when the analysis created actions (005 RCA-16)', () => {
+    const withPlan = makeEvent(['review', 'rootCause'], null, { actions: [{ id: 'a1', status: 'planned' }] });
+    const completed = completeAnalysis(withPlan, completeAnalysisData(), 'user-diego', NOW);
+    expect(completed.status).toBe('In Progress');
+    expect(currentStep(completed)).toBe('actions');
   });
 
   it('lets only the designated people (users and group members) fill it in', () => {

@@ -300,8 +300,9 @@ export function completeAnalysis(event, analysis, userId, now) {
   return next ? { ...done, status: 'In Progress' } : { ...done, status: 'Closed', closedAt: now };
 }
 
-// The designated users and the members of the designated groups.
-function designatedIds(event, groups) {
+// The designated users and the members of the designated groups (also the action plan's owners,
+// 005 AP-2).
+export function designatedIds(event, groups) {
   const assignees = event.review?.rcaAssignees;
   if (!assignees) return [];
   return [...new Set([...assignees.userIds, ...membersOf(groups, assignees.groupIds)])];

@@ -34,11 +34,11 @@ with its workflow steps.
   filters yet" when empty.
 - **EL-5** Search, filters and saved filters combine, and every count and chart follows them — the
   Archived count and chart follow the search and every filter except Status.
-- **EL-6** "SIP" (the With SIP chip, the SIP filter, the Events with SIP number) means the SIP flag
-  only: the submission's "Could this be a SIP?" answer until the event is reviewed, then whether a
-  valid review flagged it SIP (an archived event is not SIP). HCI, SPL, HCL and the CRP / SRP
-  answers do not count. Critical flags show as red badges on cards, rows and
-  the event page.
+- **EL-6** "SIP" (the With SIP chip, the SIP filter, the Events with SIP number) means that a valid
+  review flagged the event SIP; HCI, SPL and HCL do not count. The reporter's "Could this be a
+  SIP?" answer is only the reporter's view: it is shown with the event's facts and never makes it
+  SIP or red. Only the review's critical flags (domain Critical events) show as red badges on
+  cards, rows and the event page.
 
 ### Events page
 
@@ -62,10 +62,13 @@ with its workflow steps.
 
 ### KPIs page
 
-- **EL-12** Four numbers: **Events with SIP** ("Submitted with serious incident potential"),
-  **Open actions** (0, "Counted once action plans are available"), **Events in progress**
-  ("Submitted and not yet closed": status Open or In Progress) and **Archived events** ("Reviewed as not valid"). Events with
-  SIP, Events in progress and Archived events open the Events page narrowed to them.
+- **EL-12** Five numbers: **Events with SIP** ("Reviewed as a serious incident potential"), **Open
+  actions** ("Deployed and not yet completed": actions of the [action plans](action-plan.md) that
+  are deployed and not Completed or Cancelled), **Overdue actions** ("Past their due date", AP-5),
+  **Events in progress** ("Submitted and not yet closed": status Open or In Progress) and **Archived
+  events** ("Reviewed as not valid"). Each opens the Events page narrowed to its events; Open and
+  Overdue actions show the badge "Events with open actions" / "Events with overdue actions"
+  (removable) since they are not chips.
 - **EL-13** **Reported events by type**: a stacked column per type (family), split by level in the
   pillar's color ("Darker shades are more serious levels."), every type and level listed even when
   zero, with details on hover and a table view (Type, Level, Events).
@@ -86,16 +89,18 @@ with its workflow steps.
 - **EL-17** A **submitted** event has one page, its steps: back to events and the record number,
   a compact header card (pillar, level, status and critical badges, title, key facts on one line),
   the **steps menu** — Submission, Review, Root cause analysis, Actions, Validation, each Done,
-  Current step, Not reached yet or Not required (domain Steps) — and the chosen step. Opening the
+  Current step, Not reached yet, Not required or Optional (domain Steps) — and the chosen step. Opening the
   event shows its current step (Submission right after submitting, with the banner of the event
   reporting capability).
 - **EL-18** Steps that cannot be opened say "This step is not required for this event." or "This
-  step has not been reached yet.". Review and Root cause analysis are described by their
-  capabilities; Actions and Validation say "<step> comes in a later version of the prototype.".
+  step has not been reached yet.". Review, Root cause analysis, Actions and Validation are described
+  by their capabilities.
 - **EL-19** The **Submission** step shows every section, the photos and videos, the immediate
   actions and the **history** (Created by …, Submitted — record number …, Review taken by …,
   Review completed — valid / archived (<reason>), Immediate actions updated in the root cause
-  analysis by …, Root cause analysis completed by …, Last updated by …, oldest first). A Manager
+  analysis by …, Root cause analysis completed by …, Action plan deployed by …, Action plan
+  completed, Validation: not effective — <reason> (…), Validation: effective — closed by …, Last
+  updated by …, oldest first). A Manager
   who can edit it sees the form instead ([event reporting](event-reporting.md) ER-21).
 - **EL-20** Every page title names the page and the event ("Root cause analysis — TF-26-0003 —
   Event Reporting").
@@ -104,7 +109,7 @@ with its workflow steps.
 
 From freshly reset [demo data](platform-data.md), Carla Mendes at Lyon, all pillars.
 
-1. **Chips** — All 17, My events 7, Open 13, With SIP 6, Drafts 1. Choosing Drafts leaves "Hydraulic
+1. **Chips** — All 17, My events 7, Open 13, With SIP 0 (no event is reviewed yet), Drafts 1. Choosing Drafts leaves "Hydraulic
    oil drip from forklift". (EL-1, EL-7)
 2. **Kanban** — Draft 1, Open 13, In Progress 0, Closed 3; on a phone the columns scroll with ‹ ›.
    (EL-8)
@@ -120,8 +125,11 @@ From freshly reset [demo data](platform-data.md), Carla Mendes at Lyon, all pill
    page and the KPIs page shows Archived events 1; Status = Archived lists it. (EL-3, EL-12, EL-14)
 7. **Expand** — Clicking `TF-26-0002` shows its description and its immediate action; Open event
    opens its Review step (current step). (EL-10, EL-17)
-8. **KPIs** — Events with SIP 6, Open actions 0, Events in progress 13, Archived events 0; the TF
-   column splits by level and the table view lists every type and level. (EL-12, EL-13)
+8. **KPIs** — Events with SIP 0, Open actions 0, Overdue actions 0, Events in progress 13,
+   Archived events 0; the TF column splits by level and the table view lists every type and level.
+   After [action plan](action-plan.md) scenario 3 (two deployed actions on `TF-26-0005`, one
+   overdue): Open actions 2, Overdue actions 1; Overdue actions opens the Events page with
+   `TF-26-0005` and the badge "Events with overdue actions". (EL-12, EL-13)
 9. **Reports** — Event register lists the 17 events with the List columns. (EL-15)
 10. **Event page** — `TF-26-0003` shows the steps Submission Done, Review Current step, Root cause
     analysis Not required, Actions Not reached yet, Validation Not required; Validation cannot be

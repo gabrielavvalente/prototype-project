@@ -45,9 +45,10 @@ describe('critical classification', () => {
     expect(criticalFlagsOf({ familyCode: 'SRE', levelCode: 'SRE2' }, { potential: high, actual: high })).toEqual(['SPL', 'HCL']);
   });
 
-  it('lets the review decide over the submission answer', () => {
+  it('is critical only from a valid review, never from the submission answer', () => {
     const answeredSip = { riskQuestion: { type: 'SIP', answer: true } };
-    expect(criticalLabels(answeredSip)).toEqual(['SIP']);
+    expect(criticalLabels(answeredSip)).toEqual([]);
+    expect(criticalLabels({ ...answeredSip, review: { decision: 'valid', criticalFlags: ['SIP'] } })).toEqual(['SIP']);
     expect(criticalLabels({ ...answeredSip, review: { decision: 'valid', criticalFlags: [] } })).toEqual([]);
     expect(criticalLabels({ ...answeredSip, review: { decision: 'invalid' } })).toEqual([]);
   });

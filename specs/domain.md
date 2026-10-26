@@ -33,7 +33,9 @@ made in one product is seen by the others.
 | **Investigation group** | A named set of people covering some pillars and plants, who can be designated together. |
 | **Critical event** | An event flagged SIP, HCI, SPL or HCL by its review (see Critical events). |
 | **Immediate action** | Something done at the scene right away to make the situation safe; recorded with the event, always completed. |
-| **Action** | A corrective step decided during the analysis, with assignees and a due date. |
+| **Action plan** | One per event: all its actions — the immediate actions and the corrective actions. |
+| **Corrective action** | An action of the plan with assignees, a due date, a priority and a status (Planned, On Going, To Complete, Completed, Cancelled). |
+| **Validator** | The person who checks that the completed action plan was effective: the reviewer. |
 | **Master data** | Pillar-specific reference lists (Standards, Hazards, Body Parts, Injuries, Aspects, Impacts, Industrial Risk Categories) used to classify events. |
 | **Central / Cluster / Local** | The three levels of Control Panel roles: all plants / two or more plants / one plant. |
 
@@ -62,7 +64,7 @@ Each level has a one-sentence plain-language description shown when choosing it.
 
 | When | Question | Effect of Yes |
 |---|---|---|
-| Health & Safety, Environment | SIP? | The event shows as SIP until reviewed. A TF5 answered Yes becomes TF4 (with a warning). |
+| Health & Safety, Environment | SIP? | Recorded as the reporter's view (it never makes the event critical). A TF5 answered Yes becomes TF4 (with a warning). |
 | Industrial Risk SRE1–SRE2 | CRP? | Recorded with the event. |
 | Industrial Risk SRE3–SRE5 | SRP? | Recorded with the event. |
 
@@ -141,12 +143,16 @@ events.
 **Steps** are derived, never stored:
 
 - Required steps: Submission; each phase required by the event's workflow; Root cause analysis also
-  when the reviewer asked for further analysis.
+  when the reviewer asked for further analysis; Actions also as soon as the event's action plan has
+  a corrective action.
 - **Current step**: the first required step not yet done (none for Draft, Archived and Closed).
-- Each step shows as done, current, upcoming (required, not reached) or not required. Done and
-  current steps can be opened; the others cannot. For an Archived event, the required steps after
+- Each step shows as done, current, upcoming (required, not reached), not required, or — for an
+  Actions step the workflow does not require, on an Open or In Progress event — optional. Done and
+  current steps can be opened, an optional one by the plan's owners; the others cannot. For an Archived event, the required steps after
   Review stay upcoming.
 - Completing a step moves the event to the next required step, or closes it when none is left.
+  Validation is done when the last validation found the plan effective; a validation finding it
+  not effective sends the event back to Actions.
 
 ## Critical events
 
@@ -160,8 +166,9 @@ A review can flag an event as critical:
 | SPL | Industrial Risk | Potential loss is High |
 | HCL | Industrial Risk | Actual loss is High |
 
-A SIP or SPL needs a type. Critical events show red badges wherever the event appears and propose
-further analysis.
+High means a score of 50 or more. Only the review makes an event critical: before it, no event is
+red, whatever the reporter answered. A SIP or SPL needs a type. Critical events show red badges
+wherever the event appears and are the only ones asked "Do you want to further analyze?".
 
 ## Master data
 
@@ -199,8 +206,8 @@ follows the dependencies.
 | Event library (list, Kanban, filters, KPIs, reports, event page) | Event reporting | [event-library](capabilities/event-library.md) |
 | Event review (incl. severity and critical events) | Event reporting, master data | [event-review](capabilities/event-review.md) |
 | Root cause analysis | Event review | [root-cause-analysis](capabilities/root-cause-analysis.md) |
-| Action plan | Root cause analysis | not yet specified |
-| Validation | Action plan | not yet specified |
+| Action plan | Root cause analysis | [action-plan](capabilities/action-plan.md) |
+| Validation | Action plan | [validation](capabilities/validation.md) |
 
 ## Product-wide rules
 

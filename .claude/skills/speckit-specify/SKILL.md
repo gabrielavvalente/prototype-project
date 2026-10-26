@@ -129,16 +129,17 @@ Given that feature description, do this:
          - No reasonable default exists
        - **LIMIT: Maximum 3 [NEEDS CLARIFICATION] markers total**
        - Prioritize clarifications by impact: scope > security/privacy > user experience > technical details
-    4. Fill User Scenarios & Testing section
-       If no clear user flow: ERROR "Cannot determine user scenarios"
-    5. Generate Functional Requirements
-       Each requirement must be testable
-       Use reasonable defaults for unspecified details (document assumptions in Assumptions section)
-    6. Define Success Criteria
-       Create measurable, technology-agnostic outcomes
-       Include both quantitative metrics (time, performance, volume) and qualitative measures (user satisfaction, task completion)
-       Each criterion must be verifiable without implementation details
-    7. Identify Key Entities (if data involved)
+    <!-- Project patch (see .specify/memory/skill-patches.md): change-spec format, constitution v2.4.0 -->
+    4. Read `specs/domain.md` and the capability files (`specs/capabilities/*.md`) the change touches;
+       list them in **Capabilities**
+    5. Write the rules the change adds, changes or removes (full new text, with ids; reuse the
+       capability's prefix, or a new short prefix for a new capability); refer to existing rules by
+       id instead of repeating them; put each decision taken with the user in **Decisions**
+    6. Write the acceptance scenarios from the demo data of `specs/capabilities/platform-data.md`,
+       with concrete people, events, texts and counts, each citing its rule ids; check every name
+       and count against the demo data
+       If no scenario can be written: ERROR "Cannot determine acceptance scenarios"
+    7. Note demo data changes and what is out of scope
     8. Return: SUCCESS (spec ready for planning)
 
 7. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings.
@@ -156,28 +157,27 @@ Given that feature description, do this:
 
       ## Content Quality
 
-      - [ ] No implementation details (languages, frameworks, APIs)
-      - [ ] Focused on user value and business needs
+      - [ ] No implementation details (languages, frameworks, APIs, file paths)
+      - [ ] No history: rules state the behavior they set (the "was:" notes of Changed excepted)
       - [ ] Written for non-technical stakeholders
-      - [ ] All mandatory sections completed
+      - [ ] All sections of the change template completed (empty ones removed)
 
-      ## Requirement Completeness
+      ## Rules
 
       - [ ] No [NEEDS CLARIFICATION] markers remain
-      - [ ] Requirements are testable and unambiguous
-      - [ ] Success criteria are measurable
-      - [ ] Success criteria are technology-agnostic (no implementation details)
-      - [ ] All acceptance scenarios are defined
-      - [ ] Edge cases are identified
-      - [ ] Scope is clearly bounded
-      - [ ] Dependencies and assumptions identified
+      - [ ] Every rule has an id and says who, what, when — and when not
+      - [ ] Each rule is written once; existing rules are referred to by id
+      - [ ] Exact UI texts are quoted
+      - [ ] Every decision taken with the user is in Decisions and reflected in a rule
+      - [ ] The capabilities touched are listed; changed rules exist in those capabilities
 
-      ## Feature Readiness
+      ## Acceptance Scenarios
 
-      - [ ] All functional requirements have clear acceptance criteria
-      - [ ] User scenarios cover primary flows
-      - [ ] Feature meets measurable outcomes defined in Success Criteria
-      - [ ] No implementation details leak into specification
+      - [ ] Every added or changed rule is checked by at least one scenario
+      - [ ] Scenarios start from the demo data, with concrete people, events, texts and counts
+      - [ ] Names and counts match the demo data (and earlier scenarios when they run in order)
+      - [ ] Edge cases (refusals, limits, empty states) are covered
+      - [ ] Scope is clearly bounded (Out of scope)
 
       ## Notes
 
@@ -298,7 +298,7 @@ Report completion to the user with:
 When creating this spec from a user prompt:
 
 1. **Make informed guesses**: Use context, industry standards, and common patterns to fill gaps
-2. **Document assumptions**: Record reasonable defaults in the Assumptions section
+2. **Document decisions**: Record the open points confirmed with the user, and reasonable defaults, in the Decisions section (project patch)
 3. **Limit clarifications**: Maximum 3 [NEEDS CLARIFICATION] markers - use only for critical decisions that:
    - Significantly impact feature scope or user experience
    - Have multiple reasonable interpretations with different implications
@@ -318,28 +318,20 @@ When creating this spec from a user prompt:
 - Authentication method: Standard session-based or OAuth2 for web apps
 - Integration patterns: Use project-appropriate patterns (REST/GraphQL for web services, function calls for libraries, CLI args for tools, etc.)
 
-### Success Criteria Guidelines
+### Acceptance Scenario Guidelines
 
-Success criteria must be:
+<!-- Project patch (see .specify/memory/skill-patches.md): scenarios replace success criteria. -->
 
-1. **Measurable**: Include specific metrics (time, percentage, count, rate)
-2. **Technology-agnostic**: No mention of frameworks, languages, databases, or tools
-3. **User-focused**: Describe outcomes from user/business perspective, not system internals
-4. **Verifiable**: Can be tested/validated without knowing implementation details
+Acceptance scenarios must be:
 
-**Good examples**:
+1. **Concrete**: a demo person does something on a demo event (`specs/capabilities/platform-data.md`)
+2. **Exact**: the expected texts are quoted and the numbers are given ("Open actions 2")
+3. **Traceable**: each cites the rule ids it checks; every added or changed rule has one
+4. **Consistent**: names and counts match the demo data, and earlier scenarios when run in order
 
-- "Users can complete checkout in under 3 minutes"
-- "System supports 10,000 concurrent users"
-- "95% of searches return results in under 1 second"
-- "Task completion rate improves by 40%"
+**Good**: "Carla reviews `TF-26-0005` as valid: the current step is Actions, "Not deployed". (AP-1, AP-11)"
 
-**Bad examples** (implementation-focused):
-
-- "API response time is under 200ms" (too technical, use "Users see results instantly")
-- "Database can handle 1000 TPS" (implementation detail, use user-facing metric)
-- "React components render efficiently" (framework-specific)
-- "Redis cache hit rate above 80%" (technology-specific)
+**Bad**: "Users can manage action plans efficiently" (not concrete, no rule id)
 
 ## Done When
 

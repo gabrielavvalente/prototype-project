@@ -4129,3 +4129,83 @@ a.step-link:hover {
 .why-card-remove {
   margin-left: auto;
 }
+
+/* Action plan (005): an Optional Actions step, action statuses, Overdue, the plan header. */
+.step-marker--optional {
+  border-style: dashed;
+}
+
+.action-plan-summary {
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.action-status {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.action-status--onGoing,
+.action-status--toComplete {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.action-status--completed {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.action-status--cancelled {
+  text-decoration: line-through;
+}
+
+.action-status--overdue {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.action-line-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  grid-column: 1 / -1;
+}
+
+.action-line-notice,
+.action-line-history {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.due-date-history {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+}
+
+@media (max-width: 479px) {
+  .action-compact-row .immediate-compact-meta {
+    white-space: normal;
+  }
+}
+
+
+.validation-history {
+  margin: 0 0 12px;
+  padding-left: 18px;
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+}
+
+.validation-form {
+  margin-top: 20px;
+}

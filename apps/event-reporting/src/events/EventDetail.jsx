@@ -38,6 +38,17 @@ function buildHistory(event, users) {
     const by = getLabel(users, event.rca.immediateActionsChangedBy);
     items.push({ label: `Immediate actions updated in the root cause analysis by ${by}`, at: event.rca.immediateActionsChangedAt });
   }
+  if (event.actionPlan?.deployedAt) {
+    items.push({ label: `Action plan deployed by ${getLabel(users, event.actionPlan.deployedBy)}`, at: event.actionPlan.deployedAt });
+  }
+  if (event.actionPlan?.completedAt) {
+    items.push({ label: 'Action plan completed', at: event.actionPlan.completedAt });
+  }
+  for (const validation of event.validations ?? []) {
+    const by = getLabel(users, validation.by);
+    const label = validation.effective ? `Validation: effective — closed by ${by}` : `Validation: not effective — ${validation.reason} (${by})`;
+    items.push({ label, at: validation.at });
+  }
   if (event.rca?.completedAt) {
     items.push({ label: `Root cause analysis completed by ${getLabel(users, event.rca.completedBy)}`, at: event.rca.completedAt });
   }

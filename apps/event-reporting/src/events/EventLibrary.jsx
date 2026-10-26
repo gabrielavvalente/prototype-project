@@ -17,12 +17,15 @@ import {
 } from '../logic/eventList.js';
 import Icon from '../shell/Icon.jsx';
 import EventTable, { ALL_COLUMN_KEYS, ColumnsMenu } from './EventTable.jsx';
-import ActiveFilters from './ActiveFilters.jsx';
+import ActiveFilters, { FilterBadge } from './ActiveFilters.jsx';
 import FilterSheet from './FilterSheet.jsx';
 import FiltersMenu from './FiltersMenu.jsx';
 import KanbanBoard from './KanbanBoard.jsx';
 import KpiOverview from './KpiOverview.jsx';
 import KpiTiles from './KpiTiles.jsx';
+
+// Quick filters opened from the KPIs page (005 EL-12).
+const ACTION_FILTER_LABELS = { openActions: 'Events with open actions', overdueActions: 'Events with overdue actions' };
 
 const TABS = [
   { key: 'events', label: 'Events' },
@@ -186,6 +189,12 @@ export default function EventLibrary() {
       </nav>
 
       {mode === 'events' && <KpiTiles kpis={kpis} selected={quickFilter} onSelect={changeQuickFilter} />}
+      {/* Opened from the KPIs page: not a chip, so it shows as a badge (005 EL-12). */}
+      {mode === 'events' && ACTION_FILTER_LABELS[quickFilter] && (
+        <div className="active-filters">
+          <FilterBadge label={ACTION_FILTER_LABELS[quickFilter]} onRemove={() => changeQuickFilter('all')} />
+        </div>
+      )}
 
       {mode === 'reports' && (
         <section className="reports-intro">

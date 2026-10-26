@@ -112,9 +112,8 @@ export function typedFlag(event) {
   return assessment.sipQuestion ? 'SIP' : assessment.highPotential ?? null;
 }
 
-// Before review the submission's answer gives a first idea; once reviewed the review decides.
+// Only a valid review makes an event critical (red); the reporter's "Could this be a SIP?" answer
+// is the reporter's view, shown as information (005 remarks).
 export function criticalLabels(event) {
-  if (event.review?.decision === 'valid') return event.review.criticalFlags || [];
-  if (event.review?.decision === 'invalid') return [];
-  return event.riskQuestion?.type === 'SIP' && event.riskQuestion.answer === true ? ['SIP'] : [];
+  return event.review?.decision === 'valid' ? event.review.criticalFlags || [] : [];
 }
