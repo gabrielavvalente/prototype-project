@@ -36,9 +36,19 @@ describe('steps of an event', () => {
       'done',
       'current',
       'skipped',
-      'skipped',
+      'optional',
       'upcoming',
     ]);
+  });
+
+  it('makes Actions optional while active, and required once the plan has an action (005)', () => {
+    const closed = makeEvent(['review'], { status: 'Closed', review: { decision: 'valid' } });
+    expect(stepStates(closed)[3].state).toBe('skipped');
+    const withAction = makeEvent(['review'], { status: 'In Progress', review: { decision: 'valid' }, actions: [{ id: 'a1' }] });
+    expect(currentStep(withAction)).toBe('actions');
+    const completed = { ...withAction, actionPlan: { completedAt: NOW } };
+    expect(currentStep(completed)).toBeNull();
+    expect(stepStates(completed)[3].state).toBe('done');
   });
 
   it('has no current step once Archived or Closed', () => {
@@ -154,5 +164,12 @@ describe('review', () => {
     expect(onlyReview.status).toBe('Closed');
     const withActions = completeReview(claimReview(makeEvent(['review', 'actions']), carla.id, NOW), { decision: 'valid' }, NOW);
     expect(withActions.status).toBe('In Progress');
+  });
+
+  it('goes to Actions instead of closing when the plan already has actions (005)', () => {
+    const prepared = claimReview(makeEvent(['review'], { actions: [{ id: 'a1' }] }), carla.id, NOW);
+    const reviewed = completeReview(prepared, { decision: 'valid' }, NOW);
+    expect(reviewed.status).toBe('In Progress');
+    expect(currentStep(reviewed)).toBe('actions');
   });
 });

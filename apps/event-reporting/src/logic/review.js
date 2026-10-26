@@ -25,17 +25,21 @@ export function isReviewer(user, event) {
   return Boolean(event.workflow?.phases.review?.reviewerIds?.includes(user.id));
 }
 
-// Root cause analysis is also required when the reviewer asked for it ("further analyze" = Yes).
+// Root cause analysis is also required when the reviewer asked for it ("further analyze" = Yes);
+// Actions also as soon as the event's plan has an action (005 AP-3).
 function isRequired(event, step) {
   if (step === 'submission') return true;
   if (step === 'rootCause' && event.review?.furtherAnalysis === true) return true;
+  if (step === 'actions' && (event.actions?.length ?? 0) > 0) return true;
   return Boolean(event.workflow?.phases[step]?.required);
 }
 
-// Review is done once decided; Root cause analysis once completed (feature 004).
+// Review is done once decided; Root cause analysis once completed (004); Actions once the plan is
+// completed (005).
 function isDone(event, step) {
   if (step === 'review') return Boolean(event.review?.decision);
   if (step === 'rootCause') return Boolean(event.rca?.completedAt);
+  if (step === 'actions') return Boolean(event.actionPlan?.completedAt);
   return false;
 }
 
@@ -48,7 +52,8 @@ export function currentStep(event) {
 }
 
 // One state per step for the steps menu: 'done' and 'current' can be opened; 'upcoming' (not
-// reached yet) and 'skipped' (not required) cannot. An Archived event never reached the steps
+// reached yet) and 'skipped' (not required) cannot; 'optional' (a not-required Actions step of an
+// active event) opens for the plan's owners (005 AP-3). An Archived event never reached the steps
 // after Review.
 export function stepStates(event) {
   const current = currentStep(event);
@@ -56,7 +61,7 @@ export function stepStates(event) {
   const currentIndex = current ? STEPS.indexOf(current) : lastReached;
   return STEPS.map((step, index) => {
     let state = 'upcoming';
-    if (!isRequired(event, step)) state = 'skipped';
+    if (!isRequired(event, step)) state = step === 'actions' && ACTIVE_STATUSES.includes(event.status) ? 'optional' : 'skipped';
     else if (step === current) state = 'current';
     else if (index < currentIndex || isDone(event, step)) state = 'done';
     return { step, state };

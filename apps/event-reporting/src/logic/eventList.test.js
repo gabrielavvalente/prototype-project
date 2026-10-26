@@ -3,6 +3,7 @@ import {
   applyFilters,
   applyQuickFilter,
   computeKpis,
+  countActions,
   countActiveFilters,
   countArchivedByReason,
   countByFamilyAndLevel,
@@ -181,5 +182,22 @@ describe('countArchivedByReason (third review)', () => {
     const result = countArchivedByReason(archived, ['Duplicated', 'Useless', 'Bad quality'], families);
     expect(result.map((item) => [item.reason, item.total])).toEqual([['Duplicated', 2], ['Useless', 1], ['Bad quality', 0]]);
     expect(result[0].families.map((item) => item.count)).toEqual([1, 1]);
+  });
+});
+
+describe('action counts for the KPIs (005 EL-12)', () => {
+  const withActions = [
+    { id: 'e1', actions: [{ status: 'onGoing', dueDate: '2026-10-25' }, { status: 'planned', dueDate: '2026-10-01' }] },
+    { id: 'e2', actions: [{ status: 'toComplete', dueDate: '2026-11-30' }, { status: 'completed', dueDate: '2026-10-01' }] },
+    { id: 'e3' },
+  ];
+
+  it('counts deployed open actions and the overdue ones', () => {
+    expect(countActions(withActions, '2026-10-26')).toEqual({ open: 2, overdue: 1 });
+  });
+
+  it('narrows the events to those with open or overdue actions', () => {
+    expect(applyQuickFilter(withActions, 'openActions', 'u', '2026-10-26').map((event) => event.id)).toEqual(['e1', 'e2']);
+    expect(applyQuickFilter(withActions, 'overdueActions', 'u', '2026-10-26').map((event) => event.id)).toEqual(['e1']);
   });
 });

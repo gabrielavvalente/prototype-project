@@ -22,7 +22,7 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Purpose**: The pure functions and their tests
 
-- [ ] T001 [P] Extend `apps/event-reporting/src/logic/actions.js`: `emptyAction(whyId, event)` with
+- [X] T001 [P] Extend `apps/event-reporting/src/logic/actions.js`: `emptyAction(whyId, event)` with
   `location` "{ departmentId, workshopId }" from the event, `notifyMaintenance: null`, `status:
   'planned'`, `dueDateHistory: []`; `validateAction` also requires the department and workshop
   ("Choose the department and workshop.") and Notify maintenance ("Say whether maintenance must be
@@ -30,7 +30,7 @@ checked with the spec's acceptance scenarios through the launcher.
   today)` (deployed, not `completed` / `cancelled`, `dueDate` before today); `changeDueDate(action,
   dueDate, userId, now)` appending `{ from, to, by, at }`; tests in `actions.test.js` (AP-4, AP-5,
   AP-8)
-- [ ] T002 [P] Create `apps/event-reporting/src/logic/actionPlan.js`: `planOwners(event, groups,
+- [X] T002 [P] Create `apps/event-reporting/src/logic/actionPlan.js`: `planOwners(event, groups,
   users)` (designated users and group members, else the reviewer, else the Managers who can see the
   event), `canEditPlan(user, event, groups, users)`, `deployPlan(event, userId, now)` returning the
   event and the "Action assigned to you" recipients (distinct assignees who can see the event),
@@ -40,11 +40,11 @@ checked with the spec's acceptance scenarios through the launcher.
   · N overdue"), `completeBlocker(event)` ("Every action must be Completed or Cancelled, and at
   least one Completed."), `completePlan(event, userId, now)` (next required step In Progress, or
   Closed); tests in `actionPlan.test.js` (AP-2, AP-7, AP-9 to AP-13)
-- [ ] T003 [P] In `apps/event-reporting/src/logic/review.js`: Actions is required when the workflow
+- [X] T003 [P] In `apps/event-reporting/src/logic/review.js`: Actions is required when the workflow
   requires it or `event.actions.length > 0`; done when `actionPlan.completedAt`; a not-required
   Actions step of an Open / In Progress event has the state `optional`; tests in `review.test.js`
   (AP-3, RCA-16, EL-17)
-- [ ] T004 [P] In `apps/event-reporting/src/logic/eventList.js`: `countActions(events, today)` →
+- [X] T004 [P] In `apps/event-reporting/src/logic/eventList.js`: `countActions(events, today)` →
   `{ open, overdue }` and the quick filters `openActions` / `overdueActions` (events having such
   actions); tests in `eventList.test.js` (EL-12)
 

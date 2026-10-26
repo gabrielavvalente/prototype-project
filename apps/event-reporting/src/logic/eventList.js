@@ -1,5 +1,6 @@
 // Search, filters, sorting, pages and KPI counts for the event library (FR-026 to FR-031).
 
+import { isDeployed, isFinal, isOverdue, localToday } from './actions.js';
 import { criticalLabels } from './severity.js';
 
 // Rows per page in the List view, fixed for now (Clarification 2026-10-24, header/list/form review).
@@ -96,22 +97,35 @@ function isMine(event, userId) {
 
 // The KPI chip row (FR-031). "All" and "My events" include the user's own drafts, so the Kanban
 // Draft column is filled; "Open" and "With SIP" show submitted events only.
+// Deployed actions not Completed or Cancelled (005 EL-12).
+const isOpenAction = (action) => isDeployed(action) && !isFinal(action);
+
 const QUICK_FILTERS = {
   all: () => true,
   mine: (event, userId) => isMine(event, userId),
   open: (event) => event.status === 'Open' || event.status === 'In Progress',
   sip: (event) => event.status !== 'Draft' && isSip(event),
   drafts: (event) => event.status === 'Draft',
+  // Not chips: opened from the KPIs page (005 EL-12).
+  openActions: (event) => (event.actions ?? []).some(isOpenAction),
+  overdueActions: (event, userId, today) => (event.actions ?? []).some((action) => isOverdue(action, today)),
 };
 
-export const QUICK_FILTER_KEYS = Object.keys(QUICK_FILTERS);
+// The KPI chips of the Events page.
+export const QUICK_FILTER_KEYS = ['all', 'mine', 'open', 'sip', 'drafts'];
 
-export function applyQuickFilter(events, key, userId) {
-  return events.filter((event) => QUICK_FILTERS[key](event, userId));
+export function applyQuickFilter(events, key, userId, today = localToday()) {
+  return events.filter((event) => QUICK_FILTERS[key](event, userId, today));
 }
 
 export function computeKpis(events, userId) {
   return Object.fromEntries(QUICK_FILTER_KEYS.map((key) => [key, applyQuickFilter(events, key, userId).length]));
+}
+
+// Open and Overdue actions of the events, for the KPIs page (005 EL-12).
+export function countActions(events, today) {
+  const actions = events.flatMap((event) => event.actions ?? []);
+  return { open: actions.filter(isOpenAction).length, overdue: actions.filter((action) => isOverdue(action, today)).length };
 }
 
 // How many filters of the filter sheet are in use (shown on the Filters button, FR-042).
