@@ -181,24 +181,25 @@ and the reviewer validates it
 
 ## Phase 7: Apply the change to the capabilities
 
-- [ ] T019 Create `specs/capabilities/action-plan.md` (and `specs/capabilities/validation.md`) from `.specify/templates/capability-template.md`
+- [X] T019 Create `specs/capabilities/action-plan.md` (and `specs/capabilities/validation.md`) from `.specify/templates/capability-template.md`
   with the rules AP-1 to AP-13, the scenarios and the decisions of the spec; replace RCA-12, RCA-13
   and RCA-16 in `specs/capabilities/root-cause-analysis.md`, EL-12, EL-17, EL-18 and EL-19 in
   `specs/capabilities/event-library.md`; in `specs/domain.md` the Steps rule, the Glossary entry
   Action and the capability map (Action plan specified). The capabilities must read as the current
   behavior: no "was", no change history.
-- [ ] T020 Check the counts and names of every changed scenario against the demo data
+- [X] T020 Check the counts and names of every changed scenario against the demo data
 
 ---
 
 ## Phase 8: Checks
 
-- [ ] T021 Run `npm test` and `npm run build` in `apps/event-reporting/`, then the spec's acceptance
+- [X] T021 Run `npm test` and `npm run build` in `apps/event-reporting/`, then the spec's acceptance
   scenarios from **Reset demo data** through the launcher, at 320px and with the keyboard, with a
   clean browser console
-  *(2026-10-26: 135 tests and the build pass; scenarios 1–7, 10, 11 and the screen part of 8 run in
-  headless Chrome through the launcher with a clean console; the end of 8 (completing the review)
-  and 9 (from the analysis) are covered by unit tests and left to the manual check.)*
+  *(2026-10-26, after the review remarks: 141 tests and the build pass; scenarios 1–9 and 12 of the
+  spec run in headless Chrome through the launcher with a clean console, plus 320px for the
+  Actions step; scenarios 10 (end of the optional plan) and 11 (from the analysis) are covered by
+  unit tests and left to the manual check, as is the keyboard.)*
 
 ---
 

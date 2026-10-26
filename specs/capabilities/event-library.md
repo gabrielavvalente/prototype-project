@@ -93,13 +93,14 @@ with its workflow steps.
   event shows its current step (Submission right after submitting, with the banner of the event
   reporting capability).
 - **EL-18** Steps that cannot be opened say "This step is not required for this event." or "This
-  step has not been reached yet.". Review, Root cause analysis and Actions are described by their
-  capabilities; Validation says "Validation comes in a later version of the prototype.".
+  step has not been reached yet.". Review, Root cause analysis, Actions and Validation are described
+  by their capabilities.
 - **EL-19** The **Submission** step shows every section, the photos and videos, the immediate
   actions and the **history** (Created by …, Submitted — record number …, Review taken by …,
   Review completed — valid / archived (<reason>), Immediate actions updated in the root cause
   analysis by …, Root cause analysis completed by …, Action plan deployed by …, Action plan
-  completed by …, Last updated by …, oldest first). A Manager
+  completed, Validation: not effective — <reason> (…), Validation: effective — closed by …, Last
+  updated by …, oldest first). A Manager
   who can edit it sees the form instead ([event reporting](event-reporting.md) ER-21).
 - **EL-20** Every page title names the page and the event ("Root cause analysis — TF-26-0003 —
   Event Reporting").
