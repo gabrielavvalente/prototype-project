@@ -18,7 +18,7 @@ deploy them, assignees carry them out, and the plan completes by itself, which m
   workflow does not require Actions.
 - **Out**: checking the plan ([validation](validation.md)), key learnings (they are in the root
   cause analysis), a comments thread, export, the Action Management and maintenance integrations,
-  overdue alerts, a My actions page.
+  alerts about single actions (the action management tool sends them), a My actions page.
 
 ## Rules
 
@@ -66,10 +66,11 @@ deploy them, assignees carry them out, and the plan completes by itself, which m
 
 ### Deploying and following
 
-- **AP-9** **Deploy action plan** (owners, once per plan) sets every Planned action On Going and
-  sends "Action assigned to you" to each of their assignees who can see the event, once per
-  person. It is possible without any corrective action: the immediate actions are then the plan.
-  A corrective action added after deployment is On Going at once and alerts its assignees.
+- **AP-9** **Deploy action plan** (owners, once per plan) sets every Planned action On Going. It
+  is possible without any corrective action: the immediate actions are then the plan.
+  A corrective action added after deployment is On Going at once. Deploying alerts as
+  [notifications](notifications.md) NT-3 says ("Action plan deployed"); nothing is sent about
+  single actions.
 - **AP-10** An assignee sets their own On Going action to **To Complete** or **Completed**, and a To
   Complete one to **Completed**; a Completed or Cancelled action no longer changes.
 - **AP-11** The plan header counts every action of the plan, immediate ones included: "N actions ·
@@ -80,8 +81,8 @@ deploy them, assignees carry them out, and the plan completes by itself, which m
 - **AP-12** The plan **completes by itself** as soon as it is deployed, every action is Completed
   or Cancelled, and at least one is Completed (immediate actions included) — at deployment, or with
   the status change that finishes the last action. It records who made that change and when, and
-  moves the event to its next required step (In Progress) — alerting the validators "Action plan
-  ready for validation" when it is Validation — or closes it when none is left.
+  moves the event to its next required step (In Progress) or closes it when none is left, with the
+  alerts of NT-3 ("Action plan ready for validation", "Action plan completed", "Event closed").
 - **AP-13** A completed plan is read-only, with "Completed on <date>"; the history of the event
   shows "Action plan deployed by <name>" and "Action plan completed". A plan sent back by the
   validation (VAL-4) opens again.
@@ -102,8 +103,8 @@ Laurent.
    keeps the event's). *Then* the line shows Planned, "Maintenance", High and both assignees.
    Create with no assignee is refused with "Choose 1 to 5 assignees.". (AP-4, AP-6)
 3. **Deploy** — Carla adds a second action assigned to Diego Laurent only, due yesterday, then Deploy
-   action plan. *Then* both are On Going, the second also Overdue; Ana and Diego each get one
-   "Action assigned to you"; the header reads "3 actions · 1 completed · 1 overdue". (AP-5, AP-9,
+   action plan. *Then* both are On Going, the second also Overdue; nobody gets an alert (Carla is
+   the event's reporter and reviewer, and nothing is sent about single actions); the header reads "3 actions · 1 completed · 1 overdue". (AP-5, AP-9,
    AP-11)
 4. **Due date history** — Carla moves the second action's due date to next week: Overdue disappears
    and the action shows "Due date changed from <yesterday> to <next week> by Carla Mendes on
@@ -116,7 +117,8 @@ Laurent.
    and "Action plan completed". (AP-7, AP-12, AP-13)
 7. **Immediate actions are enough** — Felix Tanaka reviews `TF-26-0010` (TF2, Curitiba: Review and
    Actions; one immediate action) as valid, rated below Very Critical, then Deploy action plan without
-   any corrective action. *Then* the plan completes at once and the event is Closed. (AP-9, AP-12)
+   any corrective action. *Then* the plan completes at once, the event is Closed and Ben Okafor, its
+   reporter, gets "Event closed". (AP-9, AP-12)
 8. **Optional plan** — Carla takes the review of `TF-26-0002`: its Actions step shows Optional and
    she can open it, with its immediate action listed; she adds a corrective action, then completes
    the review as valid, rated below Very Critical (not asked to analyze further). *Then* the event is In
@@ -147,7 +149,7 @@ Laurent.
 | Deploying without corrective actions | Allowed: the immediate actions are then the plan | No rule in the sources |
 | Link to a root cause | Optional link to a why when the analysis was done | Action Plan US-AP-02 makes it required |
 | Where assignees act | Only in the event's Actions step | Action Plan US-AP-05 (My Actions) |
-| Overdue | Badge and KPIs only, no alert | Action Plan US-AP-06 (email escalation) |
+| Overdue | Badge and KPIs only; no alert from Event Reporting: the action management tool notifies actions | Action Plan US-AP-06 (email escalation) |
 | Plan when Actions is not required | Optional for the owners; once it has an action, the event goes through Actions | No rule in the sources |
 | Key learnings | In the root cause analysis | Action Plan US-AP-01 (in the plan) |
 | Location of an action | The event's location, not asked | Safety FR-22 (department and workshop, adjustable) |

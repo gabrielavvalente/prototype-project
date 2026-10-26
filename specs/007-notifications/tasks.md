@@ -119,20 +119,20 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ## Phase 6: Apply the change to the capabilities
 
-- [ ] T016 Create `specs/capabilities/notifications.md` (NT-1 to NT-11, the acceptance scenarios,
+- [X] T016 Create `specs/capabilities/notifications.md` (NT-1 to NT-11, the acceptance scenarios,
   Decisions) and apply the changed rules to `specs/capabilities/event-reporting.md` (ER-18,
   ER-19), `event-review.md` (RV-13), `root-cause-analysis.md` (RCA-2), `action-plan.md` (AP-9,
   AP-12, the Overdue decision, scenarios naming "Action assigned to you"), `validation.md` (VAL-3,
   VAL-4, scenarios naming alerts), `event-reporting-shell.md` (ES-6, ES-9, scenario 6),
   `control-panel-workspace.md` (CPW-2), `platform-data.md` (PD-3, Alerts) and `specs/domain.md`
   (roles, Alerts and notifications, the capability map). No "was", no change history.
-- [ ] T017 Check the counts and names of every changed scenario against the demo data
+- [X] T017 Check the counts and names of every changed scenario against the demo data
 
 ---
 
 ## Phase 7: Checks
 
-- [ ] T018 Run `npm test` and `npm run build` in `apps/event-reporting/` and `apps/control-panel/`,
+- [X] T018 Run `npm test` and `npm run build` in `apps/event-reporting/` and `apps/control-panel/`,
   then the spec's acceptance scenarios from **Reset demo data** through the launcher, at 320px and
   with the keyboard, with a clean browser console
 

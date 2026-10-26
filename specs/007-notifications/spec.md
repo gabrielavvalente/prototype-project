@@ -46,7 +46,7 @@ cannot decide who hears about the events of their plant.
   an event role; a draft never raises one. When one action would raise several alerts for the
   same person on the same event, they get one: an alert that hands them work first, otherwise the
   one of the latest stage in NT-3 (e.g. a review that closes the event gives the reporter "Event
-  closed", not "Your event was reviewed").
+  closed", not "Your event was reviewed"); when the person turned that one off, they get none.
 - **NT-2** Alerts are of two kinds. **Work** alerts hand the person something to do and are always
   raised: "Event to review", "Root cause analysis assigned to you", "Action plan ready for
   validation", "Action plan not effective" (to the plan owners). **Information** alerts are all the

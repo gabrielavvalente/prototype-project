@@ -14,9 +14,9 @@ reset, and the demo data itself, which every capability's acceptance scenarios s
 - **PD-2** On every start, the organization, the people, the investigation groups and the
   pillars, families and levels are **rewritten** from the demo data below (they cannot be edited in
   the products).
-- **PD-3** Workflow settings, master data, activation choices, the audit trail and Control Panel
-  notifications are loaded from the demo data **once**, then changed only through the Control
-  Panel.
+- **PD-3** Workflow settings, master data, activation choices, the audit trail, Control Panel
+  notifications and the notification settings (submission rules, people's information settings and
+  their Changes) are loaded from the demo data **once**, then changed only through the products.
 - **PD-4** Events, attachments, alerts and record-number counters are loaded from the demo data
   **once**, when there are none; the Event Reporting form lists are refreshed on every start.
 - **PD-5** **Reset demo data** on the Event Reporting start screen (after a confirmation) deletes
@@ -143,8 +143,10 @@ domain (— for Industrial Hygiene).
 
 ### Alerts
 
-Each Manager who can see an event gets an "Event submitted" alert for the two latest submitted
-events of each plant.
+The submission alerts ([notifications](notifications.md) NT-3) of the two latest submitted events
+of each plant: at Lyon, "Event to review" for `SRE-26-0004` to Carla Mendes, Eva Novak and Diego
+Laurent, and "Event submitted" for `TF-26-0007` to Carla, Diego and Lucas Weber. No submission
+rule; every information alert is on, set by nobody.
 
 ## Acceptance scenarios
 

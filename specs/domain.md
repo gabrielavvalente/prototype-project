@@ -81,7 +81,7 @@ A person has, independently:
    |---|---|
    | User | Report events, see the events of their access, receive alerts. |
    | Manager | As User, plus: edit Open events of their plant and pillars, report on behalf of someone else, receive "Event submitted" alerts, be a reviewer. |
-   | Site Admin | See the events of their access (no reporting, no editing), receive alerts, be a reviewer. |
+   | Site Admin | See the events of their access (no reporting, no editing), receive alerts, be a reviewer, manage the notifications of their plants (Control Panel). |
 
 2. **Control Panel roles**: at most one per pillar, each Central (all plants), Cluster (two or more
    plants) or Local (one plant). A Site Admin automatically holds a Local role for every pillar
@@ -187,8 +187,8 @@ wherever the event appears and are the only ones asked "Do you want to further a
 ## Alerts and notifications
 
 - **Alerts** (Event Reporting): a person's list of events that need their attention. Each alert
-  opens its event and can be marked read. The capability that raises an alert defines its type and
-  recipients.
+  opens its event and can be marked read. Who gets which alert, and the settings people and Site
+  Admins choose, are in [notifications](capabilities/notifications.md).
 - **Notifications** (Control Panel): tell a person that someone else changed their setting.
 - Every Control Panel change is written to an **audit** trail (who, when, scope, before → after).
 
@@ -211,6 +211,7 @@ follows the dependencies.
 | Root cause analysis | Event review | [root-cause-analysis](capabilities/root-cause-analysis.md) |
 | Action plan | Root cause analysis | [action-plan](capabilities/action-plan.md) |
 | Validation | Action plan | [validation](capabilities/validation.md) |
+| Notifications (lifecycle alerts, My notifications, Site Admin settings) | Validation, Control Panel workspace | [notifications](capabilities/notifications.md) |
 
 ## Product-wide rules
 

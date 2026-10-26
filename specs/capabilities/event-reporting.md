@@ -7,7 +7,8 @@ workflow an event takes at submission), Event Reporting shell (context, alerts)
 **Status**: built
 
 Anyone with the User or Manager role reports an event in a few minutes, as a draft first if
-needed; submitting gives it a record number, its workflow and alerts the plant's Managers.
+needed; submitting gives it a record number and its workflow, and alerts its reviewers and the
+plant's Managers ([notifications](notifications.md)).
 
 ## Rules
 
@@ -105,12 +106,11 @@ needed; submitting gives it a record number, its workflow and alerts the plant's
   happened before." · "Choose at least one disease." · "Complete immediate action N." (with, on the
   card: "Describe the action.", "Choose a priority.", "Choose 1 to 5 people who did it.").
 - **ER-18** A complete **Submit** gives the record number (domain), copies the workflow
-  ([workflow settings](workflow-settings.md) WF-11), sets the status Open — or Closed when nothing
-  besides Submission is required — and sends "Event submitted" to every Manager who can see the
-  event (the reporting Manager included), and "Event shared with you" to each Shared with person
-  not already alerted.
-- **ER-19** After any save the event's page opens with a banner: "Event <record> was submitted. The
-  Managers of this plant have been alerted." (with "and closed right away (no other phase
+  ([workflow settings](workflow-settings.md) WF-11) and sets the status Open — or Closed when
+  nothing besides Submission is required; the submission alerts are those of
+  [notifications](notifications.md) NT-3.
+- **ER-19** After any save the event's page opens with a banner: "Event <record> was submitted. Its
+  reviewers and the Managers of this plant have been alerted." (with "and closed right away (no other phase
   required)" when Closed, and a **Report another event** link for those who can report) · "Your
   draft was saved on this device. Only you can see it." · "Event <record> was updated."
 
@@ -130,9 +130,10 @@ From freshly reset [demo data](platform-data.md), in the context Automotive Part
 
 1. **Quick report** — Ana Ribeiro (User) creates an event in 3 taps: H&S, TF4, SIP No,
    department and workshop only, title, description, Employee = herself, shift, recurrence No →
-   Submit. *Then* it is Open as `TF-26-0013`, the banner says "Event TF-26-0013 was submitted. The
-   Managers of this plant have been alerted.", and Carla Mendes, Diego Laurent and Lucas Weber
-   each have "Event submitted". (ER-1, ER-8, ER-18, ER-19)
+   Submit. *Then* it is Open as `TF-26-0013`, the banner says "Event TF-26-0013 was submitted. Its
+   reviewers and the Managers of this plant have been alerted.", Carla Mendes, Eva Novak and Diego
+   Laurent each have "Event to review" and Lucas Weber has "Event submitted". (ER-1, ER-8, ER-18,
+   ER-19)
 2. **Classification first** — On a new event, every section but Classification shows "Choose the
    classification first." until a level is chosen. (ER-3)
 3. **TF5 with SIP** — Ana picks TF5 and answers SIP Yes: the level becomes TF4 with a warning.

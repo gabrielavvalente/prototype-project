@@ -14,7 +14,8 @@ notifications, the audit trail and the search.
   pillar.
 - **CPW-2 Pillars**: after signing in, "Hello, <first name>" lists only the pillars the person holds
   a role on, each with their level and plants ("Central · All plants", "Cluster · Lyon, Porto",
-  "Local · Lyon"). Choosing one opens its Workflow tab.
+  "Local · Lyon"). Choosing one opens its Workflow tab. Below them, a Site Admin also sees one
+  **Notifications** card per plant of their access ([notifications](notifications.md) NT-6).
 - **CPW-3 Context and tabs**: every pillar page shows a context bar (pillar with its color, level
   badge, plants) and three tabs: **Workflow**, **Master data**, **Audit**.
 - **CPW-4 Header**: "Control Panel" (back to the pillars), a search box ("Search pillars and master

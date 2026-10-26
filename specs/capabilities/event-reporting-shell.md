@@ -26,7 +26,8 @@ The frame of Event Reporting: choosing where to work, the header and navigation,
 - **ES-5** The header: a Home icon to all applications, **Event Reporting** (opens the event
   list), a search field "Search events by title or record number" (an icon on phones), the
   notifications bell with the number of unread alerts, and the avatar.
-- **ES-6** The avatar opens **Account**: name and role, **Business** (only with access to several),
+- **ES-6** The avatar opens **Account**: name and role, **My notifications**
+  ([notifications](notifications.md) NT-4), **Business** (only with access to several),
   **Plant** (each with its type icon and country flag), the pillar with **Change pillar** (back to
   the start screen) and **Switch user**. Changing business or plant with unsaved changes in the
   form asks "You have unsaved changes in the form. Change anyway? Your changes will be lost.".
@@ -47,7 +48,8 @@ The frame of Event Reporting: choosing where to work, the header and navigation,
   context (the others show when the person switches to their plant or pillar), newest first, each with its event
   and type and a relative time ("just now", "5 min ago", "2h ago", "3d ago", then the date);
   unread ones are marked "Unread". Opening one opens its event and marks it read; **Mark all read**
-  marks them all. Empty: "No notifications yet.".
+  marks them all. Empty: "No notifications yet.". An "Event to review" disappears once another
+  reviewer takes the review ([notifications](notifications.md) NT-3).
 
 ### Search
 
@@ -74,8 +76,9 @@ From freshly reset [demo data](platform-data.md).
    ES-8)
 5. **Scope** — In Curitiba, Felix Tanaka opens the address of a Lyon event: "Event not found.".
    (ES-4)
-6. **Alerts** — Carla's bell shows her unread "Event submitted" alerts; opening one opens the event
-   and marks it read; Mark all read clears the count. (ES-9)
+6. **Alerts** — Carla's bell shows 2 unread: "Event to review" for `SRE-26-0004` and "Event
+   submitted" for `TF-26-0007`; opening one opens the event and marks it read; Mark all read clears
+   the count. (ES-9)
 7. **Search** — Carla searches "TF-26-0003" and presses Enter: the event opens. Searching "spill"
    lists "Coolant spill reached rain drain". Back on Search, her last searches are listed. (ES-10)
 8. **Phone and keyboard** — At 320px the search is an icon and the bottom bar shows; every header

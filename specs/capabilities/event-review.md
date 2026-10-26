@@ -102,9 +102,8 @@ classifies it, assesses its severity, and sends it to its next step or archives 
 
 ### After the decision
 
-- **RV-13** Not valid → **Archived** (final); "Event archived (<reason>)" goes to the reporter, the
-  people it was shared with and the other reviewers, never the reviewer who archived. The steps
-  after Review stay "Not reached yet".
+- **RV-13** Not valid → **Archived** (final), with the alert of [notifications](notifications.md)
+  NT-3. The steps after Review stay "Not reached yet".
 - **RV-14** Valid → the next required step (Root cause analysis when required or asked for) with
   the event In Progress, or **Closed** when nothing else is required.
 - **RV-15** A completed review shows its summary: Reviewer, Reviewed on, Valid event; then either
