@@ -20,14 +20,14 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ## Phase 1: Rules
 
-- [ ] T001 [P] Regions of the plants in `shared/platform/sampleData.js` and the plant criteria in
+- [X] T001 [P] Regions of the plants in `shared/platform/sampleData.js` and the plant criteria in
   `shared/platform/organization.js` (test in `organization.test.js`); "Shared event received" in
   `shared/platform/notifications.js` (Demo data, NT-4)
-- [ ] T002 New `apps/event-reporting/src/logic/sharingHub.js` with `sharingHub.test.js`: `canShare`,
+- [X] T002 New `apps/event-reporting/src/logic/sharingHub.js` with `sharingHub.test.js`: `canShare`,
   `reachPlants`, `namedParts`, `buildPackage`, `shareWarning`, `receivedPackages`, `checkOf`,
   `canCheck`, `startCheck`, `validateLocalAction`, `saveLocalAction`, `setLocalActionStatus`,
   `completeCheck`, `historyOf` (SH-1 to SH-9)
-- [ ] T003 In `apps/event-reporting/src/logic/notifications.js`: the alerts of a share for the
+- [X] T003 In `apps/event-reporting/src/logic/notifications.js`: the alerts of a share for the
   reached plants' Site Admins and Managers, skipping the sharer and switched-off alerts; test in
   `notifications.test.js` (SH-6, NT-1, NT-3)
 

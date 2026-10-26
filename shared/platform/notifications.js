@@ -24,6 +24,7 @@ export const INFORMATION_ALERTS = [
   { key: 'Action plan completed', hint: 'The action plan of an event you reported was completed.' },
   { key: 'Action plan not effective', hint: 'On an event you reported. Plan owners always get it.' },
   { key: 'Event closed', hint: 'An event you reported or that was shared with you was closed.' },
+  { key: 'Shared event received', hint: 'A safety lesson was shared with your plant.' },
 ];
 
 // The order of the lifecycle (NT-3): when one action raises several alerts for one person, the
@@ -42,6 +43,7 @@ export const STAGE_ORDER = [
   'Action plan completed',
   'Action plan not effective',
   'Event closed',
+  'Shared event received',
 ];
 
 export function isInformationAlert(key) {

@@ -3,6 +3,7 @@ import { users } from '../../../../shared/platform/sampleData.js';
 import {
   analysisCompletedCandidates,
   deliverAlerts,
+  sharedAlerts,
   planCompletedCandidates,
   planDeployedCandidates,
   reviewCandidates,
@@ -124,5 +125,16 @@ describe('lifecycle alerts (NT-3)', () => {
       { recipientId: 'user-diego', type: 'Action plan not effective' },
       { recipientId: 'user-ana', type: 'Action plan not effective' },
     ]);
+  });
+});
+
+describe('shared event alerts (SH-6)', () => {
+  it('go to the Site Admins and Managers of each plant reached, not to the sharer', () => {
+    expect(sharedAlerts(['plant-porto', 'plant-curitiba'], { actorId: 'user-diego', users })).toEqual([
+      { recipientId: 'user-lucas', type: 'Shared event received', plantId: 'plant-porto' },
+      { recipientId: 'user-felix', type: 'Shared event received', plantId: 'plant-curitiba' },
+    ]);
+    const off = [{ userId: 'user-lucas', type: 'Shared event received', on: false }];
+    expect(sharedAlerts(['plant-porto'], { actorId: 'user-eva', users, settings: off }).map((alert) => alert.recipientId)).toEqual(['user-diego']);
   });
 });
