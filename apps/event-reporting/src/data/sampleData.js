@@ -68,22 +68,25 @@ export const reference = [
     'Any Fire or Explosion',
     'Any other incident that could cause a serious injury',
   ]),
-  // PROVISIONAL: the environment source names "HPR Type (Environment)" without values (003 FR-025).
+  // SIP types of environment events, from the business (006 review remarks).
   ...simpleList('sipTypeEnv', [
-    'Uncontrolled release to soil or water',
-    'Release to air above permitted limits',
-    'Spill of a hazardous substance outside its containment',
-    'Fire or explosion with environmental impact',
-    'Other event with serious environmental potential',
-  ]),
-  // PROVISIONAL: SPL types are not defined by the industrial risk source (003 FR-026).
-  ...simpleList('splType', [
-    'Fire or explosion',
-    'Loss of containment of a hazardous substance',
-    'Structural or major equipment failure',
-    'Loss of a critical utility (power, gas, water, IT)',
-    'Natural hazard (flood, storm, earthquake)',
-    'Other serious potential loss',
+    'Significant or major spill/leak due to a failure of chemical or fuel tanks',
+    'Significant or major impact due to overfilling/delivery failure or tanker cleaning',
+    'Significant or major spill/leak due to the release of very toxic, toxic or hazardous substances',
+    'Significant or major spill or leak from underground tank',
+    'Significant or major release to air of very toxic, toxic or hazardous substances',
+    'Significant or major release to air (odour, noise etc.) that is likely to cause nuisance',
+    'Illegal waste disposal due to contamination of waste/incorrect segregation',
+    'Contamination of waste received as a raw material (e.g. asbestos)',
+    'Significant land contamination',
+    'Impact to Protected species/habitats or other sensitive receptors',
+    'Potential to create or exacerbate critical environmental risk(s)',
+    'Damaging impact that would be permanent',
+    'Impact that needs specific remediation',
+    'Impact where the environment needs a long time to recover',
+    'Enforcement action by the Regulatory Authority',
+    'Significant financial penalty or cost',
+    'Reputational damage with stakeholders',
   ]),
 ].map((item, index) => ({ ...item, sortOrder: index }));
 

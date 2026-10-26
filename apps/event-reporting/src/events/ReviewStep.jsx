@@ -63,9 +63,10 @@ function archiveRecipients(event, reviewerId) {
 }
 
 // The form starts from the event: the statement from its description, the Environment SIP answer
-// from the submission (003 FR-013, FR-025).
+// from the submission; HCL and SPL start unanswered (003 FR-013, FR-025; 006 review remarks).
 function startingReview(event) {
   const submittedSip = event.riskQuestion?.type === 'SIP' ? event.riskQuestion.answer : null;
+  const question = assessmentFor(event).flagQuestion;
   return {
     decision: null,
     invalidReason: '',
@@ -74,7 +75,7 @@ function startingReview(event) {
     classification: {},
     potential: null,
     actual: null,
-    sipConfirmed: assessmentFor(event).sipQuestion ? submittedSip : null,
+    flagConfirmed: question?.flag === 'SIP' ? submittedSip : null,
     criticalTypeId: '',
     furtherAnalysis: null,
     rcaAssignees: { userIds: [], groupIds: [] },
@@ -117,7 +118,7 @@ function ReviewSummary({ event, masterData }) {
   }
   if (assessment.potential) rows.push({ label: assessment.potentialTitle, value: describeRating(assessment.matrix, review.potential) });
   if (assessment.actual) rows.push({ label: assessment.actualTitle, value: describeRating(assessment.matrix, review.actual) });
-  if (assessment.sipQuestion) rows.push({ label: 'Is this event a SIP?', value: review.sipConfirmed ? 'Yes' : 'No' });
+  if (assessment.flagQuestion) rows.push({ label: assessment.flagQuestion.label, value: review.flagConfirmed ? 'Yes' : 'No' });
   rows.push({ label: 'Critical', value: review.criticalFlags?.join(' · ') || 'No' });
   if (review.criticalTypeId) rows.push({ label: `${typedFlag(event)} type`, value: getLabel(reference, review.criticalTypeId) });
   if (review.furtherAnalysis !== null && review.furtherAnalysis !== undefined) {
@@ -160,7 +161,7 @@ function InvalidFields({ review, set, errorsFor }) {
   );
 }
 
-// The SIP / SPL type, asked inside the block that makes the event SIP or SPL (third review).
+// The SIP type, asked inside the block that makes the event SIP (third review).
 function CriticalType({ event, review, set, errorsFor }) {
   const { reference } = useApp();
   const flag = typedFlag(event);
@@ -184,11 +185,13 @@ function CriticalType({ event, review, set, errorsFor }) {
   );
 }
 
-// Severity or loss: one framed block for the potential (with the SIP / SPL type) and one for the
-// actual outcome; for Environment, the SIP question with its type (003 FR-022 to FR-027).
+// Severity: one framed block for the potential (with the SIP type) and one for the actual outcome;
+// for Environment and Industrial Risk, the SIP, HCL or SPL question (003 FR-022 to FR-027; 006).
+// Only SIP asks a type.
 function SeverityFields({ event, review, set, errorsFor }) {
   const assessment = assessmentFor(event);
   const actualHigh = assessment.actual && review.actual?.band === 'high';
+  const question = assessment.flagQuestion;
   return (
     <>
       {assessment.potential && (
@@ -223,17 +226,25 @@ function SeverityFields({ event, review, set, errorsFor }) {
           )}
         </div>
       )}
-      {assessment.sipQuestion && (
+      {question && (
         <div className="assessment-block">
           <YesNoField
-            id="sipConfirmed"
-            label="Is this event a SIP?"
-            hint="Serious Incident Potential: could it have caused serious harm under slightly different circumstances?"
-            value={review.sipConfirmed}
-            onChange={(sipConfirmed) => set({ sipConfirmed })}
-            errors={errorsFor('sipConfirmed')}
+            id="flagConfirmed"
+            label={question.label}
+            hint={question.hint}
+            value={review.flagConfirmed}
+            onChange={(flagConfirmed) => set({ flagConfirmed })}
+            errors={errorsFor('flagConfirmed')}
           />
-          <CriticalType event={event} review={review} set={set} errorsFor={errorsFor} />
+          {question.flag === typedFlag(event) ? (
+            <CriticalType event={event} review={review} set={set} errorsFor={errorsFor} />
+          ) : (
+            review.flagConfirmed === true && (
+              <p className="message message--error critical-notice" role="status">
+                Critical event: {question.flag}.
+              </p>
+            )
+          )}
         </div>
       )}
     </>
@@ -335,17 +346,16 @@ function ClassificationFields({ event, review, set, errorsFor, masterData }) {
   );
 }
 
-// Title of the severity part: injuries (safety), losses (industrial risk) or the SIP question.
+// Title of the severity part: injuries (safety) or the SIP, HCL or SPL question.
 function severityTitle(assessment) {
-  if (assessment.sipQuestion) return 'Serious incident potential';
-  return assessment.highPotential === 'SPL' ? 'Loss' : 'Severity';
+  return assessment.flagQuestion?.title ?? 'Severity';
 }
 
 // A valid event, in titled parts: statement and lists, severity, and the next step.
 function ValidFields({ event, review, set, errorsFor, masterData }) {
   const assessment = assessmentFor(event);
   const critical = criticalFlagsOf(event, review).length > 0;
-  const hasSeverity = assessment.potential || assessment.actual || assessment.sipQuestion;
+  const hasSeverity = assessment.potential || assessment.actual || assessment.flagQuestion;
   return (
     <>
       <ReviewSection title="Event statement and classification">

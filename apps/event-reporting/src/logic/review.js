@@ -123,7 +123,10 @@ function validateAssessment(review, event, errors) {
   }
   if (assessment.potential && !review.potential) errors.potential = `Rate the ${assessment.potentialTitle.toLowerCase()}.`;
   if (assessment.actual && !review.actual) errors.actual = `Rate the ${assessment.actualTitle.toLowerCase()}.`;
-  if (assessment.sipQuestion && typeof review.sipConfirmed !== 'boolean') errors.sipConfirmed = 'Say whether the event is a SIP.';
+  const question = assessment.flagQuestion;
+  if (question && typeof review.flagConfirmed !== 'boolean') {
+    errors.flagConfirmed = `Say whether the event is ${question.article} ${question.flag}.`;
+  }
   const flag = typedFlag(event);
   if (flag && criticalFlagsOf(event, review).includes(flag) && !review.criticalTypeId) {
     errors.criticalTypeId = `Choose the ${flag} type.`;
@@ -138,7 +141,7 @@ function validateAssessment(review, event, errors) {
 }
 
 // review = { decision, invalidReason, invalidComment, statement, classification, potential,
-// actual, sipConfirmed, criticalTypeId, furtherAnalysis, rcaAssignees: { userIds, groupIds } } —
+// actual, flagConfirmed, criticalTypeId, furtherAnalysis, rcaAssignees: { userIds, groupIds } } —
 // potential / actual are rated cells.
 export function validateReview(review, event, reporterName) {
   const errors = {};
@@ -175,7 +178,7 @@ function decidedFields(event, review) {
     classification: review.classification || {},
     potential: assessment.potential ? review.potential : null,
     actual: assessment.actual ? review.actual : null,
-    sipConfirmed: assessment.sipQuestion ? review.sipConfirmed : null,
+    flagConfirmed: assessment.flagQuestion ? review.flagConfirmed : null,
     criticalFlags,
     criticalTypeId: criticalFlags.includes(typedFlag(event)) ? review.criticalTypeId : '',
     furtherAnalysis: asksFurtherAnalysis(event, review) ? review.furtherAnalysis : null,

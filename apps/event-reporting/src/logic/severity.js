@@ -1,8 +1,8 @@
 // Severity at review and the critical classification (feature 003, second review 2026-10-25).
-// The injury matrix comes from the Severity Level document (006); the loss matrix (Industrial
-// Risk) is a PROVISIONAL placeholder of the same structure until the business provides the real one.
+// The injury matrix comes from the Severity Level document (006); Environment and Industrial Risk
+// answer one Yes / No flag question instead (006 review remarks).
 
-// Score bands of both matrices (Severity Level document, 006). The keys stay low / medium / high so
+// Score bands of the injury matrix (Severity Level document, 006). The keys stay low / medium / high so
 // saved ratings keep their meaning; "high" (Very Critical, 50 or more) raises the critical flags.
 export const BANDS = [
   { key: 'low', label: 'Moderate', min: 2, max: 19 },
@@ -32,21 +32,27 @@ export function bandLabel(key) {
   return BANDS.find((band) => band.key === key)?.label ?? key;
 }
 
-// PROVISIONAL: labels and definitions to be replaced by the Industrial Risk loss matrix.
-export const LOSS_MATRIX = {
-  impactTitle: 'Impact of the loss',
-  durationTitle: 'Duration of the disruption',
-  impacts: [
-    { key: 'severe', label: 'Major', weight: 5, hint: 'Loss of a production line or major equipment, or harm beyond the site' },
-    { key: 'significant', label: 'Significant', weight: 3, hint: 'Equipment damaged and the production of a workshop stopped' },
-    { key: 'minor', label: 'Minor', weight: 1, hint: 'Limited damage; production barely affected' },
-  ],
-  durations: [
-    { key: 'minimal', label: 'Minimal', weight: 2, hint: 'Back to normal within a day' },
-    { key: 'short', label: 'Short term', weight: 5, hint: 'More than a day, less than a week' },
-    { key: 'medium', label: 'Medium term', weight: 10, hint: 'More than a week, less than a month' },
-    { key: 'long', label: 'Long term', weight: 20, hint: 'A month or more' },
-  ],
+// The Yes / No question that flags an Environment or Industrial Risk event (006 review remarks).
+const SIP_QUESTION = {
+  flag: 'SIP',
+  article: 'a',
+  title: 'Serious incident potential',
+  label: 'Is this event a SIP?',
+  hint: 'Serious Incident Potential: could it have caused serious harm under slightly different circumstances?',
+};
+const HCL_QUESTION = {
+  flag: 'HCL',
+  article: 'an',
+  title: 'High consequence loss',
+  label: 'Is this event an HCL?',
+  hint: 'High Consequence Loss: a real event with actual consequences — a major loss for the Group.',
+};
+const SPL_QUESTION = {
+  flag: 'SPL',
+  article: 'an',
+  title: 'Serious potential loss',
+  label: 'Is this event an SPL?',
+  hint: 'Serious Potential Loss: a near miss or moderate event whose potential severity is a weak signal before a major loss.',
 };
 
 export function bandOf(score) {
@@ -84,39 +90,29 @@ export function assessmentFor(event) {
     };
   }
   if (event.familyCode === 'EVE') {
-    return { sipQuestion: true, typeList: 'sipTypeEnv', requiredListIds: ['aspects', 'impacts'] };
+    return { flagQuestion: SIP_QUESTION, typeList: 'sipTypeEnv', requiredListIds: ['aspects', 'impacts'] };
   }
   if (event.familyCode === 'SRE') {
-    return {
-      matrix: LOSS_MATRIX,
-      potential: true,
-      actual: level !== null && level <= 3,
-      potentialTitle: 'Potential loss',
-      actualTitle: 'Actual loss',
-      highPotential: 'SPL',
-      highActual: 'HCL',
-      typeList: 'splType',
-      requiredListIds: ['irCategories'],
-    };
+    // HCL for SRE1–SRE3, SPL for SRE4–SRE5; neither has a type.
+    return { flagQuestion: level !== null && level <= 3 ? HCL_QUESTION : SPL_QUESTION, requiredListIds: ['irCategories'] };
   }
   return { requiredListIds: [] };
 }
 
-// SIP / HCI (safety), SIP (environment), SPL / HCL (industrial risk) from the review's answers.
-// review = { potential, actual, sipConfirmed } where potential / actual are rated cells.
+// SIP / HCI (safety), SIP (environment), HCL or SPL (industrial risk) from the review's answers.
+// review = { potential, actual, flagConfirmed } where potential / actual are rated cells.
 export function criticalFlagsOf(event, review) {
   const assessment = assessmentFor(event);
   const flags = [];
-  if (assessment.sipQuestion && review.sipConfirmed === true) flags.push('SIP');
+  if (assessment.flagQuestion && review.flagConfirmed === true) flags.push(assessment.flagQuestion.flag);
   if (assessment.potential && review.potential?.band === 'high') flags.push(assessment.highPotential);
   if (assessment.actual && review.actual?.band === 'high') flags.push(assessment.highActual);
   return flags;
 }
 
-// The flag that needs a type (SIP or SPL), or null.
+// The flag that needs a type (SIP), or null.
 export function typedFlag(event) {
-  const assessment = assessmentFor(event);
-  return assessment.sipQuestion ? 'SIP' : assessment.highPotential ?? null;
+  return assessmentFor(event).typeList ? 'SIP' : null;
 }
 
 // Only a valid review makes an event critical (red); the reporter's "Could this be a SIP?" answer

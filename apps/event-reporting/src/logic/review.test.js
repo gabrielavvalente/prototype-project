@@ -24,7 +24,7 @@ function envEvent(required) {
 }
 
 function criticalReview() {
-  return { decision: 'valid', statement: 'x', sipConfirmed: true, criticalTypeId: 'sipTypeEnv-1', classification: { aspects: ['a1'], impacts: ['i1'] } };
+  return { decision: 'valid', statement: 'x', flagConfirmed: true, criticalTypeId: 'sipTypeEnv-1', classification: { aspects: ['a1'], impacts: ['i1'] } };
 }
 
 const carla = { id: 'user-carla' };
@@ -95,10 +95,18 @@ describe('review', () => {
     expect(validateReview({ decision: 'invalid', invalidReason: 'Duplicated' }, event, '')).toEqual({});
   });
 
+  it('asks the HCL or SPL answer of an industrial risk event, without a type (006 review remarks)', () => {
+    const sre = (levelCode) => ({ ...makeEvent(['review']), familyCode: 'SRE', levelCode });
+    const review = { decision: 'valid', statement: 'x', classification: { irCategories: ['c1'] } };
+    expect(validateReview(review, sre('SRE3'), '')).toEqual({ flagConfirmed: 'Say whether the event is an HCL.' });
+    expect(validateReview(review, sre('SRE4'), '')).toEqual({ flagConfirmed: 'Say whether the event is an SPL.' });
+    expect(Object.keys(validateReview({ ...review, flagConfirmed: true }, sre('SRE4'), ''))).toEqual(['furtherAnalysis']);
+  });
+
   it('asks "further analyze" only for a critical event whose workflow does not require the analysis (005 remarks)', () => {
     expect(Object.keys(validateReview(criticalReview(), envEvent(['review']), ''))).toEqual(['furtherAnalysis']);
     // Not critical: not asked, and no analysis.
-    const calm = { ...criticalReview(), sipConfirmed: false };
+    const calm = { ...criticalReview(), flagConfirmed: false };
     expect(validateReview(calm, envEvent(['review']), '')).toEqual({});
     expect(leadsToAnalysis(envEvent(['review']), { ...calm, furtherAnalysis: true })).toBe(false);
     const designated = { userIds: [], groupIds: ['group-lyon-hs'] };
