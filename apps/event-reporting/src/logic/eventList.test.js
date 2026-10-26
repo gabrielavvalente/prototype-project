@@ -32,7 +32,8 @@ function makeEvent(id, changes = {}) {
 }
 
 const events = [
-  makeEvent('1', { title: 'Forklift near miss', reportDate: '2026-09-01', riskQuestion: { type: 'SIP', answer: true } }),
+  // Reviewed as critical (SIP): only the review makes an event SIP (005 remarks).
+  makeEvent('1', { title: 'Forklift near miss', status: 'In Progress', reportDate: '2026-09-01', riskQuestion: { type: 'SIP', answer: true }, review: { decision: 'valid', criticalFlags: ['SIP'] } }),
   makeEvent('2', { title: 'Oil leak', familyCode: 'EVE', levelCode: 'EvE4', reporterId: 'user-2', createdBy: 'user-2', reportDate: '2026-09-15' }),
   makeEvent('3', { title: 'Fire in cabinet', familyCode: 'SRE', levelCode: 'SRE3', riskQuestion: { type: 'SRP', answer: true }, reportDate: '2026-10-05', location: { departmentId: 'dep-2', workshopId: 'ws-9', jobId: '', workstationId: '', taskId: '' } }),
   makeEvent('4', { title: 'Draft forklift', status: 'Draft', recordNumber: null, reportDate: '2026-10-20', riskQuestion: { type: 'SIP', answer: true } }),
@@ -81,8 +82,9 @@ describe('applyFilters (FR-030)', () => {
 
   it('filters by reporter, SIP and status', () => {
     expect(filter({ reporterId: 'user-2' })).toEqual(['2']);
-    expect(filter({ sip: 'yes' })).toEqual(['1', '4']);
-    expect(filter({ sip: 'no' })).toEqual(['2', '3']);
+    // The draft's "Could this be a SIP?" Yes is the reporter's view, not a SIP.
+    expect(filter({ sip: 'yes' })).toEqual(['1']);
+    expect(filter({ sip: 'no' })).toEqual(['2', '3', '4']);
     expect(filter({ status: 'Draft' })).toEqual(['4']);
   });
 
@@ -91,7 +93,7 @@ describe('applyFilters (FR-030)', () => {
   });
 
   it('combines filters with search', () => {
-    const filtered = applyFilters(searchEvents(events, 'forklift'), { ...EMPTY_FILTERS, status: 'Open' }, 'user-1');
+    const filtered = applyFilters(searchEvents(events, 'forklift'), { ...EMPTY_FILTERS, status: 'In Progress' }, 'user-1');
     expect(ids(filtered)).toEqual(['1']);
   });
 });

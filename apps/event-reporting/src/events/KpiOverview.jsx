@@ -9,7 +9,7 @@ import EventsByTypeChart from './EventsByTypeChart.jsx';
 export default function KpiOverview({ events, archived, kpis, onOpen }) {
   const actionCounts = countActions(events, localToday());
   const tiles = [
-    { key: 'sip', label: 'Events with SIP', value: kpis.sip, hint: 'Submitted with serious incident potential' },
+    { key: 'sip', label: 'Events with SIP', value: kpis.sip, hint: 'Reviewed as a serious incident potential' },
     { key: 'openActions', label: 'Open actions', value: actionCounts.open, hint: 'Deployed and not yet completed' },
     { key: 'overdueActions', label: 'Overdue actions', value: actionCounts.overdue, hint: 'Past their due date' },
     { key: 'open', label: 'Events in progress', value: kpis.open, hint: 'Submitted and not yet closed' },

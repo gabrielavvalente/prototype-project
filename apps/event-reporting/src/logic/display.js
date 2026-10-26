@@ -2,11 +2,9 @@
 
 import { criticalLabels } from './severity.js';
 
-// Red display: the review's classification once reviewed; before that, the submission's SIP
-// answer or a serious level, as before.
+// Red display: only the review's critical classification (005 remarks).
 export function isCritical(event) {
-  if (event.review?.decision) return criticalLabels(event).length > 0;
-  return criticalLabels(event).length > 0 || getSeverityDots(event.levelCode) >= 3;
+  return criticalLabels(event).length > 0;
 }
 
 // Level 1 → 4 dots (critical) … levels 4 and 5 → 1 dot (low); disease types have no level.
