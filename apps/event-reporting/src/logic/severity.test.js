@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assessmentFor, bandOf, criticalFlagsOf, criticalLabels, INJURY_MATRIX, rate } from './severity.js';
+import { assessmentFor, bandLabel, bandOf, criticalFlagsOf, criticalLabels, INJURY_MATRIX, rate } from './severity.js';
 
 const high = { band: 'high' };
 const low = { band: 'low' };
@@ -51,5 +51,18 @@ describe('critical classification', () => {
     expect(criticalLabels({ ...answeredSip, review: { decision: 'valid', criticalFlags: ['SIP'] } })).toEqual(['SIP']);
     expect(criticalLabels({ ...answeredSip, review: { decision: 'valid', criticalFlags: [] } })).toEqual([]);
     expect(criticalLabels({ ...answeredSip, review: { decision: 'invalid' } })).toEqual([]);
+  });
+
+  it('names the bands Moderate, Critical and Very Critical (006)', () => {
+    expect([2, 19, 20, 30, 49, 50, 100].map((score) => bandLabel(bandOf(score).key))).toEqual([
+      'Moderate',
+      'Moderate',
+      'Critical',
+      'Critical',
+      'Critical',
+      'Very Critical',
+      'Very Critical',
+    ]);
+    expect(INJURY_MATRIX.durations.find((item) => item.key === 'short').hint).toBe('Recovery will take between 1 week and 3 months');
   });
 });

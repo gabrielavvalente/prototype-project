@@ -24,7 +24,7 @@ import {
   validateReview,
 } from '../logic/review.js';
 import { assigneeIds, canPerformAnalysis } from '../logic/rootCause.js';
-import { assessmentFor, criticalFlagsOf, typedFlag } from '../logic/severity.js';
+import { assessmentFor, bandLabel, criticalFlagsOf, typedFlag } from '../logic/severity.js';
 import SeverityMatrix from './SeverityMatrix.jsx';
 import SummaryList from './SummaryList.jsx';
 
@@ -93,7 +93,7 @@ function describeRating(matrix, rating) {
   if (!rating) return '';
   const impact = matrix.impacts.find((item) => item.key === rating.impact).label;
   const duration = matrix.durations.find((item) => item.key === rating.duration).label;
-  return `${rating.score} — ${rating.band[0].toUpperCase()}${rating.band.slice(1)} (${impact} × ${duration})`;
+  return `${rating.score} — ${bandLabel(rating.band)} (${impact} × ${duration})`;
 }
 
 function ReviewSummary({ event, masterData }) {

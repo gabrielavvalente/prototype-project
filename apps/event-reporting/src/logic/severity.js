@@ -1,12 +1,13 @@
 // Severity at review and the critical classification (feature 003, second review 2026-10-25).
-// The injury matrix comes from the safety event source; the loss matrix (Industrial Risk) is a
-// PROVISIONAL placeholder of the same structure until the business provides the real one.
+// The injury matrix comes from the Severity Level document (006); the loss matrix (Industrial
+// Risk) is a PROVISIONAL placeholder of the same structure until the business provides the real one.
 
-// Score bands of both matrices (safety source).
+// Score bands of both matrices (Severity Level document, 006). The keys stay low / medium / high so
+// saved ratings keep their meaning; "high" (Very Critical, 50 or more) raises the critical flags.
 export const BANDS = [
-  { key: 'low', label: 'Low', min: 2, max: 15 },
-  { key: 'medium', label: 'Medium', min: 20, max: 30 },
-  { key: 'high', label: 'High', min: 50, max: 100 },
+  { key: 'low', label: 'Moderate', min: 2, max: 19 },
+  { key: 'medium', label: 'Critical', min: 20, max: 49 },
+  { key: 'high', label: 'Very Critical', min: 50, max: 100 },
 ];
 
 export const INJURY_MATRIX = {
@@ -18,12 +19,18 @@ export const INJURY_MATRIX = {
     { key: 'minor', label: 'Minor', weight: 1, hint: "The impact on the person's life is minimal" },
   ],
   durations: [
-    { key: 'minimal', label: 'Minimal', weight: 2, hint: '1 week or less' },
-    { key: 'short', label: 'Short term', weight: 5, hint: 'More than 1 week, less than 1 month' },
-    { key: 'medium', label: 'Medium term', weight: 10, hint: 'More than 1 month, less than 6 months' },
-    { key: 'long', label: 'Long term / Permanent', weight: 20, hint: '6 months or more, or may never fully recover' },
+    { key: 'minimal', label: 'Minimal', weight: 2, hint: 'Recovery will take 1 week or less' },
+    { key: 'short', label: 'Short term', weight: 5, hint: 'Recovery will take between 1 week and 3 months' },
+    { key: 'medium', label: 'Medium term', weight: 10, hint: 'Recovery will take more than 3 but less than 6 months' },
+    { key: 'long', label: 'Long term / Permanent', weight: 20, hint: 'Recovery will take 6 months or more, or the person may never fully recover' },
   ],
+  note: 'Recovery time is the period from the time of injury until the employee returns close to their original health and normal work ability.',
 };
+
+// The label of a band key ("Very Critical").
+export function bandLabel(key) {
+  return BANDS.find((band) => band.key === key)?.label ?? key;
+}
 
 // PROVISIONAL: labels and definitions to be replaced by the Industrial Risk loss matrix.
 export const LOSS_MATRIX = {
