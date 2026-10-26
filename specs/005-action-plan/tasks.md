@@ -148,21 +148,52 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 6b: Review remarks (2026-10-26) — one event, one action plan; Validation
+
+**Goal**: The plan lists every action of the event (immediate ones included), completes by itself,
+and the reviewer validates it
+
+**Scenarios**: 1–10 (updated in the spec)
+
+- [ ] T022 In `apps/event-reporting/src/logic/actionPlan.js`: counts include the immediate actions;
+  `deployPlan` possible without corrective actions; `finishIfDone` completes the plan by itself
+  (AP-12) after deploying and after a status change, returning the "Action plan ready for
+  validation" recipients when Validation is next; drop `completeBlocker` and the owner's completion;
+  tests in `actionPlan.test.js` (AP-1, AP-9, AP-11, AP-12)
+- [ ] T023 [P] Create `apps/event-reporting/src/logic/validation.js`: `validators(event, users)`,
+  `canValidate`, `validateValidation(answer)` ("Say whether the action plan is effective.",
+  "Explain why it is not effective."), `completeValidation(event, answer, userId, now, ...)` →
+  Closed + "Event closed" to the reporter, or back to Actions + "Action plan not effective" to the
+  owners; in `logic/review.js`, Validation is done when the last validation is effective; tests in
+  `validation.test.js` and `review.test.js` (VAL-1 to VAL-5)
+- [ ] T024 Create `apps/event-reporting/src/events/PlanActions.jsx` (Immediate actions group,
+  read-only, then the corrective `ActionLines`) and use it in `ActionPlanStep.jsx`; remove Complete
+  action plan; "Completed on <date>" (AP-6, AP-12, AP-13)
+- [ ] T025 Create `apps/event-reporting/src/events/ValidationStep.jsx` (the plan read-only, the
+  question, Complete validation, earlier validations, "Validated as effective by …") and show it in
+  `EventSteps.jsx` (VAL-2 to VAL-5, EL-18)
+- [ ] T026 In `apps/event-reporting/src/events/EventDetail.jsx`: history "Action plan completed" (no
+  name) and the validations (AP-13, VAL-5, EL-19)
+
+**Checkpoint**: Scenarios 1–10 pass
+
+---
+
 ## Phase 7: Apply the change to the capabilities
 
-- [X] T019 Create `specs/capabilities/action-plan.md` from `.specify/templates/capability-template.md`
+- [ ] T019 Create `specs/capabilities/action-plan.md` (and `specs/capabilities/validation.md`) from `.specify/templates/capability-template.md`
   with the rules AP-1 to AP-13, the scenarios and the decisions of the spec; replace RCA-12, RCA-13
   and RCA-16 in `specs/capabilities/root-cause-analysis.md`, EL-12, EL-17, EL-18 and EL-19 in
   `specs/capabilities/event-library.md`; in `specs/domain.md` the Steps rule, the Glossary entry
   Action and the capability map (Action plan specified). The capabilities must read as the current
   behavior: no "was", no change history.
-- [X] T020 Check the counts and names of every changed scenario against the demo data
+- [ ] T020 Check the counts and names of every changed scenario against the demo data
 
 ---
 
 ## Phase 8: Checks
 
-- [X] T021 Run `npm test` and `npm run build` in `apps/event-reporting/`, then the spec's acceptance
+- [ ] T021 Run `npm test` and `npm run build` in `apps/event-reporting/`, then the spec's acceptance
   scenarios from **Reset demo data** through the launcher, at 320px and with the keyboard, with a
   clean browser console
   *(2026-10-26: 135 tests and the build pass; scenarios 1–7, 10, 11 and the screen part of 8 run in
