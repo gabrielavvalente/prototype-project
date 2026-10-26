@@ -89,11 +89,10 @@ with its workflow steps.
 - **EL-16** A **draft** has its own page: back, "Draft", the header card, every section entered,
   and a bottom bar with **All events** and, for its author, **Continue draft**.
 - **EL-17** A **submitted** event has one page, its steps: back to events and the record number,
-  a compact header card (pillar, level, status and critical badges, title, key facts on one line)
-  with **Safety Alert** once it exists and **Safety Warning** for the plan owners' draft, for
-  everyone once published ([safety communication](safety-communication.md) SC-4 to SC-7),
+  a compact header card (pillar, level, status and critical badges, title, key facts on one line),
   the **steps menu** — Submission, Review, Root cause analysis, Actions, Validation, each Done,
-  Current step, Not reached yet, Not required or Optional (domain Steps) — and the chosen step. Opening the
+  Current step, Not reached yet, Not required or Optional (domain Steps), then its **Communications**
+  section ([safety communication](safety-communication.md) SC-10) — and the chosen step. Opening the
   event shows its current step (Submission right after submitting, with the banner of the event
   reporting capability).
 - **EL-18** Steps that cannot be opened say "This step is not required for this event." or "This

@@ -117,3 +117,34 @@ export function publishWarning(event, content, userId, now) {
 export function warningToShow(event, lookups, today) {
   return event.safetyWarning?.publishedAt ? event.safetyWarning.content : warningContent(event, lookups, today);
 }
+
+const analysisPossible = (event) =>
+  Boolean(event.rca?.completedAt) || event.review?.furtherAnalysis === true || Boolean(event.workflow?.phases.rootCause?.required);
+
+// Why a document is not there (yet), or null when nothing prevents it.
+function blockedReason(event) {
+  if (!PILLARS_WITH_DOCUMENTS.includes(event.pillarId)) return 'Not for Industrial Hygiene';
+  if (event.status === 'Archived') return 'Not for an archived event';
+  return null;
+}
+
+// The Communications section of the event's steps menu: each document's state text and whether it
+// opens there (SC-10). Returns [{ kind, label, hint, open }].
+export function communicationStates(user, event, groups, users) {
+  const blocked = blockedReason(event);
+  const alert = hasAlert(event)
+    ? { hint: 'Available', open: true }
+    : { hint: blocked ?? 'After the review', open: false };
+  let warning;
+  const state = warningState(event);
+  if (state === 'published') warning = { hint: 'Published', open: true };
+  else if (state === 'draft' && canPublish(user, event, groups, users)) warning = { hint: 'Draft — ready to publish', open: true };
+  else if (state === 'draft') warning = { hint: 'Being prepared by the plan owners', open: false };
+  else if (blocked) warning = { hint: blocked, open: false };
+  else if (event.review?.decision === 'valid' && !analysisPossible(event)) warning = { hint: 'Only after a root cause analysis', open: false };
+  else warning = { hint: 'After the analysis and the action plan', open: false };
+  return [
+    { kind: 'alert', label: 'Safety Alert', ...alert },
+    { kind: 'warning', label: 'Safety Warning', ...warning },
+  ];
+}

@@ -6,11 +6,12 @@ import { findEvent, getByIndex } from '../data/db.js';
 import { investigationGroups } from '../../../../shared/platform/sampleData.js';
 import { canEditEvent, getMenuItems, isEventVisible } from '../logic/access.js';
 import { canOpenOptionalPlan } from '../logic/actionPlan.js';
-import { canSeeWarning, hasAlert } from '../logic/safetyCommunication.js';
+import { communicationStates } from '../logic/safetyCommunication.js';
 import { STEP_LABELS, STEPS, stepStates } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
 import { EventForm } from '../create/EventForm.jsx';
+import CommunicationView from '../communications/CommunicationView.jsx';
 import { EventHeadCard, EventHistory, EventSections, SavedBanner } from './EventDetail.jsx';
 import ActionPlanStep from './ActionPlanStep.jsx';
 import ReviewStep from './ReviewStep.jsx';
@@ -19,9 +20,13 @@ import ValidationStep from './ValidationStep.jsx';
 
 const STATE_HINTS = { done: 'Done', current: 'Current step', upcoming: 'Not reached yet', skipped: 'Not required', optional: 'Optional' };
 
+// The documents that open beside the menu, like steps (SC-10).
+const COMMUNICATION_LABELS = { alert: 'Safety Alert', warning: 'Safety Warning' };
+
 // The steps menu: steps already reached open, an Optional Actions step opens for the plan's owners
 // (005 AP-3); the others are shown but disabled.
 function StepsMenu({ event, activeStep, canOpenOptional }) {
+  const { user, users } = useApp();
   const path = `/events/${event.recordNumber}/steps`;
   return (
     <nav className="steps-menu" aria-label="Workflow steps">
@@ -58,6 +63,43 @@ function StepsMenu({ event, activeStep, canOpenOptional }) {
           );
         })}
       </ol>
+      {/* The Safety Alert and Safety Warning: available ones open here, the others are greyed with
+          when they will be (SC-10). */}
+      <h3 className="steps-menu-heading" id="communications-title">
+        Communications
+      </h3>
+      <ul aria-labelledby="communications-title">
+        {communicationStates(user, event, investigationGroups, users).map((item) => {
+          const content = (
+            <>
+              <span className={`step-marker step-marker--${item.open ? 'available' : 'unavailable'}`} aria-hidden="true">
+                <Icon name="file" size={14} />
+              </span>
+              <span className="step-text">
+                <strong>{item.label}</strong>
+                <span className="field-hint">{item.hint}</span>
+              </span>
+            </>
+          );
+          return (
+            <li key={item.kind}>
+              {item.open ? (
+                <Link
+                  to={`${path}/${item.kind}`}
+                  className="step-link step-link--available"
+                  aria-current={item.kind === activeStep ? 'step' : undefined}
+                >
+                  {content}
+                </Link>
+              ) : (
+                <span className="step-link step-link--unavailable" aria-disabled="true">
+                  {content}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </nav>
   );
 }
@@ -102,13 +144,16 @@ export default function EventSteps() {
   }, [id, user, context]);
 
   useEffect(() => {
-    if (event) document.title = `${STEP_LABELS[step] ?? 'Steps'} — ${event.recordNumber} — Event Reporting`;
+    if (event) document.title = `${STEP_LABELS[step] ?? COMMUNICATION_LABELS[step] ?? 'Steps'} — ${event.recordNumber} — Event Reporting`;
   }, [event, step]);
 
   if (event === undefined) return <p className="page">Loading…</p>;
-  if (event === null || !STEPS.includes(step)) return <NotAllowed reason="notFound" />;
+  if (event === null || (!STEPS.includes(step) && !COMMUNICATION_LABELS[step])) return <NotAllowed reason="notFound" />;
+  const communication = COMMUNICATION_LABELS[step]
+    ? communicationStates(user, event, investigationGroups, users).find((item) => item.kind === step)
+    : null;
 
-  const state = stepStates(event).find((item) => item.step === step).state;
+  const state = communication ? null : stepStates(event).find((item) => item.step === step).state;
   const canOpenOptional = canOpenOptionalPlan(user, event, investigationGroups, users);
   const available = state === 'done' || state === 'current' || (state === 'optional' && canOpenOptional);
 
@@ -131,20 +176,20 @@ export default function EventSteps() {
       )}
 
       <EventHeadCard event={event} compact />
-      {hasAlert(event) && (
-        <nav className="communication-links" aria-label="Safety communication">
-          <Link to={`/communications/${event.recordNumber}/alert`}>Safety Alert</Link>
-          {canSeeWarning(user, event, investigationGroups, users) && (
-            <Link to={`/communications/${event.recordNumber}/warning`}>Safety Warning</Link>
-          )}
-        </nav>
-      )}
 
       <div className="steps-layout">
         <StepsMenu event={event} activeStep={step} canOpenOptional={canOpenOptional} />
         <Paper component="section" withBorder radius="md" p="xl" className="card steps-content" aria-labelledby="step-title">
-          <Title order={2} size="h3" id="step-title">{STEP_LABELS[step]}</Title>
-          {!available && (
+          <Title order={2} size="h3" id="step-title">{STEP_LABELS[step] ?? COMMUNICATION_LABELS[step]}</Title>
+          {communication && !communication.open && (
+            <Alert color="gray" variant="light">
+              {communication.hint}.
+            </Alert>
+          )}
+          {communication?.open && (
+            <CommunicationView key={`${event.id}-${step}`} event={event} kind={step} attachments={attachments} onSaved={setEvent} />
+          )}
+          {!communication && !available && (
             <Alert color="gray" variant="light">
               {state === 'skipped' || state === 'optional' ? 'This step is not required for this event.' : 'This step has not been reached yet.'}
             </Alert>

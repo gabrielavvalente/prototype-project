@@ -72,6 +72,25 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 6: Review remarks — Communications in the steps menu
+
+**Scenarios**: 1, 2, 6, 7
+
+- [X] T010 In `apps/event-reporting/src/logic/safetyCommunication.js`: `communicationStates(user,
+  event, groups, users)` — each document's state text and whether it opens (SC-10); tests in
+  `safetyCommunication.test.js`
+- [X] T011 Move the document view (document, draft photos, Publish, Print) out of
+  `apps/event-reporting/src/communications/CommunicationPage.jsx` into `CommunicationView.jsx`,
+  used by the standalone page and by the event page (SC-10)
+- [X] T012 In `apps/event-reporting/src/events/EventSteps.jsx`: the Communications section of the
+  steps menu, `#/events/:id/steps/alert` and `…/warning` opening the document beside the menu; the
+  header card links removed; styles appended to `apps/event-reporting/src/app.css` (SC-10, EL-17)
+- [X] T013 Apply the remark to `specs/capabilities/safety-communication.md` (SC-10, scenarios,
+  Decisions) and `specs/capabilities/event-library.md` (EL-17); run `npm test`, `npm run build` and
+  the changed scenarios through the launcher, at 320px and with the keyboard, with a clean console
+
+---
+
 ## Phase 4: Apply the change to the capabilities
 
 - [X] T007 Create `specs/capabilities/safety-communication.md` (SC-1 to SC-9, the acceptance

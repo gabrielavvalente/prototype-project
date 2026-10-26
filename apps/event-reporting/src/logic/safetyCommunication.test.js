@@ -6,6 +6,7 @@ import {
   canPublish,
   canReadCommunication,
   canSeeWarning,
+  communicationStates,
   hasAlert,
   nextSteps,
   publishWarning,
@@ -138,5 +139,29 @@ describe('who reads and publishes (SC-3, SC-5, SC-7)', () => {
     const moved = { ...published, actions: [{ ...published.actions[0], dueDate: '2026-11-16' }] };
     expect(warningToShow(moved, lookups, TODAY).actions[0].dueDate).toBe('9 Nov 2026');
     expect(warningToShow(moved, lookups, TODAY).publishedOn).toBe('26 Oct 2026');
+  });
+});
+
+describe('the Communications section of the steps menu (SC-10)', () => {
+  const states = (user, event) =>
+    communicationStates(byId(user), event, investigationGroups, users).map((item) => `${item.label}: ${item.hint}${item.open ? ' (opens)' : ''}`);
+
+  it('says when each document will be available', () => {
+    expect(states('user-ana', sample('TF-26-0003'))).toEqual(['Safety Alert: After the review', 'Safety Warning: After the analysis and the action plan']);
+    const reviewed = { ...sample('TF-26-0003'), status: 'In Progress', review: review({ furtherAnalysis: false }) };
+    expect(states('user-ana', reviewed)).toEqual(['Safety Alert: Available (opens)', 'Safety Warning: Only after a root cause analysis']);
+    expect(states('user-ana', { ...sample('OH-26-0001'), review: review() })).toEqual(['Safety Alert: Not for Industrial Hygiene', 'Safety Warning: Not for Industrial Hygiene']);
+    expect(states('user-ana', { ...sample('TF-26-0001'), status: 'Archived', review: review({ decision: 'invalid' }) })).toEqual([
+      'Safety Alert: Not for an archived event',
+      'Safety Warning: Not for an archived event',
+    ]);
+  });
+
+  it('opens the draft for the plan owners only, then the published Warning for everyone', () => {
+    const event = workedEvent();
+    expect(states('user-diego', event)[1]).toBe('Safety Warning: Draft — ready to publish (opens)');
+    expect(states('user-ana', event)[1]).toBe('Safety Warning: Being prepared by the plan owners');
+    const published = publishWarning(event, warningContent(event, lookups, TODAY), 'user-diego', NOW);
+    expect(states('user-ana', published)[1]).toBe('Safety Warning: Published (opens)');
   });
 });

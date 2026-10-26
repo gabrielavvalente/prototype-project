@@ -77,20 +77,36 @@ anyone.
   browser's print, which can also save it as PDF), and, for people who can open the event, a link
   back to it. Page titles: "Safety Alert — <record> — Event Reporting", "Safety Warning — <record> —
   Event Reporting".
+- **SC-10** On the event's page, the steps menu ends with a **Communications** section: **Safety
+  Alert** and **Safety Warning**, each with its state. An available one opens inside the event page,
+  beside the menu, like a step (its document and, for the Warning draft, the photos and Publish);
+  one that is not available is greyed and cannot be opened:
+
+  | Document | State shown | Opens |
+  |---|---|---|
+  | Safety Alert | "Available" | yes |
+  | Safety Alert | "After the review" — or "Not for an archived event", "Not for Industrial Hygiene" | no |
+  | Safety Warning | "Published" | yes |
+  | Safety Warning | "Draft — ready to publish" (plan owners) | yes |
+  | Safety Warning | "Being prepared by the plan owners" (everyone else, during the draft) | no |
+  | Safety Warning | "After the analysis and the action plan" — or "Only after a root cause analysis" (the review is done and the event has no analysis), "Not for an archived event", "Not for Industrial Hygiene" | no |
 
 ## Acceptance scenarios
 
 From freshly reset [demo data](platform-data.md), in order.
 
 1. **No communication yet** — Ana Ribeiro opens Safety communications at Lyon: "No safety
-   communications yet.". (SC-8)
+   communications yet.". On `TF-26-0003`, the steps menu shows Communications with Safety Alert
+   greyed, "After the review", and Safety Warning greyed, "After the analysis and the action
+   plan"; neither opens. (SC-8, SC-10)
 2. **Alert after review** — Carla Mendes reviews `TF-26-0003` as valid, Potential Severe × Medium
-   term (SIP, type chosen), Actual Minor × Short term, "further analyze" No. *Then* its header card
-   offers Safety Alert;
-   the Alert reads "Safety Alert", `TF-26-0003`, Lyon, Health & Safety, "TF2 — Non-Lost Time
+   term (SIP, type chosen), Actual Minor × Short term, "further analyze" No. *Then* its steps menu
+   shows Communications with Safety Alert "Available" and Safety Warning greyed, "Only after a root
+   cause analysis"; opening the Alert there reads "Safety Alert", `TF-26-0003`, Lyon, Health & Safety, "TF2 — Non-Lost Time
    Accident", Critical "SIP", "Potential severity" "50 — Very Critical (Severe × Medium term)", its
    statement, the immediate action "Area made safe and people informed · High", and Next steps
-   "Actions"; no name appears (not Ana Ribeiro, Tom Baker or Carla Mendes). (SC-2, SC-4, EL-17)
+   "Actions"; no name appears (not Ana Ribeiro, Tom Baker or Carla Mendes). (SC-2, SC-4, SC-10,
+   EL-17)
 3. **Plant-wide** — Carla reviews `EVE-26-0001` as valid. *Then* Diego Laurent (Lyon: Health &
    Safety, Industrial Risk) sees two Safety Alerts in Safety communications and opens the
    Environment one, without a link to the event; Felix Tanaka (Curitiba) sees "No safety
@@ -105,15 +121,18 @@ From freshly reset [demo data](platform-data.md), in order.
    analysis" (its Actions step is Optional). (SC-4)
 6. **Warning draft** — Diego completes the analysis (one 6M cause, Methods › Inadequate procedure;
    one root cause with the corrective action "Deburr the sheet edges" for Ana; learnings "Sharp
-   edges must be deburred before handling") and deploys the plan. *Then* Diego's header card offers Safety Warning, a draft
+   edges must be deburred before handling") and deploys the plan. *Then* Diego's steps menu shows
+   Safety Warning "Draft — ready to publish"; it opens a draft
    with "Draft — only the plan owners see it until it is published.", the cause "Methods ›
    Inadequate procedure", the root cause, the learnings, the action with "On Going" and its due date
    and "3 actions · 2 completed · 0 overdue", and "Photos to include" with the two photos unticked.
-   Ana sees no Safety Warning link and the list has no Warning. (SC-5, SC-6, EL-17)
+   Ana's menu shows Safety Warning greyed, "Being prepared by the plan owners", and the list has
+   no Warning. (SC-5, SC-6, SC-10)
 7. **Publish** — Diego ticks one photo and publishes ("Publish this Safety Warning? Everyone at Lyon
    will be able to read it, and it will no longer change."). *Then* it shows "Published on
-   <today>" and the photo; Lucas Weber and Eva Novak find it in Safety communications; no alert is
-   raised. Diego then moves the action's due date: the Warning keeps the old date. (SC-3, SC-7)
+   <today>" and the photo; Ana's menu now shows Safety Warning "Published"; Lucas Weber and Eva
+   Novak find it in Safety communications; no alert is raised. Diego then moves the action's due
+   date: the Warning keeps the old date. (SC-3, SC-7, SC-10)
 8. **No analysis, no Warning** — Carla deploys the plan of `TF-26-0003` (Review and Actions, no
    analysis) without corrective actions: the event closes, its Alert's Next steps read "None — the
    event is closed.", and it has no Safety Warning. (SC-4, SC-5)
@@ -137,3 +156,4 @@ From freshly reset [demo data](platform-data.md), in order.
 | Pillars | Health & Safety, Environment, Industrial Risk; not Industrial Hygiene | Safety Communication (common template SAF, ENV, IR) |
 | Alerts | Publishing raises no alert | Safety Communication FR-7 (email to the regional office) |
 | Free texts | Statement, actions, causes and learnings are shown as written; the owners check them before publishing | The review already refuses the reporter's name in the statement (RV-11) |
+| On the event | A Communications section of the steps menu, each document Available or greyed with when it will be; it opens inside the event page | User (review remark) |
