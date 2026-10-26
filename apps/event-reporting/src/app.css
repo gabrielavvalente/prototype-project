@@ -4205,3 +4205,14 @@ a.step-link:hover {
   }
 }
 
+
+.validation-history {
+  margin: 0 0 12px;
+  padding-left: 18px;
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+}
+
+.validation-form {
+  margin-top: 20px;
+}

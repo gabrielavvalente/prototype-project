@@ -14,6 +14,7 @@ import { EventHeadCard, EventHistory, EventSections, SavedBanner } from './Event
 import ActionPlanStep from './ActionPlanStep.jsx';
 import ReviewStep from './ReviewStep.jsx';
 import RootCauseStep from './RootCauseStep.jsx';
+import ValidationStep from './ValidationStep.jsx';
 
 const STATE_HINTS = { done: 'Done', current: 'Current step', upcoming: 'Not reached yet', skipped: 'Not required', optional: 'Optional' };
 
@@ -144,11 +145,7 @@ export default function EventSteps() {
           {available && step === 'review' && <ReviewStep key={event.id} event={event} onSaved={setEvent} />}
           {available && step === 'rootCause' && <RootCauseStep key={event.id} event={event} onSaved={setEvent} />}
           {available && step === 'actions' && <ActionPlanStep key={event.id} event={event} onSaved={setEvent} />}
-          {available && step === 'validation' && (
-            <Alert color="blue" variant="light">
-              {STEP_LABELS[step]} comes in a later version of the prototype.
-            </Alert>
-          )}
+          {available && step === 'validation' && <ValidationStep key={event.id} event={event} onSaved={setEvent} />}
         </Paper>
       </div>
     </main>

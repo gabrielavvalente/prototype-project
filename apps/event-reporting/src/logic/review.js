@@ -35,11 +35,13 @@ function isRequired(event, step) {
 }
 
 // Review is done once decided; Root cause analysis once completed (004); Actions once the plan is
-// completed (005).
+// completed (005); Validation once effective (005).
 function isDone(event, step) {
   if (step === 'review') return Boolean(event.review?.decision);
   if (step === 'rootCause') return Boolean(event.rca?.completedAt);
   if (step === 'actions') return Boolean(event.actionPlan?.completedAt);
+  // Validation once the last validation found the plan effective (005 VAL-3).
+  if (step === 'validation') return event.validations?.at(-1)?.effective === true;
   return false;
 }
 

@@ -4,10 +4,9 @@ import {
   addAction,
   allowedStatuses,
   canEditPlan,
-  completeBlocker,
-  completePlan,
   deleteAction,
   deployPlan,
+  isPlanFinished,
   planOwners,
   planSummary,
   setActionStatus,
@@ -76,18 +75,21 @@ describe('action plan lifecycle (005)', () => {
     const event = makeEvent(['review', 'actions'], {
       actions: [action('a1', { assigneeIds: ['user-ana', 'user-diego'] }), action('a2', { assigneeIds: ['user-diego', 'user-felix'] })],
     });
-    const { event: deployed, recipientIds } = deployPlan(event, 'user-carla', NOW, users);
+    const { event: deployed, alerts } = deployPlan(event, 'user-carla', NOW, users);
     expect(deployed.actions.map((item) => item.status)).toEqual(['onGoing', 'onGoing']);
-    expect(deployed.actionPlan).toMatchObject({ deployedBy: 'user-carla', deployedAt: NOW });
+    expect(deployed.actionPlan).toMatchObject({ deployedBy: 'user-carla', deployedAt: NOW, completedAt: null });
     // Felix Tanaka cannot see a Lyon event.
-    expect(recipientIds).toEqual(['user-ana', 'user-diego']);
+    expect(alerts).toEqual([
+      { recipientId: 'user-ana', type: 'Action assigned to you' },
+      { recipientId: 'user-diego', type: 'Action assigned to you' },
+    ]);
   });
 
   it('adds On Going actions after deployment, with an alert', () => {
     const deployed = makeEvent(['review', 'actions'], { actionPlan: { deployedAt: NOW } });
-    const { event, recipientIds } = addAction(deployed, action('a3'), 'user-carla', NOW, users);
+    const { event, alerts } = addAction(deployed, action('a3'), 'user-carla', NOW, users);
     expect(event.actions[0].status).toBe('onGoing');
-    expect(recipientIds).toEqual(['user-ana']);
+    expect(alerts).toEqual([{ recipientId: 'user-ana', type: 'Action assigned to you' }]);
     expect(addAction(makeEvent(['review', 'actions']), action('a4'), 'user-carla', NOW, users).event.actions[0].status).toBe('planned');
   });
 
@@ -108,25 +110,40 @@ describe('action plan lifecycle (005)', () => {
     expect(allowedStatuses(byId('user-ana'), action('a2'), true)).toEqual([]);
   });
 
-  it('summarizes the plan and completes it once every action is finished', () => {
-    let event = makeEvent(['review', 'actions', 'validation'], {
+  it('counts the immediate actions in the plan', () => {
+    const event = makeEvent(['review', 'actions'], {
+      immediateActions: [{ id: 'i1' }],
       actions: [action('a1', { status: 'onGoing' }), action('a2', { status: 'onGoing', dueDate: '2026-10-25' })],
       actionPlan: { deployedAt: NOW },
     });
-    expect(planSummary(event, '2026-10-26')).toEqual({ count: 2, completed: 0, overdue: 1, deployed: true });
-    expect(completeBlocker(event)).toBe('Every action must be Completed or Cancelled, and at least one Completed.');
-    event = setActionStatus(event, 'a1', 'completed', 'user-ana', NOW);
-    event = setActionStatus(event, 'a2', 'cancelled', 'user-carla', NOW);
-    expect(completeBlocker(event)).toBeNull();
-    const completed = completePlan(event, 'user-carla', NOW);
-    expect(completed).toMatchObject({ status: 'In Progress', actionPlan: { completedBy: 'user-carla', completedAt: NOW } });
-    const closing = completePlan({ ...event, workflow: { phases: phases(['review', 'actions']) } }, 'user-carla', NOW);
-    expect(closing.status).toBe('Closed');
+    expect(planSummary(event, '2026-10-26')).toEqual({ count: 3, completed: 1, overdue: 1, deployed: true });
   });
 
-  it('cannot complete before deploying or with only cancelled actions', () => {
-    expect(completeBlocker(makeEvent(['review', 'actions'], { actions: [action('a1')] }))).toBe('Deploy the action plan first.');
+  it('completes by itself with the change that finishes the last action, then goes to Validation', () => {
+    let event = makeEvent(['review', 'actions', 'validation'], {
+      actions: [action('a1', { status: 'onGoing' }), action('a2', { status: 'onGoing' })],
+      actionPlan: { deployedAt: NOW },
+    });
+    let result = setActionStatus(event, 'a1', 'completed', 'user-ana', NOW, users);
+    expect(result.event.actionPlan.completedAt).toBeFalsy();
+    result = setActionStatus(result.event, 'a2', 'cancelled', 'user-carla', NOW, users);
+    expect(result.event).toMatchObject({ status: 'In Progress', actionPlan: { completedBy: 'user-carla', completedAt: NOW } });
+    expect(result.alerts).toEqual([{ recipientId: 'user-carla', type: 'Action plan ready for validation' }]);
+    event = makeEvent(['review', 'actions'], { actions: [action('a1', { status: 'onGoing' })], actionPlan: { deployedAt: NOW } });
+    expect(setActionStatus(event, 'a1', 'completed', 'user-ana', NOW, users).event.status).toBe('Closed');
+  });
+
+  it('completes at deployment when the immediate actions are enough', () => {
+    const event = makeEvent(['review', 'actions'], { immediateActions: [{ id: 'i1' }] });
+    const { event: deployed } = deployPlan(event, 'user-felix', NOW, users);
+    expect(deployed).toMatchObject({ status: 'Closed', actionPlan: { completedAt: NOW } });
+  });
+
+  it('is not finished before deploying, with an open action, or with only cancelled actions', () => {
+    expect(isPlanFinished(makeEvent(['review', 'actions'], { actions: [action('a1', { status: 'completed' })] }))).toBe(false);
+    const open = makeEvent(['review', 'actions'], { actions: [action('a1', { status: 'onGoing' })], actionPlan: { deployedAt: NOW } });
+    expect(isPlanFinished(open)).toBe(false);
     const cancelled = makeEvent(['review', 'actions'], { actions: [action('a1', { status: 'cancelled' })], actionPlan: { deployedAt: NOW } });
-    expect(completeBlocker(cancelled)).not.toBeNull();
+    expect(isPlanFinished(cancelled)).toBe(false);
   });
 });

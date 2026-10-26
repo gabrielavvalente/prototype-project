@@ -155,24 +155,24 @@ and the reviewer validates it
 
 **Scenarios**: 1–10 (updated in the spec)
 
-- [ ] T022 In `apps/event-reporting/src/logic/actionPlan.js`: counts include the immediate actions;
+- [X] T022 In `apps/event-reporting/src/logic/actionPlan.js`: counts include the immediate actions;
   `deployPlan` possible without corrective actions; `finishIfDone` completes the plan by itself
   (AP-12) after deploying and after a status change, returning the "Action plan ready for
   validation" recipients when Validation is next; drop `completeBlocker` and the owner's completion;
   tests in `actionPlan.test.js` (AP-1, AP-9, AP-11, AP-12)
-- [ ] T023 [P] Create `apps/event-reporting/src/logic/validation.js`: `validators(event, users)`,
+- [X] T023 [P] Create `apps/event-reporting/src/logic/validation.js`: `validators(event, users)`,
   `canValidate`, `validateValidation(answer)` ("Say whether the action plan is effective.",
   "Explain why it is not effective."), `completeValidation(event, answer, userId, now, ...)` →
   Closed + "Event closed" to the reporter, or back to Actions + "Action plan not effective" to the
   owners; in `logic/review.js`, Validation is done when the last validation is effective; tests in
   `validation.test.js` and `review.test.js` (VAL-1 to VAL-5)
-- [ ] T024 Create `apps/event-reporting/src/events/PlanActions.jsx` (Immediate actions group,
+- [X] T024 Create `apps/event-reporting/src/events/PlanActions.jsx` (Immediate actions group,
   read-only, then the corrective `ActionLines`) and use it in `ActionPlanStep.jsx`; remove Complete
   action plan; "Completed on <date>" (AP-6, AP-12, AP-13)
-- [ ] T025 Create `apps/event-reporting/src/events/ValidationStep.jsx` (the plan read-only, the
+- [X] T025 Create `apps/event-reporting/src/events/ValidationStep.jsx` (the plan read-only, the
   question, Complete validation, earlier validations, "Validated as effective by …") and show it in
   `EventSteps.jsx` (VAL-2 to VAL-5, EL-18)
-- [ ] T026 In `apps/event-reporting/src/events/EventDetail.jsx`: history "Action plan completed" (no
+- [X] T026 In `apps/event-reporting/src/events/EventDetail.jsx`: history "Action plan completed" (no
   name) and the validations (AP-13, VAL-5, EL-19)
 
 **Checkpoint**: Scenarios 1–10 pass

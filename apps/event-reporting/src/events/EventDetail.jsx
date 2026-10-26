@@ -42,7 +42,12 @@ function buildHistory(event, users) {
     items.push({ label: `Action plan deployed by ${getLabel(users, event.actionPlan.deployedBy)}`, at: event.actionPlan.deployedAt });
   }
   if (event.actionPlan?.completedAt) {
-    items.push({ label: `Action plan completed by ${getLabel(users, event.actionPlan.completedBy)}`, at: event.actionPlan.completedAt });
+    items.push({ label: 'Action plan completed', at: event.actionPlan.completedAt });
+  }
+  for (const validation of event.validations ?? []) {
+    const by = getLabel(users, validation.by);
+    const label = validation.effective ? `Validation: effective — closed by ${by}` : `Validation: not effective — ${validation.reason} (${by})`;
+    items.push({ label, at: validation.at });
   }
   if (event.rca?.completedAt) {
     items.push({ label: `Root cause analysis completed by ${getLabel(users, event.rca.completedBy)}`, at: event.rca.completedAt });
