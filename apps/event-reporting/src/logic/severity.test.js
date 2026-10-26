@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assessmentFor, bandLabel, bandOf, criticalFlagsOf, criticalLabels, INJURY_MATRIX, rate, typedFlag } from './severity.js';
+import { assessmentFor, bandLabel, bandOf, criticalFlagsOf, criticalLabels, INJURY_MATRIX, rate, ratingText, typedFlag } from './severity.js';
 
 const high = { band: 'high' };
 const low = { band: 'low' };
@@ -78,5 +78,12 @@ describe('critical classification', () => {
       'Very Critical',
     ]);
     expect(INJURY_MATRIX.durations.find((item) => item.key === 'short').hint).toBe('Recovery will take between 1 week and 3 months');
+  });
+});
+
+describe('rating text (RV-15)', () => {
+  it('reads score, band, impact and duration', () => {
+    expect(ratingText(INJURY_MATRIX, rate(INJURY_MATRIX, { impact: 'severe', duration: 'medium' }))).toBe('50 — Very Critical (Severe × Medium term)');
+    expect(ratingText(INJURY_MATRIX, null)).toBe('');
   });
 });

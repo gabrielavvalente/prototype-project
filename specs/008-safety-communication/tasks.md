@@ -22,10 +22,10 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Purpose**: The pure functions and their tests
 
-- [ ] T001 [P] Move the rating text to `ratingText(matrix, rating)` in
+- [X] T001 [P] Move the rating text to `ratingText(matrix, rating)` in
   `apps/event-reporting/src/logic/severity.js` (test in `severity.test.js`) and use it in
   `apps/event-reporting/src/events/ReviewStep.jsx` (RV-15, SC-4)
-- [ ] T002 New `apps/event-reporting/src/logic/safetyCommunication.js` with tests in
+- [X] T002 New `apps/event-reporting/src/logic/safetyCommunication.js` with tests in
   `safetyCommunication.test.js`: `hasAlert(event)` (valid review, not Industrial Hygiene),
   `nextSteps(event)`, `alertContent(event, lookups)`, `warningState(event)` (none / draft /
   published), `warningContent(event, lookups)`, `canReadCommunication(user, event)`,
