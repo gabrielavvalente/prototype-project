@@ -20,3 +20,18 @@
   5W1H answers are kept by question position, as before.
 - **Rationale**: The demo data has no saved analysis; analyses made during testing stay readable.
 - **Alternatives considered**: converting old options to new ones (no reliable mapping).
+
+## R3. One Yes / No flag question for Environment and Industrial Risk
+
+- **Decision**: The assessment of an Environment or Industrial Risk event is one `flagQuestion`
+  (`{ flag, label, hint, article }`: SIP for Environment, HCL for SRE1–SRE3, SPL for SRE4–SRE5); the
+  review stores its answer as `flagConfirmed` (was `sipConfirmed`). Only SIP has a type list
+  (`typedFlag` returns `SIP` for Health & Safety and Environment, null for Industrial Risk). The loss
+  matrix and the `splType` list are deleted.
+- **Rationale**: The Environment SIP question already had the required shape (Yes / No, a hint,
+  live badge, required); one code path serves the three flags.
+- **Consequence**: reviews completed during testing before this change show "No" for the
+  Environment SIP question in their summary (their Critical flags are kept); **Reset demo data**
+  clears them. The demo data has no completed review.
+- **Alternatives considered**: keeping `sipConfirmed` as the field name for HCL and SPL (misleading);
+  keeping the loss matrix next to the question (the user removed it).

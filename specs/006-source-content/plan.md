@@ -9,7 +9,9 @@
 A content change: the 5W1H questions and 6M themes in the root cause analysis rules, the injury
 matrix durations and the band names of both matrices in the severity rules, and the domain's
 definitions. No screen, data shape or workflow rule changes besides "Who was injured?" being for
-Health & Safety only. Decisions in [research.md](research.md).
+Health & Safety only. Review remarks: the Industrial Risk loss matrix and SPL types are replaced by
+a Yes / No HCL or SPL question (the same kind as the Environment SIP question), and the Environment
+SIP types get their real list. Decisions in [research.md](research.md).
 
 ## Technical Context
 
@@ -49,8 +51,10 @@ specs/006-source-content/
 ```text
 apps/event-reporting/src/
 ├── logic/rootCause.js        # FIVE_W1H, SIX_M_THEMES content; "Who was injured?" for H&S only
-├── logic/severity.js         # injury durations; band labels and ranges
-├── events/ReviewStep.jsx     # the rating text uses the band label
+├── logic/severity.js         # injury durations; band labels and ranges; the flag question (R3)
+├── logic/review.js           # the flag answer's validation and saved review
+├── data/sampleData.js        # the Environment SIP types; no SPL types
+├── events/ReviewStep.jsx     # the rating text uses the band label; the flag question and summary
 └── events/SeverityMatrix.jsx # the recovery note under the injury matrix
 ```
 

@@ -8,7 +8,8 @@ cd apps/event-reporting && npm test && npm run build
 ```
 
 1. Open Event Reporting through the launcher and press **Reset demo data**.
-2. Run the spec's acceptance scenarios ([spec.md](spec.md#acceptance-scenarios)): 4–6 in the
-   reviews of `TF-26-0003` and `SRE-26-0001`; 1–3 in the analysis of `TF-26-0003` once reviewed
+2. Run the spec's acceptance scenarios ([spec.md](spec.md#acceptance-scenarios)): 4–5 in the
+   reviews of `TF-26-0003`; 6–7 in the reviews of `SRE-26-0001` and `SRE-26-0002` as Carla
+   Martins; 8 in the review of `EVE-26-0001`; 1–3 in the analysis of `TF-26-0003` once reviewed
    with "further analyze" Yes, and of `EVE-26-0001` / `SRE-26-0004` for scenario 2.
 3. Check at 320px and with the keyboard, with a clean browser console.

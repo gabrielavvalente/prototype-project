@@ -63,6 +63,31 @@ description: "Task list for feature 006 Source content"
 
 ---
 
+## Phase 5: Review remarks — HCL / SPL and Environment SIP types
+
+**Scenarios**: 6–8
+
+- [X] T008 In `apps/event-reporting/src/logic/severity.js`: delete `LOSS_MATRIX`; Environment and
+  Industrial Risk get a `flagQuestion` (SIP; HCL for SRE1–SRE3, SPL for SRE4–SRE5) with its label,
+  hint and article (research R3); `criticalFlagsOf` reads `review.flagConfirmed`; `typedFlag` is SIP
+  for Health & Safety and Environment, null for Industrial Risk; tests in `severity.test.js` (RV-7,
+  RV-9)
+- [X] T009 In `apps/event-reporting/src/logic/review.js`: "Say whether the event is a SIP." / "an
+  HCL." / "an SPL." from the flag question; the saved review keeps `flagConfirmed`; tests in
+  `review.test.js` (RV-11)
+- [X] T010 [P] In `apps/event-reporting/src/data/sampleData.js`: the 17 Environment SIP types; delete
+  `splType` (RV-9)
+- [X] T011 In `apps/event-reporting/src/events/ReviewStep.jsx`: the flag question block (nothing
+  selected for HCL / SPL, the submission's answer for SIP), its summary row, no Industrial Risk
+  matrix (RV-7, RV-15)
+- [X] T012 Apply the remarks to `specs/capabilities/event-review.md` (RV-7, RV-8, RV-9, RV-11,
+  RV-15, scenario 7, Decisions) and `specs/domain.md` (HCI in the Glossary, Critical events, Open
+  points); check the changed scenarios' names and counts against the demo data
+- [X] T013 Run `npm test` and `npm run build` in `apps/event-reporting/`, then scenarios 5–8 through
+  the launcher with a clean browser console
+
+---
+
 ## Notes
 
 - Commit after each logical group with Conventional Commits

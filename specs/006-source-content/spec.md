@@ -7,16 +7,19 @@
 **Input**: User description: "Support documents for the missing points" — four documents provided by
 the user on 2026-10-26, kept outside the repository (it is public): *6M* (failure causes and
 guidance), *Analysis Checklist* (5W1H questions), *Severity Level* (injury matrix, updated) and *HCL
-& SPL* (definitions). They replace the draft and outdated content of the product.
+& SPL* (definitions). They replace the draft and outdated content of the product. Review remarks
+(2026-10-26): HCI is "High Consequence Injury"; the Environment SIP types; HCL and SPL are a Yes /
+No answer (HCL for SRE1–SRE3, SPL for SRE4–SRE5), with no type.
 
 **Capabilities**: changed: `specs/capabilities/root-cause-analysis.md` (RCA-10, RCA-11, Content:
-5W1H sections and 6M themes, Decisions), `specs/capabilities/event-review.md` (RV-8, RV-15),
-`specs/domain.md` (Glossary, Critical events, Open points)
+5W1H sections and 6M themes, Decisions), `specs/capabilities/event-review.md` (RV-7, RV-8, RV-9,
+RV-11, RV-15, Decisions), `specs/domain.md` (Glossary, Critical events, Open points)
 
 ## Why
 
-The 5W1H questions and the 6M causes were drafts, and the injury matrix had outdated durations and
-band names; the business has now provided the official content.
+The 5W1H questions and the 6M causes were drafts, the injury matrix had outdated durations and
+band names, and the Industrial Risk loss matrix, the Environment SIP types and the SPL types were
+placeholders; the business has now provided the official content.
 
 ## Decisions
 
@@ -26,7 +29,11 @@ band names; the business has now provided the official content.
 | Wording of the sources | The meaning is kept; obvious typos and cut-off sentences are fixed (list below) | Analysis Checklist, 6M |
 | Severity scope | Unchanged: Potential TF1–TF4, Actual TF1–TF3 | Severity Level requires the level for LTA and NLTA (TF1, TF2) and recommends it for all |
 | "Who was injured?" | Health & Safety events only | Analysis Checklist: "Who was injured (Safety only)" |
-| Still provisional | The loss matrix, the SPL types and the Environment SIP types; the expansion of HCI | Not in the documents |
+| HCL and SPL | A Yes / No answer of the reviewer: "Is this event an HCL?" for SRE1–SRE3, "Is this event an SPL?" for SRE4–SRE5; no loss matrix | User (review remarks); HCL & SPL definitions |
+| HCL / SPL type | None (unlike SIP) | User |
+| HCL / SPL answer when the review opens | Nothing selected; the answer is required | User (the report form asks no HCL / SPL question) |
+| Industrial Risk Categories | Still asked in the review | User |
+| Environment SIP types | The 17 types given by the user | User |
 
 **Fixes made to the sources**: "Summary of inquiry" → "Summary of injury"; "inured person" → "injured
 person"; "occured" → "occurred"; "Expérience" → "Experience"; "at the same time of the event" → "at the
@@ -36,7 +43,9 @@ hazard/consequences"; "Communication information problem" → "Communication / i
 "anormal" → "abnormal"; "Is medical HR adviced required" → "Is medical or HR advice required?"; three
 cut-off checklist items completed ("…relevant to the work being carried out?", "…Permits to work or
 method statements?", "…(details of emergency procedures/actions)"); the guidance paragraphs are split
-into one question each. "CHEAR" and "SHEAR" are kept as written (program names).
+into one question each; "High consequece injury" → "High Consequence Injury"; "Reputational damage
+with stakeholder" → "Reputational damage with stakeholders". "CHEAR" and "SHEAR" are kept as written
+(program names).
 
 ## Rules
 
@@ -70,21 +79,49 @@ into one question each. "CHEAR" and "SHEAR" are kept as written (program names).
   | Materials | Hazardous substances · Explosive dust/vapours · Contact with energy source · Shape, size, weight · Raw materials · Materials containment | Are controls in place to prevent exposure to hazardous materials or energy sources? · Are materials and products stored in a safe condition? · Are the materials or products in an abnormal condition? |
   | Environment | Confined space · Storage conditions · Warning devices · Lighting · Noise · Excessive heat or cold · Fumes, smoke, dust · Climatic conditions · Humidity · Work at height | Did the climatic or workplace conditions cause or contribute to the cause of the incident? |
 
-- **RV-8** *(the injury matrix and the bands)* The injury matrix's durations are Minimal 2 ("Recovery
-  will take 1 week or less"), Short term 5 ("Recovery will take between 1 week and 3 months"),
-  Medium term 10 ("Recovery will take more than 3 but less than 6 months") and Long term / Permanent
-  20 ("Recovery will take 6 months or more, or the person may never fully recover"); its impacts
-  are unchanged. The bands of both matrices are **Moderate** 2–19, **Critical** 20–49 and **Very
-  Critical** 50–100; Very Critical potential makes SIP (SPL), Very Critical actual makes HCI (HCL).
-  A note under the injury matrix: "Recovery time is the period from the time of injury until the
-  employee returns close to their original health and normal work ability." *(was: Short term up to
-  1 month, Medium term 1 to 6 months; bands Low 2–15, Medium 20–30, High 50–100)*
-- **RV-15** *(the rating format)* Ratings read "<score> — <Moderate | Critical | Very Critical>
-  (<impact> × <duration>)". *(was: Low, Medium, High)*
-- **Domain, Glossary and Critical events**: HCL is "High Consequence Loss" (real events, actual
-  consequences: major losses for the Group) and SPL "Serious Potential Loss" (near misses or
-  moderate events, potential severity: weak signals before a major loss); the flags are raised by a
-  **Very Critical** score (50 or more); the expansion of HCI stays an open point.
+- **RV-7** *(the Industrial Risk row)* Industrial Risk: required list Categories; assessment "Is this
+  event an HCL?" ("High Consequence Loss: a real event with actual consequences — a major loss for
+  the Group.") for SRE1–SRE3, "Is this event an SPL?" ("Serious Potential Loss: a near miss or
+  moderate event whose potential severity is a weak signal before a major loss.") for SRE4–SRE5.
+  Yes / No, nothing selected when the review opens. There is no loss matrix. *(was: Potential loss
+  for all levels and Actual loss for SRE1–SRE3 on a provisional loss matrix)*
+- **RV-8** *(the injury matrix and the bands)* The matrix is the injury matrix only (Health &
+  Safety). Its durations are Minimal 2 ("Recovery will take 1 week or less"), Short term 5
+  ("Recovery will take between 1 week and 3 months"), Medium term 10 ("Recovery will take more than
+  3 but less than 6 months") and Long term / Permanent 20 ("Recovery will take 6 months or more, or
+  the person may never fully recover"); its impacts are unchanged. The bands are **Moderate** 2–19,
+  **Critical** 20–49 and **Very Critical** 50–100; Very Critical potential makes SIP, Very Critical
+  actual makes HCI. A note under the matrix: "Recovery time is the period from the time of injury
+  until the employee returns close to their original health and normal work ability." *(was: two
+  matrices; Short term up to 1 month, Medium term 1 to 6 months; bands Low 2–15, Medium 20–30, High
+  50–100)*
+- **RV-9** *(the types)* Only a SIP asks its type; Yes to HCL or SPL raises the flag and the
+  "Critical event" badge without a type. The Environment SIP types are: Significant or major
+  spill/leak due to a failure of chemical or fuel tanks · Significant or major impact due to
+  overfilling/delivery failure or tanker cleaning · Significant or major spill/leak due to the
+  release of very toxic, toxic or hazardous substances · Significant or major spill or leak from
+  underground tank · Significant or major release to air of very toxic, toxic or hazardous
+  substances · Significant or major release to air (odour, noise etc.) that is likely to cause
+  nuisance · Illegal waste disposal due to contamination of waste/incorrect segregation ·
+  Contamination of waste received as a raw material (e.g. asbestos) · Significant land
+  contamination · Impact to Protected species/habitats or other sensitive receptors · Potential to
+  create or exacerbate critical environmental risk(s) · Damaging impact that would be permanent ·
+  Impact that needs specific remediation · Impact where the environment needs a long time to
+  recover · Enforcement action by the Regulatory Authority · Significant financial penalty or cost ·
+  Reputational damage with stakeholders. *(was: SPL types and five provisional Environment types)*
+- **RV-11** *(the messages)* "Say whether the event is an HCL." · "Say whether the event is an
+  SPL." join "Say whether the event is a SIP."; "Rate the potential loss." and "Rate the actual
+  loss." are removed, and so is "Choose the SPL type.".
+- **RV-15** *(the rating format and the Industrial Risk rows)* Ratings read "<score> — <Moderate |
+  Critical | Very Critical> (<impact> × <duration>)". An Industrial Risk review shows "Is this event
+  an HCL?" or "Is this event an SPL?" (Yes / No) instead of ratings, and no type. *(was: Low,
+  Medium, High; Potential / Actual loss ratings and the SPL type)*
+- **Domain, Glossary and Critical events**: HCI is "High Consequence Injury", HCL "High
+  Consequence Loss" (real events, actual consequences: major losses for the Group) and SPL "Serious
+  Potential Loss" (near misses or moderate events, potential severity: weak signals before a major
+  loss). SIP and HCI (Health & Safety) are raised by a **Very Critical** score (50 or more); HCL
+  (SRE1–SRE3) and SPL (SRE4–SRE5) when the reviewer answers Yes; only a SIP needs a type. No
+  expansion is an open point any more.
 
 ## Acceptance scenarios
 
@@ -106,12 +143,19 @@ From freshly reset demo data (`specs/capabilities/platform-data.md`).
 5. **Bands** — Potential Severe × Medium term reads "50, Very Critical" and makes the event SIP;
    Significant × Medium term "30, Critical"; Actual Minor × Short term "5, Moderate"; the completed
    review shows "50 — Very Critical (Severe × Medium term)". (RV-8, RV-15)
-6. **Loss matrix bands** — In the review of `SRE-26-0001`, Major × Long term reads "100, Very
-   Critical" and makes it SPL. (RV-8)
+6. **SPL** — Carla Mendes reviewing `SRE-26-0001` (SRE4) as valid is asked Categories and "Is this event an SPL?" with
+   neither Yes nor No selected, and no matrix. Completing without answering shows "Say whether the
+   event is an SPL.". Yes shows the "Critical event" badge (SPL) and asks no type; the completed
+   review shows "Is this event an SPL?" Yes and Critical SPL, without a type row. (RV-7, RV-9,
+   RV-11, RV-15)
+7. **HCL** — Carla reviewing `SRE-26-0002` (SRE3) is asked "Is this event an HCL?" and no SPL question; No
+   leaves the event not critical. (RV-7)
+8. **Environment SIP types** — Reviewing `EVE-26-0001`, Yes to "Is this event a SIP?" asks the SIP
+   type, which offers 17 types starting "Significant or major spill/leak due to a failure of
+   chemical or fuel tanks" and ending "Reputational damage with stakeholders". (RV-9)
 
 ## Out of scope
 
-- The Industrial Risk loss matrix content, the SPL and Environment SIP type lists (still
-  provisional), and the meaning of HCI (no source yet).
 - Changing the severity scope (Potential TF1–TF4, Actual TF1–TF3) and the TG / severity rate
   formula of the Severity Level document (not used by the product).
+- An HCL / SPL question on the report form (it keeps its SRP question).
