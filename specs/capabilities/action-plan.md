@@ -43,8 +43,8 @@ deploy them, assignees carry them out, and the plan completes by itself, which m
 ### Actions
 
 - **AP-4** A corrective action has: description, assignees (1 to 5 people whose access includes the event's
-  plant and pillar), due date, priority (Emergency, High, Medium, Low), location — department and
-  workshop of the event's plant, filled from the event and adjustable — **Notify maintenance**
+  plant and pillar), due date, priority (Emergency, High, Medium, Low), the event's location (kept
+  with the action, not asked), **Notify maintenance**
   (Yes / No, required), and optionally the why of the 5 Why it comes from (only when the event has
   an analysis). All but the why are required; the action popup's button is **Create** (Save when
   editing).
@@ -93,13 +93,13 @@ Actions and Validation; `TF-26-0002` (TF3, Lyon) requires Review only; both have
 action ("Area made safe and people informed") and the reviewers Carla Mendes, Eva Novak and Diego
 Laurent.
 
-1. **Owner without analysis** — Carla reviews `TF-26-0005` as valid, "further analyze" No. *Then*
+1. **Owner without analysis** — Carla reviews `TF-26-0005` as valid and rates it below High (not critical, so "Do you want to further analyze?" is not asked). *Then*
    the current step is Actions: "1 action · 1 completed · 0 overdue · Not deployed", the immediate
    action under Immediate actions, Add action and Deploy action plan for Carla; Diego sees the plan
    read-only. (AP-1, AP-2, AP-6, AP-11)
 2. **Prepare** — Carla adds "Fix the ladder storage rack": assignees Ana Ribeiro and Diego Laurent,
-   due date in two weeks, High, location filled with the event's department and workshop, Notify
-   maintenance Yes → Create. *Then* the line shows Planned, "Maintenance", High and both assignees.
+   due date in two weeks, High, Notify maintenance Yes → Create (no location is asked: the action
+   keeps the event's). *Then* the line shows Planned, "Maintenance", High and both assignees.
    Create with no assignee is refused with "Choose 1 to 5 assignees.". (AP-4, AP-6)
 3. **Deploy** — Carla adds a second action assigned to Diego Laurent only, due yesterday, then Deploy
    action plan. *Then* both are On Going, the second also Overdue; Ana and Diego each get one
@@ -115,11 +115,12 @@ Laurent.
    "Action plan ready for validation", and the history shows "Action plan deployed by Carla Mendes"
    and "Action plan completed". (AP-7, AP-12, AP-13)
 7. **Immediate actions are enough** — Felix Tanaka reviews `TF-26-0010` (TF2, Curitiba: Review and
-   Actions; one immediate action) as valid, "further analyze" No, then Deploy action plan without
+   Actions; one immediate action) as valid, rated below High, then Deploy action plan without
    any corrective action. *Then* the plan completes at once and the event is Closed. (AP-9, AP-12)
 8. **Optional plan** — Carla takes the review of `TF-26-0002`: its Actions step shows Optional and
    she can open it, with its immediate action listed; she adds a corrective action, then completes
-   the review as valid with "further analyze" No. *Then* the event is In Progress at Actions
+   the review as valid, rated below High (not asked to analyze further). *Then* the event is In
+   Progress at Actions
    instead of Closed; after deploying and completing the action, the plan completes and the event
    is Closed (no Validation). Ana sees the Actions step of `TF-26-0006` as "This step is not
    required for this event.". (AP-3, AP-12, EL-17)
@@ -149,3 +150,4 @@ Laurent.
 | Overdue | Badge and KPIs only, no alert | Action Plan US-AP-06 (email escalation) |
 | Plan when Actions is not required | Optional for the owners; once it has an action, the event goes through Actions | No rule in the sources |
 | Key learnings | In the root cause analysis | Action Plan US-AP-01 (in the plan) |
+| Location of an action | The event's location, not asked | Safety FR-22 (department and workshop, adjustable) |

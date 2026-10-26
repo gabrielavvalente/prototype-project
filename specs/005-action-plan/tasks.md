@@ -179,6 +179,27 @@ and the reviewer validates it
 
 ---
 
+## Phase 6c: Review remarks, second round (2026-10-26)
+
+**Goal**: Further analysis only for red events; one Standard and one Hazard; no location in the
+action popup; the analyst lands on Actions
+
+**Scenarios**: 15–17, and 1, 2, 9, 10 as updated
+
+- [X] T027 In `apps/event-reporting/src/logic/review.js`: `asksFurtherAnalysis(event, review)` only
+  for a critical event whose workflow does not require the analysis; `SINGLE_CHOICE_LISTS`
+  (standards, hazards) with "Choose a value."; tests in `review.test.js` (RV-6, RV-10, RV-11)
+- [X] T028 In `apps/event-reporting/src/events/ReviewStep.jsx`: a single Select for Standards and
+  Hazards; the question follows the live answers (RV-6, RV-10)
+- [X] T029 In `apps/event-reporting/src/logic/actions.js` and `events/ActionModal.jsx`: the action
+  keeps the event's location, no location field; tests in `actions.test.js` (AP-4)
+- [X] T030 In `apps/event-reporting/src/events/RootCauseStep.jsx`: after completing, open the Actions
+  step when it is the current step (RCA-16)
+- [X] T031 Update the review, root cause analysis and action plan capabilities and their scenarios
+  (no "further analyze No" for events that are not red)
+
+---
+
 ## Phase 7: Apply the change to the capabilities
 
 - [X] T019 Create `specs/capabilities/action-plan.md` (and `specs/capabilities/validation.md`) from `.specify/templates/capability-template.md`

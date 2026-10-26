@@ -11,6 +11,7 @@ user on 2026-10-26.
 
 **Capabilities**: new: `specs/capabilities/action-plan.md`, `specs/capabilities/validation.md`;
 changed:
+`specs/capabilities/event-review.md` (RV-6, RV-10, RV-11),
 `specs/capabilities/root-cause-analysis.md` (RCA-12, RCA-13, RCA-16),
 `specs/capabilities/event-library.md` (EL-12, EL-17, EL-18, EL-19), `specs/domain.md` (Steps,
 Glossary, capability map)
@@ -37,6 +38,9 @@ only say they come later, and the actions created in the analysis go nowhere.
 | Overdue | Overdue badge and KPIs only; no alert (no server to send it on time) | Action Plan US-AP-06 (email escalation) |
 | Action plan when Actions is not required | The step stays visible as optional for the owner until the event closes; once the plan has an action, the event goes through Actions | Sources: the plant may choose an action plan; no rule given |
 | Key learnings | Stay in the root cause analysis | Action Plan US-AP-01 (in the plan) |
+| Further analysis | Asked only for a critical (red) event whose workflow does not require the analysis | User's remark (was asked for every event) |
+| Standards and Hazards in the review | One value each | User's remark |
+| Location of an action | The event's location, not asked | Safety FR-22 (department and workshop, adjustable) |
 
 ## Rules
 
@@ -63,8 +67,8 @@ only say they come later, and the actions created in the analysis go nowhere.
 **Actions**
 
 - **AP-4** A corrective action has: description, assignees (1 to 5 people whose access includes the event's
-  plant and pillar), due date, priority (Emergency, High, Medium, Low), location — department and
-  workshop of the event's plant, filled from the event and adjustable — **Notify maintenance**
+  plant and pillar), due date, priority (Emergency, High, Medium, Low), the event's location (kept
+  with the action, not asked), **Notify maintenance**
   (Yes / No, required), and optionally the why of the 5 Why it comes from (only when the event has
   an analysis). All but the why are required; the action popup's button is **Create** (Save when
   editing).
@@ -133,8 +137,18 @@ only say they come later, and the actions created in the analysis go nowhere.
   is deployed; the analysis lists them under 5 Why as before and they are not required to complete
   the analysis. *(was: actions with the core fields, to be used later by the Action plan)*
 - **RCA-16** Completing the analysis moves the event to its next required step — Actions when the
-  workflow requires it or the plan has actions (AP-3) — or closes it when none is left. *(was:
-  next required step or Closed)*
+  workflow requires it or the plan has actions (AP-3) — or closes it when none is left; when it is
+  Actions, the analyst is taken to the Actions step. *(was: next required step or Closed, staying
+  on the analysis)*
+- **RV-6** *(the classification part)* Standards and Hazards take **one value** each (a searchable
+  single choice); the other lists stay multiple. *(was: several values)*
+- **RV-10** "Do you want to further analyze?" is asked only for a **critical** event (red: SIP, HCI,
+  SPL or HCL from the review's answers) whose workflow does not already require Root cause
+  analysis, with Yes proposed; otherwise it is not asked and the event does not go to the analysis
+  unless its workflow requires it. *(was: asked for every event whose workflow does not require the
+  analysis)*
+- **RV-11** *(one message)* A missing Standard or Hazard says "Choose a value."; the other lists
+  still say "Choose at least one value.". *(was: "Choose at least one value." for every list)*
 - **EL-12** **Open actions** counts the deployed actions not Completed or Cancelled, and a fifth
   number **Overdue actions** counts those that are Overdue (AP-5), both in the events of the
   context and following the search and filters; each opens the Events page narrowed to their
@@ -158,13 +172,13 @@ requires Review, Actions and Validation; `TF-26-0002` (TF3, Lyon) requires Revie
 one immediate action ("Area made safe and people informed") and the reviewers Carla Mendes, Eva
 Novak and Diego Laurent.
 
-1. **Owner without analysis** — Carla reviews `TF-26-0005` as valid, "further analyze" No. *Then*
+1. **Owner without analysis** — Carla reviews `TF-26-0005` as valid and rates it below High (not critical, so "Do you want to further analyze?" is not asked). *Then*
    the current step is Actions: "1 action · 1 completed · 0 overdue · Not deployed", the immediate
    action under Immediate actions, Add action and Deploy action plan for Carla; Diego sees the plan
    read-only. (AP-1, AP-2, AP-6, AP-11)
 2. **Prepare** — Carla adds "Fix the ladder storage rack": assignees Ana Ribeiro and Diego Laurent,
-   due date in two weeks, High, location filled with the event's department and workshop, Notify
-   maintenance Yes → Create. *Then* the line shows Planned, "Maintenance", High and both assignees.
+   due date in two weeks, High, Notify maintenance Yes → Create (no location is asked: the action
+   keeps the event's). *Then* the line shows Planned, "Maintenance", High and both assignees.
    Create with no assignee is refused with "Choose 1 to 5 assignees.". (AP-4, AP-6)
 3. **Deploy** — Carla adds a second action assigned to Diego Laurent only, due yesterday, then Deploy
    action plan. *Then* both are On Going, the second also Overdue; Ana and Diego each get one
@@ -190,11 +204,12 @@ Novak and Diego Laurent.
    step shows "Validated as effective by Carla Mendes on …". Diego sees the Validation step
    read-only. (AP-9, AP-12, VAL-1, VAL-3)
 9. **Immediate actions are enough** — Felix Tanaka reviews `TF-26-0010` (TF2, Curitiba: Review and
-   Actions; one immediate action) as valid, "further analyze" No, then Deploy action plan without
+   Actions; one immediate action) as valid, rated below High, then Deploy action plan without
    any corrective action. *Then* the plan completes at once and the event is Closed. (AP-9, AP-12)
 10. **Optional plan** — Carla takes the review of `TF-26-0002`: its Actions step shows Optional and
     she can open it, with its immediate action listed; she adds a corrective action, then completes
-    the review as valid with "further analyze" No. *Then* the event is In Progress at Actions
+    the review as valid, rated below High (not asked to analyze further). *Then* the event is In
+    Progress at Actions
     instead of Closed; after deploying and completing the action, the plan completes and the event
     is Closed (no Validation). Ana sees the Actions step of `TF-26-0006` as "This step is not
     required for this event.". (AP-3, AP-12, EL-17)
@@ -209,6 +224,14 @@ Novak and Diego Laurent.
     this prototype.". (AP-6)
 14. **Phone and keyboard** — At 320px the action lines wrap and the popups fit; every control works
     with the keyboard. (Domain)
+
+15. **Further analysis only when red** — Carla reviews `TF-26-0006` (TF4): with Potential Minor ×
+    Minimal (Low) "Do you want to further analyze?" is not shown; with Severe × Long term (High,
+    SIP) it appears, proposing Yes. (RV-10)
+16. **One Standard, one Hazard** — In the same review, Standards and Hazards each take a single
+    value; leaving Standards empty says "Choose a value.". (RV-6, RV-11)
+17. **On to Actions** — When Diego completes the analysis of `TF-26-0003`, the page opens its
+    Actions step. (RCA-16)
 
 ## Out of scope
 

@@ -24,7 +24,8 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 ### Designation (in the review)
 
 - **RCA-1** When a valid review leads to Root cause analysis (the event's workflow requires it, or
-  the reviewer answered Yes to "Do you want to further analyze?"), the review asks **Who will
+  the reviewer answered Yes to "Do you want to further analyze?", asked for critical events), the
+  review asks **Who will
   perform the root cause analysis?**: a required, searchable multiple choice in two groups —
   *Users* (people of any event role whose access includes the event's plant and pillar, the
   reviewer included) and *Groups* (investigation groups covering the event's plant and pillar).
@@ -111,7 +112,7 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
   nothing at all is saved (not even the other parts) and each missing part shows its message.
   Completing records who and when and moves the event to its next required step (In Progress) —
   Actions when the workflow requires it or the plan has actions (AP-3) — or closes it when none is
-  left.
+  left; when it is Actions, the analyst is taken to the Actions step.
 - **RCA-17** A completed analysis shows "Completed by <name> on <date>"; the event history shows
   "Root cause analysis completed by <name>".
 
@@ -159,18 +160,20 @@ From freshly reset [demo data](platform-data.md). Carla Mendes is a reviewer of 
    (RCA-1, RCA-3, RCA-4)
 2. **Alerts** — Eva Novak, Ana Ribeiro and Diego Laurent have one "Root cause analysis assigned to
    you" each; Carla has none. (RCA-2)
-3. **Reviewer stays on the summary** — Carla reviews `TF-26-0002` as valid, "further analyze"
-   Yes, and designates only Diego Laurent. *Then* she stays on the review summary.
+3. **Reviewer stays on the summary** — Carla reviews `TF-26-0002` as valid with Potential Severe ×
+   Medium term (SIP, type chosen), "further analyze" Yes, and designates only Diego Laurent. *Then* she stays on the review summary.
    (RCA-4)
-4. **Not asked** — Carla reviews `TF-26-0006` with "further analyze" No (workflow not requiring
-   the analysis). *Then* the designation question is not shown. (RCA-1)
+4. **Not asked** — Carla reviews `TF-26-0006` as valid with Potential Minor × Minimal (not critical,
+   workflow not requiring the analysis): neither "further analyze" nor the designation is asked.
+   (RCA-1)
 5. **Overview and immediate actions** — Diego opens `TF-26-0003`, Root cause analysis: statement
    pre-filled, immediate actions as compact lines, every part Not started, 5W1H collapsed, 5 Why
    disabled. Add immediate action → Create with an empty card is refused; complete it → Create;
    Save. *Then* the Submission step lists the new immediate action and the history shows
    "Immediate actions updated in the root cause analysis by Diego Laurent". (RCA-8, RCA-9)
 6. **5W1H** — Expand 5W1H, open "What happened?", choose Yes. *Then* 13 numbered questions appear;
-   No hides them. Carla reviews `EVE-26-0001` as valid, "further analyze" Yes, designating
+   No hides them. Carla reviews `EVE-26-0001` as valid, confirming it is a SIP (type chosen),
+   "further analyze" Yes, designating
    herself: its 5W1H has no "Who was injured?". (RCA-10)
 7. **6M and the 5 Why gate** — Tick Management › Lack of Resources. *Then* card C1 asks "How did
    "Lack of Resources" contribute to the event occurrence?" and 5 Why stays disabled; answer it.
@@ -188,8 +191,9 @@ From freshly reset [demo data](platform-data.md). Carla Mendes is a reviewer of 
    (RCA-12, RCA-13)
 10. **Save and complete** — Save, leave and come back: unchanged. Empty the learnings → Complete
     analysis is refused with Learnings flagged. Write them → Complete. *Then* Actions is the
-    current step, the step is read-only with "Completed by Diego Laurent on …", and the history
-    shows "Root cause analysis completed by Diego Laurent". (RCA-14 to RCA-17)
+    current step and Diego is taken to it; back on the analysis, it is read-only with "Completed by
+    Diego Laurent on …", and the history shows "Root cause analysis completed by Diego Laurent".
+    (RCA-14 to RCA-17)
 11. **Readers** — Lucas Weber (event access at Lyon and Porto; member only of the electrical
     team, which was not designated) opens the step while it is current: every
     field is read-only, but he can expand 5W1H and switch sections and themes. (RCA-7)

@@ -36,7 +36,7 @@ classifies it, assesses its severity, and sends it to its next step or archives 
      description ("Starts from the reported description: rewrite it to be shared. Do not name the
      reporter."), and the classification lists of the event's pillar with the values available at
      its plant ([master data](master-data.md) MD-10; Body Parts grouped by category, coded values
-     as "<code> — <name>").
+     as "<code> — <name>"). Standards and Hazards take one value each; the other lists several.
   2. **Severity** / **Loss** / **Serious incident potential** (by pillar, below).
   3. **Next step** — "Do you want to further analyze?" and the root cause analysis designation
      ([root cause analysis](root-cause-analysis.md) RCA-1).
@@ -76,13 +76,15 @@ classifies it, assesses its severity, and sends it to its next step or archives 
   - SPL types *(provisional)*: Fire or explosion · Loss of containment of a hazardous substance ·
     Structural or major equipment failure · Loss of a critical utility (power, gas, water, IT) ·
     Natural hazard (flood, storm, earthquake) · Other serious potential loss.
-- **RV-10** "Do you want to further analyze?" is asked only when the workflow does not already
-  require Root cause analysis; for a critical event Yes is proposed ("Proposed for a critical
-  event: Yes opens a root cause analysis."). Yes makes Root cause analysis a required step.
+- **RV-10** "Do you want to further analyze?" is asked only for a critical (red) event (RV-9) whose
+  workflow does not already require Root cause analysis, with Yes proposed ("Proposed for a
+  critical event: Yes opens a root cause analysis."); Yes makes Root cause analysis a required
+  step. Otherwise it is not asked, and the event goes to the analysis only when its workflow
+  requires it.
 - **RV-11** Completing with something missing saves nothing and shows each message next to its
   field: "Say whether the event is valid." · "Choose why the event is not valid." · "Explain what
   makes the report of bad quality." · "Write the event statement." · "Do not name the reporter in
-  the event statement." (the reporter's full name, ignoring case) · "Choose at least one value." ·
+  the event statement." (the reporter's full name, ignoring case) · "Choose a value." (Standards, Hazards) · "Choose at least one value." (the other lists) ·
   "Rate the potential severity." (or actual severity / potential loss / actual loss) · "Say
   whether the event is a SIP." · "Choose the SIP type." / "Choose the SPL type." · "Say whether the
   event should be analyzed further." · "Choose who will perform the root cause analysis.".
@@ -118,7 +120,8 @@ Mendes, Eva Novak and Diego Laurent.
    Ana, Eva and Diego get "Event archived (Bad quality)", Carla does not. (RV-5, RV-11, RV-13)
 3. **Statement** — On `TF-26-0003`, Diego writing "Ana Ribeiro slipped" is refused with "Do not name the
    reporter in the event statement.". (RV-11)
-4. **Safety assessment** — Standards, Hazards, Body Parts and Injuries are required (TF2). Potential
+4. **Safety assessment** — Standards and Hazards (one value each), Body Parts and Injuries are
+   required (TF2). Potential
    Severe × Medium term = 50 High → SIP, the "Critical event" badge and a required SIP type; Actual
    Minor × Short term = 5 Low. "Do you want to further analyze?" proposes Yes. (RV-7 to RV-10)
 5. **Only available values** — After Carla deactivates Hazard A1 for Lyon in the Control Panel, A1
@@ -127,8 +130,9 @@ Mendes, Eva Novak and Diego Laurent.
    (starting from No, the submission's answer); Yes asks the SIP type. (RV-7, RV-9)
 7. **Industrial Risk** — Reviewing `SRE-26-0001` (SRE4) asks Categories and Potential loss only;
    Major × Long term makes it SPL with a type. (RV-7, RV-9)
-8. **Valid, nothing else required** — `TF-26-0006` (TF4, Review only) reviewed valid with "further
-   analyze" No → Closed. (RV-14)
+8. **Valid, nothing else required** — `TF-26-0006` (TF4, Review only) reviewed valid with Potential
+   Minor × Minimal (Low): "Do you want to further analyze?" is not asked → Closed. With Severe ×
+   Long term instead, the event is SIP and the question appears, proposing Yes. (RV-10, RV-14)
 9. **Summary and history** — The completed review of `TF-26-0003` shows its summary rows; the
    Submission step's history shows "Review taken by Diego Laurent" and "Review completed — valid";
    the submission is read-only. (RV-15, RV-16)
