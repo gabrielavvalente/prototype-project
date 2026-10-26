@@ -4454,3 +4454,25 @@ a.step-link:hover {
     overflow-x: auto;
   }
 }
+
+/* Safety Warning (008 remarks): photos next to the header, below it on phones; the badge detail. */
+.communication-head--with-photos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 16rem);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.communication-head--with-photos .communication-photos {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.communication-detail {
+  color: var(--color-muted);
+}
+
+@media (max-width: 767px) {
+  .communication-head--with-photos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

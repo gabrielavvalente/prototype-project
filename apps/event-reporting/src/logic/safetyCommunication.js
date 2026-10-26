@@ -8,7 +8,7 @@ import { planOwners, planSummary } from './actionPlan.js';
 import { getLabel } from './lookups.js';
 import { STEP_LABELS, stepStates } from './review.js';
 import { causeName, SIX_M_THEMES } from './rootCause.js';
-import { assessmentFor, ratingText } from './severity.js';
+import { assessmentFor, bandLabel, ratingText } from './severity.js';
 
 const PILLARS_WITH_DOCUMENTS = ['pillar-hs', 'pillar-env', 'pillar-ir'];
 
@@ -50,12 +50,26 @@ export function canPublish(user, event, groups, users) {
   return warningState(event) === 'draft' && planOwners(event, groups, users).includes(user.id);
 }
 
+// A rating as a badge "<score> — <band>" in its band's color and its "(<impact> × <duration>)".
+function ratingRow(label, matrix, rating) {
+  if (!rating) return { label, value: '—' };
+  const impact = matrix.impacts.find((item) => item.key === rating.impact).label;
+  const duration = matrix.durations.find((item) => item.key === rating.duration).label;
+  return {
+    label,
+    value: ratingText(matrix, rating),
+    band: rating.band,
+    badge: `${rating.score} — ${bandLabel(rating.band)}`,
+    detail: `(${impact} × ${duration})`,
+  };
+}
+
 function severityRows(event) {
   const assessment = assessmentFor(event);
   const review = event.review;
   const rows = [];
-  if (assessment.potential) rows.push({ label: assessment.potentialTitle, value: ratingText(assessment.matrix, review.potential) || '—' });
-  if (assessment.actual) rows.push({ label: assessment.actualTitle, value: ratingText(assessment.matrix, review.actual) || '—' });
+  if (assessment.potential) rows.push(ratingRow(assessment.potentialTitle, assessment.matrix, review.potential));
+  if (assessment.actual) rows.push(ratingRow(assessment.actualTitle, assessment.matrix, review.actual));
   if (assessment.flagQuestion) rows.push({ label: assessment.flagQuestion.label, value: review.flagConfirmed ? 'Yes' : 'No' });
   return rows;
 }
@@ -82,13 +96,15 @@ export function alertContent(event, { organization, reference }) {
   };
 }
 
-// The Safety Warning: the Alert's parts and what the analysis and the plan found (SC-5).
+// The Safety Warning: the Alert's parts but its Next steps, and what the analysis and the plan
+// found (SC-5).
 export function warningContent(event, lookups, today) {
   const rca = event.rca || {};
   const themeLabel = (key) => SIX_M_THEMES.find((theme) => theme.key === key)?.label ?? key;
   const summary = planSummary(event, today);
+  const { nextSteps: _alertOnly, ...alert } = alertContent(event, lookups);
   return {
-    ...alertContent(event, lookups),
+    ...alert,
     causes: (rca.causes || []).map((cause) => ({ cause: `${themeLabel(cause.theme)} › ${causeName(cause)}`, how: cause.why || '' })),
     rootCauses: (rca.whys || []).filter((why) => why.rootCause && why.answer?.trim()).map((why) => why.answer.trim()),
     learnings: rca.learnings || '',

@@ -91,6 +91,22 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 7: Review remarks — severity badges and the Warning's layout
+
+**Scenarios**: 2, 6, 7
+
+- [X] T014 In `apps/event-reporting/src/logic/safetyCommunication.js`: severity rows carry the score,
+  band and band label; the Warning content has no Next steps; tests in `safetyCommunication.test.js`
+  (SC-4, SC-5)
+- [X] T015 In `apps/event-reporting/src/communications/CommunicationDocument.jsx`: band-colored
+  badges; the Warning's photos next to its header (below on phones), parts in the order causes,
+  root causes, corrective actions, key learnings; styles appended to `apps/event-reporting/src/app.css`
+  (SC-4, SC-5)
+- [X] T016 Apply the remarks to `specs/capabilities/safety-communication.md`; run `npm test`,
+  `npm run build` and scenarios 2, 6 and 7 through the launcher, at 320px, with a clean console
+
+---
+
 ## Phase 4: Apply the change to the capabilities
 
 - [X] T007 Create `specs/capabilities/safety-communication.md` (SC-1 to SC-9, the acceptance

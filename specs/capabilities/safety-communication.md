@@ -36,23 +36,23 @@ anyone.
   |---|---|
   | Header | "Safety Alert", the record number, plant, pillar, level (code — name), event date |
   | Critical | The critical flags of the review (SIP, HCI, HCL, SPL) or "No" |
-  | Severity | Health & Safety: "Potential severity" and "Actual severity" ratings of the review; Environment: "Is this event a SIP?" Yes / No; Industrial Risk: "Is this event an HCL?" or "Is this event an SPL?" Yes / No |
+  | Severity | Health & Safety: "Potential severity" and "Actual severity" of the review, each a badge "<score> — <band>" in its band's color (Moderate green, Critical amber, Very Critical red, as in the review's matrix) followed by "(<impact> × <duration>)"; Environment: "Is this event a SIP?" Yes / No; Industrial Risk: "Is this event an HCL?" or "Is this event an SPL?" Yes / No |
   | What happened | The event statement |
   | What was done | Each immediate action: description · priority |
   | Next steps | The event's required steps not done yet ("Root cause analysis · Actions · Validation"), or "None — the event is closed." |
 
 - **SC-5** The **Safety Warning** exists once the event's root cause analysis is completed and its
   action plan deployed. Until it is published it is a **draft** that only the plan owners see,
-  with "Draft — only the plan owners see it until it is published."; it shows the Alert's parts
-  and:
+  with "Draft — only the plan owners see it until it is published."; it shows the Alert's header,
+  Critical, Severity, What happened and What was done — not its Next steps — with the photos
+  chosen (SC-6) next to the header (below it on phones), then, in this order:
 
   | Part | Content |
   |---|---|
   | Contributory causes | Each 6M cause ticked: theme › cause, and how it contributed |
   | Root causes | The answer of each why marked Root cause |
-  | Key learnings | The analysis's learnings |
   | Corrective actions | Each: description · status · due date; then "<n> actions · <n> completed · <n> overdue" |
-  | Photos | The photos chosen (SC-6) |
+  | Key learnings | The analysis's learnings (always the last part) |
 
 
 ### Publishing
@@ -103,7 +103,8 @@ From freshly reset [demo data](platform-data.md), in order.
    term (SIP, type chosen), Actual Minor × Short term, "further analyze" No. *Then* its steps menu
    shows Communications with Safety Alert "Available" and Safety Warning greyed, "Only after a root
    cause analysis"; opening the Alert there reads "Safety Alert", `TF-26-0003`, Lyon, Health & Safety, "TF2 — Non-Lost Time
-   Accident", Critical "SIP", "Potential severity" "50 — Very Critical (Severe × Medium term)", its
+   Accident", Critical "SIP", "Potential severity" with the red badge "50 — Very Critical" and
+   "(Severe × Medium term)", "Actual severity" with the green badge "5 — Moderate", its
    statement, the immediate action "Area made safe and people informed · High", and Next steps
    "Actions"; no name appears (not Ana Ribeiro, Tom Baker or Carla Mendes). (SC-2, SC-4, SC-10,
    EL-17)
@@ -123,14 +124,16 @@ From freshly reset [demo data](platform-data.md), in order.
    one root cause with the corrective action "Deburr the sheet edges" for Ana; learnings "Sharp
    edges must be deburred before handling") and deploys the plan. *Then* Diego's steps menu shows
    Safety Warning "Draft — ready to publish"; it opens a draft
-   with "Draft — only the plan owners see it until it is published.", the cause "Methods ›
-   Inadequate procedure", the root cause, the learnings, the action with "On Going" and its due date
-   and "3 actions · 2 completed · 0 overdue", and "Photos to include" with the two photos unticked.
+   with "Draft — only the plan owners see it until it is published.", the red badge "50 — Very
+   Critical" and the green "2 — Moderate", no Next steps, the cause "Methods › Inadequate
+   procedure", the root cause, the action with "On Going" and its due date and "3 actions · 2
+   completed · 0 overdue", and last the learnings; below, "Photos to include" with the two photos
+   unticked.
    Ana's menu shows Safety Warning greyed, "Being prepared by the plan owners", and the list has
    no Warning. (SC-5, SC-6, SC-10)
 7. **Publish** — Diego ticks one photo and publishes ("Publish this Safety Warning? Everyone at Lyon
    will be able to read it, and it will no longer change."). *Then* it shows "Published on
-   <today>" and the photo; Ana's menu now shows Safety Warning "Published"; Lucas Weber and Eva
+   <today>" and the photo next to its header; Ana's menu now shows Safety Warning "Published"; Lucas Weber and Eva
    Novak find it in Safety communications; no alert is raised. Diego then moves the action's due
    date: the Warning keeps the old date. (SC-3, SC-7, SC-10)
 8. **No analysis, no Warning** — Carla deploys the plan of `TF-26-0003` (Review and Actions, no
@@ -151,7 +154,9 @@ From freshly reset [demo data](platform-data.md), in order.
 | When the Warning exists | A draft once the root cause analysis is completed and the action plan deployed; no analysis, no Warning | Safety Communication FR-5 vs Safety FR-27 (at closure) and FR-28 |
 | Publishing the Warning | The plan owners publish it; it is then frozen and readable by everyone with an event role whose access includes the event's plant | Safety Communication FR-7 (Owner publishes, sent to a regional office) |
 | Names | None on either document: no reporter, person involved, reviewer, analysts or assignees | Safety Communication FR-4 vs Safety table ("Investigator(s)") |
-| Photos | The plan owners choose which of the event's photos the Warning shows; the Alert shows none | Safety Communication FR-6, FR-10 (images in the Warning); Safety table (photos in both) |
+| Photos | The plan owners choose which of the event's photos the Warning shows, next to its header; the Alert shows none | Safety Communication FR-6, FR-10 (images in the Warning); Safety table (photos in both); user (review remark) |
+| Warning layout | No Next steps; the key learnings close the document | User (review remark) |
+| Severity display | A badge in the band's color for each rating | User (review remark) |
 | Print | A Print button (the browser's print, which can also save as PDF) | Safety Communication US-COMM-04 (PDF export, deferred) |
 | Pillars | Health & Safety, Environment, Industrial Risk; not Industrial Hygiene | Safety Communication (common template SAF, ENV, IR) |
 | Alerts | Publishing raises no alert | Safety Communication FR-7 (email to the regional office) |

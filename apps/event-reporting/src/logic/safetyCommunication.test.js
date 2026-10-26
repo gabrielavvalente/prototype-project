@@ -82,8 +82,8 @@ describe('content (SC-2, SC-4, SC-5)', () => {
       level: 'TF2 — Non-Lost Time Accident',
       critical: 'SIP',
       severity: [
-        { label: 'Potential severity', value: '50 — Very Critical (Severe × Medium term)' },
-        { label: 'Actual severity', value: '5 — Moderate (Minor × Short term)' },
+        { label: 'Potential severity', band: 'high', badge: '50 — Very Critical', detail: '(Severe × Medium term)' },
+        { label: 'Actual severity', band: 'low', badge: '5 — Moderate', detail: '(Minor × Short term)' },
       ],
       immediateActions: [{ description: 'Area made safe and people informed', priority: 'High' }],
       nextSteps: 'Actions',
@@ -101,6 +101,7 @@ describe('content (SC-2, SC-4, SC-5)', () => {
     expect(warning.learnings).toBe('Sharp edges must be deburred before handling.');
     expect(warning.actions).toEqual([{ description: 'Deburr the sheet edges', status: 'On Going', dueDate: '9 Nov 2026' }]);
     expect(warning.summary).toBe('2 actions · 1 completed · 0 overdue');
+    expect(warning).not.toHaveProperty('nextSteps');
   });
 
   it('names nobody, and never shows the title (SC-2)', () => {
