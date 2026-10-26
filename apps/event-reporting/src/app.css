@@ -4396,3 +4396,19 @@ a.step-link:hover {
     border-color: #999;
   }
 }
+
+/* Four workspace pages (008): the tabs scroll inside their row on phones, the heading wraps. */
+.event-page-tabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.event-page-tab {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.library-heading {
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

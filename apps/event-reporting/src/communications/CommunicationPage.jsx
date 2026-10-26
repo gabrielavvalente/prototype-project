@@ -66,7 +66,9 @@ export default function CommunicationPage() {
   const chosen = event.safetyWarning?.photoIds || [];
   const canOpenEvent = getPillarIdsForPlant(user, event.plantId).includes(event.pillarId);
 
+  // Shows the change at once (a ticked photo), then saves it.
   async function save(updated) {
+    setEvent(updated);
     setSaving(true);
     try {
       setEvent(await saveWorkflowStep(updated));
