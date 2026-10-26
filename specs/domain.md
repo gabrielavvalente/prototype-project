@@ -41,6 +41,8 @@ made in one product is seen by the others.
 | **Validator** | The person who checks that the completed action plan was effective: the reviewer. |
 | **Master data** | Pillar-specific reference lists (Standards, Hazards, Body Parts, Injuries, Aspects, Impacts, Industrial Risk Categories) used to classify events. |
 | **Central / Cluster / Local** | The three levels of Control Panel roles: all plants / two or more plants / one plant. |
+| **Safety Alert** | An anonymised summary of a reviewed event for its plant. |
+| **Safety Warning** | The anonymised lessons of an analysed event, published by its plan owners for its plant. |
 
 ## Organization
 
@@ -212,6 +214,7 @@ follows the dependencies.
 | Action plan | Root cause analysis | [action-plan](capabilities/action-plan.md) |
 | Validation | Action plan | [validation](capabilities/validation.md) |
 | Notifications (lifecycle alerts, My notifications, Site Admin settings) | Validation, Control Panel workspace | [notifications](capabilities/notifications.md) |
+| Safety communication (Safety Alert, Safety Warning) | Action plan, event library | [safety-communication](capabilities/safety-communication.md) |
 
 ## Product-wide rules
 

@@ -74,17 +74,17 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ## Phase 4: Apply the change to the capabilities
 
-- [ ] T007 Create `specs/capabilities/safety-communication.md` (SC-1 to SC-9, the acceptance
+- [X] T007 Create `specs/capabilities/safety-communication.md` (SC-1 to SC-9, the acceptance
   scenarios, Decisions) and apply the changed rules to `specs/capabilities/event-library.md` (EL-1,
   EL-17), `event-review.md` (Decisions), `root-cause-analysis.md` and `validation.md` (Scope) and
   `specs/domain.md` (Glossary, Capabilities). No "was", no change history.
-- [ ] T008 Check the counts and names of every changed scenario against the demo data
+- [X] T008 Check the counts and names of every changed scenario against the demo data
 
 ---
 
 ## Phase 5: Checks
 
-- [ ] T009 Run `npm test` and `npm run build` in `apps/event-reporting/`, then the spec's acceptance
+- [X] T009 Run `npm test` and `npm run build` in `apps/event-reporting/`, then the spec's acceptance
   scenarios from **Reset demo data** through the launcher, at 320px and with the keyboard, with a
   clean browser console
 

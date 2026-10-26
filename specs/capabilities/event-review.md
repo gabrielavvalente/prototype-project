@@ -162,4 +162,4 @@ Mendes, Eva Novak and Diego Laurent.
 | Statuses | Draft, Open, In Progress, Archived, Closed; no Rework | Status models differ between sources |
 | Not valid | Reason Duplicated / Useless / Bad quality; comment only for Bad quality | — |
 | HCL and SPL | A Yes / No answer of the reviewer (HCL for SRE1–SRE3, SPL for SRE4–SRE5), nothing selected at first, no type; no loss matrix | Business, HCL & SPL definitions |
-| Out of this version | Owner, Final Reviewer, HPR, Risk / Cost / Ease, Attackability score, Safety Alert, Record Historian, Rework, Final Review | Later capabilities |
+| Out of this version | Owner, Final Reviewer, HPR, Risk / Cost / Ease, Attackability score, Record Historian, Rework, Final Review | Later capabilities; the Safety Alert is in [safety communication](safety-communication.md) |

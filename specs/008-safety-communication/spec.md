@@ -96,7 +96,8 @@ anyone.
 - **EL-1** "EVENT WORKSPACE" offers four pages — **Events**, **KPIs**, **Reports**, **Safety
   communications** ([safety communication](safety-communication.md) SC-8) — and **Create event**
   for those who can report. The first three show the events of the context (domain Visibility):
-  submitted events plus the person's own drafts, never someone else's drafts. *(was: three pages)*
+  submitted events plus the person's own drafts, never someone else's drafts. On phones the page
+  names scroll sideways within their row. *(was: three pages)*
 - **EL-17** *(the header card)* The header card also offers **Safety Alert** once it exists and
   **Safety Warning** to the plan owners for the draft, to everyone once published (SC-4 to SC-7).
   *(was: no links)*
