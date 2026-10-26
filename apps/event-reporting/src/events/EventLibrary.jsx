@@ -23,6 +23,7 @@ import FiltersMenu from './FiltersMenu.jsx';
 import KanbanBoard from './KanbanBoard.jsx';
 import KpiOverview from './KpiOverview.jsx';
 import KpiTiles from './KpiTiles.jsx';
+import CommunicationsList from '../communications/CommunicationsList.jsx';
 
 // Quick filters opened from the KPIs page (005 EL-12).
 const ACTION_FILTER_LABELS = { openActions: 'Events with open actions', overdueActions: 'Events with overdue actions' };
@@ -31,6 +32,7 @@ const TABS = [
   { key: 'events', label: 'Events' },
   { key: 'kpis', label: 'KPIs' },
   { key: 'reports', label: 'Reports' },
+  { key: 'communications', label: 'Safety communications' },
 ];
 
 const VIEWS = [
@@ -61,12 +63,13 @@ export default function EventLibrary() {
   // The one row or card shown expanded (FR-027).
   const [expandedId, setExpandedId] = useState(null);
   const view = ['kanban', 'list'].includes(settings.listView) ? settings.listView : defaultView();
-  const mode = ['kpis', 'reports'].includes(searchParams.get('tab')) ? searchParams.get('tab') : 'events';
+  const mode = ['kpis', 'reports', 'communications'].includes(searchParams.get('tab')) ? searchParams.get('tab') : 'events';
   const savedFilters = settings.savedFilters || [];
 
   useEffect(() => {
-    document.title = 'Events — Event Reporting';
-  }, []);
+    // The Safety communications page sets its own title.
+    if (mode !== 'communications') document.title = 'Events — Event Reporting';
+  }, [mode]);
 
   useEffect(() => {
     getAll('events').then((all) => setEvents(all.filter((event) => isEventVisible(user, context, event))));
@@ -166,7 +169,7 @@ export default function EventLibrary() {
       <div className="library-heading">
         <div>
           <Text className="entry-eyebrow" size="sm" fw={600}>EVENT WORKSPACE</Text>
-          <Title order={1}>{mode === 'kpis' ? 'KPIs' : mode === 'reports' ? 'Reports' : 'Events'}</Title>
+          <Title order={1}>{TABS.find((tab) => tab.key === mode).label}</Title>
         </div>
         {getMenuItems(user.role).includes('create-event') && (
           <Button component={Link} to="/events/new" leftSection={<Icon name="plus" size={18} />}>
@@ -188,6 +191,9 @@ export default function EventLibrary() {
         ))}
       </nav>
 
+      {mode === 'communications' && <CommunicationsList />}
+      {mode !== 'communications' && (
+        <>
       {mode === 'events' && <KpiTiles kpis={kpis} selected={quickFilter} onSelect={changeQuickFilter} />}
       {/* Opened from the KPIs page: not a chip, so it shows as a badge (005 EL-12). */}
       {mode === 'events' && ACTION_FILTER_LABELS[quickFilter] && (
@@ -337,6 +343,8 @@ export default function EventLibrary() {
           </Group>
         </form>
       </Modal>
+        </>
+      )}
     </main>
   );
 }

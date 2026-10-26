@@ -6,6 +6,7 @@ import { findEvent, getByIndex } from '../data/db.js';
 import { investigationGroups } from '../../../../shared/platform/sampleData.js';
 import { canEditEvent, getMenuItems, isEventVisible } from '../logic/access.js';
 import { canOpenOptionalPlan } from '../logic/actionPlan.js';
+import { canSeeWarning, hasAlert } from '../logic/safetyCommunication.js';
 import { STEP_LABELS, STEPS, stepStates } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
@@ -130,6 +131,14 @@ export default function EventSteps() {
       )}
 
       <EventHeadCard event={event} compact />
+      {hasAlert(event) && (
+        <nav className="communication-links" aria-label="Safety communication">
+          <Link to={`/communications/${event.recordNumber}/alert`}>Safety Alert</Link>
+          {canSeeWarning(user, event, investigationGroups, users) && (
+            <Link to={`/communications/${event.recordNumber}/warning`}>Safety Warning</Link>
+          )}
+        </nav>
+      )}
 
       <div className="steps-layout">
         <StepsMenu event={event} activeStep={step} canOpenOptional={canOpenOptional} />

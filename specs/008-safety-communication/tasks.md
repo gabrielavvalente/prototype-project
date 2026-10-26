@@ -43,15 +43,15 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Scenarios**: 2, 5–9
 
-- [ ] T003 New `apps/event-reporting/src/communications/CommunicationDocument.jsx` (the document
+- [X] T003 New `apps/event-reporting/src/communications/CommunicationDocument.jsx` (the document
   parts of SC-4 and SC-5, photos) and `CommunicationPage.jsx` (routes of contracts/routes.md,
   "This safety communication is not available.", the draft notice, "Photos to include" with its
   hint, **Publish Safety Warning** with its confirmation, "Published on <date>", **Print**, the link
   back to the event); routes and route names in `App.jsx` and `logic/access.js` (SC-3, SC-5 to
   SC-7, SC-9)
-- [ ] T004 In `apps/event-reporting/src/events/EventSteps.jsx` (header card): the **Safety Alert**
+- [X] T004 In `apps/event-reporting/src/events/EventSteps.jsx` (header card): the **Safety Alert**
   and **Safety Warning** links (EL-17)
-- [ ] T005 [P] In `apps/event-reporting/src/app.css` (appended at the end): document, cards and an
+- [X] T005 [P] In `apps/event-reporting/src/app.css` (appended at the end): document, cards and an
   `@media print` style that prints the document only (SC-9, research R5)
 
 **Checkpoint**: Scenarios 2 and 5–9 pass
@@ -64,7 +64,7 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Scenarios**: 1, 3, 4
 
-- [ ] T006 New `apps/event-reporting/src/communications/CommunicationsList.jsx` and the fourth page
+- [X] T006 New `apps/event-reporting/src/communications/CommunicationsList.jsx` and the fourth page
   **Safety communications** in `apps/event-reporting/src/events/EventLibrary.jsx` (SC-8, EL-1,
   research R3)
 
