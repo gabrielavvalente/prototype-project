@@ -39,7 +39,7 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Scenarios**: 1–3, 7
 
-- [ ] T004 New `apps/event-reporting/src/communications/ShareToHub.jsx`; the Share to Hub button and
+- [X] T004 New `apps/event-reporting/src/communications/ShareToHub.jsx`; the Share to Hub button and
   the "Shared with" lines in `CommunicationView.jsx`; `apps/event-reporting/src/data/db.js` saves a
   share with its plant alerts (SH-1 to SH-4, SH-6)
 
@@ -51,7 +51,7 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Scenarios**: 4–6, 8, 9
 
-- [ ] T005 New `apps/event-reporting/src/hub/HubList.jsx` (the fifth workspace page in
+- [X] T005 New `apps/event-reporting/src/hub/HubList.jsx` (the fifth workspace page in
   `events/EventLibrary.jsx`) and `hub/HubItemPage.jsx` (package with its Classification part, the
   local check, the history); the route in `App.jsx` and `logic/access.js`; plant alerts in
   `shell/Header.jsx` and `shell/AlertsPanel.jsx`; styles appended to `app.css` (SH-5, SH-7 to SH-9,

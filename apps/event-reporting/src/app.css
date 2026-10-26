@@ -4476,3 +4476,99 @@ a.step-link:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Sharing Hub (009): the reach line, the local check, its actions and history. */
+.share-reach {
+  margin: 0;
+  font-weight: 600;
+}
+
+.communication-shared {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  margin-bottom: var(--space-3);
+}
+
+.communication-shared .communication-published {
+  margin: 0;
+}
+
+.communication-classification {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.communication-classification dt {
+  color: var(--color-muted);
+  font-size: var(--font-size-tiny);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.communication-classification dd {
+  margin: 0;
+}
+
+.hub-state {
+  font-weight: 600;
+}
+
+.hub-state--yes {
+  color: var(--color-error);
+}
+
+.hub-state--no {
+  color: var(--color-success);
+}
+
+.hub-state--beingChecked {
+  color: var(--color-warning);
+}
+
+.hub-check {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  margin-top: var(--space-5);
+}
+
+.hub-check h3 {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-base);
+}
+
+.hub-actions,
+.hub-history {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.hub-action {
+  overflow-wrap: anywhere;
+}
+
+.hub-action .hub-buttons {
+  display: inline-flex;
+  margin-left: var(--space-2);
+}
+
+.hub-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.hub-action-form {
+  width: 100%;
+  max-width: 40rem;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
