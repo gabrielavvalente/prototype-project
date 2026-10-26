@@ -26,18 +26,17 @@ function completeAction(changes = {}) {
 }
 
 describe('actions (005)', () => {
-  it('starts Planned at the event department and workshop', () => {
+  it('starts Planned at the event location', () => {
     const action = emptyAction('w1', event);
-    expect(action).toMatchObject({ status: 'planned', whyId: 'w1', location: { departmentId: 'd1', workshopId: 'w1' }, notifyMaintenance: null });
+    expect(action).toMatchObject({ status: 'planned', whyId: 'w1', location: event.location, notifyMaintenance: null });
   });
 
-  it('needs a description, 1 to 5 assignees, a due date, a priority, a location and Notify maintenance', () => {
+  it('needs a description, 1 to 5 assignees, a due date, a priority and Notify maintenance', () => {
     expect(Object.keys(validateAction(emptyAction(null, {})))).toEqual([
       'description',
       'assigneeIds',
       'dueDate',
       'priority',
-      'location',
       'notifyMaintenance',
     ]);
     expect(validateAction(completeAction())).toEqual({});
@@ -46,7 +45,7 @@ describe('actions (005)', () => {
 
   it('reads actions saved before with defaults', () => {
     const old = { id: 'a1', whyId: 'w2', description: 'x', assigneeIds: [], dueDate: '', priority: 'Low' };
-    expect(normalizeAction(old, event)).toMatchObject({ status: 'planned', notifyMaintenance: null, whyId: 'w2', dueDateHistory: [] });
+    expect(normalizeAction(old, event)).toMatchObject({ status: 'planned', notifyMaintenance: null, whyId: 'w2', dueDateHistory: [], location: event.location });
   });
 
   it('is Overdue when deployed, not finished and due before today', () => {

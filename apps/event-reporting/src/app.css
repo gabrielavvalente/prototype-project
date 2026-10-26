@@ -4192,13 +4192,6 @@ a.step-link:hover {
   font-size: var(--font-size-small);
 }
 
-.action-location {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
-  gap: 12px;
-  margin: 12px 0;
-}
-
 @media (max-width: 479px) {
   .action-compact-row .immediate-compact-meta {
     white-space: normal;

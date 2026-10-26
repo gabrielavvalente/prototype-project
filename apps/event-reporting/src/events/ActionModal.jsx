@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Button, Modal, MultiSelect, NativeSelect, Textarea, TextInput } from '@mantine/core';
-import { useApp } from '../AppContext.js';
 import ChipGroup from '../create/ChipGroup.jsx';
 import { YesNoField } from '../create/fields.jsx';
 import { ACTION_PRIORITIES, MAX_ASSIGNEES, validateAction } from '../logic/actions.js';
@@ -8,18 +7,14 @@ import DueDateHistory from './DueDateHistory.jsx';
 
 const PRIORITY_OPTIONS = ACTION_PRIORITIES.map((priority) => ({ value: priority, label: priority }));
 
-const childrenOf = (organization, parentId, type) => organization.filter((node) => node.parentId === parentId && node.type === type);
-
-// Creates or edits an action of the event's action plan (005 AP-4, AP-8), from a why of the analysis
+// Creates or edits an action of the event's action plan (005 AP-4, AP-8; its location is the
+// event's, not asked), from a why of the analysis
 // (the why is then fixed) or from the Actions step (an optional why of the analysis). Nothing is
 // kept until Create (Save when editing).
 export default function ActionModal({ action, isNew, event, whys, whyFixed, candidates, onSave, onClose }) {
-  const { organization } = useApp();
   const [draft, setDraft] = useState(action);
   const [errors, setErrors] = useState({});
   const set = (changes) => setDraft((current) => ({ ...current, ...changes }));
-  const departments = childrenOf(organization, event.plantId, 'department');
-  const workshops = draft.location.departmentId ? childrenOf(organization, draft.location.departmentId, 'workshop') : [];
   const why = whys?.find((item) => item.id === draft.whyId);
 
   function save() {
@@ -89,25 +84,6 @@ export default function ActionModal({ action, isNew, event, whys, whyFixed, cand
         errors={errors.priority ? [{ field: 'action-priority', message: errors.priority }] : []}
         onChange={(priority) => set({ priority })}
       />
-      <div className="action-location">
-        <NativeSelect
-          label="Department"
-          required
-          data={[{ value: '', label: 'Choose' }, ...departments.map((node) => ({ value: node.id, label: node.name }))]}
-          value={draft.location.departmentId}
-          error={errors.location && !draft.location.departmentId ? errors.location : undefined}
-          onChange={(e) => set({ location: { departmentId: e.target.value, workshopId: '' } })}
-        />
-        <NativeSelect
-          label="Workshop"
-          required
-          disabled={!draft.location.departmentId}
-          data={[{ value: '', label: 'Choose' }, ...workshops.map((node) => ({ value: node.id, label: node.name }))]}
-          value={draft.location.workshopId}
-          error={errors.location && draft.location.departmentId && !draft.location.workshopId ? errors.location : undefined}
-          onChange={(e) => set({ location: { ...draft.location, workshopId: e.target.value } })}
-        />
-      </div>
       <YesNoField
         id="action-maintenance"
         label="Notify maintenance"

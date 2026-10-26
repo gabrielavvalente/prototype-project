@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Alert, Badge, Button, Textarea } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { investigationGroups } from '../../../../shared/platform/sampleData.js';
@@ -17,6 +18,7 @@ import {
   syncWhysWithCauses,
   validateAnalysis,
 } from '../logic/rootCause.js';
+import { currentStep } from '../logic/review.js';
 import { completeImmediateActions } from '../logic/submission.js';
 import { validateImmediateAction } from '../logic/validation.js';
 import Icon from '../shell/Icon.jsx';
@@ -108,6 +110,7 @@ function Overview({ event, analysis }) {
 // the event; both are stored with the analysis on Save.
 export default function RootCauseStep({ event, onSaved }) {
   const { user, users } = useApp();
+  const navigate = useNavigate();
   const [analysis, setAnalysis] = useState(() => (event.rca ? normalizeAnalysis(event.rca) : emptyAnalysis(event)));
   const [immediateActions, setImmediateActions] = useState(event.immediateActions);
   // The plan's actions (005 RCA-13); actions saved before 005 get its defaults.
@@ -210,7 +213,10 @@ export default function RootCauseStep({ event, onSaved }) {
     if (!work) found.immediateActions = immediateActionsError;
     setErrors(found);
     if (Object.keys(found).length > 0) return;
-    await save(completeAnalysis(work, work.rca, user.id, now));
+    const completed = completeAnalysis(work, work.rca, user.id, now);
+    await save(completed);
+    // The analyst goes on with the plan's actions (005 remarks).
+    if (currentStep(completed) === 'actions') navigate(`/events/${event.recordNumber}/steps/actions`);
   }
 
   return (

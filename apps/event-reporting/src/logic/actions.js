@@ -16,11 +16,12 @@ export const ACTION_STATUS_LABELS = {
 
 const FINAL_STATUSES = ['completed', 'cancelled'];
 
+// An action takes the event's location; it is not asked (005 remarks).
 function eventLocation(event) {
-  return { departmentId: event?.location?.departmentId ?? '', workshopId: event?.location?.workshopId ?? '' };
+  return { ...(event?.location ?? {}) };
 }
 
-// A new action, Planned, at the event's department and workshop (AP-4).
+// A new action, Planned, at the event's location (AP-4).
 export function emptyAction(whyId, event) {
   return {
     id: crypto.randomUUID(),
@@ -36,15 +37,16 @@ export function emptyAction(whyId, event) {
   };
 }
 
-// Actions saved before feature 005 had no status, location or Notify maintenance (research R2).
+// Actions saved before feature 005 had no status or Notify maintenance (research R2); every action
+// has the event's location.
 export function normalizeAction(action, event) {
   return {
     whyId: null,
-    location: eventLocation(event),
     notifyMaintenance: null,
     status: 'planned',
     dueDateHistory: [],
     ...action,
+    location: eventLocation(event),
   };
 }
 
@@ -62,9 +64,6 @@ export function validateAction(action) {
   }
   if (!action.dueDate) errors.dueDate = 'Choose a due date.';
   if (!ACTION_PRIORITIES.includes(action.priority)) errors.priority = 'Choose a priority.';
-  if (!action.location?.departmentId || !action.location?.workshopId) {
-    errors.location = 'Choose the department and workshop.';
-  }
   if (typeof action.notifyMaintenance !== 'boolean') {
     errors.notifyMaintenance = 'Say whether maintenance must be notified.';
   }
