@@ -15,7 +15,8 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 - **In**: designation in the review, investigation groups (fixed demo data), the
   Root cause analysis step (overview, immediate actions, 5W1H, 6M, 5 Why, actions, learnings),
   saving, completing, alerts, history.
-- **Out**: risk-assessment gap question, related hazards, attachments, Safety Alert / Warning,
+- **Out**: risk-assessment gap question, related hazards, attachments, the Safety Alert and
+  Warning ([safety communication](safety-communication.md)),
   field-level audit trail, export or print of the 5 Why diagram, editing groups, Behavioral /
   Conditional classification of root causes, following the actions ([action plan](action-plan.md)).
 

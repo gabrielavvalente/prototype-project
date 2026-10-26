@@ -13,7 +13,8 @@ goes back to Actions for more corrective actions.
 
 - **In**: who validates, the question and its answer, closing the event, sending the plan back,
   the validations kept in the history.
-- **Out**: a Final Review, the Safety Alert / Warning, effectiveness checks after closing.
+- **Out**: a Final Review, the Safety Alert and Warning ([safety communication](safety-communication.md)),
+  effectiveness checks after closing.
 
 ## Rules
 

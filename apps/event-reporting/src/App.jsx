@@ -12,6 +12,7 @@ import EntryScreen from './shell/EntryScreen.jsx';
 import BottomNav from './shell/BottomNav.jsx';
 import Header from './shell/Header.jsx';
 import NotAllowed from './shell/NotAllowed.jsx';
+import CommunicationPage from './communications/CommunicationPage.jsx';
 import MyNotifications from './shell/MyNotifications.jsx';
 import SearchPage from './shell/SearchPage.jsx';
 import StartScreen from './shell/StartScreen.jsx';
@@ -51,6 +52,7 @@ const router = createHashRouter([
       { path: 'events', element: <RequireRoute name="events"><EventLibrary /></RequireRoute> },
       { path: 'search', element: <RequireRoute name="search"><SearchPage /></RequireRoute> },
       { path: 'notifications', element: <RequireRoute name="notifications"><MyNotifications /></RequireRoute> },
+      { path: 'communications/:record/:kind', element: <RequireRoute name="communication"><CommunicationPage /></RequireRoute> },
       { path: 'events/new', element: <RequireRoute name="events-new"><EventFormPage /></RequireRoute> },
       { path: 'events/:id', element: <RequireRoute name="event-detail"><EventDetail /></RequireRoute> },
       { path: 'events/:id/edit', element: <RequireRoute name="event-edit"><EventFormPage /></RequireRoute> },

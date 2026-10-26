@@ -13,9 +13,11 @@ with its workflow steps.
 
 ### Event workspace
 
-- **EL-1** "EVENT WORKSPACE" offers three pages — **Events**, **KPIs**, **Reports** — and **Create
-  event** for those who can report. All three show the events of the context (domain Visibility):
-  submitted events plus the person's own drafts, never someone else's drafts.
+- **EL-1** "EVENT WORKSPACE" offers four pages — **Events**, **KPIs**, **Reports**, **Safety
+  communications** ([safety communication](safety-communication.md) SC-8) — and **Create event**
+  for those who can report. The first three show the events of the context (domain Visibility):
+  submitted events plus the person's own drafts, never someone else's drafts. On phones the page
+  names scroll sideways within their row.
 - **EL-2** One toolbar line: search ("Title or record number": title contains the text, or the
   record number is exactly the text, ignoring case), **Filters** (with the number of filters in
   use) and, on Events, the column chooser **Show columns** and the view switch **Kanban** / **List**
@@ -89,7 +91,8 @@ with its workflow steps.
 - **EL-17** A **submitted** event has one page, its steps: back to events and the record number,
   a compact header card (pillar, level, status and critical badges, title, key facts on one line),
   the **steps menu** — Submission, Review, Root cause analysis, Actions, Validation, each Done,
-  Current step, Not reached yet, Not required or Optional (domain Steps) — and the chosen step. Opening the
+  Current step, Not reached yet, Not required or Optional (domain Steps), then its **Communications**
+  section ([safety communication](safety-communication.md) SC-10) — and the chosen step. Opening the
   event shows its current step (Submission right after submitting, with the banner of the event
   reporting capability).
 - **EL-18** Steps that cannot be opened say "This step is not required for this event." or "This

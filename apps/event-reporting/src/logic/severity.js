@@ -32,6 +32,14 @@ export function bandLabel(key) {
   return BANDS.find((band) => band.key === key)?.label ?? key;
 }
 
+// "50 — Very Critical (Severe × Medium term)", or '' when not rated (RV-15).
+export function ratingText(matrix, rating) {
+  if (!rating) return '';
+  const impact = matrix.impacts.find((item) => item.key === rating.impact).label;
+  const duration = matrix.durations.find((item) => item.key === rating.duration).label;
+  return `${rating.score} — ${bandLabel(rating.band)} (${impact} × ${duration})`;
+}
+
 // The Yes / No question that flags an Environment or Industrial Risk event (006 review remarks).
 const SIP_QUESTION = {
   flag: 'SIP',

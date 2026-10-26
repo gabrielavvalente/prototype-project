@@ -25,7 +25,7 @@ import {
   validateReview,
 } from '../logic/review.js';
 import { assigneeIds, canPerformAnalysis } from '../logic/rootCause.js';
-import { assessmentFor, bandLabel, criticalFlagsOf, typedFlag } from '../logic/severity.js';
+import { assessmentFor, criticalFlagsOf, ratingText, typedFlag } from '../logic/severity.js';
 import SeverityMatrix from './SeverityMatrix.jsx';
 import SummaryList from './SummaryList.jsx';
 
@@ -86,13 +86,6 @@ export function describeAssignees(assignees, users) {
   return [...names, ...groups].join(', ');
 }
 
-function describeRating(matrix, rating) {
-  if (!rating) return '';
-  const impact = matrix.impacts.find((item) => item.key === rating.impact).label;
-  const duration = matrix.durations.find((item) => item.key === rating.duration).label;
-  return `${rating.score} — ${bandLabel(rating.band)} (${impact} × ${duration})`;
-}
-
 function ReviewSummary({ event, masterData }) {
   const { users, reference } = useApp();
   const review = event.review;
@@ -112,8 +105,8 @@ function ReviewSummary({ event, masterData }) {
   for (const list of reviewLists(event.pillarId)) {
     rows.push({ label: list.label, value: (review.classification[list.id] || []).map(valueName).join(', ') });
   }
-  if (assessment.potential) rows.push({ label: assessment.potentialTitle, value: describeRating(assessment.matrix, review.potential) });
-  if (assessment.actual) rows.push({ label: assessment.actualTitle, value: describeRating(assessment.matrix, review.actual) });
+  if (assessment.potential) rows.push({ label: assessment.potentialTitle, value: ratingText(assessment.matrix, review.potential) });
+  if (assessment.actual) rows.push({ label: assessment.actualTitle, value: ratingText(assessment.matrix, review.actual) });
   if (assessment.flagQuestion) rows.push({ label: assessment.flagQuestion.label, value: review.flagConfirmed ? 'Yes' : 'No' });
   rows.push({ label: 'Critical', value: review.criticalFlags?.join(' · ') || 'No' });
   if (review.criticalTypeId) rows.push({ label: `${typedFlag(event)} type`, value: getLabel(reference, review.criticalTypeId) });
