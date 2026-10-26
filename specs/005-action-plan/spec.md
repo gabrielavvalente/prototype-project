@@ -46,10 +46,11 @@ nowhere.
   each assignee updates their own deployed actions; everyone else who can see the event reads the
   plan.
 - **AP-3** When the event's workflow does not require Actions, the step shows **Optional** in the
-  steps menu and its owners can open it while the event is Open or In Progress; others see "This
-  step is not required for this event.". As soon as the plan has at least one action, Actions
-  counts as a required step of that event: the step before it moves the event to Actions instead
-  of closing it.
+  steps menu (until it becomes the current step) and its owners can open it while the event is Open
+  or In Progress; others see "This step is not required for this event.". As soon as the plan has
+  at least one action, Actions counts as a required step of that event: the step before it moves
+  the event to Actions instead of closing it. While the root cause analysis is the current step,
+  the plan is read-only in the Actions step (the analysis lists and edits its actions).
 
 **Actions**
 
