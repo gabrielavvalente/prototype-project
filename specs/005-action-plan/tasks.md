@@ -162,9 +162,12 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ## Phase 8: Checks
 
-- [ ] T021 Run `npm test` and `npm run build` in `apps/event-reporting/`, then the spec's acceptance
+- [X] T021 Run `npm test` and `npm run build` in `apps/event-reporting/`, then the spec's acceptance
   scenarios from **Reset demo data** through the launcher, at 320px and with the keyboard, with a
   clean browser console
+  *(2026-10-26: 135 tests and the build pass; scenarios 1–7, 10, 11 and the screen part of 8 run in
+  headless Chrome through the launcher with a clean console; the end of 8 (completing the review)
+  and 9 (from the analysis) are covered by unit tests and left to the manual check.)*
 
 ---
 
