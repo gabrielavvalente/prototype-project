@@ -24,11 +24,11 @@ goes back to Actions for more corrective actions.
   No asks "Why is it not effective?" (required); **Complete validation**. Missing answers are refused
   next to their field ("Say whether the action plan is effective.", "Explain why it is not
   effective."). Everyone else who can see the event reads it.
-- **VAL-3** **Yes** closes the event (Closed) and sends "Event closed" to its reporter; the step
-  shows "Validated as effective by <name> on <date>".
+- **VAL-3** **Yes** closes the event (Closed), with the alerts of [notifications](notifications.md)
+  NT-3; the step shows "Validated as effective by <name> on <date>".
 - **VAL-4** **No** sends the event back to Actions (In Progress, current step Actions): the plan
-  opens again for its owners, who get "Action plan not effective" and add corrective actions (On
-  Going at once, AP-9); once they are finished, the plan completes again (AP-12) and the event
+  opens again for its owners, who are alerted with its reporter (NT-3) and add corrective actions
+  (On Going at once, AP-9); once they are finished, the plan completes again (AP-12) and the event
   returns to Validation.
 - **VAL-5** Every validation is kept; the history shows "Validation: not effective — <reason> (<name>)"
   and "Validation: effective — closed by <name>".
@@ -44,9 +44,9 @@ completed and Validation as its current step.
    unfixed at night" → the event is back at Actions (In Progress), Carla (owner) gets "Action plan
    not effective", and the history shows "Validation: not effective — The rack is still unfixed at
    night (Carla Mendes)". (VAL-2, VAL-4, VAL-5)
-2. **Effective** — Carla adds "Night check of the rack" for Ana (On Going at once, Ana alerted); Ana
+2. **Effective** — Carla adds "Night check of the rack" for Ana (On Going at once); Ana
    completes it; the plan completes again and the event returns to Validation; Carla answers Yes.
-   *Then* the event is Closed, its reporter (Carla Mendes herself here) gets "Event closed", and the
+   *Then* the event is Closed (no "Event closed": Carla, its reporter, closed it herself), and the
    step shows "Validated as effective by Carla Mendes on …". Diego sees the Validation step
    read-only. (AP-9, AP-12, VAL-1, VAL-3)
 

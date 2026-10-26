@@ -30,9 +30,8 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
   *Users* (people of any event role whose access includes the event's plant and pillar, the
   reviewer included) and *Groups* (investigation groups covering the event's plant and pillar).
   Otherwise the question is not shown.
-- **RCA-2** Saving the review keeps the designated users and groups on the event and sends
-  "Root cause analysis assigned to you" to each designated user and each member of a designated
-  group who can see the event — once per person, never to the reviewer.
+- **RCA-2** Saving the review keeps the designated users and groups on the event and alerts them
+  ([notifications](notifications.md) NT-3).
 - **RCA-3** A completed review shows who was designated.
 - **RCA-4** After completing the review, a reviewer who is one of the designated people (directly
   or through a group) is taken to the Root cause analysis step; any other reviewer stays on the

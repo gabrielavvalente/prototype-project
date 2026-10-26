@@ -67,7 +67,7 @@ export default function ActionPlanStep({ event, onSaved }) {
     const now = new Date().toISOString();
     const isNew = editing.isNew;
     setEditing(null);
-    await save(isNew ? addAction(current, action, user.id, now, users) : { event: updateAction(current, action, user.id, now) });
+    await save({ event: isNew ? addAction(current, action, user.id, now) : updateAction(current, action, user.id, now) });
   }
 
   async function remove(action) {

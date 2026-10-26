@@ -1,10 +1,10 @@
 // The action plan of an event (feature 005): who owns it, deploying it, the assignees' updates,
 // cancelling and completing it. The actions themselves are in actions.js.
 
-import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
 import { getManagersToAlert } from './access.js';
 import { changeDueDate, isDeployed, isFinal, isOverdue } from './actions.js';
 import { currentStep, stepStates } from './review.js';
+import { planCompletedCandidates, planDeployedCandidates } from './notifications.js';
 import { designatedIds } from './rootCause.js';
 import { validatorIds } from './planValidation.js';
 
@@ -38,39 +38,23 @@ export function canOpenOptionalPlan(user, event, groups, users) {
   return planOwners(event, groups, users).includes(user.id);
 }
 
-function canSeeEvent(users, event, id) {
-  const person = users.find((user) => user.id === id);
-  return Boolean(person) && getPillarIdsForPlant(person, event.plantId).includes(event.pillarId);
-}
-
-// Each assignee once, if they can see the event (AP-9).
-function recipientsOf(actions, event, users) {
-  const ids = [...new Set(actions.flatMap((action) => action.assigneeIds))];
-  return ids.filter((id) => canSeeEvent(users, event, id));
-}
-
 const withStatus = (action, status, userId, now) => ({ ...action, status, statusChangedBy: userId, statusChangedAt: now });
 
 // Deploy action plan: every Planned action becomes On Going, also when there is none (the immediate
-// actions are then the plan); the plan may complete at once (AP-9, AP-12).
-// Returns { event, alerts: [{ recipientId, type }] }.
+// actions are then the plan); the plan may complete at once (AP-9, AP-12). No alert about single
+// actions: the action management tool notifies them (007). Returns { event, alerts } (candidates).
 export function deployPlan(event, userId, now, users) {
-  const planned = (event.actions ?? []).filter((action) => action.status === 'planned');
   const actions = (event.actions ?? []).map((action) => (action.status === 'planned' ? withStatus(action, 'onGoing', userId, now) : action));
   const actionPlan = { ...event.actionPlan, deployedBy: userId, deployedAt: now, completedBy: null, completedAt: null };
-  const assigned = recipientsOf(planned, event, users).map((recipientId) => ({ recipientId, type: 'Action assigned to you' }));
   const finished = finishIfDone({ ...event, actions, actionPlan }, userId, now, users);
-  return { event: finished.event, alerts: [...assigned, ...finished.alerts] };
+  return { event: finished.event, alerts: [...planDeployedCandidates(finished.event), ...finished.alerts] };
 }
 
-// A new action: On Going and alerting its assignees once the plan is deployed (AP-9).
-// Returns { event, alerts }.
-export function addAction(event, action, userId, now, users) {
+// A new action: On Going at once when the plan is deployed (AP-9).
+export function addAction(event, action, userId, now) {
   const deployed = Boolean(event.actionPlan?.deployedAt);
   const added = { ...action, createdBy: userId, createdAt: now, ...(deployed ? { status: 'onGoing', statusChangedBy: userId, statusChangedAt: now } : {}) };
-  const updated = { ...event, actions: [...(event.actions ?? []), added] };
-  const alerts = deployed ? recipientsOf([added], event, users).map((recipientId) => ({ recipientId, type: 'Action assigned to you' })) : [];
-  return { event: updated, alerts };
+  return { ...event, actions: [...(event.actions ?? []), added] };
 }
 
 // An edited action; a new due date goes to the history (AP-8).
@@ -128,13 +112,13 @@ export function isPlanFinished(event) {
   return Boolean(event.actionPlan?.deployedAt) && actions.every(isFinal) && anyCompleted;
 }
 
-// Completes a finished plan by itself: the event moves to its next required step (In Progress) —
-// alerting the validators when it is Validation — or closes (AP-12). Returns { event, alerts }.
+// Completes a finished plan by itself: the event moves to its next required step (In Progress) or
+// closes (AP-12). Returns { event, alerts } (candidates of NT-3).
 export function finishIfDone(event, userId, now, users) {
   if (event.actionPlan?.completedAt || !isPlanFinished(event)) return { event, alerts: [] };
   const done = { ...event, actionPlan: { ...event.actionPlan, completedBy: userId, completedAt: now } };
   const next = currentStep({ ...done, status: 'In Progress' });
-  if (!next) return { event: { ...done, status: 'Closed', closedAt: now }, alerts: [] };
-  const alerts = next === 'validation' ? validatorIds(done, users).map((recipientId) => ({ recipientId, type: 'Action plan ready for validation' })) : [];
-  return { event: { ...done, status: 'In Progress' }, alerts };
+  const finished = next ? { ...done, status: 'In Progress' } : { ...done, status: 'Closed', closedAt: now };
+  const validators = next === 'validation' ? validatorIds(done, users) : [];
+  return { event: finished, alerts: planCompletedCandidates(finished, validators) };
 }

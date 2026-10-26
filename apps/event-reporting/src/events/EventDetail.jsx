@@ -65,8 +65,8 @@ export function SavedBanner({ saved, recordNumber, status, canCreate }) {
     submit: (
       <>
         Event <strong>{recordNumber}</strong> was submitted
-        {status === 'Closed' ? ' and closed right away (no other phase required)' : ''}. The Managers of this
-        plant have been alerted.
+        {status === 'Closed' ? ' and closed right away (no other phase required)' : ''}. Its reviewers and the
+        Managers of this plant have been alerted.
       </>
     ),
     draft: 'Your draft was saved on this device. Only you can see it.',

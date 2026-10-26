@@ -6,6 +6,7 @@ import { investigationGroups } from '../../../../shared/platform/sampleData.js';
 import { saveWorkflowStep } from '../data/db.js';
 import { actionCandidates, actionsOfWhys, emptyAction, localToday, normalizeAction } from '../logic/actions.js';
 import { getLabel } from '../logic/lookups.js';
+import { analysisCompletedCandidates } from '../logic/notifications.js';
 import {
   canDoFiveWhy,
   canPerformAnalysis,
@@ -182,10 +183,10 @@ export default function RootCauseStep({ event, onSaved }) {
     return { ...event, immediateActions: completeImmediateActions({ ...event, immediateActions }), actions, rca, updatedBy: user.id, updatedAt: now };
   }
 
-  async function save(updated) {
+  async function save(updated, alerts = []) {
     setSaving(true);
     try {
-      const saved = await saveWorkflowStep(updated);
+      const saved = await saveWorkflowStep(updated, alerts);
       // The step keeps showing what was stored (e.g. who completed it and when).
       setAnalysis(saved.rca);
       setImmediateActions(saved.immediateActions);
@@ -214,7 +215,7 @@ export default function RootCauseStep({ event, onSaved }) {
     setErrors(found);
     if (Object.keys(found).length > 0) return;
     const completed = completeAnalysis(work, work.rca, user.id, now);
-    await save(completed);
+    await save(completed, analysisCompletedCandidates(completed));
     // The analyst goes on with the plan's actions (005 remarks).
     if (currentStep(completed) === 'actions') navigate(`/events/${event.recordNumber}/steps/actions`);
   }

@@ -15,6 +15,7 @@ import {
 
 const NOW = '2026-10-26T10:00:00.000Z';
 const byId = (id) => users.find((user) => user.id === id);
+const sent = (alerts) => alerts.map(({ recipientId, type }) => ({ recipientId, type }));
 
 function phases(required) {
   return Object.fromEntries(
@@ -71,26 +72,20 @@ describe('action plan owners (005)', () => {
 });
 
 describe('action plan lifecycle (005)', () => {
-  it('deploys Planned actions and alerts each assignee once', () => {
+  it('deploys Planned actions and tells the reviewer, not the assignees (007)', () => {
     const event = makeEvent(['review', 'actions'], {
       actions: [action('a1', { assigneeIds: ['user-ana', 'user-diego'] }), action('a2', { assigneeIds: ['user-diego', 'user-felix'] })],
     });
     const { event: deployed, alerts } = deployPlan(event, 'user-carla', NOW, users);
     expect(deployed.actions.map((item) => item.status)).toEqual(['onGoing', 'onGoing']);
     expect(deployed.actionPlan).toMatchObject({ deployedBy: 'user-carla', deployedAt: NOW, completedAt: null });
-    // Felix Tanaka cannot see a Lyon event.
-    expect(alerts).toEqual([
-      { recipientId: 'user-ana', type: 'Action assigned to you' },
-      { recipientId: 'user-diego', type: 'Action assigned to you' },
-    ]);
+    expect(sent(alerts)).toEqual([{ recipientId: 'user-carla', type: 'Action plan deployed' }]);
   });
 
-  it('adds On Going actions after deployment, with an alert', () => {
+  it('adds On Going actions after deployment', () => {
     const deployed = makeEvent(['review', 'actions'], { actionPlan: { deployedAt: NOW } });
-    const { event, alerts } = addAction(deployed, action('a3'), 'user-carla', NOW, users);
-    expect(event.actions[0].status).toBe('onGoing');
-    expect(alerts).toEqual([{ recipientId: 'user-ana', type: 'Action assigned to you' }]);
-    expect(addAction(makeEvent(['review', 'actions']), action('a4'), 'user-carla', NOW, users).event.actions[0].status).toBe('planned');
+    expect(addAction(deployed, action('a3'), 'user-carla', NOW).actions[0].status).toBe('onGoing');
+    expect(addAction(makeEvent(['review', 'actions']), action('a4'), 'user-carla', NOW).actions[0].status).toBe('planned');
   });
 
   it('records due date changes and deletes Planned actions only', () => {
@@ -128,7 +123,7 @@ describe('action plan lifecycle (005)', () => {
     expect(result.event.actionPlan.completedAt).toBeFalsy();
     result = setActionStatus(result.event, 'a2', 'cancelled', 'user-carla', NOW, users);
     expect(result.event).toMatchObject({ status: 'In Progress', actionPlan: { completedBy: 'user-carla', completedAt: NOW } });
-    expect(result.alerts).toEqual([{ recipientId: 'user-carla', type: 'Action plan ready for validation' }]);
+    expect(sent(result.alerts)).toEqual([{ recipientId: 'user-carla', type: 'Action plan ready for validation' }]);
     event = makeEvent(['review', 'actions'], { actions: [action('a1', { status: 'onGoing' })], actionPlan: { deployedAt: NOW } });
     expect(setActionStatus(event, 'a1', 'completed', 'user-ana', NOW, users).event.status).toBe('Closed');
   });

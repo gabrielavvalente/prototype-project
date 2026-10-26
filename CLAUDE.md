@@ -77,7 +77,7 @@ session and data through an `AppContext`.
 
 **UI.** Mantine components styled by `shared/theme.css` variables (colors, pillar colors
 `--color-pillar-*`, `.pillar-tag`, `.pillar-dot`). Gotcha: the theme greys out
-`input[readonly]` but excludes `.mantine-Select-input`, because Mantine selects use a read-only
+`input[readonly]` but excludes `.mantine-Select-input` and `.mantine-MultiSelect-inputField`, because Mantine selects use a read-only
 input internally. `apps/event-reporting/src/app.css` is long and layered: later rules override
 earlier ones, so append overrides at the end.
 

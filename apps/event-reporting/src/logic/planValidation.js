@@ -2,6 +2,7 @@
 // action plan was effective, then closes the event or sends it back to Actions.
 
 import { getManagersToAlert } from './access.js';
+import { validationCandidates } from './notifications.js';
 
 // The event's reviewer; with no review in its workflow, the Managers who can see it (VAL-1).
 export function validatorIds(event, users) {
@@ -22,15 +23,15 @@ export function validateValidation(answer) {
   return errors;
 }
 
-// Effective: Closed, the reporter is told. Not effective: back to Actions, the plan opens again and
-// its owners are told (VAL-3, VAL-4). Returns { event, alerts: [{ recipientId, type }] }.
+// Effective: Closed. Not effective: back to Actions, the plan opens again (VAL-3, VAL-4).
+// Returns { event, alerts } (candidates of NT-3).
 export function completeValidation(event, answer, userId, now, ownerIds) {
   const validation = { effective: answer.effective, reason: answer.effective ? '' : answer.reason.trim(), by: userId, at: now };
   const validations = [...(event.validations ?? []), validation];
   if (answer.effective) {
     const closed = { ...event, validations, status: 'Closed', closedAt: now };
-    return { event: closed, alerts: [{ recipientId: event.reporterId, type: 'Event closed' }] };
+    return { event: closed, alerts: validationCandidates(closed, ownerIds) };
   }
   const reopened = { ...event, validations, status: 'In Progress', actionPlan: { ...event.actionPlan, completedBy: null, completedAt: null } };
-  return { event: reopened, alerts: ownerIds.map((recipientId) => ({ recipientId, type: 'Action plan not effective' })) };
+  return { event: reopened, alerts: validationCandidates(reopened, ownerIds) };
 }

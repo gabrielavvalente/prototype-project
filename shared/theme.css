@@ -386,7 +386,7 @@ input[type='radio'] {
 /* Mantine selects use a read-only input to open their list: they are not read-only fields. */
 input:disabled,
 select:disabled,
-input[readonly]:not(.mantine-Select-input) {
+input[readonly]:not(.mantine-Select-input):not(.mantine-MultiSelect-inputField) {
   background: var(--color-surface-muted);
   color: var(--color-muted);
 }
