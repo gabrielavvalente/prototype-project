@@ -150,13 +150,13 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ## Phase 7: Apply the change to the capabilities
 
-- [ ] T019 Create `specs/capabilities/action-plan.md` from `.specify/templates/capability-template.md`
+- [X] T019 Create `specs/capabilities/action-plan.md` from `.specify/templates/capability-template.md`
   with the rules AP-1 to AP-13, the scenarios and the decisions of the spec; replace RCA-12, RCA-13
   and RCA-16 in `specs/capabilities/root-cause-analysis.md`, EL-12, EL-17, EL-18 and EL-19 in
   `specs/capabilities/event-library.md`; in `specs/domain.md` the Steps rule, the Glossary entry
   Action and the capability map (Action plan specified). The capabilities must read as the current
   behavior: no "was", no change history.
-- [ ] T020 Check the counts and names of every changed scenario against the demo data
+- [X] T020 Check the counts and names of every changed scenario against the demo data
 
 ---
 

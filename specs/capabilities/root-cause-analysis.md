@@ -3,7 +3,8 @@
 **Product**: Event Reporting (the step and the designation)
 **Builds on**: [domain](../domain.md) (roles, visibility, workflow and steps),
 [platform data](platform-data.md) (people, groups, demo events), Event reporting (immediate
-actions), Event review (the review form and its decision)
+actions), Event review (the review form and its decision), [action plan](action-plan.md) (the
+actions created from whys)
 **Status**: built
 
 The reviewer designates who analyzes a valid event; the designated people find the root causes
@@ -16,7 +17,7 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
   saving, completing, alerts, history.
 - **Out**: risk-assessment gap question, related hazards, attachments, Safety Alert / Warning,
   field-level audit trail, export or print of the 5 Why diagram, editing groups, Behavioral /
-  Conditional classification of root causes, action status and follow-up (Action plan capability).
+  Conditional classification of root causes, following the actions ([action plan](action-plan.md)).
 
 ## Rules
 
@@ -87,7 +88,8 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
   - A why card shows "Why N" (its depth), the number of its actions, an **X** to delete it, its
     answer, a **Root cause** switch, and buttons **Add why** (only when it has no next why and
     N < 5), **Branch** (adds an alternative answer to the same question beside it; on a Why 1, a
-    second first why under the same cause) and **Add action** (disabled until it has an answer).
+    second first why under the same cause) and **Add action** (disabled until it has an answer),
+    which opens the action popup of the [action plan](action-plan.md) (AP-4) with that why fixed.
   - A root cause only highlights its card: no classification is asked and every button stays
     available. Any why can be a root cause, with or without whys below it.
   - Deleting a why deletes the whys below it (after confirmation when actions would be lost); a
@@ -95,14 +97,10 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
   - Several next whys sit side by side; the area scrolls sideways on narrow screens.
   - Done when at least one why (anywhere, not one per cause) is a root cause and every root cause
     has an answer.
-- **RCA-13 Actions**: created from an answered why in a popup that shows the why's answer, with
-  description, assignees (1–5 people whose access includes the event's plant and pillar, chosen in
-  a searchable multiple choice), due date (any date) and priority (Emergency, High, Medium, Low),
-  all required; button **Create** (Save when editing). Deleting an action asks for confirmation.
-  Under 5 Why, **Actions (n)** lists them in compact lines — the why's answer on one line; the
-  description, priority, assignees and due date on the next — with edit and delete icons.
-  Actions belong to the event (the Action plan capability will use them). They are not required to
-  complete.
+- **RCA-13 Actions**: the actions created from the whys are the event's action plan's
+  ([action plan](action-plan.md) AP-1), Planned until the plan is deployed. Under 5 Why, **Actions
+  (n)** lists them in the plan's compact lines (AP-6), with edit and delete icons for the analysts;
+  deleting asks for confirmation. They are not required to complete the analysis.
 - **RCA-14 Learnings**: "What did we learn?", required text.
 
 ### Saving and completing
@@ -110,8 +108,10 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 - **RCA-15** **Save** keeps everything (statement, immediate actions, parts, actions, learnings)
   without completing and shows "Saved at HH:MM".
 - **RCA-16** **Complete analysis** requires 6M Done, 5 Why Done and the learnings; otherwise
-  nothing at all is saved (not even the other parts) and each missing part shows its message. Completing records who and when and
-  moves the event to its next required step (In Progress), or closes it when none is left.
+  nothing at all is saved (not even the other parts) and each missing part shows its message.
+  Completing records who and when and moves the event to its next required step (In Progress) —
+  Actions when the workflow requires it or the plan has actions (AP-3) — or closes it when none is
+  left.
 - **RCA-17** A completed analysis shows "Completed by <name> on <date>"; the event history shows
   "Root cause analysis completed by <name>".
 
@@ -181,7 +181,8 @@ From freshly reset [demo data](platform-data.md). Carla Mendes is a reviewer of 
    highlighted and nothing else is asked. Branch Why 2: a second Why 2 appears beside it. A path
    offers no Add why after Why 5. Delete the branched Why 2 with its X. (RCA-12)
 9. **Actions** — Add action is disabled on an empty why. On Why 3, Add action: the popup shows Why
-   3's answer; fill description, Diego and Eva, a due date, High → Create. *Then* Why 3 shows
+   3's answer; fill description, Diego and Eva, a due date, High, Notify maintenance No → Create
+   (department and workshop come from the event). *Then* Why 3 shows
    "1 action" and Actions (1) lists the why's answer and the action below it. Edit it, then
    delete it. Create one again, then delete Why 2: a confirmation warns that the action goes too.
    (RCA-12, RCA-13)
