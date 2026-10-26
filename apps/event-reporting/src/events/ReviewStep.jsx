@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, MultiSelect, Textarea } from '@mantine/core';
+import { Alert, Button, MultiSelect, Select, Textarea } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { availableValues, listsForPillar } from '../../../../shared/platform/masterData.js';
 import { groupsCovering } from '../../../../shared/platform/groups.js';
@@ -20,6 +20,7 @@ import {
   isReviewer,
   leadsToAnalysis,
   REASON_NEEDING_COMMENT,
+  SINGLE_CHOICE_LISTS,
   validateReview,
 } from '../logic/review.js';
 import { assigneeIds, canPerformAnalysis } from '../logic/rootCause.js';
@@ -309,19 +310,24 @@ function ClassificationFields({ event, review, set, errorsFor, masterData }) {
       {masterData &&
         reviewLists(event.pillarId).map((list) => {
           const required = assessment.requiredListIds.includes(list.id);
+          const common = {
+            id: `list-${list.id}`,
+            label: required ? list.label : `${list.label} (optional)`,
+            required,
+            searchable: true,
+            clearable: true,
+            data: listOptions(list, masterData.values, masterData.activations, event.plantId),
+            error: errorsFor(`list-${list.id}`)[0]?.message,
+          };
+          const setIds = (ids) => set({ classification: { ...review.classification, [list.id]: ids } });
           return (
             <div className="field" key={list.id}>
-              <MultiSelect
-                id={`list-${list.id}`}
-                label={required ? list.label : `${list.label} (optional)`}
-                required={required}
-                searchable
-                clearable
-                data={listOptions(list, masterData.values, masterData.activations, event.plantId)}
-                value={review.classification[list.id] || []}
-                error={errorsFor(`list-${list.id}`)[0]?.message}
-                onChange={(ids) => set({ classification: { ...review.classification, [list.id]: ids } })}
-              />
+              {/* Standards and Hazards take a single value, kept as a one-value list (005 remarks). */}
+              {SINGLE_CHOICE_LISTS.includes(list.id) ? (
+                <Select {...common} value={review.classification[list.id]?.[0] ?? null} onChange={(id) => setIds(id ? [id] : [])} />
+              ) : (
+                <MultiSelect {...common} value={review.classification[list.id] || []} onChange={setIds} />
+              )}
             </div>
           );
         })}
@@ -350,9 +356,9 @@ function ValidFields({ event, review, set, errorsFor, masterData }) {
           <SeverityFields event={event} review={review} set={set} errorsFor={errorsFor} />
         </ReviewSection>
       )}
-      {(asksFurtherAnalysis(event) || leadsToAnalysis(event, review)) && (
+      {(asksFurtherAnalysis(event, review) || leadsToAnalysis(event, review)) && (
         <ReviewSection title="Next step">
-          {asksFurtherAnalysis(event) && (
+          {asksFurtherAnalysis(event, review) && (
             <YesNoField
               id="furtherAnalysis"
               label="Do you want to further analyze?"

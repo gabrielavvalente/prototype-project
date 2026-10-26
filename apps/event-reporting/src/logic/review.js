@@ -73,16 +73,21 @@ export function stepStates(event) {
   });
 }
 
-// "Do you want to further analyze?" is asked only when the workflow does not already require
-// Root cause analysis.
-export function asksFurtherAnalysis(event) {
-  return !event.workflow?.phases.rootCause?.required;
+// Lists of which a review picks a single value (review remarks 2026-10-26).
+export const SINGLE_CHOICE_LISTS = ['standards', 'hazards'];
+
+const analysisRequired = (event) => Boolean(event.workflow?.phases.rootCause?.required);
+
+// "Do you want to further analyze?" is asked only for a critical (red) event whose workflow does
+// not already require Root cause analysis (review remarks 2026-10-26).
+export function asksFurtherAnalysis(event, review) {
+  return !analysisRequired(event) && criticalFlagsOf(event, review).length > 0;
 }
 
 // Whether a valid review sends the event to Root cause analysis: required by the workflow, or
 // asked for with "further analyze" = Yes.
 export function leadsToAnalysis(event, review) {
-  return !asksFurtherAnalysis(event) || review.furtherAnalysis === true;
+  return analysisRequired(event) || (asksFurtherAnalysis(event, review) && review.furtherAnalysis === true);
 }
 
 // The Review button: a configured reviewer, an event waiting for review, not taken by someone else.
@@ -113,7 +118,8 @@ function validateStatement(statement, reporterName) {
 function validateAssessment(review, event, errors) {
   const assessment = assessmentFor(event);
   for (const listId of assessment.requiredListIds) {
-    if (!(review.classification?.[listId] || []).length) errors[`list-${listId}`] = 'Choose at least one value.';
+    const message = SINGLE_CHOICE_LISTS.includes(listId) ? 'Choose a value.' : 'Choose at least one value.';
+    if (!(review.classification?.[listId] || []).length) errors[`list-${listId}`] = message;
   }
   if (assessment.potential && !review.potential) errors.potential = `Rate the ${assessment.potentialTitle.toLowerCase()}.`;
   if (assessment.actual && !review.actual) errors.actual = `Rate the ${assessment.actualTitle.toLowerCase()}.`;
@@ -122,7 +128,7 @@ function validateAssessment(review, event, errors) {
   if (flag && criticalFlagsOf(event, review).includes(flag) && !review.criticalTypeId) {
     errors.criticalTypeId = `Choose the ${flag} type.`;
   }
-  if (asksFurtherAnalysis(event) && typeof review.furtherAnalysis !== 'boolean') {
+  if (asksFurtherAnalysis(event, review) && typeof review.furtherAnalysis !== 'boolean') {
     errors.furtherAnalysis = 'Say whether the event should be analyzed further.';
   }
   const assignees = review.rcaAssignees;
@@ -172,7 +178,7 @@ function decidedFields(event, review) {
     sipConfirmed: assessment.sipQuestion ? review.sipConfirmed : null,
     criticalFlags,
     criticalTypeId: criticalFlags.includes(typedFlag(event)) ? review.criticalTypeId : '',
-    furtherAnalysis: asksFurtherAnalysis(event) ? review.furtherAnalysis : null,
+    furtherAnalysis: asksFurtherAnalysis(event, review) ? review.furtherAnalysis : null,
     rcaAssignees: leadsToAnalysis(event, review) ? review.rcaAssignees : null,
   };
 }

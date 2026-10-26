@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canStartReview, claimReview, completeReview, currentStep, stepStates, validateReview } from './review.js';
+import { canStartReview, claimReview, completeReview, currentStep, leadsToAnalysis, stepStates, validateReview } from './review.js';
 
 const NOW = '2026-10-25T10:00:00.000Z';
 
@@ -16,6 +16,15 @@ function makeEvent(required, changes = {}) {
   const workflow = { phases: phases(required) };
   workflow.phases.review.reviewerIds = ['user-carla', 'user-eva'];
   return { id: 'e1', status: 'Open', workflow, review: null, ...changes };
+}
+
+// An Environment event and a review confirming it is a SIP: a critical (red) event.
+function envEvent(required) {
+  return { ...makeEvent(required), familyCode: 'EVE', levelCode: 'EvE4' };
+}
+
+function criticalReview() {
+  return { decision: 'valid', statement: 'x', sipConfirmed: true, criticalTypeId: 'sipTypeEnv-1', classification: { aspects: ['a1'], impacts: ['i1'] } };
 }
 
 const carla = { id: 'user-carla' };
@@ -86,9 +95,12 @@ describe('review', () => {
     expect(validateReview({ decision: 'invalid', invalidReason: 'Duplicated' }, event, '')).toEqual({});
   });
 
-  it('asks "further analyze" only when the workflow does not require Root cause analysis', () => {
-    const asked = makeEvent(['review']);
-    expect(Object.keys(validateReview({ decision: 'valid', statement: 'x' }, asked, ''))).toEqual(['furtherAnalysis']);
+  it('asks "further analyze" only for a critical event whose workflow does not require the analysis (005 remarks)', () => {
+    expect(Object.keys(validateReview(criticalReview(), envEvent(['review']), ''))).toEqual(['furtherAnalysis']);
+    // Not critical: not asked, and no analysis.
+    const calm = { ...criticalReview(), sipConfirmed: false };
+    expect(validateReview(calm, envEvent(['review']), '')).toEqual({});
+    expect(leadsToAnalysis(envEvent(['review']), { ...calm, furtherAnalysis: true })).toBe(false);
     const designated = { userIds: [], groupIds: ['group-lyon-hs'] };
     expect(validateReview({ decision: 'valid', statement: 'x', rcaAssignees: designated }, makeEvent(['review', 'rootCause']), '')).toEqual({});
   });
@@ -97,9 +109,16 @@ describe('review', () => {
     const empty = { userIds: [], groupIds: [] };
     const required = validateReview({ decision: 'valid', statement: 'x', rcaAssignees: empty }, makeEvent(['review', 'rootCause']), '');
     expect(Object.keys(required)).toEqual(['rcaAssignees']);
-    const asked = validateReview({ decision: 'valid', statement: 'x', furtherAnalysis: true }, makeEvent(['review']), '');
+    const asked = validateReview({ ...criticalReview(), furtherAnalysis: true }, envEvent(['review']), '');
     expect(Object.keys(asked)).toEqual(['rcaAssignees']);
-    expect(validateReview({ decision: 'valid', statement: 'x', furtherAnalysis: false }, makeEvent(['review']), '')).toEqual({});
+    expect(validateReview({ ...criticalReview(), furtherAnalysis: false }, envEvent(['review']), '')).toEqual({});
+  });
+
+  it('asks a single Standard and Hazard (005 remarks)', () => {
+    const tf = { ...makeEvent(['review']), familyCode: 'TF', levelCode: 'TF4' };
+    const errors = validateReview({ decision: 'valid', statement: 'x', classification: {} }, tf, '');
+    expect(errors['list-standards']).toBe('Choose a value.');
+    expect(errors['list-hazards']).toBe('Choose a value.');
   });
 
   it('keeps the designation only when the analysis will happen (004)', () => {
@@ -133,12 +152,12 @@ describe('review', () => {
     expect(invalid).toEqual({ reviewerId: undefined, claimedAt: undefined, decision: 'invalid', invalidReason: 'Useless', invalidComment: '', reviewedAt: NOW });
   });
 
-  it('sends the event to Root cause analysis when the reviewer asks for it', () => {
-    const event = makeEvent(['review', 'actions']);
-    const analyzed = completeReview(event, { decision: 'valid', statement: 'x', furtherAnalysis: true }, NOW);
+  it('sends a critical event to Root cause analysis when the reviewer asks for it', () => {
+    const event = envEvent(['review', 'actions']);
+    const analyzed = completeReview(event, { ...criticalReview(), furtherAnalysis: true }, NOW);
     expect(analyzed.status).toBe('In Progress');
     expect(currentStep(analyzed)).toBe('rootCause');
-    const notAnalyzed = completeReview(event, { decision: 'valid', statement: 'x', furtherAnalysis: false }, NOW);
+    const notAnalyzed = completeReview(event, { ...criticalReview(), furtherAnalysis: false }, NOW);
     expect(currentStep(notAnalyzed)).toBe('actions');
   });
 
