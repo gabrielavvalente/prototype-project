@@ -6,7 +6,7 @@ import { organization, users, workflowSettings } from '../../../../shared/platfo
 import { getPlants } from '../../../../shared/platform/organization.js';
 import { workflowForEvent } from '../../../../shared/platform/workflow.js';
 import { getSubmittedStatus } from '../logic/submission.js';
-import { getManagersToAlert } from '../logic/access.js';
+import { deliverAlerts, submissionCandidates } from '../logic/notifications.js';
 import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 
 // ---------------------------------------------------------------------------
@@ -272,16 +272,16 @@ const sample = buildSampleEvents();
 export const events = sample.events;
 export const counters = sample.counters;
 
-// A few "Event submitted" alerts: one per Manager for the two latest submitted events of each plant.
+// The submission alerts of the two latest submitted events of each plant, every switch on
+// (007 research R6).
 export const alerts = getPlants(organization)
   .flatMap((plant) =>
     events.filter((event) => event.status !== 'Draft' && event.plantId === plant.id).slice(-2),
   )
   .flatMap((event) =>
-    getManagersToAlert(users, event).map((manager) => ({
-      id: `sample-alert-${event.id}-${manager.id}`,
-      recipientId: manager.id,
-      type: 'Event submitted',
+    deliverAlerts(submissionCandidates(event, users, []), { event, actorId: event.reporterId, users }).map((alert) => ({
+      id: `sample-alert-${event.id}-${alert.recipientId}`,
+      ...alert,
       eventId: event.id,
       createdAt: event.submittedAt,
     })),

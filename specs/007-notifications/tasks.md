@@ -46,7 +46,7 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Goal**: Settings, rules and changes stored and protected
 
-- [ ] T004 In `shared/platform/platformData.js`: version 2 creating only missing stores
+- [X] T004 In `shared/platform/platformData.js`: version 2 creating only missing stores
   (`notificationSettings`, `notificationRules`, `notificationChanges`; research R1); reset clears
   them; `getNotificationSettings(userIds)`, `setNotificationSetting(actor, userId, type, on)`,
   `getNotificationRules(plantId)`, `saveNotificationRule(user, rule)` (turns on "Event submitted"
@@ -64,16 +64,16 @@ checked with the spec's acceptance scenarios through the launcher.
 
 **Scenarios**: 1–8, 13
 
-- [ ] T005 In `apps/event-reporting/src/data/db.js`: `submitEvent` and `saveWorkflowStep` take
+- [X] T005 In `apps/event-reporting/src/data/db.js`: `submitEvent` and `saveWorkflowStep` take
   candidates and deliver them (settings and rules loaded before the transaction, R2); taking the
   review clears the other reviewers' "Event to review" and marks the taker's read (R5) (NT-1,
   NT-3, NT-9, ER-18, ES-9)
-- [ ] T006 In `apps/event-reporting/src/events/ReviewStep.jsx`, `RootCauseStep.jsx`,
+- [X] T006 In `apps/event-reporting/src/events/ReviewStep.jsx`, `RootCauseStep.jsx`,
   `ActionPlanStep.jsx`, `ValidationStep.jsx`: pass the candidates of their stage with the acting
   person (NT-3, RV-13, RCA-2, AP-9, AP-12, VAL-3, VAL-4)
-- [ ] T007 [P] In `apps/event-reporting/src/events/EventDetail.jsx`: the submission banner "Its
+- [X] T007 [P] In `apps/event-reporting/src/events/EventDetail.jsx`: the submission banner "Its
   reviewers and the Managers of this plant have been alerted." (ER-19)
-- [ ] T008 [P] In `apps/event-reporting/src/data/sampleData.js`: demo alerts from the submission
+- [X] T008 [P] In `apps/event-reporting/src/data/sampleData.js`: demo alerts from the submission
   candidates of the two latest submitted events of each plant (R6, Demo data changes)
 
 **Checkpoint**: Scenarios 1–8 and 13 pass

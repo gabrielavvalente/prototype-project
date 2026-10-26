@@ -1,8 +1,13 @@
 // Browser database (IndexedDB) for the app, see data-model.md and research R2.
 
 import { openDB } from 'idb';
-import { resetPlatformData } from '../../../../shared/platform/platformData.js';
-import { getManagersToAlert } from '../logic/access.js';
+import {
+  getNotificationRules,
+  getNotificationSettings,
+  loadPlatform,
+  resetPlatformData,
+} from '../../../../shared/platform/platformData.js';
+import { deliverAlerts, submissionCandidates } from '../logic/notifications.js';
 import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 import { completeImmediateActions, getSubmittedStatus } from '../logic/submission.js';
 import * as sampleData from './sampleData.js';
@@ -160,10 +165,12 @@ export function saveChanges(args) {
 }
 
 // Submit: gives the next record number, keeps the workflow in force (002 FR-012), sets status Open
-// — or Closed when only Submission is required (002 FR-026) — and alerts the Managers and the
-// Shared with users (FR-016).
-// The counter is read and increased in the same transaction, so two events never share a number.
-export function submitEvent({ users, workflow, ...args }) {
+// — or Closed when only Submission is required (002 FR-026) — with the submission alerts (NT-3).
+// The counter is read and increased in the same transaction, so two events never share a number;
+// the rules and settings are read before it (an IndexedDB transaction cannot wait for another
+// database, 007 research R2).
+export async function submitEvent({ users, workflow, ...args }) {
+  const [rules, settings] = await Promise.all([getNotificationRules(args.event.plantId), getNotificationSettings()]);
   return writeEvent(args, async (tx, event, now) => {
     const counterId = getCounterId(event.familyCode, new Date().getFullYear());
     const counters = tx.objectStore('counters');
@@ -177,26 +184,34 @@ export function submitEvent({ users, workflow, ...args }) {
     event.submittedAt = now;
     event.closedAt = event.status === 'Closed' ? now : null;
 
-    const managerIds = getManagersToAlert(users, event).map((manager) => manager.id);
-    const sharedIds = event.sharedWithIds.filter((id) => !managerIds.includes(id));
-    const alerts = [
-      ...managerIds.map((recipientId) => ({ recipientId, type: 'Event submitted' })),
-      ...sharedIds.map((recipientId) => ({ recipientId, type: 'Event shared with you' })),
-    ];
+    const candidates = submissionCandidates(event, users, rules);
+    const alerts = deliverAlerts(candidates, { event, actorId: args.userId, users, settings });
     for (const alert of alerts) {
       tx.objectStore('alerts').put({ id: newId(), ...alert, eventId: event.id, createdAt: now });
     }
   });
 }
 
-// Saves a workflow step (taking the review, the decision, the root cause analysis) with its
-// alerts in one transaction. alerts: [{ recipientId, type }]
-export async function saveWorkflowStep(event, alerts = []) {
+// Saves a workflow step (taking the review, the decision, the root cause analysis, the plan) with
+// its alerts in one transaction. candidates: the stage's alerts (logic/notifications.js), delivered
+// for event.updatedBy (NT-1, NT-2). clearReviewAlerts: the review was just taken, so the other
+// reviewers' "Event to review" go and the taker's is read (NT-3, research R5).
+export async function saveWorkflowStep(event, candidates = [], { clearReviewAlerts = false } = {}) {
+  const [{ users }, settings] = await Promise.all([loadPlatform(), getNotificationSettings()]);
+  const alerts = deliverAlerts(candidates, { event, actorId: event.updatedBy, users, settings });
   const db = await getDatabase();
   const tx = db.transaction(['events', 'alerts'], 'readwrite');
   tx.objectStore('events').put(event);
   for (const alert of alerts) {
     tx.objectStore('alerts').put({ id: newId(), ...alert, eventId: event.id, createdAt: event.updatedAt });
+  }
+  if (clearReviewAlerts) {
+    const store = tx.objectStore('alerts');
+    const toReview = (await store.getAll()).filter((alert) => alert.eventId === event.id && alert.type === 'Event to review');
+    for (const alert of toReview) {
+      if (alert.recipientId !== event.updatedBy) store.delete(alert.id);
+      else if (!alert.readAt) store.put({ ...alert, readAt: event.updatedAt });
+    }
   }
   await tx.done;
   return event;

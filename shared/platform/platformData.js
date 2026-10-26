@@ -4,19 +4,30 @@
 
 import { masterValues } from './catalogs.js';
 import { allowedValueActions, getList, ownActivation, planImport, validateValue } from './masterData.js';
-import { getPlantName } from './organization.js';
+import { canChangeSetting, canManagePlant, describeRule, settingFor, validateRule } from './notifications.js';
+import { getPillarIdsForPlant, getPlantName } from './organization.js';
 import { getRole, LEVEL_LABELS } from './permissions.js';
 import * as sampleData from './sampleData.js';
 import { getAll, getAllByIndex, openDatabase, runTransaction } from './storage.js';
 import { analysisWithoutReview, cellStateFor, PHASE_LABELS } from './workflow.js';
 
 const DATABASE_NAME = 'platform';
-const DATABASE_VERSION = 1;
+// Version 2 adds the notification stores (007); the upgrade only creates missing stores.
+const DATABASE_VERSION = 2;
 
 // Lists that cannot be edited in any app yet: refreshed from the sample data on every start.
 const FIXED_STORES = ['users', 'organization', 'reference'];
 // Data changed in the Control Panel: seeded once, kept afterwards.
-const EDITABLE_STORES = ['workflowSettings', 'masterValues', 'activations', 'audit', 'notifications'];
+const EDITABLE_STORES = [
+  'workflowSettings',
+  'masterValues',
+  'activations',
+  'audit',
+  'notifications',
+  'notificationSettings',
+  'notificationRules',
+  'notificationChanges',
+];
 const STORES = [...FIXED_STORES, ...EDITABLE_STORES, 'meta'];
 
 const INDEXES = {
@@ -25,10 +36,15 @@ const INDEXES = {
   activations: ['valueId'],
   audit: ['pillarId'],
   notifications: ['userId'],
+  notificationSettings: ['userId'],
+  notificationRules: ['plantId'],
+  notificationChanges: ['plantId'],
 };
 
+// Creates the stores a browser does not have yet, so an upgrade keeps the data (007 research R1).
 function createStores(db) {
   for (const name of STORES) {
+    if (db.objectStoreNames.contains(name)) continue;
     const store = db.createObjectStore(name, { keyPath: name === 'meta' ? 'key' : 'id' });
     for (const field of INDEXES[name] || []) {
       store.createIndex(field, field);
@@ -412,4 +428,119 @@ export async function getAudit(pillarId) {
   const db = await openPlatform();
   const entries = await getAllByIndex(db, 'audit', 'pillarId', pillarId);
   return entries.sort((a, b) => b.at.localeCompare(a.at));
+}
+
+// ---------------------------------------------------------------------------
+// Notification settings (feature 007, NT-5 to NT-11)
+// ---------------------------------------------------------------------------
+
+// The information settings that were changed, for some people (all when userIds is omitted).
+export async function getNotificationSettings(userIds) {
+  const db = await openPlatform();
+  const settings = await getAll(db, 'notificationSettings');
+  return userIds ? settings.filter((item) => userIds.includes(item.userId)) : settings;
+}
+
+export async function getNotificationRules(plantId) {
+  const db = await openPlatform();
+  return getAllByIndex(db, 'notificationRules', 'plantId', plantId);
+}
+
+export async function getNotificationChanges(plantId) {
+  const db = await openPlatform();
+  const changes = await getAllByIndex(db, 'notificationChanges', 'plantId', plantId);
+  return changes.sort((a, b) => b.at.localeCompare(a.at));
+}
+
+function settingRecord(userId, type, on, actorId, at) {
+  return { id: `${userId}|${type}`, userId, type, on, setById: actorId, setAt: at };
+}
+
+function changeEntry(plantId, actor, what, action, before, after, at) {
+  return { id: newId(), plantId, at, userId: actor.id, what, action, before, after };
+}
+
+const onOff = (on) => (on ? 'On' : 'Off');
+
+// The person or a Site Admin turns an information alert on or off; the latest change wins (NT-5).
+// A Site Admin's change (from the page of plantId) is saved with its Changes entry (NT-11).
+export async function setNotificationSetting(actor, userId, type, on, plantId = null) {
+  const { users } = await loadPlatform();
+  const person = users.find((user) => user.id === userId);
+  const byAdmin = actor.id !== userId;
+  if (!canChangeSetting(actor, person, type) || (byAdmin && !canManagePlant(actor, plantId))) {
+    throw new Error('You are not allowed to change this setting.');
+  }
+  const before = settingFor(await getNotificationSettings([userId]), userId, type);
+  const now = new Date().toISOString();
+  const db = await openPlatform();
+  await runTransaction(db, ['notificationSettings', 'notificationChanges'], 'readwrite', (stores) => {
+    stores.notificationSettings.put(settingRecord(userId, type, on, actor.id, now));
+    if (byAdmin) {
+      stores.notificationChanges.put(
+        changeEntry(plantId, actor, `${person.name} · ${type}`, on ? 'Turned on' : 'Turned off', onOff(before.on), onOff(on), now),
+      );
+    }
+  });
+}
+
+function checkRuleRights(user, plantId, pillarId) {
+  if (!canManagePlant(user, plantId) || !getPillarIdsForPlant(user, plantId).includes(pillarId)) {
+    throw new Error('You are not allowed to change the notifications of this plant.');
+  }
+}
+
+// Adds (rule.id empty) or saves a submission rule; people added to it get "Event submitted" turned
+// on (NT-7, NT-8). Throws with the validation messages joined when the rule is not valid.
+export async function saveNotificationRule(user, rule) {
+  checkRuleRights(user, rule.plantId, rule.pillarId);
+  const errors = validateRule(rule);
+  if (Object.keys(errors).length > 0) {
+    throw new Error(Object.values(errors).join(' '));
+  }
+  const platform = await loadPlatform();
+  const existing = rule.id ? (await getNotificationRules(rule.plantId)).find((item) => item.id === rule.id) : null;
+  const now = new Date().toISOString();
+  const saved = { ...rule, id: rule.id || newId(), departmentIds: rule.departmentIds || [], authorId: user.id, updatedAt: now };
+  const added = saved.userIds.filter((id) => !existing?.userIds.includes(id));
+  const settings = await getNotificationSettings(added);
+  const pillar = platform.reference.find((item) => item.id === rule.pillarId);
+  const db = await openPlatform();
+  await runTransaction(db, ['notificationRules', 'notificationSettings', 'notificationChanges'], 'readwrite', (stores) => {
+    stores.notificationRules.put(saved);
+    stores.notificationChanges.put(
+      changeEntry(
+        rule.plantId,
+        user,
+        `${pillar.label} rule`,
+        existing ? 'Edited' : 'Added',
+        existing ? describeRule(existing, platform) : '—',
+        describeRule(saved, platform),
+        now,
+      ),
+    );
+    for (const userId of added) {
+      const before = settingFor(settings, userId, 'Event submitted');
+      stores.notificationSettings.put(settingRecord(userId, 'Event submitted', true, user.id, now));
+      if (!before.on) {
+        const name = platform.users.find((item) => item.id === userId)?.name ?? userId;
+        stores.notificationChanges.put(changeEntry(rule.plantId, user, `${name} · Event submitted`, 'Turned on', 'Off', 'On', now));
+      }
+    }
+  });
+  return saved;
+}
+
+export async function deleteNotificationRule(user, plantId, ruleId) {
+  const rule = (await getNotificationRules(plantId)).find((item) => item.id === ruleId);
+  if (!rule) return;
+  checkRuleRights(user, plantId, rule.pillarId);
+  const platform = await loadPlatform();
+  const pillar = platform.reference.find((item) => item.id === rule.pillarId);
+  const now = new Date().toISOString();
+  const db = await openPlatform();
+  await runTransaction(db, ['notificationRules', 'notificationChanges'], 'readwrite', (stores) => {
+    stores.notificationRules.delete(ruleId);
+    stores.notificationChanges.put(changeEntry(plantId, user, `${pillar.label} rule`, 'Deleted', describeRule(rule, platform), '—', now));
+  });
 }

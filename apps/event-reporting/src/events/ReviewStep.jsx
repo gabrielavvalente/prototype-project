@@ -11,6 +11,7 @@ import { saveWorkflowStep } from '../data/db.js';
 import ChipGroup from '../create/ChipGroup.jsx';
 import { SelectField, YesNoField } from '../create/fields.jsx';
 import { getLabel, getReferenceList } from '../logic/lookups.js';
+import { reviewCandidates } from '../logic/notifications.js';
 import {
   asksFurtherAnalysis,
   canStartReview,
@@ -57,11 +58,6 @@ function listOptions(list, values, activations, plantId) {
 
 // Everyone told when an event is archived: the reporter, people it was shared with and the other
 // reviewers (core FR-6).
-function archiveRecipients(event, reviewerId) {
-  const ids = [event.reporterId, ...event.sharedWithIds, ...(event.workflow.phases.review.reviewerIds || [])];
-  return [...new Set(ids)].filter((id) => id && id !== reviewerId);
-}
-
 // The form starts from the event: the statement from its description, the Environment SIP answer
 // from the submission; HCL and SPL start unanswered (003 FR-013, FR-025; 006 review remarks).
 function startingReview(event) {
@@ -410,10 +406,10 @@ export default function ReviewStep({ event, onSaved }) {
     getMasterData().then(setMasterData);
   }, []);
 
-  async function save(updated, alerts) {
+  async function save(updated, alerts, options) {
     setSaving(true);
     try {
-      onSaved(await saveWorkflowStep({ ...updated, updatedBy: user.id, updatedAt: new Date().toISOString() }, alerts));
+      onSaved(await saveWorkflowStep({ ...updated, updatedBy: user.id, updatedAt: new Date().toISOString() }, alerts, options));
     } finally {
       setSaving(false);
     }
@@ -424,14 +420,7 @@ export default function ReviewStep({ event, onSaved }) {
     setErrors(found);
     if (Object.keys(found).length > 0) return;
     const reviewed = completeReview(event, effective, new Date().toISOString());
-    const alerts =
-      reviewed.status === 'Archived'
-        ? archiveRecipients(event, user.id).map((recipientId) => ({ recipientId, type: `Event archived (${review.invalidReason})` }))
-        : assigneeIds(reviewed, investigationGroups, users).map((recipientId) => ({
-            recipientId,
-            type: 'Root cause analysis assigned to you',
-          }));
-    await save(reviewed, alerts);
+    await save(reviewed, reviewCandidates(reviewed, assigneeIds(reviewed, investigationGroups, users)));
     // A reviewer who also performs the analysis goes straight to it; others see the review summary
     // (004 FR-003a).
     if (canPerformAnalysis(user, reviewed, investigationGroups)) {
@@ -448,7 +437,7 @@ export default function ReviewStep({ event, onSaved }) {
         {canStartReview(user, event) ? (
           <>
             <p>Assign yourself to review it. The other reviewers will no longer be able to.</p>
-            <Button type="button" disabled={saving} onClick={() => save(claimReview(event, user.id, new Date().toISOString()), [])}>
+            <Button type="button" disabled={saving} onClick={() => save(claimReview(event, user.id, new Date().toISOString()), [], { clearReviewAlerts: true })}>
               Assign myself as reviewer
             </Button>
           </>
