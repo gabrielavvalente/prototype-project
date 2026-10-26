@@ -93,7 +93,7 @@ Actions and Validation; `TF-26-0002` (TF3, Lyon) requires Review only; both have
 action ("Area made safe and people informed") and the reviewers Carla Mendes, Eva Novak and Diego
 Laurent.
 
-1. **Owner without analysis** — Carla reviews `TF-26-0005` as valid and rates it below High (not critical, so "Do you want to further analyze?" is not asked). *Then*
+1. **Owner without analysis** — Carla reviews `TF-26-0005` as valid and rates it below Very Critical (not critical, so "Do you want to further analyze?" is not asked). *Then*
    the current step is Actions: "1 action · 1 completed · 0 overdue · Not deployed", the immediate
    action under Immediate actions, Add action and Deploy action plan for Carla; Diego sees the plan
    read-only. (AP-1, AP-2, AP-6, AP-11)
@@ -115,11 +115,11 @@ Laurent.
    "Action plan ready for validation", and the history shows "Action plan deployed by Carla Mendes"
    and "Action plan completed". (AP-7, AP-12, AP-13)
 7. **Immediate actions are enough** — Felix Tanaka reviews `TF-26-0010` (TF2, Curitiba: Review and
-   Actions; one immediate action) as valid, rated below High, then Deploy action plan without
+   Actions; one immediate action) as valid, rated below Very Critical, then Deploy action plan without
    any corrective action. *Then* the plan completes at once and the event is Closed. (AP-9, AP-12)
 8. **Optional plan** — Carla takes the review of `TF-26-0002`: its Actions step shows Optional and
    she can open it, with its immediate action listed; she adds a corrective action, then completes
-   the review as valid, rated below High (not asked to analyze further). *Then* the event is In
+   the review as valid, rated below Very Critical (not asked to analyze further). *Then* the event is In
    Progress at Actions
    instead of Closed; after deploying and completing the action, the plan completes and the event
    is Closed (no Validation). Ana sees the Actions step of `TF-26-0006` as "This step is not

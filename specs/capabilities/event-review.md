@@ -52,11 +52,11 @@ classifies it, assesses its severity, and sends it to its next step or archives 
 - **RV-8** Potential and actual are separate framed blocks ("The credible worst case, had the
   circumstances been slightly different." / "What actually happened."); the reviewer clicks the
   matrix cell that fits ("Click the cell that fits."). Score = impact weight × duration weight;
-  bands Low 2–15, Medium 20–30, High 50–100.
+  bands **Moderate** 2–19, **Critical** 20–49, **Very Critical** 50–100.
 
   | Matrix | Impacts (weight) | Durations (weight) |
   |---|---|---|
-  | Injury — "Impact of the injury" × "Duration of the impact (recovery time)" | Severe 5 (prevents most or all private and recreational activities) · Significant 3 (significantly reduces them) · Minor 1 (minimal impact on the person's life) | Minimal 2 (1 week or less) · Short term 5 (more than 1 week, less than 1 month) · Medium term 10 (more than 1 month, less than 6 months) · Long term / Permanent 20 (6 months or more, or may never fully recover) |
+  | Injury — "Impact of the injury" × "Duration of the impact (recovery time)" | Severe 5 (prevents most or all private and recreational activities) · Significant 3 (significantly reduces them) · Minor 1 (minimal impact on the person's life) | Minimal 2 ("Recovery will take 1 week or less") · Short term 5 ("Recovery will take between 1 week and 3 months") · Medium term 10 ("Recovery will take more than 3 but less than 6 months") · Long term / Permanent 20 ("Recovery will take 6 months or more, or the person may never fully recover") |
   | Loss — "Impact of the loss" × "Duration of the disruption" *(provisional)* | Major 5 (loss of a production line or major equipment, or harm beyond the site) · Significant 3 (equipment damaged, a workshop's production stopped) · Minor 1 (limited damage) | Minimal 2 (back to normal within a day) · Short term 5 (more than a day, less than a week) · Medium term 10 (more than a week, less than a month) · Long term 20 (a month or more) |
 
 - **RV-9** The critical flags (domain Critical events) follow the answers live, with a "Critical
@@ -99,8 +99,8 @@ classifies it, assesses its severity, and sends it to its next step or archives 
 - **RV-14** Valid → the next required step (Root cause analysis when required or asked for) with
   the event In Progress, or **Closed** when nothing else is required.
 - **RV-15** A completed review shows its summary: Reviewer, Reviewed on, Valid event; then either
-  Reason (and Comment), or Event statement, each list's values, the ratings ("<score> — <Band>
-  (<impact> × <duration>)"), "Is this event a SIP?", Critical (flags or No), the type, Further
+  Reason (and Comment), or Event statement, each list's values, the ratings ("<score> — <Moderate |
+  Critical | Very Critical> (<impact> × <duration>)", e.g. "50 — Very Critical (Severe × Medium term)"), "Is this event a SIP?", Critical (flags or No), the type, Further
   analysis, Root cause analysis by.
 - **RV-16** Once reviewed, the submission can no longer be edited ([event reporting](event-reporting.md)
   ER-21); the history shows "Review taken by …" and "Review completed — valid" or "— archived
@@ -122,8 +122,8 @@ Mendes, Eva Novak and Diego Laurent.
    reporter in the event statement.". (RV-11)
 4. **Safety assessment** — Standards and Hazards (one value each), Body Parts and Injuries are
    required (TF2). Potential
-   Severe × Medium term = 50 High → SIP, the "Critical event" badge and a required SIP type; Actual
-   Minor × Short term = 5 Low. "Do you want to further analyze?" proposes Yes. (RV-7 to RV-10)
+   Severe × Medium term = 50 Very Critical → SIP, the "Critical event" badge and a required SIP type; Actual
+   Minor × Short term = 5 Moderate. "Do you want to further analyze?" proposes Yes. (RV-7 to RV-10)
 5. **Only available values** — After Carla deactivates Hazard A1 for Lyon in the Control Panel, A1
    is not offered in the review of a Lyon event. (RV-6)
 6. **Environment** — Reviewing `EVE-26-0001` asks Aspects and Impacts and "Is this event a SIP?"
@@ -131,7 +131,7 @@ Mendes, Eva Novak and Diego Laurent.
 7. **Industrial Risk** — Reviewing `SRE-26-0001` (SRE4) asks Categories and Potential loss only;
    Major × Long term makes it SPL with a type. (RV-7, RV-9)
 8. **Valid, nothing else required** — `TF-26-0006` (TF4, Review only) reviewed valid with Potential
-   Minor × Minimal (Low): "Do you want to further analyze?" is not asked → Closed. With Severe ×
+   Minor × Minimal (Moderate): "Do you want to further analyze?" is not asked → Closed. With Severe ×
    Long term instead, the event is SIP and the question appears, proposing Yes. (RV-10, RV-14)
 9. **Summary and history** — The completed review of `TF-26-0003` shows its summary rows; the
    Submission step's history shows "Review taken by Diego Laurent" and "Review completed — valid";
