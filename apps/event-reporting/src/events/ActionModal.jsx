@@ -1,17 +1,26 @@
 import { useState } from 'react';
-import { Button, Modal, MultiSelect, Textarea, TextInput } from '@mantine/core';
+import { Button, Modal, MultiSelect, NativeSelect, Textarea, TextInput } from '@mantine/core';
+import { useApp } from '../AppContext.js';
 import ChipGroup from '../create/ChipGroup.jsx';
+import { YesNoField } from '../create/fields.jsx';
 import { ACTION_PRIORITIES, MAX_ASSIGNEES, validateAction } from '../logic/actions.js';
+import DueDateHistory from './DueDateHistory.jsx';
 
 const PRIORITY_OPTIONS = ACTION_PRIORITIES.map((priority) => ({ value: priority, label: priority }));
 
-// Creates or edits an action linked to a why (004 FR-011a). Nothing is kept until Create (Save when
-// editing); the analysis itself is stored with the step's Save.
-export default function ActionModal({ action, whyText, candidates, onSave, onClose }) {
-  const isNew = !action.description;
+const childrenOf = (organization, parentId, type) => organization.filter((node) => node.parentId === parentId && node.type === type);
+
+// Creates or edits an action of the event's action plan (005 AP-4, AP-8), from a why of the analysis
+// (the why is then fixed) or from the Actions step (an optional why of the analysis). Nothing is
+// kept until Create (Save when editing).
+export default function ActionModal({ action, isNew, event, whys, whyFixed, candidates, onSave, onClose }) {
+  const { organization } = useApp();
   const [draft, setDraft] = useState(action);
   const [errors, setErrors] = useState({});
   const set = (changes) => setDraft((current) => ({ ...current, ...changes }));
+  const departments = childrenOf(organization, event.plantId, 'department');
+  const workshops = draft.location.departmentId ? childrenOf(organization, draft.location.departmentId, 'workshop') : [];
+  const why = whys?.find((item) => item.id === draft.whyId);
 
   function save() {
     const found = validateAction(draft);
@@ -21,11 +30,24 @@ export default function ActionModal({ action, whyText, candidates, onSave, onClo
 
   return (
     <Modal opened onClose={onClose} title={isNew ? 'New action' : 'Edit action'} size="lg">
-      <div className="action-modal-why">
-        <span className="field-label">Why</span>
-        <p>{whyText.trim() || 'No answer written yet.'}</p>
-      </div>
+      {whyFixed ? (
+        <div className="action-modal-why">
+          <span className="field-label">Why</span>
+          <p>{why?.answer.trim() || 'No answer written yet.'}</p>
+        </div>
+      ) : (
+        whys && (
+          <NativeSelect
+            label="Why (optional)"
+            description="The why of the 5 Why this action addresses."
+            data={[{ value: '', label: 'None' }, ...whys.map((item) => ({ value: item.id, label: item.answer }))]}
+            value={draft.whyId ?? ''}
+            onChange={(e) => set({ whyId: e.target.value || null })}
+          />
+        )
+      )}
       <Textarea
+        mt="sm"
         label="Description"
         required
         data-autofocus
@@ -57,6 +79,7 @@ export default function ActionModal({ action, whyText, candidates, onSave, onClo
         error={errors.dueDate}
         onChange={(e) => set({ dueDate: e.target.value })}
       />
+      <DueDateHistory history={draft.dueDateHistory} />
       <ChipGroup
         id="action-priority"
         label="Priority"
@@ -65,6 +88,32 @@ export default function ActionModal({ action, whyText, candidates, onSave, onClo
         value={draft.priority}
         errors={errors.priority ? [{ field: 'action-priority', message: errors.priority }] : []}
         onChange={(priority) => set({ priority })}
+      />
+      <div className="action-location">
+        <NativeSelect
+          label="Department"
+          required
+          data={[{ value: '', label: 'Choose' }, ...departments.map((node) => ({ value: node.id, label: node.name }))]}
+          value={draft.location.departmentId}
+          error={errors.location && !draft.location.departmentId ? errors.location : undefined}
+          onChange={(e) => set({ location: { departmentId: e.target.value, workshopId: '' } })}
+        />
+        <NativeSelect
+          label="Workshop"
+          required
+          disabled={!draft.location.departmentId}
+          data={[{ value: '', label: 'Choose' }, ...workshops.map((node) => ({ value: node.id, label: node.name }))]}
+          value={draft.location.workshopId}
+          error={errors.location && draft.location.departmentId && !draft.location.workshopId ? errors.location : undefined}
+          onChange={(e) => set({ location: { ...draft.location, workshopId: e.target.value } })}
+        />
+      </div>
+      <YesNoField
+        id="action-maintenance"
+        label="Notify maintenance"
+        value={draft.notifyMaintenance}
+        errors={errors.notifyMaintenance ? [{ field: 'action-maintenance', message: errors.notifyMaintenance }] : []}
+        onChange={(notifyMaintenance) => set({ notifyMaintenance })}
       />
       <div className="form-actions">
         <Button type="button" variant="default" onClick={onClose}>

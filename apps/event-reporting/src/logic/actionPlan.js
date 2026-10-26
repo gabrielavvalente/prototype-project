@@ -18,10 +18,13 @@ export function planOwners(event, groups, users) {
   return getManagersToAlert(users, event).map((user) => user.id);
 }
 
-// The Actions step can be worked on while it is the current step, or an Optional step (AP-3).
+// The Actions step can be worked on while it is the current step, or an Optional step (AP-3) — not
+// while the analysis is in progress, since the analysis saves the actions it lists.
 function stepIsOpen(event) {
   if (event.actionPlan?.completedAt) return false;
-  if (currentStep(event) === 'actions') return true;
+  const step = currentStep(event);
+  if (step === 'actions') return true;
+  if (step === 'rootCause') return false;
   return stepStates(event).find((item) => item.step === 'actions').state === 'optional';
 }
 

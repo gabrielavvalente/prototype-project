@@ -49,6 +49,8 @@ describe('steps of an event', () => {
     const completed = { ...withAction, actionPlan: { completedAt: NOW } };
     expect(currentStep(completed)).toBeNull();
     expect(stepStates(completed)[3].state).toBe('done');
+    const duringReview = makeEvent(['review'], { status: 'In Progress', review: { reviewerId: 'user-carla', decision: null }, actions: [{ id: 'a1' }] });
+    expect(stepStates(duringReview)[3].state).toBe('optional');
   });
 
   it('has no current step once Archived or Closed', () => {

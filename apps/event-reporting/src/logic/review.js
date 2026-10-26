@@ -61,9 +61,12 @@ export function stepStates(event) {
   const currentIndex = current ? STEPS.indexOf(current) : lastReached;
   return STEPS.map((step, index) => {
     let state = 'upcoming';
-    if (!isRequired(event, step)) state = step === 'actions' && ACTIVE_STATUSES.includes(event.status) ? 'optional' : 'skipped';
+    const optionalActions = step === 'actions' && ACTIVE_STATUSES.includes(event.status) && !event.workflow?.phases.actions?.required;
+    if (!isRequired(event, step)) state = optionalActions ? 'optional' : 'skipped';
     else if (step === current) state = 'current';
     else if (index < currentIndex || isDone(event, step)) state = 'done';
+    // A plan started on a not-required Actions step stays Optional until it is the current step.
+    else if (optionalActions) state = 'optional';
     return { step, state };
   });
 }

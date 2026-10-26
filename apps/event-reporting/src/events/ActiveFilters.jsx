@@ -30,7 +30,7 @@ function describeFilters(filters, { users, organization }) {
   return badges;
 }
 
-function FilterBadge({ label, onRemove }) {
+export function FilterBadge({ label, onRemove }) {
   return (
     <span className="filter-badge">
       {label}

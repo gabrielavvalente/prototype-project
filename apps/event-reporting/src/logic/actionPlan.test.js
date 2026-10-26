@@ -66,6 +66,8 @@ describe('action plan owners (005)', () => {
     expect(canEditPlan(byId('user-carla'), optional, investigationGroups, users)).toBe(true);
     const closed = makeEvent(['review'], { status: 'Closed' });
     expect(canEditPlan(byId('user-carla'), closed, investigationGroups, users)).toBe(false);
+    const analysing = makeEvent(['review', 'rootCause'], { review: { decision: 'valid', reviewerId: 'user-carla', rcaAssignees: { userIds: ['user-carla'], groupIds: [] } } });
+    expect(canEditPlan(byId('user-carla'), analysing, investigationGroups, users)).toBe(false);
   });
 });
 

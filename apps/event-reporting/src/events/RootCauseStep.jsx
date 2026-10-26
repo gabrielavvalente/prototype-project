@@ -3,7 +3,7 @@ import { Alert, Badge, Button, Textarea } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { investigationGroups } from '../../../../shared/platform/sampleData.js';
 import { saveWorkflowStep } from '../data/db.js';
-import { actionCandidates, actionsOfWhys, emptyAction } from '../logic/actions.js';
+import { actionCandidates, actionsOfWhys, emptyAction, localToday, normalizeAction } from '../logic/actions.js';
 import { getLabel } from '../logic/lookups.js';
 import {
   canDoFiveWhy,
@@ -20,8 +20,8 @@ import {
 import { completeImmediateActions } from '../logic/submission.js';
 import { validateImmediateAction } from '../logic/validation.js';
 import Icon from '../shell/Icon.jsx';
+import ActionLines from './ActionLines.jsx';
 import ActionModal from './ActionModal.jsx';
-import ActionsSummary from './ActionsSummary.jsx';
 import FiveW1HPart from './FiveW1HPart.jsx';
 import FiveWhyPart from './FiveWhyPart.jsx';
 import ImmediateActionsList from './ImmediateActionsList.jsx';
@@ -110,8 +110,9 @@ export default function RootCauseStep({ event, onSaved }) {
   const { user, users } = useApp();
   const [analysis, setAnalysis] = useState(() => (event.rca ? normalizeAnalysis(event.rca) : emptyAnalysis(event)));
   const [immediateActions, setImmediateActions] = useState(event.immediateActions);
-  const [actions, setActions] = useState(event.actions ?? []);
-  const [editing, setEditing] = useState(null);
+  // The plan's actions (005 RCA-13); actions saved before 005 get its defaults.
+  const [actions, setActions] = useState(() => (event.actions ?? []).map((action) => normalizeAction(action, event)));
+  const [editing, setEditing] = useState(null); // { action, isNew }
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
@@ -273,12 +274,19 @@ export default function RootCauseStep({ event, onSaved }) {
               onChange={(whys) => set({ whys })}
               actions={actions}
               readOnly={readOnly}
-              onAddAction={(whyId) => setEditing(emptyAction(whyId))}
+              onAddAction={(whyId) => setEditing({ action: emptyAction(whyId, event), isNew: true })}
               onRemoveWhy={removeWhyAndActions}
             />
           </fieldset>
           <h4 className="rca-subheading">Actions ({actions.length})</h4>
-          <ActionsSummary actions={actions} whyText={whyText} readOnly={readOnly} onEdit={setEditing} onDelete={deleteAction} />
+          <ActionLines
+            actions={actions}
+            whyText={whyText}
+            today={localToday()}
+            canEdit={!readOnly}
+            onEdit={(action) => setEditing({ action, isNew: false })}
+            onDelete={deleteAction}
+          />
         </CollapsiblePart>
         <Part title="Learnings" error={errors.learnings}>
           <Textarea
@@ -294,8 +302,11 @@ export default function RootCauseStep({ event, onSaved }) {
       </div>
       {editing && (
         <ActionModal
-          action={editing}
-          whyText={whyText(editing.whyId)}
+          action={editing.action}
+          isNew={editing.isNew}
+          event={event}
+          whys={analysis.whys}
+          whyFixed
           candidates={actionCandidates(event, users)}
           onSave={keepAction}
           onClose={() => setEditing(null)}
