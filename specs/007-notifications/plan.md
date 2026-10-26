@@ -71,13 +71,13 @@ apps/event-reporting/src/
 ├── data/db.js               # submit and saveWorkflowStep deliver candidates; take-review clearing
 ├── data/sampleData.js       # demo alerts from the submission candidates
 ├── events/ReviewStep.jsx    # review, archive and analysis candidates; taking the review clears
-├── events/RootCauseStep.jsx # (or where the analysis completes) "Root cause analysis completed"
-├── events/EventForm*.jsx    # banner text (ER-19)
+├── events/RootCauseStep.jsx, ActionPlanStep.jsx, ValidationStep.jsx  # their stage's candidates
+├── events/EventDetail.jsx   # banner text (ER-19)
 ├── shell/AccountSheet.jsx   # "My notifications" entry (ES-6)
-├── settings/MyNotifications.jsx  # NEW page (NT-4, NT-5)
+├── shell/MyNotifications.jsx     # NEW page (NT-4, NT-5)
 └── App.jsx                  # route #/notifications
 apps/control-panel/src/
-├── pages/PillarPicker.jsx   # the Notifications cards for Site Admins (CPW-2, NT-6)
+├── shell/PillarPicker.jsx   # the Notifications cards for Site Admins (CPW-2, NT-6)
 ├── notifications/*.jsx      # NEW page: Submission rules, People, Changes tabs (NT-7 to NT-11)
 └── App.jsx                  # routes #/notifications/:plantId/…
 ```
