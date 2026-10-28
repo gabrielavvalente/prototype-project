@@ -9,6 +9,7 @@ import {
 } from '../../../../shared/platform/notifications.js';
 import { saveNotificationRule } from '../../../../shared/platform/platformData.js';
 import Sheet from '../shell/Sheet.jsx';
+import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 // Adds or edits a submission rule of a pillar; mistakes are shown next to each field (NT-7, NT-8).
 export default function RuleForm({ plantId, pillar, rule, onSaved, onClose }) {
@@ -29,6 +30,7 @@ export default function RuleForm({ plantId, pillar, rule, onSaved, onClose }) {
     e.preventDefault();
     const found = validateRule(draft);
     setErrors(found);
+    if (Object.keys(found).length > 0) scrollToFirstProblemSoon();
     if (Object.keys(found).length > 0) return;
     try {
       await saveNotificationRule(user, draft);

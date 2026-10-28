@@ -96,7 +96,8 @@ with its workflow steps.
   event shows its current step (Submission right after submitting, with the banner of the event
   reporting capability).
 - **EL-18** Steps that cannot be opened say "This step is not required for this event." or "This
-  step has not been reached yet.". Review, Root cause analysis, Actions and Validation are described
+  step has not been reached yet."; an optional Root cause analysis step opens for the people who can
+  start it ([root cause analysis](root-cause-analysis.md) RCA-18). Review, Root cause analysis, Actions and Validation are described
   by their capabilities.
 - **EL-19** The **Submission** step shows every section, the photos and videos, the immediate
   actions and the **history** (Created by …, Submitted — record number …, Review taken by …,

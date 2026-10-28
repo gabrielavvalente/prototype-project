@@ -6,6 +6,7 @@ import { getPlantName, getPlants, plantFacets } from '../../../../shared/platfor
 import { saveWorkflowStep } from '../data/db.js';
 import { buildPackage, classificationNames, namedParts, namesToHide, reachPlants, sharedPlantIds, shareWarning } from '../logic/sharingHub.js';
 import Sheet from '../shell/Sheet.jsx';
+import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 function Choices({ label, options, value, onChange }) {
   return (
@@ -40,10 +41,12 @@ export default function ShareToHub({ event, onShared, onClose }) {
   async function share() {
     if (named.length > 0) {
       setError(`This Safety Warning names someone (${named.join(', ')}) and cannot be shared.`);
+      scrollToFirstProblemSoon();
       return;
     }
     if (reached.length === 0) {
       setError(noReach);
+      scrollToFirstProblemSoon();
       return;
     }
     setSaving(true);

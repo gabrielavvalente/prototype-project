@@ -11,6 +11,7 @@ import { completeValidation, lastValidation, validateValidation, validatorIds } 
 import { currentStep } from '../logic/review.js';
 import { analysisWhys, withPlanDefaults } from './ActionPlanStep.jsx';
 import PlanActions from './PlanActions.jsx';
+import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 function formatDateTime(isoText) {
   return new Date(isoText).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
@@ -33,6 +34,7 @@ export default function ValidationStep({ event, onSaved }) {
   async function submit() {
     const found = validateValidation(answer);
     setErrors(found);
+    if (Object.keys(found).length > 0) scrollToFirstProblemSoon();
     if (Object.keys(found).length > 0) return;
     setSaving(true);
     try {

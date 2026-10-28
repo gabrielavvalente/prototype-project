@@ -28,6 +28,7 @@ import { assigneeIds, canPerformAnalysis } from '../logic/rootCause.js';
 import { assessmentFor, criticalFlagsOf, ratingText, typedFlag } from '../logic/severity.js';
 import SeverityMatrix from './SeverityMatrix.jsx';
 import SummaryList from './SummaryList.jsx';
+import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 // The pillar's own lists, without lists that only group another one (Body Part Categories group
 // Body Parts, which are shown by category). Lists shown read-only from another pillar (H&S
@@ -242,7 +243,7 @@ function SeverityFields({ event, review, set, errorsFor }) {
 
 // Who will perform the root cause analysis: the plant's users who can see the pillar and the
 // groups covering the plant and pillar, in one multiple choice (004 FR-001).
-function AssigneesField({ event, review, set, errorsFor }) {
+export function AssigneesField({ event, review, set, errorsFor }) {
   const { users } = useApp();
   const people = users.filter((person) => getPillarIdsForPlant(person, event.plantId).includes(event.pillarId));
   const groups = groupsCovering(investigationGroups, event);
@@ -411,6 +412,7 @@ export default function ReviewStep({ event, onSaved }) {
   async function submit() {
     const found = validateReview(effective, event, getLabel(users, event.reporterId));
     setErrors(found);
+    if (Object.keys(found).length > 0) scrollToFirstProblemSoon();
     if (Object.keys(found).length > 0) return;
     const reviewed = completeReview(event, effective, new Date().toISOString());
     await save(reviewed, reviewCandidates(reviewed, assigneeIds(reviewed, investigationGroups, users)));

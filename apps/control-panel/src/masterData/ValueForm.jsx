@@ -5,6 +5,7 @@ import { validateValue } from '../../../../shared/platform/masterData.js';
 import { saveValue } from '../../../../shared/platform/platformData.js';
 import { getRole } from '../../../../shared/platform/permissions.js';
 import Sheet from '../shell/Sheet.jsx';
+import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 // Adds a value or edits one (FR-015, FR-019, FR-020). New values belong to the user's level and
 // plants; mistakes are shown next to each field before anything is saved.
@@ -36,6 +37,7 @@ export default function ValueForm({ list, value, values, onSaved, onClose }) {
     };
     const found = validateValue(list, { ...owner, ...draft }, values);
     setErrors(found);
+    if (Object.keys(found).length > 0) scrollToFirstProblemSoon();
     if (Object.keys(found).length > 0) {
       return;
     }

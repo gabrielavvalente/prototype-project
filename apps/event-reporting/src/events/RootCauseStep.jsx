@@ -30,6 +30,7 @@ import FiveWhyPart from './FiveWhyPart.jsx';
 import ImmediateActionsList from './ImmediateActionsList.jsx';
 import { describeAssignees } from './ReviewStep.jsx';
 import SixMPart from './SixMPart.jsx';
+import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 const STATUS = {
   notStarted: { label: 'Not started', color: 'gray' },
@@ -202,6 +203,7 @@ export default function RootCauseStep({ event, onSaved }) {
     const now = new Date().toISOString();
     const work = withWork(now);
     setErrors(work ? {} : { immediateActions: immediateActionsError });
+    if (!work) scrollToFirstProblemSoon();
     if (!work) return;
     await save(work);
     setMessage(`Saved at ${new Date(now).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}.`);
@@ -213,6 +215,7 @@ export default function RootCauseStep({ event, onSaved }) {
     const found = validateAnalysis(analysis);
     if (!work) found.immediateActions = immediateActionsError;
     setErrors(found);
+    if (Object.keys(found).length > 0) scrollToFirstProblemSoon();
     if (Object.keys(found).length > 0) return;
     const completed = completeAnalysis(work, work.rca, user.id, now);
     await save(completed, analysisCompletedCandidates(completed));

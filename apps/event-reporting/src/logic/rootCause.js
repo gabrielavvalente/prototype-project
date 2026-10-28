@@ -312,9 +312,10 @@ export function completeAnalysis(event, analysis, userId, now) {
 // The designated users and the members of the designated groups (also the action plan's owners,
 // 005 AP-2).
 export function designatedIds(event, groups) {
-  const assignees = event.review?.rcaAssignees;
-  if (!assignees) return [];
-  return [...new Set([...assignees.userIds, ...membersOf(groups, assignees.groupIds)])];
+  // The review's designation, or the one made when starting an optional analysis (010 RCA-18).
+  const all = [event.review?.rcaAssignees, event.optionalAnalysis?.rcaAssignees].filter(Boolean);
+  if (all.length === 0) return [];
+  return [...new Set(all.flatMap((assignees) => [...assignees.userIds, ...membersOf(groups, assignees.groupIds)]))];
 }
 
 // Who may fill the analysis in: the designated people while it is the current step; the reviewer
