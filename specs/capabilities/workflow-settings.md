@@ -13,7 +13,7 @@ Reporting gives every new event the resulting workflow.
 ### Settings view
 
 - **WF-1** The Workflow tab's **Settings** view shows one row per level of the pillar (code and
-  name) and one column per phase. Submission is shown "Required" and cannot be changed. The hint
+  name), then its critical row (WF-13), and one column per phase. Submission is shown "Required" and cannot be changed. The hint
   reads "Make a phase Required for your plants. Optional phases are skipped. Changes apply to new
   events only."
 - **WF-2** Each other cell is, for the person:
@@ -40,7 +40,8 @@ Reporting gives every new event the resulting workflow.
   cause analysis Required first ("Make Review Required for <level> first: Root cause analysis
   needs a review (missing at <plants>).") or making Review Optional while it is needed ("Review
   stays Required for <level>: Root cause analysis is required at <plants> and needs a review."),
-  whatever the levels involved. Actions and Validation do not need Review.
+  whatever the levels involved. Actions and Validation do not need Review, nor does the critical
+  row's Root cause analysis: a flagged event has been reviewed.
 
 ### Reviewers
 
@@ -62,17 +63,30 @@ Reporting gives every new event the resulting workflow.
   skipped."
 - **WF-10** Choosing a level row shows "Path of a <level> event at <plant>": the phases in order,
   skipped ones crossed out, ending with "Closed", or "Closed after submission" when only
-  Submission is required.
+  Submission is required. Choosing the critical row shows "Added at <plant> when the review flags
+  <SIP or HCI | SIP | SPL or HCL>": Root cause analysis, Actions and Validation, the ones not
+  required crossed out, or "Nothing is added." when none is.
 
 ### Effect on events
 
 - **WF-11** Each submitted event keeps the workflow in force at its submission (domain Workflow):
   the required phases and the reviewers — the reviewers of every setting requiring Review there,
-  limited to Managers and Site Admins who can see the event's plant and pillar. Changing a
-  setting never changes existing events.
+  limited to Managers and Site Admins who can see the event's plant and pillar — and the critical
+  row's required phases, applied if its review flags it (WF-13). Changing a setting never changes
+  existing events.
 - **WF-12** Every change writes an audit entry ([workspace](control-panel-workspace.md) CPW-6):
   "Made Required" (Optional → Required, or "Required (reviewers: …)" for Review), "Made Optional"
   or "Changed" (reviewers).
+
+### Critical row
+
+- **WF-13** **Critical row**: after the levels, Health & Safety shows a row **SIP/HCI** ("Flagged
+  SIP or HCI by the review"), Environment **SIP** ("Flagged SIP by the review") and Industrial
+  Risk **SPL/HCL** ("Flagged SPL or HCL by the review"); Industrial Hygiene has none. Its Root
+  cause analysis, Actions and Validation cells work as the level rows' (WF-2 to WF-5, WF-8, WF-9,
+  WF-12); its Submission and Review cells read "From the level" and cannot be changed. A phase
+  Required there is added to an event's workflow, whatever its level, as soon as its review flags
+  it (domain Critical events); otherwise the row changes nothing.
 
 ## Acceptance scenarios
 
@@ -80,7 +94,10 @@ From freshly reset [demo data](platform-data.md) (H&S starts with Review TF1–T
 TF1–TF2 at Central by Ludovic Costa, Validation TF1 at Lyon by Eva Novak).
 
 1. **Grid** — Ludovic opens Health & Safety › Workflow: rows TF1–TF5, Submission Required and
-   fixed, Review on for TF1–TF4, Actions on for TF1–TF2. (WF-1, WF-2)
+   fixed, Review on for TF1–TF4, Actions on for TF1–TF2; then "SIP/HCI — Flagged SIP or HCI by the
+   review", Submission and Review "From the level", Root cause analysis on. Environment ends with
+   "SIP", Industrial Risk with "SPL/HCL", Industrial Hygiene with its four disease types only.
+   (WF-1, WF-2, WF-13)
 2. **Locked for lower levels** — Lucas Weber (Cluster Lyon, Porto) sees Review TF1–TF4 locked
    "Required by Central, Ludovic Costa, 20 Oct 2026"; he cannot switch them. (WF-2)
 3. **Cluster requires** — Lucas switches TF2 Root cause analysis on: "Saved — TF2 Root cause
@@ -110,6 +127,16 @@ TF1–TF2 at Central by Ludovic Costa, Validation TF1 at Lyon by Eva Novak).
     review (missing at Lyon, Porto).". Sergio Martins switches SRE1 Review off: refused, "Review stays Required
     for SRE1: Root cause analysis is required at Lyon, Curitiba, Porto and needs a review.".
     (WF-5a)
+11. **Critical row** — Lucas sees SIP/HCI Root cause analysis locked "Required by Central, Ludovic
+    Costa, …" and switches SIP/HCI Validation on: "Saved — SIP/HCI Validation is now Required.
+    Applies to new events.", with no refusal although SIP/HCI has no Review; the H&S Audit shows
+    "SIP/HCI · Validation", "Made Required". Ludovic, Result per plant, Curitiba, SIP/HCI: "Added
+    at Curitiba when the review flags SIP or HCI", Root cause analysis, with Actions and Validation
+    crossed out; Lyon shows Validation too. (WF-5a, WF-10, WF-12, WF-13)
+12. **Critical events keep their settings** — After scenario 11, a TF3 Ana Ribeiro submits at Lyon
+    and Carla reviews with Potential Severe × Long term (SIP) has Root cause analysis and
+    Validation; `TF-26-0002` (submitted before) reviewed the same way has Root cause analysis but
+    no Validation. (WF-11, WF-13)
 
 ## Decisions
 
@@ -118,3 +145,4 @@ TF1–TF2 at Central by Ludovic Costa, Validation TF1 at Lyon by Eva Novak).
 | Who may change a setting | Only people at the same level with an overlapping perimeter (a higher level only adds Required on top). |
 | What is stored | Only Required settings; Optional is the absence of a setting. |
 | Existing events | Keep the workflow of their submission. |
+| Critical events | One more row per pillar (SIP/HCI, SIP, SPL/HCL; none for Industrial Hygiene) adds Root cause analysis, Actions or Validation when the review flags the event; nobody is asked whether to analyse further. |

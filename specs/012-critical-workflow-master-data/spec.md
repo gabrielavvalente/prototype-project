@@ -15,6 +15,8 @@ WF-13 added, scenarios 1 and 7), `specs/capabilities/event-review.md` (RV-6, RV-
 RV-15, scenarios 4, 5 and 8), `specs/capabilities/root-cause-analysis.md` (RCA-1),
 `specs/capabilities/master-data.md` (MD-1, MD-2, MD-4, MD-7, MD-11, MD-12, Initial catalogs,
 scenarios 1, 3, 4, 6 and 9), `specs/capabilities/platform-data.md` (workflow settings),
+the scenarios of `action-plan.md`, `notifications.md` and `safety-communication.md` that answered
+"further analyze",
 `specs/domain.md` (Critical events)
 
 ## Why
@@ -141,8 +143,8 @@ below).
    `TF-26-0002` (TF3, submitted before scenario 2), reviewed the same way, shows Root cause
    analysis but no Validation. (WF-11, WF-13)
 7. **Injuries by body part** — On `TF-26-0003` (TF2) review, Injuries reads "Choose the body parts
-   first."; choosing Ear offers 12 injuries, from "Burn (1°/2° degree)" to "Other", including
-   "Tinnitus (buzzing)" and not "Fracture"; adding Fingers offers 17; choosing "Tinnitus (buzzing)"
+   first."; choosing Ear offers 12 injuries, including "Burn (1°/2° degree)",
+   "Tinnitus (buzzing)" and "Other", not "Fracture"; adding Fingers offers 17; choosing "Tinnitus (buzzing)"
    then removing Ear drops it. (RV-6, MD-4)
 8. **Catalogs** — Ludovic opens Master data: chips Standards, Hazards, Diseases, Body Part
    Categories, Body Parts, Injuries. Standards shows "12 values", from "STD-01 Confined Spaces" to

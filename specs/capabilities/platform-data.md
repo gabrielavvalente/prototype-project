@@ -92,7 +92,9 @@ event keeps only those who can see its plant and pillar).
 | Industrial Risk | SRE1–SRE4 | SRE1, SRE2 | — | — | Sergio Martins |
 | Industrial Hygiene | all four disease types | — | — | — | Ludovic Costa |
 
-TF5, EvE5 and SRE5 require nothing, so their events are Closed at submission.
+TF5, EvE5 and SRE5 require nothing, so their events are Closed at submission. The critical rows
+([workflow settings](workflow-settings.md) WF-13) require Root cause analysis: H&S SIP/HCI by
+Ludovic Costa, Environment SIP by Ed Petrov, Industrial Risk SPL/HCL by Sergio Martins.
 
 ### Events
 

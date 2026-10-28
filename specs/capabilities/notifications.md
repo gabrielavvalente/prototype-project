@@ -133,14 +133,14 @@ From freshly reset [demo data](platform-data.md), in order.
 6. **Closed at review** — Carla reviews `TF-26-0006` (TF4, Review only) as valid, below Very
    Critical. *Then* the event is Closed and Ana gets "Event closed" only. (NT-1, NT-3)
 7. **Analysis and plan** — Carla reviews `TF-26-0002` as valid, Potential Severe × Medium term
-   (SIP, type chosen), "further analyze" Yes, designating Diego. Diego completes the analysis. *Then* Ana and Carla get "Root cause analysis
+   (SIP, type chosen), designating Diego. Diego completes the analysis. *Then* Ana and Carla get "Root cause analysis
    completed". Diego adds a corrective action for Ana and deploys the plan. *Then* Ana and Carla
    get "Action plan deployed", and nobody gets an alert about the action. Ana completes it: the plan
    completes and the event closes (no Validation for TF3). *Then* Ana gets nothing (she did it) and
    Carla gets nothing more. (NT-2, NT-3, AP-9, AP-12)
 8. **Not effective** — Diego reviews `TF-26-0005` (TF1, Lyon: Actions and Validation required,
-   reporter Carla) as valid, Potential Severe × Long term (SIP, type chosen), "further analyze"
-   Yes, designating Ana. Ana completes the analysis, adds a corrective action for herself, deploys
+   reporter Carla) as valid, Potential Severe × Long term (SIP, type chosen),
+   designating Ana. Ana completes the analysis, adds a corrective action for herself, deploys
    the plan and completes the action. *Then* Diego, its validator, gets "Action plan ready for
    validation" and Carla gets "Action plan completed". Diego answers No ("Rack still unstable").
    *Then* Ana gets "Event sent back for rework" and Carla "Action plan not effective". (NT-3,

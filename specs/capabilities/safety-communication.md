@@ -102,13 +102,13 @@ From freshly reset [demo data](platform-data.md), in order.
    greyed, "After the review", and Safety Warning greyed, "After the analysis and the action
    plan"; neither opens. (SC-8, SC-10)
 2. **Alert after review** — Carla Mendes reviews `TF-26-0003` as valid, Potential Severe × Medium
-   term (SIP, type chosen), Actual Minor × Short term, "further analyze" No. *Then* its steps menu
-   shows Communications with Safety Alert "Available" and Safety Warning greyed, "Only after a root
-   cause analysis"; opening the Alert there reads "Safety Alert", `TF-26-0003`, Lyon, Health & Safety, "TF2 — Non-Lost Time
+   term (SIP, type chosen), Actual Minor × Short term, designating Diego Laurent. *Then* its steps
+   menu shows Communications with Safety Alert "Available" and Safety Warning greyed, "After the
+   analysis and the action plan"; opening the Alert there reads "Safety Alert", `TF-26-0003`, Lyon, Health & Safety, "TF2 — Non-Lost Time
    Accident", Critical "SIP", "Potential severity" with the red badge "50 — Very Critical" and
    "(Severe × Medium term)", "Actual severity" with the green badge "5 — Moderate", its
    statement, the immediate action "Area made safe and people informed · High", and Next steps
-   "Actions"; no name appears (not Ana Ribeiro, Tom Baker or Carla Mendes). (SC-2, SC-4, SC-10,
+   "Root cause analysis · Actions"; no name appears (not Ana Ribeiro, Tom Baker or Carla Mendes). (SC-2, SC-4, SC-10,
    EL-17)
 3. **Plant-wide** — Carla reviews `EVE-26-0001` as valid. *Then* Diego Laurent (Lyon: Health &
    Safety, Industrial Risk) sees two Safety Alerts in Safety communications and opens the
@@ -118,7 +118,7 @@ From freshly reset [demo data](platform-data.md), in order.
 4. **No document** — Carla archives `TF-26-0001` (Duplicated) and reviews `OH-26-0001` as valid:
    neither has a Safety Alert, and the list still shows two. (SC-1, SC-4)
 5. **Alert follows the event** — On `TF-26-0002`, Carla, a Manager, attaches two photos while it is
-   Open, then reviews it as valid, Potential Severe × Medium term (SIP), "further analyze" Yes,
+   Open, then reviews it as valid, Potential Severe × Medium term (SIP),
    designating Diego. Diego, in the analysis, adds the immediate action "Edges taped" (Medium).
    *Then* the Alert of `TF-26-0002` lists both immediate actions and Next steps "Root cause
    analysis" (its Actions step is Optional). (SC-4)
