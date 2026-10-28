@@ -72,8 +72,9 @@ anyone.
 - **SC-8** **Safety communications**, a page of the event workspace (EL-1), lists the Safety Alerts
   and the published Safety Warnings of the context's plant, all pillars, newest first: each card
   shows Safety Alert or Safety Warning, the pillar, the level, the record number, the date (review
-  or publication) and the first line of the statement; opening one opens its document. Empty: "No
-  safety communications yet.".
+  or publication) and the first line of the statement; opening one opens its document. Under a
+  published Warning's card, **Share to Hub** and the plants it was shared with, for those who may
+  share it ([sharing hub](sharing-hub.md) SH-1). Empty: "No safety communications yet.".
 - **SC-9** Each document's page has a **Print** button that prints the document only (with the
   browser's print, which can also save it as PDF), and, for people who can open the event, a link
   back to it. Page titles: "Safety Alert — <record> — Event Reporting", "Safety Warning — <record> —

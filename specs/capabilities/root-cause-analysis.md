@@ -120,7 +120,7 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 
 - **RCA-18** **Optional analysis**: after a valid review, when neither the workflow nor the review
   made Root cause analysis required, the step shows **Optional** while the event is In Progress or
-  Closed (never Archived). Its reviewer and the Managers and Site Admins who can see the event open
+  Closed (never Archived, nor locked by its [validation](validation.md) VAL-6). Its reviewer and the Managers and Site Admins who can see the event open
   it and see "This analysis is not required. You can still start it for this event." with **Who
   will perform the root cause analysis?** (as RCA-1) and **Start root cause analysis**, refused
   without anyone ("Choose who will perform the root cause analysis."). Starting it makes Root cause

@@ -18,7 +18,6 @@ import {
 import Icon from '../shell/Icon.jsx';
 import EventTable, { ALL_COLUMN_KEYS, ColumnsMenu } from './EventTable.jsx';
 import ActiveFilters, { FilterBadge } from './ActiveFilters.jsx';
-import FilterSheet from './FilterSheet.jsx';
 import FiltersMenu from './FiltersMenu.jsx';
 import KanbanBoard from './KanbanBoard.jsx';
 import KpiOverview from './KpiOverview.jsx';
@@ -58,7 +57,6 @@ export default function EventLibrary() {
   const [quickFilter, setQuickFilter] = useState('all');
   const [sort, setSort] = useState({ key: 'date', direction: 'desc' });
   const [page, setPage] = useState(1);
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [filterName, setFilterName] = useState('');
   const [selectedSavedFilterId, setSelectedSavedFilterId] = useState('');
@@ -97,7 +95,6 @@ export default function EventLibrary() {
   const visibleColumns = settings.visibleColumns || ALL_COLUMN_KEYS;
 
   const toggleExpanded = useCallback((id) => setExpandedId((current) => (current === id ? null : id)), []);
-  const closeFilters = useCallback(() => setFiltersOpen(false), []);
 
   // Any change to what is shown starts again from page 1.
   function changeSearch(text) {
@@ -227,11 +224,12 @@ export default function EventLibrary() {
           />
         </label>
         <FiltersMenu
+          filters={filters}
+          onApply={changeFilters}
           activeCount={activeFilters}
           savedFilters={savedFilters}
           selectedId={selectedSavedFilterId}
           canSave={activeFilters > 0 || Boolean(search) || quickFilter !== 'all'}
-          onOpenFilters={() => setFiltersOpen(true)}
           onApplySaved={applySavedFilter}
           onSave={() => setSaveModalOpen(true)}
           onDelete={deleteSavedFilter}
@@ -318,7 +316,6 @@ export default function EventLibrary() {
         <Alert color="yellow" variant="light">No events match the current search and filters.</Alert>
       )}
 
-      {filtersOpen && <FilterSheet filters={filters} onApply={changeFilters} onClose={closeFilters} />}
       <Modal
         opened={saveModalOpen}
         onClose={() => setSaveModalOpen(false)}

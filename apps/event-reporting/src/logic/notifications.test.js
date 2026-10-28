@@ -122,7 +122,7 @@ describe('lifecycle alerts (NT-3)', () => {
     ]);
     const reopened = makeEvent({ status: 'In Progress' });
     expect(deliver(validationCandidates(reopened, ['user-diego']), reopened, 'user-carla')).toEqual([
-      { recipientId: 'user-diego', type: 'Action plan not effective' },
+      { recipientId: 'user-diego', type: 'Event sent back for rework' },
       { recipientId: 'user-ana', type: 'Action plan not effective' },
     ]);
   });

@@ -66,7 +66,9 @@ export function stepStates(event) {
     let state = 'upcoming';
     const optionalActions = step === 'actions' && ACTIVE_STATUSES.includes(event.status) && !event.workflow?.phases.actions?.required;
     // An analysis nobody required, after a valid review, can still be started (010 RCA-18).
-    const optionalAnalysis = step === 'rootCause' && event.review?.decision === 'valid' && ['In Progress', 'Closed'].includes(event.status);
+    // Never on an event locked by its validation (011 VAL-6).
+    const locked = event.status === 'Closed' && event.validations?.at(-1)?.effective === true;
+    const optionalAnalysis = step === 'rootCause' && event.review?.decision === 'valid' && ['In Progress', 'Closed'].includes(event.status) && !locked;
     if (!isRequired(event, step)) state = optionalActions || optionalAnalysis ? 'optional' : 'skipped';
     else if (step === current) state = 'current';
     else if (index < currentIndex || isDone(event, step)) state = 'done';

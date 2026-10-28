@@ -25,10 +25,15 @@ export function isClosed(check) {
   return check.state === 'closedYes' || check.state === 'no';
 }
 
-// The plan owners and the Site Admins of the event's plant, once the Warning is published (SH-1).
+// The plan owners, the event's reviewer and the Site Admins of the event's plant, once the Warning is
+// published (SH-1).
 export function canShare(user, event, groups, users) {
   if (warningState(event) !== 'published') return false;
-  return planOwners(event, groups, users).includes(user.id) || (user.role === 'Site Admin' && hasAccessTo(user, event.plantId));
+  return (
+    planOwners(event, groups, users).includes(user.id) ||
+    event.review?.reviewerId === user.id ||
+    (user.role === 'Site Admin' && hasAccessTo(user, event.plantId))
+  );
 }
 
 // A plant matches every chosen region, country and business; the chosen plants are added; never

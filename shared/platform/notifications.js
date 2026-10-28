@@ -9,7 +9,7 @@ export const WORK_ALERTS = [
   'Event to review',
   'Root cause analysis assigned to you',
   'Action plan ready for validation',
-  'Action plan not effective',
+  'Event sent back for rework',
 ];
 
 // Alerts a person can turn off, with the hint of My notifications (NT-4).
@@ -22,7 +22,7 @@ export const INFORMATION_ALERTS = [
   { key: 'Root cause analysis completed', hint: 'The analysis of an event you reported or reviewed was completed.' },
   { key: 'Action plan deployed', hint: 'The action plan of an event you reported or reviewed was deployed.' },
   { key: 'Action plan completed', hint: 'The action plan of an event you reported was completed.' },
-  { key: 'Action plan not effective', hint: 'On an event you reported. Plan owners always get it.' },
+  { key: 'Action plan not effective', hint: 'On an event you reported.' },
   { key: 'Event closed', hint: 'An event you reported or that was shared with you was closed.' },
   { key: 'Shared event received', hint: 'A safety lesson was shared with your plant.' },
 ];
@@ -42,6 +42,7 @@ export const STAGE_ORDER = [
   'Action plan ready for validation',
   'Action plan completed',
   'Action plan not effective',
+  'Event sent back for rework',
   'Event closed',
   'Shared event received',
 ];

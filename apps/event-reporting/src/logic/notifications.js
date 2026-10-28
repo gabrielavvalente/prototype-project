@@ -66,7 +66,7 @@ export function planCompletedCandidates(event, validatorIds) {
 // Effective: closed. Not effective: the owners must act, the reporter is told (VAL-3, VAL-4).
 export function validationCandidates(event, ownerIds) {
   if (event.status === 'Closed') return closedCandidates(event);
-  return [...work(ownerIds, 'Action plan not effective'), ...information([event.reporterId], 'Action plan not effective')];
+  return [...work(ownerIds, 'Event sent back for rework'), ...information([event.reporterId], 'Action plan not effective')];
 }
 
 const stageOf = (candidate) => STAGE_ORDER.indexOf(candidate.key);
@@ -106,4 +106,9 @@ export function sharedAlerts(plantIds, { actorId, users, settings = [] }) {
 // An optional analysis started (010 RCA-18): the designated people get their work alert.
 export function analysisStartedCandidates(analystIds) {
   return work(analystIds, 'Root cause analysis assigned to you');
+}
+
+// A rework sends the event back to its plan owners (011 VAL-7).
+export function reworkCandidates(ownerIds) {
+  return work(ownerIds, 'Event sent back for rework');
 }

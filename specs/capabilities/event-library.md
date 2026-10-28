@@ -23,15 +23,17 @@ with its workflow steps.
   use) and, on Events, the column chooser **Show columns** and the view switch **Kanban** / **List**
   (icon and word). Kanban is the default on phones and List on wider screens; the choice and the
   shown columns are remembered for the person.
-- **EL-3** **Filters** opens a sheet (bottom on phones, side on wide screens) with Type and Level,
+- **EL-3** **Filters** opens a popup under the button with the criteria directly: Type and Level,
   From / To (report date), Location (department down to task), Reporter, SIP (Yes / No), Status
   (Draft, Open, In Progress, Closed, Archived — "Archived events show only when you choose
-  Archived.") and My events; **Clear all** empties it and nothing applies until **Apply
-  filters**. Archived events never show unless the
+  Archived.") and My events, then the saved filters (EL-4); **Clear all** empties it and nothing
+  applies until **Apply filters**, which closes it (as do Escape and a click outside). The popup
+  never runs past the screen: its criteria scroll, Clear all and Apply filters stay at its bottom.
+  Archived events never show unless the
   Status filter asks for them. Filters in use appear as removable badges under the toolbar.
-- **EL-4** **Saved filters** (in the Filters button's menu): "Save current filters" with a filter
-  name keeps the search, the sheet's criteria and the chosen KPI chip for that person; applying one
-  marks it "Applied" in the menu and shows one badge "Saved filter: <name>" (removing it clears
+- **EL-4** **Saved filters** (at the bottom of the Filters popup): "Save current filters" with a filter
+  name keeps the search, the applied criteria and the chosen KPI chip for that person; applying one
+  marks it "Applied" in the popup and shows one badge "Saved filter: <name>" (removing it clears
   it); presets can be deleted. "No saved
   filters yet" when empty.
 - **EL-5** Search, filters and saved filters combine, and every count and chart follows them — the
@@ -140,5 +142,5 @@ From freshly reset [demo data](platform-data.md), Carla Mendes at Lyon, all pill
     opened. Its Submission step shows the history "Created by Ana Ribeiro", "Submitted — record
     number TF-26-0003". (EL-17, EL-18, EL-19)
 11. **Draft page** — Carla's draft opens its page with Continue draft; Ana cannot see it. (EL-16)
-12. **Phone and keyboard** — At 320px the toolbar wraps and the filter sheet opens from the bottom;
+12. **Phone and keyboard** — At 320px the toolbar wraps and the Filters popup fits the screen;
     every chip, card and row works with the keyboard. (Domain)

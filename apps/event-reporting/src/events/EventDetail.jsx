@@ -46,7 +46,11 @@ function buildHistory(event, users) {
   }
   for (const validation of event.validations ?? []) {
     const by = getLabel(users, validation.by);
-    const label = validation.effective ? `Validation: effective — closed by ${by}` : `Validation: not effective — ${validation.reason} (${by})`;
+    const label = validation.effective
+      ? `Validation: effective — closed by ${by}`
+      : validation.rework
+        ? `Rework: ${validation.reason} (${by})`
+        : `Validation: not effective — ${validation.reason} (${by})`;
     items.push({ label, at: validation.at });
   }
   if (event.optionalAnalysis?.startedAt) {
@@ -215,7 +219,8 @@ export function EventHistory({ event }) {
     <Collapsible title="History" open>
       <ol className="timeline">
         {buildHistory(event, users).map((item) => (
-          <li key={item.label}>
+          // The same line can come twice (e.g. validated again after a rework): key by line and time.
+          <li key={`${item.label}-${item.at}`}>
             <span>{item.label}</span>
             <span className="field-hint">{formatDateTime(item.at)}</span>
           </li>
