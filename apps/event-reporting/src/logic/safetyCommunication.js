@@ -6,7 +6,7 @@ import { getPlantName } from '../../../../shared/platform/organization.js';
 import { ACTION_STATUS_LABELS } from './actions.js';
 import { planOwners, planSummary } from './actionPlan.js';
 import { getLabel } from './lookups.js';
-import { STEP_LABELS, stepStates } from './review.js';
+import { requiredByWorkflow, STEP_LABELS, stepStates } from './review.js';
 import { causeName, SIX_M_THEMES } from './rootCause.js';
 import { assessmentFor, bandLabel, ratingText } from './severity.js';
 
@@ -135,7 +135,7 @@ export function warningToShow(event, lookups, today) {
 }
 
 const analysisPossible = (event) =>
-  Boolean(event.rca?.completedAt) || event.review?.furtherAnalysis === true || Boolean(event.workflow?.phases.rootCause?.required);
+  Boolean(event.rca?.completedAt) || event.review?.furtherAnalysis === true || requiredByWorkflow(event, 'rootCause');
 
 // Why a document is not there (yet), or null when nothing prevents it.
 function blockedReason(event) {

@@ -2,13 +2,14 @@ import { useCallback, useState } from 'react';
 import { useApp } from '../AppContext.js';
 import { saveWorkflowSetting } from '../../../../shared/platform/platformData.js';
 import { LEVEL_LABELS } from '../../../../shared/platform/permissions.js';
-import { cellStateFor, CONFIGURABLE_PHASES, PHASE_LABELS } from '../../../../shared/platform/workflow.js';
+import { cellStateFor, CONFIGURABLE_PHASES, CRITICAL_PHASES, levelLabel, PHASE_LABELS } from '../../../../shared/platform/workflow.js';
 import Icon from '../shell/Icon.jsx';
 import ReviewersPicker from './ReviewersPicker.jsx';
 import { formatDate, userName } from './workflowText.js';
 
 // Settings view (FR-006, FR-008, FR-009, FR-010): one row per level, one column per phase.
-// The user switches phases of their own level; what a higher level requires is locked.
+// The user switches phases of their own level; what a higher level requires is locked. The
+// critical row sets only the phases after the review (012 WF-13).
 export default function SettingsGrid({ pillar, role, levels, settings, onSaved }) {
   const { user, users } = useApp();
   const [picker, setPicker] = useState(null); // { levelCode, initialIds } while choosing reviewers
@@ -30,7 +31,7 @@ export default function SettingsGrid({ pillar, role, levels, settings, onSaved }
     setError('');
     try {
       await saveWorkflowSetting(user, { pillarId: pillar.id, levelCode, phase, required, reviewerIds });
-      onSaved(`Saved — ${levelCode} ${PHASE_LABELS[phase]} is now ${required ? 'Required' : 'Optional'}. Applies to new events.`);
+      onSaved(`Saved — ${levelLabel(pillar.id, levelCode)} ${PHASE_LABELS[phase]} is now ${required ? 'Required' : 'Optional'}. Applies to new events.`);
     } catch (saveError) {
       setError(saveError.message);
     }
@@ -55,6 +56,9 @@ export default function SettingsGrid({ pillar, role, levels, settings, onSaved }
   }
 
   function renderCell(level, phase) {
+    if (level.critical && !CRITICAL_PHASES.includes(phase)) {
+      return <span className="cell-from-level">From the level</span>;
+    }
     const cell = cellStateFor(user, settings, { pillarId: pillar.id, levelCode: level.code, phase });
     if (cell.state === 'locked') {
       const source = cell.lockedBy[0];
@@ -85,7 +89,7 @@ export default function SettingsGrid({ pillar, role, levels, settings, onSaved }
           <span className="switch-track" aria-hidden="true" />
           <span className="switch-label">{on ? 'Required' : 'Optional'}</span>
           <span className="visually-hidden">
-            {PHASE_LABELS[phase]} for {level.code}
+            {PHASE_LABELS[phase]} for {level.shownCode}
           </span>
         </button>
         {on && phase === 'review' && (
@@ -120,15 +124,19 @@ export default function SettingsGrid({ pillar, role, levels, settings, onSaved }
           </thead>
           <tbody>
             {levels.map((level) => (
-              <tr key={level.code}>
+              <tr key={level.code} className={level.critical ? 'row--critical' : undefined}>
                 <th scope="row">
-                  <strong>{level.code}</strong>
+                  <strong>{level.shownCode}</strong>
                   <small>{level.label}</small>
                 </th>
                 <td>
-                  <span className="tag tag--dark" title="Always required">
-                    Required
-                  </span>
+                  {level.critical ? (
+                    <span className="cell-from-level">From the level</span>
+                  ) : (
+                    <span className="tag tag--dark" title="Always required">
+                      Required
+                    </span>
+                  )}
                 </td>
                 {CONFIGURABLE_PHASES.map((phase) => (
                   <td key={phase}>{renderCell(level, phase)}</td>

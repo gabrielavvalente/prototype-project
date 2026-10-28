@@ -1,6 +1,6 @@
-// Initial global master data catalogs (spec FR-014), from the source specs in
-// specs/001-event-reporting/source/Control Panel/. Every value is owned by Central and Active.
-// Standards have no code in the source; STD-01… are given here because the spec requires codes.
+// Initial global master data catalogs (spec FR-014): Health & Safety from the business's master
+// data workbook (012), the others from the source specs in specs/001-event-reporting/source/Control
+// Panel/. Every value is owned by Central and Active.
 // Shared code: imports no packages and nothing from apps/ (constitution v2.3.0).
 
 const CREATED_AT = '2026-10-01T09:00:00.000Z';
@@ -23,69 +23,41 @@ function value(listId, index, fields) {
   };
 }
 
+// The business's master data workbook (012): Standards and Hazards in its order, with codes
+// STD-01… and HZ-01… given because both lists require codes.
 const standards = [
-  'Confined Space Entry',
-  'Construction Project Safety',
-  'Control of Hazardous Energy (LOTO)',
-  'Health & Safety Risk Assessment & Control',
-  'Lifting Operations',
-  'Machinery Safety',
-  'Management of Contractors',
-  'Management of Work Related Road Risks',
-  'Permit to Work',
-  'Rules for the Classification & Reporting of Safety Events',
-  'Warehousing, Loading & Unloading',
-  'Work at Height',
-  'Workplace Vehicles',
-  'Others',
+  'Confined Spaces',
+  'Fork Lift Trucks',
+  'LockOut / TagOut (LO/TO)',
+  'Machinery safety',
+  'Mobile phones and smartphones',
+  'Not related to a Group standard',
+  'Road Risk Management',
+  'Vehicles and Pedestrians',
+  'Warehousing and Loading',
+  'Working at height',
+  'Assessment of Health & Safety risks',
+  'Control of contractors',
 ].map((name, index) => value('standards', index, { code: `STD-${String(index + 1).padStart(2, '0')}`, name }));
 
-// "A1 - Manual handling of loads" → code A1, name "Manual handling of loads".
-function coded(listId, lines) {
-  return lines.map((line, index) => {
-    const [code, ...rest] = line.split(' - ');
-    return value(listId, index, { code, name: rest.join(' - ') });
-  });
-}
-
-const hazards = coded('hazards', [
-  'A1 - Manual handling of loads',
-  'A2 - Awkward position',
-  'A3 - Repetitive work',
-  'A4 - Night work',
-  'A5 - Successive team shifts',
-  'A6 - Isolated work',
-  'A7 - Stress related to work',
-  'B1 - Toxic agents (Safety aspects)',
-  'B2 - Biological and bacteriological agents',
-  'C1 - Vibrations',
-  'C2 - Noise',
-  'C3 - Temperature',
-  'C4 - Light',
-  'C5 - Radiation',
-  'C6 - Working environment',
-  'C7 - Atmospheric pressure',
-  'D1 - Falls on the same level',
-  'D2 - Falls from a height',
-  'D3 - Falling objects',
-  'E1 - Electricity',
-  'E2 - Fire, explosion (Material or substance which can generate...)',
-  'F1 - Shearing, cutting (Equipment or product which can generate...)',
-  'F2 - Pinched, crushed by (Equipment or product which can generate...)',
-  'F3 - Lifting by, rolling by, moving by (Equipment which can generate...)',
-  'F4 - Struck (Moving area, equipment or product which can generate...)',
-  'F5 - Perforation or shot/sting (Equipment or product which can generate...)',
-  'F6 - Rubbing or abrasion (Equipment or product which can generate...)',
-  'F7 - Ejection, objects shatter (Equipment or product which can generate...)',
-  'F8 - Burn, heating (Equipment or product which can generate...)',
-  'G1 - Internal transportation - on-site',
-  'G2 - External transportation - off organization site',
-  'H1 - Physical attack',
-  'H2 - Natural risks',
-  'H3 - Animals',
-  'H4 - Technological risks',
-  'I1 - Other hazards',
-]);
+const hazards = [
+  'Acts of violence',
+  'Contact with electricity or electrical discharge',
+  'Contact with moving machinery',
+  'Drowning or asphyxiation',
+  'Exposure to an explosion',
+  'Exposure to fire',
+  'Exposure to, or contact with, a harmful substance',
+  'Falls from a height',
+  'Injured by an animal',
+  'Injured while handling, lifting or carrying',
+  'Other kind of accident',
+  'Slips, trips or falls on same level',
+  'Strike against something fixed or stationary',
+  'Struck by moving vehicle',
+  'Struck by moving, including flying / falling, object',
+  'Trapped by something collapsing / overturning',
+].map((name, index) => value('hazards', index, { code: `HZ-${String(index + 1).padStart(2, '0')}`, name }));
 
 const bodyPartsByCategory = {
   Head: ['Cranium', 'Ear', 'Eyes', 'Nose', 'Teeth, Gingiva', 'Face (Other)', 'Cervical spine', 'Neck'],
@@ -169,7 +141,76 @@ const injuries = [
   'Electrical shock',
   'Allergic shock',
   'Other',
-].map((name, index) => value('injuries', index, { name }));
+];
+
+// The injuries offered for each body part, from the workbook (012 MD-4).
+const injuriesByBodyPart = {
+  'Cranium': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Fracture', 'Bruise', 'Cephalalgia', 'Other'],
+  'Ear': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Sting, bite', 'Bruise', 'Foreign matters presence', 'Bleeding', 'Tinnitus (buzzing)', 'Hearing Loss', 'Other'],
+  'Eyes': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Pain, sensory trouble', 'Sting, bite', 'Bruise', 'Damage to the cornea', 'Foreign matters presence', 'Conjunctival irritation', 'Temporary loss of sight', 'Permanent loss of sight', 'Other'],
+  'Nose': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Foreign matters presence', 'Bleeding', 'Other'],
+  'Teeth, Gingiva': ['Pain, sensory trouble', 'Fracture', 'Bruise', 'Bleeding', 'Other', 'Amputation'],
+  'Face (Other)': ['Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Bruise', 'Bleeding', 'Paralysis', 'Other'],
+  'Cervical spine': ['Contusion, ecchymosis', 'Fracture', 'Sting, bite', 'Bruise', 'Fracture with paralysis', 'Pain (cervicalgia)', 'Other'],
+  'Neck': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Other'],
+  'Back and spine': ['Contusion, ecchymosis', 'Fracture', 'Sting, bite', 'Bruise', 'Pain (back, lumbago)', 'Fracture with paralysis', 'Other'],
+  'Abdomen': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Muscular tear or sprain', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Sting, bite', 'Bruise', 'Hernia', 'Internal Injuries (liver, spleen, kidney)', 'Other'],
+  'Pelvis': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Muscular tear or sprain', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Inguinal hernia', 'Internal Injuries (urinary, genital)', 'Other'],
+  'Thorax': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Muscular tear or sprain', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Inhalation, foreign body', 'Sting, bite', 'Bruise', 'Other'],
+  'Whole upper limb': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Muscular tear or sprain', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Amputation', 'Other'],
+  'Shoulder': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Muscular tear or sprain', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Dislocation', 'Other'],
+  'Arm (Left)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Muscular tear or sprain', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Amputation', 'Other'],
+  'Arm (Right)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Muscular tear or sprain', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Amputation', 'Other'],
+  'Elbow': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Muscular tear or sprain', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Dislocation', 'Other'],
+  'Forearm (Left)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Other'],
+  'Forearm (Right)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Other'],
+  'Wrist': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Dislocation', 'Other'],
+  'Hand, Palmar and dorsal side (Left)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Paralysis', 'Avulsion', 'Other'],
+  'Hand, Palmar and dorsal side (Right)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Paralysis', 'Avulsion', 'Other'],
+  'Fingers': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Paralysis', 'Avulsion', 'Other'],
+  'Whole lower limb': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Other'],
+  'Hip': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Dislocation', 'Other'],
+  'Thigh (Left)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Other'],
+  'Thigh (Right)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Other'],
+  'Knee (Left)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Dislocation', 'Other'],
+  'Knee (Right)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Dislocation', 'Other'],
+  'Leg (Left)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Other'],
+  'Leg (Right)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Other'],
+  'Ankle (Left)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Dislocation', 'Other'],
+  'Ankle (Right)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Dislocation', 'Other'],
+  'Foot (Left)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Paralysis', 'Avulsion', 'Other'],
+  'Foot (Right)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Paralysis', 'Avulsion', 'Other'],
+  'Toe(s)': ['Burn (1°/2° degree)', 'Burn (3°/4° degree)', 'Contusion, ecchymosis', 'Dermatosis (skin infection)', 'Pain, sensory trouble', 'Fracture', 'Sting, bite', 'Bruise', 'Bleeding', 'Muscular tear or sprain', 'Amputation', 'Paralysis', 'Avulsion', 'Other'],
+  'General': ['Drowning', 'Malaise, dizziness, loss of consciousness', 'Asphyxia, breathing difficulty', 'Intoxication', 'Heat stroke', 'Electrical shock', 'Allergic shock'],
+};
+
+const injuryValues = injuries.map((name, index) =>
+  value('injuries', index, {
+    name,
+    bodyPartIds: bodyParts.filter((part) => injuriesByBodyPart[part.name]?.includes(name)).map((part) => part.id),
+  }),
+);
+
+// Health & Safety diseases, from the workbook (typos fixed); used by the form later (012 MD-1).
+const diseases = [
+  'Bone, articular and peri-articular pathology of lower limbs',
+  'Bone, articular and peri-articular pathology of upper limbs',
+  'Broncho-pulmonary and pleural pathology',
+  'Cardiac and vascular pathology',
+  'Cutaneous and mucosal pathology',
+  'Digestive and liver pathology',
+  'Lumbar pathology',
+  'Neurological pathology',
+  'Parasitic and infectious pathology, non dermal',
+  'Pathology of blood and bloodforming organs',
+  'Pathology of head and neck',
+  'Pathology of hearing',
+  'Pathology of oral and upper respiratory tract (other than lung)',
+  'Pathology of the eye',
+  'Psychological pathology',
+  'Renal and vesical pathology',
+  'Other',
+].map((name, index) => value('diseases', index, { name }));
 
 const aspects = [
   ['Water withdrawal/consumption', 'Process water, cooling water, domestic water, and leaks.'],
@@ -205,6 +246,14 @@ const impacts = [
   'Soil / land pollution',
 ].map((name, index) => value('impacts', index, { name }));
 
+// "IRC1 - Fire" → code IRC1, name "Fire".
+function coded(listId, lines) {
+  return lines.map((line, index) => {
+    const [code, ...rest] = line.split(' - ');
+    return value(listId, index, { code, name: rest.join(' - ') });
+  });
+}
+
 const irCategories = coded('irCategories', [
   'IRC1 - Fire',
   'IRC2 - Explosion',
@@ -224,7 +273,8 @@ export const masterValues = [
   ...hazards,
   ...bodyPartCategories,
   ...bodyParts,
-  ...injuries,
+  ...injuryValues,
+  ...diseases,
   ...aspects,
   ...impacts,
   ...irCategories,

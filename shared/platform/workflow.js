@@ -23,6 +23,21 @@ export const PHASE_LABELS = {
 
 export const REVIEWER_ROLES = ['Manager', 'Site Admin'];
 
+// The critical row of a pillar, after its levels: phases added to an event once its review flags it
+// (012 WF-13). Stored like a level, with the reserved level code 'critical'.
+export const CRITICAL_LEVEL = 'critical';
+export const CRITICAL_PHASES = ['rootCause', 'actions', 'validation'];
+export const CRITICAL_ROWS = {
+  'pillar-hs': { code: 'SIP/HCI', label: 'Flagged SIP or HCI by the review', flags: 'SIP or HCI' },
+  'pillar-env': { code: 'SIP', label: 'Flagged SIP by the review', flags: 'SIP' },
+  'pillar-ir': { code: 'SPL/HCL', label: 'Flagged SPL or HCL by the review', flags: 'SPL or HCL' },
+};
+
+// How a row is named in messages: its level code, or the critical row's code.
+export function levelLabel(pillarId, levelCode) {
+  return levelCode === CRITICAL_LEVEL ? CRITICAL_ROWS[pillarId]?.code ?? levelCode : levelCode;
+}
+
 // A Central setting applies everywhere; a Cluster or Local setting to its plants.
 export function settingApplies(setting, plantId) {
   return setting.scopeLevel === 'central' || setting.plantIds.includes(plantId);
@@ -78,35 +93,37 @@ export function validReviewers(users, { pillarId, plantIds }) {
   return users.filter((user) => plantIds.some((plantId) => canReviewAt(user, pillarId, plantId)));
 }
 
-// The workflow kept on an event at submission (FR-012, research R6).
+const keptSources = (sources) =>
+  sources.map((setting) => ({ settingId: setting.id, scopeLevel: setting.scopeLevel, authorId: setting.authorId }));
+
+// The workflow kept on an event at submission (FR-012, research R6), with its critical row's
+// phases, applied if the review flags it (012 WF-11).
 export function workflowForEvent(settings, users, event) {
   const result = resultingWorkflow(settings, event);
   const phases = {};
   for (const phase of PHASES) {
     const { required, sources } = result[phase];
-    phases[phase] = {
-      required,
-      sources: sources.map((setting) => ({
-        settingId: setting.id,
-        scopeLevel: setting.scopeLevel,
-        authorId: setting.authorId,
-      })),
-    };
+    phases[phase] = { required, sources: keptSources(sources) };
   }
+  const criticalResult = resultingWorkflow(settings, { ...event, levelCode: CRITICAL_LEVEL });
+  const critical = Object.fromEntries(
+    CRITICAL_PHASES.map((phase) => [phase, { required: criticalResult[phase].required, sources: keptSources(criticalResult[phase].sources) }]),
+  );
   // Reviewers of every setting requiring Review, limited to people who can see the event.
   const reviewerIds = new Set(result.review.sources.flatMap((setting) => setting.reviewerIds));
   phases.review.reviewerIds = users
     .filter((user) => reviewerIds.has(user.id) && canReviewAt(user, event.pillarId, event.plantId))
     .map((user) => user.id);
-  return { computedAt: new Date().toISOString(), phases };
+  return { computedAt: new Date().toISOString(), phases, critical };
 }
 
 // Root cause analysis needs a review (review 2026-10-25): for each plant where a setting requires
 // Root cause analysis, Review must be Required for the same pillar and level. Returns the
-// { levelCode, plantId } pairs breaking that rule.
+// { levelCode, plantId } pairs breaking that rule. Not the critical row: a flagged event was
+// reviewed (012 WF-5a).
 export function analysisWithoutReview(settings, allPlantIds) {
   const broken = [];
-  for (const setting of settings.filter((item) => item.phase === 'rootCause')) {
+  for (const setting of settings.filter((item) => item.phase === 'rootCause' && item.levelCode !== CRITICAL_LEVEL)) {
     const plantIds = setting.scopeLevel === 'central' ? allPlantIds : setting.plantIds;
     for (const plantId of plantIds) {
       const result = resultingWorkflow(settings, { pillarId: setting.pillarId, levelCode: setting.levelCode, plantId });

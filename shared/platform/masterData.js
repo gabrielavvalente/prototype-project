@@ -9,6 +9,7 @@ import { getRole, plantsOverlap } from './permissions.js';
 export const LISTS = [
   { id: 'standards', pillarId: 'pillar-hs', label: 'Standards', fixedGlobal: false, hasCode: true },
   { id: 'hazards', pillarId: 'pillar-hs', label: 'Hazards', fixedGlobal: false, hasCode: true },
+  { id: 'diseases', pillarId: 'pillar-hs', label: 'Diseases', fixedGlobal: false, hasCode: false },
   { id: 'bodyPartCategories', pillarId: 'pillar-hs', label: 'Body Part Categories', fixedGlobal: true, hasCode: false },
   {
     id: 'bodyParts',
@@ -67,6 +68,11 @@ export function isAvailable(value, values, activations, plantId) {
 
 export function availableValues(values, activations, { listId, plantId }) {
   return values.filter((value) => value.listId === listId && isAvailable(value, values, activations, plantId));
+}
+
+// The injuries offered for any of the chosen body parts (012 MD-4, RV-6).
+export function injuriesFor(injuries, bodyPartIds) {
+  return injuries.filter((injury) => (injury.bodyPartIds || []).some((id) => bodyPartIds.includes(id)));
 }
 
 // The values a user sees in a list: Central values and those of Clusters sharing a plant with

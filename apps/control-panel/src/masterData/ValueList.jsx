@@ -39,6 +39,12 @@ export default function ValueList({ list, values, activations, plants, plantId, 
   const role = getRole(user, list.pillarId);
   const myPlants = role ? describePlants(role, organization) : '';
   const plantName = getPlantName(organization, plantId);
+  // Injuries are offered for some body parts only (012 MD-4, MD-11).
+  const withParts = list.id === 'injuries';
+  const bodyPartCount = (value) => {
+    const count = (value.bodyPartIds || []).length;
+    return `${count} body part${count === 1 ? '' : 's'}`;
+  };
 
   const words = query.trim().toLowerCase();
   // By code when the list has codes (A1, A2… IRC10 after IRC9), otherwise by name.
@@ -56,15 +62,18 @@ export default function ValueList({ list, values, activations, plants, plantId, 
     }
   }
 
-  // Every value shown, with the columns an import reads back (Code, Name, Description, Category).
+  // Every value shown, with the columns an import reads back (Code, Name, Description, Category);
+  // Injuries add the body parts they are offered for (012 MD-12).
   function exportValues() {
     const categoryName = (value) => values.find((item) => item.id === value.parentId)?.name ?? '';
-    const header = [...(list.hasCode ? ['Code'] : []), 'Name', 'Description', ...(list.parentListId ? ['Category'] : []), 'Owner', 'Status', `Available at ${plantName}`];
+    const partNames = (value) => (value.bodyPartIds || []).map((id) => values.find((item) => item.id === id)?.name).filter(Boolean).join(' | ');
+    const header = [...(list.hasCode ? ['Code'] : []), 'Name', 'Description', ...(list.parentListId ? ['Category'] : []), ...(withParts ? ['Body parts'] : []), 'Owner', 'Status', `Available at ${plantName}`];
     const rows = shown.map((value) => [
       ...(list.hasCode ? [value.code] : []),
       value.name,
       value.description,
       ...(list.parentListId ? [categoryName(value)] : []),
+      ...(withParts ? [partNames(value)] : []),
       owner(value),
       value.status,
       isAvailable(value, values, activations, plantId) ? 'Yes' : 'No',
@@ -137,6 +146,7 @@ export default function ValueList({ list, values, activations, plants, plantId, 
           {value.name}
           {value.description && <small>{value.description}</small>}
         </th>
+        {withParts && <td>{bodyPartCount(value)}</td>}
         <td>{owner(value)}</td>
         <td>
           <span className={`tag ${STATUS_TAGS[value.status]}`}>{value.status}</span>
@@ -242,6 +252,7 @@ export default function ValueList({ list, values, activations, plants, plantId, 
             <tr>
               {list.hasCode && <th scope="col">Code</th>}
               <th scope="col">Name</th>
+              {withParts && <th scope="col">Body parts</th>}
               <th scope="col">Owner</th>
               <th scope="col">Status</th>
               <th scope="col">Available at {plantName}</th>

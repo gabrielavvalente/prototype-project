@@ -12,15 +12,16 @@ function phases(required) {
   );
 }
 
-function makeEvent(required, changes = {}) {
-  const workflow = { phases: phases(required) };
+// critical: the phases the critical row requires, applied once the review flags the event (012).
+function makeEvent(required, changes = {}, critical = []) {
+  const workflow = { phases: phases(required), critical: phases(critical) };
   workflow.phases.review.reviewerIds = ['user-carla', 'user-eva'];
   return { id: 'e1', status: 'Open', workflow, review: null, ...changes };
 }
 
 // An Environment event and a review confirming it is a SIP: a critical (red) event.
-function envEvent(required) {
-  return { ...makeEvent(required), familyCode: 'EVE', levelCode: 'EvE4' };
+function envEvent(required, critical = []) {
+  return { ...makeEvent(required, {}, critical), familyCode: 'EVE', levelCode: 'EvE4' };
 }
 
 function criticalReview() {
@@ -101,15 +102,18 @@ describe('review', () => {
     const review = { decision: 'valid', statement: 'x', classification: { irCategories: ['c1'] } };
     expect(validateReview(review, sre('SRE3'), '')).toEqual({ flagConfirmed: 'Say whether the event is an HCL.' });
     expect(validateReview(review, sre('SRE4'), '')).toEqual({ flagConfirmed: 'Say whether the event is an SPL.' });
-    expect(Object.keys(validateReview({ ...review, flagConfirmed: true }, sre('SRE4'), ''))).toEqual(['furtherAnalysis']);
+    expect(validateReview({ ...review, flagConfirmed: true }, sre('SRE4'), '')).toEqual({});
   });
 
-  it('asks "further analyze" only for a critical event whose workflow does not require the analysis (005 remarks)', () => {
-    expect(Object.keys(validateReview(criticalReview(), envEvent(['review']), ''))).toEqual(['furtherAnalysis']);
-    // Not critical: not asked, and no analysis.
+  it('sends a critical event to the analysis only when its critical row requires it (012 RV-10)', () => {
+    // Nobody is asked whether to analyse further.
+    expect(validateReview(criticalReview(), envEvent(['review']), '')).toEqual({});
+    expect(leadsToAnalysis(envEvent(['review']), criticalReview())).toBe(false);
+    expect(leadsToAnalysis(envEvent(['review'], ['rootCause']), criticalReview())).toBe(true);
+    // Not critical: the critical row does not apply.
     const calm = { ...criticalReview(), flagConfirmed: false };
-    expect(validateReview(calm, envEvent(['review']), '')).toEqual({});
-    expect(leadsToAnalysis(envEvent(['review']), { ...calm, furtherAnalysis: true })).toBe(false);
+    expect(validateReview(calm, envEvent(['review'], ['rootCause']), '')).toEqual({});
+    expect(leadsToAnalysis(envEvent(['review'], ['rootCause']), calm)).toBe(false);
     const designated = { userIds: [], groupIds: ['group-lyon-hs'] };
     expect(validateReview({ decision: 'valid', statement: 'x', rcaAssignees: designated }, makeEvent(['review', 'rootCause']), '')).toEqual({});
   });
@@ -118,9 +122,9 @@ describe('review', () => {
     const empty = { userIds: [], groupIds: [] };
     const required = validateReview({ decision: 'valid', statement: 'x', rcaAssignees: empty }, makeEvent(['review', 'rootCause']), '');
     expect(Object.keys(required)).toEqual(['rcaAssignees']);
-    const asked = validateReview({ ...criticalReview(), furtherAnalysis: true }, envEvent(['review']), '');
-    expect(Object.keys(asked)).toEqual(['rcaAssignees']);
-    expect(validateReview({ ...criticalReview(), furtherAnalysis: false }, envEvent(['review']), '')).toEqual({});
+    const critical = validateReview(criticalReview(), envEvent(['review'], ['rootCause']), '');
+    expect(Object.keys(critical)).toEqual(['rcaAssignees']);
+    expect(validateReview(criticalReview(), envEvent(['review']), '')).toEqual({});
   });
 
   it('asks a single Standard and Hazard (005 remarks)', () => {
@@ -134,7 +138,7 @@ describe('review', () => {
     const designated = { userIds: ['user-diego'], groupIds: [] };
     const kept = completeReview(makeEvent(['review', 'rootCause']), { decision: 'valid', statement: 'x', rcaAssignees: designated }, NOW);
     expect(kept.review.rcaAssignees).toEqual(designated);
-    const dropped = completeReview(makeEvent(['review']), { decision: 'valid', statement: 'x', furtherAnalysis: false, rcaAssignees: designated }, NOW);
+    const dropped = completeReview(makeEvent(['review']), { decision: 'valid', statement: 'x', rcaAssignees: designated }, NOW);
     expect(dropped.review.rcaAssignees).toBeNull();
   });
 
@@ -161,13 +165,20 @@ describe('review', () => {
     expect(invalid).toEqual({ reviewerId: undefined, claimedAt: undefined, decision: 'invalid', invalidReason: 'Useless', invalidComment: '', reviewedAt: NOW });
   });
 
-  it('sends a critical event to Root cause analysis when the reviewer asks for it', () => {
-    const event = envEvent(['review', 'actions']);
-    const analyzed = completeReview(event, { ...criticalReview(), furtherAnalysis: true }, NOW);
+  it('adds the phases of the critical row once the review flags the event (012 WF-13)', () => {
+    const designated = { userIds: ['user-diego'], groupIds: [] };
+    const event = envEvent(['review', 'actions'], ['rootCause', 'validation']);
+    const analyzed = completeReview(event, { ...criticalReview(), rcaAssignees: designated }, NOW);
     expect(analyzed.status).toBe('In Progress');
+    expect(analyzed.review.furtherAnalysis).toBeUndefined();
     expect(currentStep(analyzed)).toBe('rootCause');
-    const notAnalyzed = completeReview(event, { ...criticalReview(), furtherAnalysis: false }, NOW);
-    expect(currentStep(notAnalyzed)).toBe('actions');
+    expect(stepStates(analyzed).map((item) => item.state)).toEqual(['done', 'done', 'current', 'upcoming', 'upcoming']);
+    const calm = completeReview(event, { ...criticalReview(), flagConfirmed: false }, NOW);
+    expect(currentStep(calm)).toBe('actions');
+    expect(stepStates(calm)[4].state).toBe('skipped');
+    // Reviewed before 012 with "further analyze" = Yes: still analysed.
+    const earlier = { ...makeEvent(['review']), status: 'In Progress', review: { decision: 'valid', furtherAnalysis: true } };
+    expect(currentStep(earlier)).toBe('rootCause');
   });
 
   it('keeps the steps after Review disabled for an Archived event', () => {

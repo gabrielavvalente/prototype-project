@@ -5,6 +5,7 @@ import {
   canEditSetting,
   cellStateFor,
   isOnlySubmission,
+  levelLabel,
   resultingWorkflow,
   validReviewers,
   workflowForEvent,
@@ -103,5 +104,32 @@ describe('reviewers and the workflow kept on events (FR-010, FR-012, FR-026)', (
     ]);
     const centralAnalysis = [...settings, setting('c-TF4', 'TF4', 'rootCause', 'central', ALL, 'user-ludovic')];
     expect(analysisWithoutReview(centralAnalysis, ALL).map((item) => item.plantId)).toEqual(ALL);
+  });
+});
+
+describe('the critical row (012 WF-11, WF-13, WF-5a)', () => {
+  const critical = [
+    ...settings,
+    setting('c-crit', 'critical', 'rootCause', 'central', ALL, 'user-ludovic'),
+    setting('k-crit', 'critical', 'validation', 'cluster', ['plant-lyon', 'plant-porto'], 'user-lucas'),
+  ];
+
+  it('is kept on the event apart from its level', () => {
+    const workflow = workflowForEvent(critical, users, { pillarId: 'pillar-hs', levelCode: 'TF4', plantId: 'plant-curitiba' });
+    expect(workflow.phases.rootCause.required).toBe(false);
+    expect(workflow.critical.rootCause).toEqual({ required: true, sources: [{ settingId: 'c-crit', scopeLevel: 'central', authorId: 'user-ludovic' }] });
+    expect(workflow.critical.actions.required).toBe(false);
+    expect(workflow.critical.validation.required).toBe(false);
+    const atLyon = workflowForEvent(critical, users, { pillarId: 'pillar-hs', levelCode: 'TF4', plantId: 'plant-lyon' });
+    expect(atLyon.critical.validation.required).toBe(true);
+    expect(isOnlySubmission(workflowForEvent(critical, users, { pillarId: 'pillar-hs', levelCode: 'TF5', plantId: 'plant-lyon' }))).toBe(true);
+  });
+
+  it('never needs Review, and is named by its code', () => {
+    expect(analysisWithoutReview(critical, ALL)).toEqual([]);
+    expect(levelLabel('pillar-hs', 'critical')).toBe('SIP/HCI');
+    expect(levelLabel('pillar-env', 'critical')).toBe('SIP');
+    expect(levelLabel('pillar-ir', 'critical')).toBe('SPL/HCL');
+    expect(levelLabel('pillar-hs', 'TF2')).toBe('TF2');
   });
 });

@@ -9,7 +9,7 @@ import { getPillarIdsForPlant, getPlantName } from './organization.js';
 import { getRole, LEVEL_LABELS } from './permissions.js';
 import * as sampleData from './sampleData.js';
 import { getAll, getAllByIndex, openDatabase, runTransaction } from './storage.js';
-import { analysisWithoutReview, cellStateFor, PHASE_LABELS } from './workflow.js';
+import { analysisWithoutReview, cellStateFor, levelLabel, PHASE_LABELS } from './workflow.js';
 
 const DATABASE_NAME = 'platform';
 // Version 2 adds the notification stores (007); the upgrade only creates missing stores.
@@ -219,7 +219,7 @@ export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, re
         scopeLevel: setting.scopeLevel,
         plantIds: setting.plantIds,
         subject: 'workflow',
-        targetId: `${levelCode} · ${PHASE_LABELS[phase]}`,
+        targetId: `${levelLabel(pillarId, levelCode)} · ${PHASE_LABELS[phase]}`,
         action: !after ? 'optional' : !before ? 'required' : 'reviewers',
         before: beforeText,
         after: afterText,
@@ -233,7 +233,7 @@ export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, re
           pillarId,
           settingId: setting.id,
           text:
-            `${user.name} changed your ${PHASE_LABELS[phase]} setting for ${levelCode} ` +
+            `${user.name} changed your ${PHASE_LABELS[phase]} setting for ${levelLabel(pillarId, levelCode)} ` +
             `(${pillar.label}, ${describeScope(setting, platform.organization)}): ${beforeText} → ${afterText}.`,
         });
       }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { masterValues } from './catalogs.js';
-import { allowedValueActions, availableValues, getList, listsForPillar, planImport, validateValue } from './masterData.js';
+import { allowedValueActions, availableValues, getList, injuriesFor, listsForPillar, planImport, validateValue } from './masterData.js';
 import { users } from './sampleData.js';
 
 const byId = (id) => users.find((user) => user.id === id);
@@ -12,13 +12,38 @@ function newValue(listId, fields) {
 
 describe('initial catalogs (FR-014)', () => {
   it('has the counts of the sources', () => {
-    expect(count('standards')).toBe(14);
-    expect(count('hazards')).toBe(36);
+    expect(count('standards')).toBe(12);
+    expect(count('hazards')).toBe(16);
+    expect(count('diseases')).toBe(17);
     expect(count('bodyPartCategories')).toBe(8);
     expect(count('injuries')).toBe(38);
     expect(count('aspects')).toBe(15);
     expect(count('impacts')).toBe(13);
     expect(count('irCategories')).toBe(11);
+  });
+
+  it('gives Standards and Hazards the workbook values with codes (012)', () => {
+    const named = (listId) => masterValues.filter((value) => value.listId === listId).map((value) => `${value.code} ${value.name}`);
+    expect(named('standards').at(0)).toBe('STD-01 Confined Spaces');
+    expect(named('standards').at(-1)).toBe('STD-12 Control of contractors');
+    expect(named('hazards').at(0)).toBe('HZ-01 Acts of violence');
+    expect(named('hazards').at(-1)).toBe('HZ-16 Trapped by something collapsing / overturning');
+    expect(masterValues.some((value) => value.name === 'Psychological pathology')).toBe(true);
+    expect(listsForPillar('pillar-hs').map((list) => list.id)).toContain('diseases');
+    expect(listsForPillar('pillar-ir').map((list) => list.id)).not.toContain('diseases');
+  });
+
+  it('offers the injuries of the chosen body parts (012 MD-4)', () => {
+    const injuries = masterValues.filter((value) => value.listId === 'injuries');
+    const part = (name) => masterValues.find((value) => value.listId === 'bodyParts' && value.name === name).id;
+    expect(injuries.reduce((sum, injury) => sum + injury.bodyPartIds.length, 0)).toBe(423);
+    const ear = injuriesFor(injuries, [part('Ear')]).map((injury) => injury.name);
+    expect(ear).toHaveLength(12);
+    expect(ear).toContain('Tinnitus (buzzing)');
+    expect(ear).not.toContain('Fracture');
+    expect(injuriesFor(injuries, [part('Ear'), part('Fingers')])).toHaveLength(17);
+    expect(injuriesFor(injuries, [])).toEqual([]);
+    expect(injuries.find((injury) => injury.name === 'Other').bodyPartIds).toHaveLength(36);
   });
 
   it('puts every Body Part in a category', () => {
@@ -58,7 +83,7 @@ describe('availableValues (FR-018, FR-020)', () => {
     expect(ids('plant-porto')).not.toContain('hazards-3');
     expect(ids('plant-curitiba')).toContain('hazards-3');
     expect(ids('plant-curitiba')).not.toContain('h-cluster');
-    expect(ids('plant-lyon')).toHaveLength(36 - 3 + 1);
+    expect(ids('plant-lyon')).toHaveLength(16 - 3 + 1);
   });
 
   it('hides the Body Parts of an inactive category', () => {
@@ -110,13 +135,13 @@ describe('allowedValueActions (FR-015, FR-016)', () => {
 
 describe('validateValue (FR-019, FR-020)', () => {
   it('refuses a duplicate code, a missing name and a missing code', () => {
-    const errors = validateValue(getList('hazards'), newValue('hazards', { code: 'a1', name: '' }), masterValues);
-    expect(errors).toEqual({ name: 'Enter a name.', code: 'A value with code a1 already exists.' });
+    const errors = validateValue(getList('hazards'), newValue('hazards', { code: 'hz-01', name: '' }), masterValues);
+    expect(errors).toEqual({ name: 'Enter a name.', code: 'A value with code hz-01 already exists.' });
     expect(validateValue(getList('standards'), newValue('standards', { name: 'New' }), masterValues)).toEqual({ code: 'Enter a code.' });
   });
 
   it('allows the same code in another owner scope', () => {
-    const clusterValue = newValue('hazards', { code: 'A1', name: 'Local variant', ownerLevel: 'cluster', ownerPlantIds: ['plant-lyon', 'plant-porto'] });
+    const clusterValue = newValue('hazards', { code: 'HZ-01', name: 'Local variant', ownerLevel: 'cluster', ownerPlantIds: ['plant-lyon', 'plant-porto'] });
     expect(validateValue(getList('hazards'), clusterValue, masterValues)).toEqual({});
   });
 
@@ -141,7 +166,7 @@ describe('planImport (review 2026-10-25)', () => {
 
   it('changes Central values for Central and adds new codes', () => {
     const rows = [
-      { code: 'STD-01', name: 'Confined Space Entry', description: 'Updated' },
+      { code: 'STD-01', name: 'Confined Spaces', description: 'Updated' },
       { code: 'STD-99', name: 'New standard', description: '' },
     ];
     const plan = planImport(byId('user-ludovic'), standards, rows, masterValues);
@@ -153,12 +178,12 @@ describe('planImport (review 2026-10-25)', () => {
   });
 
   it('skips unchanged rows', () => {
-    const plan = planImport(byId('user-ludovic'), standards, [{ code: 'STD-01', name: 'Confined Space Entry' }], masterValues);
+    const plan = planImport(byId('user-ludovic'), standards, [{ code: 'STD-01', name: 'Confined Spaces' }], masterValues);
     expect(plan.changes).toEqual([]);
   });
 
   it('never copies Central values for a Cluster', () => {
-    const rows = [{ code: 'STD-01', name: 'Confined Space Entry' }, { code: 'LY-1', name: 'Lyon rule' }];
+    const rows = [{ code: 'STD-01', name: 'Confined Spaces' }, { code: 'LY-1', name: 'Lyon rule' }];
     const plan = planImport(byId('user-lucas'), standards, rows, masterValues);
     expect(plan.skipped.map((item) => item.line)).toEqual([2]);
     expect(plan.changes[0].after).toMatchObject({ code: 'LY-1', ownerLevel: 'cluster' });
