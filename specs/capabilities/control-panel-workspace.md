@@ -39,8 +39,8 @@ notifications, the audit trail and the search.
 
 From freshly reset [demo data](platform-data.md).
 
-1. **No role** — Ana Ribeiro is shown disabled on the Control Panel start screen and cannot be
-   chosen. (CPW-1, platform data PD-7)
+1. **No role** — Ana Ribeiro is never offered on the Control Panel start screen, whatever the pillar
+   and level chosen. (CPW-1, platform data PD-7)
 2. **Pillars** — Lucas Weber sees Health & Safety and Environment, each "Cluster · Lyon, Porto";
    Eva Novak sees the four pillars as "Local · Lyon". (CPW-2)
 3. **Tabs** — Ludovic Costa opens Health & Safety: context bar "Health & Safety", "Central", "All

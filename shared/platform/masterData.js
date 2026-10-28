@@ -76,6 +76,42 @@ export function injuriesFor(injuries, bodyPartIds) {
   return injuries.filter((injury) => (injury.bodyPartIds || []).some((id) => bodyPartIds.includes(id)));
 }
 
+// A review's injury is chosen for one body part (012 RV-6): kept as "<bodyPartId>><injuryId>".
+const INJURY_SEPARATOR = '>';
+
+export function injuryChoice(bodyPartId, injuryId) {
+  return `${bodyPartId}${INJURY_SEPARATOR}${injuryId}`;
+}
+
+// The Injuries options of a review: one group per chosen body part, its injuries below it. The label
+// names both ("Ear: Bruise", for the chosen badge); injury is what the option itself shows.
+export function injuryOptions(injuries, bodyParts) {
+  return bodyParts
+    .map((part) => ({
+      group: part.name,
+      items: injuries
+        .filter((injury) => (injury.bodyPartIds || []).includes(part.id))
+        .map((injury) => ({ value: injuryChoice(part.id, injury.id), label: `${part.name}: ${injury.name}`, injury: injury.name })),
+    }))
+    .filter((group) => group.items.length > 0);
+}
+
+// The chosen injuries still offered once the body parts change.
+export function keepInjuries(choices, bodyPartIds) {
+  return choices.filter((choice) => !choice.includes(INJURY_SEPARATOR) || bodyPartIds.includes(choice.split(INJURY_SEPARATOR)[0]));
+}
+
+// The name of a classification value: "Ear: Bruise" for an injury chosen for a body part, the
+// value's name otherwise (also for injuries chosen before 012).
+export function classificationValueName(values, id) {
+  const name = (valueId) => values.find((value) => value.id === valueId)?.name;
+  if (id.includes(INJURY_SEPARATOR)) {
+    const [partId, injuryId] = id.split(INJURY_SEPARATOR);
+    return `${name(partId) ?? partId}: ${name(injuryId) ?? injuryId}`;
+  }
+  return name(id) ?? id;
+}
+
 // The values a user sees in a list: Central values and those of Clusters sharing a plant with
 // them (Central sees all).
 export function visibleValues(user, list, values) {

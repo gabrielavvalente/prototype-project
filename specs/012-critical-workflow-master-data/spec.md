@@ -11,13 +11,15 @@ is needed, remove the question. And for the master data content: see the Excel f
 master data content." — with the open points decided with the user on 2026-10-28. Review
 remarks (2026-10-28): creating or editing an injury requires its link to body parts; a safety
 event's review asks Standards, Hazards, Body Parts and Injuries for TF1–TF3, Standards and Hazards
-only for TF4–TF5.
+only for TF4–TF5; Injuries lists each chosen body part with its injuries indented below, an
+injury being chosen for a body part; "Choose a demo account" becomes a sequence of dropdowns.
 
 **Capabilities**: changed: `specs/capabilities/workflow-settings.md` (WF-1, WF-5a, WF-10, WF-11,
 WF-13 added, scenarios 1 and 7), `specs/capabilities/event-review.md` (RV-6, RV-7, RV-10, RV-11, RV-14,
 RV-15, scenarios 4, 5, 8 and 8b), `specs/capabilities/root-cause-analysis.md` (RCA-1),
 `specs/capabilities/master-data.md` (MD-1, MD-2, MD-4, MD-5, MD-7, MD-11, MD-12, MD-13, MD-14, Initial catalogs,
-scenarios 1, 3, 4, 6 and 9), `specs/capabilities/platform-data.md` (workflow settings),
+scenarios 1, 3, 4, 6 and 9), `specs/capabilities/platform-data.md` (workflow settings, PD-7, scenario 2),
+`specs/capabilities/control-panel-workspace.md` (scenario 1),
 the scenarios of `action-plan.md`, `notifications.md` and `safety-communication.md` that answered
 "further analyze",
 `specs/domain.md` (Critical events)
@@ -40,6 +42,8 @@ master data workbook, with injuries that make sense for the injured body part.
 | Body Parts, Injuries | Values unchanged; the workbook's typos ("Torse", "Back and spin", "Pain (back,lumbago)") and its broken degree signs are not taken | Workbook |
 | Injuries by body part | The workbook's pairing applies: the review offers only the injuries of the chosen body parts | User |
 | Lists by level | Health & Safety TF1–TF3: Standards, Hazards, Body Parts, Injuries; TF4–TF5: Standards and Hazards only; the review asks no optional list (so not Diseases, kept for the form) | User (review remark) |
+| Injuries in the review | Under each chosen body part, indented; chosen per body part ("Ear: Bruise") | User (review remark) |
+| Demo sign-in | A sequence of dropdowns: Event Reporting Plant → Role → Person; Control Panel and User Management Pillar → Level → Person | User (review remark) |
 | Injury configuration | Creating or editing an injury requires at least one body part; import reads them too | User (review remark) |
 | Diseases | A new Health & Safety list with the workbook's 17 values, fixed: "or lower/upper limbs" → "of lower/upper limbs", "Psycological" → "Psychological"; the Health & Safety form uses it later | User |
 | Not taken | Risk Families, Circumstances, Type of Immediate actions; the empty sheets Aspects, Related Aspects, Risk Category change nothing | User |
@@ -72,10 +76,12 @@ master data workbook, with injuries that make sense for the injured body part.
 
 - **RV-6** *(the parts and the injuries)* 3. **Next step** — the root cause analysis designation
   ([root cause analysis](root-cause-analysis.md) RCA-1), shown only when the event goes to Root
-  cause analysis. In part 1, **Injuries** offers only the injuries of the chosen Body Parts
-  (master data MD-4), available at the plant; before a body part is chosen it reads "Choose the
-  body parts first." and offers nothing; removing a body part drops the chosen injuries no longer
-  offered. *(was: "Do you want to further analyze?" in part 3; every injury offered)*
+  cause analysis. In part 1, **Injuries** lists, under each chosen Body Part as a heading, the injuries offered for
+  it (master data MD-4) and available at the plant, indented; an injury is chosen for a body part —
+  "Ear: Bruise" and "Fingers: Bruise" are two answers, each shown as such in its badge, the
+  summary and what the Sharing Hub receives. Before a body part is chosen it reads "Choose the body
+  parts first." and offers nothing; removing a body part drops the injuries chosen for it. *(was: "Do you want to further analyze?" in part 3;
+  every injury offered, once)*
 - **RV-6** *(the lists)* Part 1 asks only the classification lists the event's level requires
   (RV-7), all required; no list is shown "(optional)". *(was: every list of the pillar, the others
   optional)*
@@ -129,6 +135,20 @@ master data workbook, with injuries that make sense for the injured body part.
 - **MD-14** *(injuries)* An Injury's audit entry shows its body parts' count ("Hearing Loss · 2 body
   parts"). *(was: code, name, description)*
 
+### Changed — `platform-data.md`
+
+- **PD-7** *(the steps)* Signing in means choosing a person on the start screen, "Choose a demo account" (no
+  password), in steps: Event Reporting asks **Plant** (the plants of people with an event role, by
+  name), **Role** (the event roles held there: User, Manager, Site Admin) and **Person** (the
+  people of that plant with that role; once chosen, their role and plants are shown under it); the
+  Control Panel and User Management ask **Pillar**, **Level** (the Control Panel levels held on it:
+  Central, Cluster, Local) and **Person** (their Control Panel roles shown under it). Each step
+  waits for the previous one ("Choose a plant first", …) and changing a step empties the next
+  ones; **Sign in** is enabled once a person is chosen. People without an event role are not
+  offered in Event Reporting, nor people without a Control Panel role in the Control Panel and User
+  Management. Closing the tab signs out. *(was: every
+  person at once, those without a Control Panel role disabled)*
+
 ### Changed — `domain.md`
 
 - **Critical events**: "Critical events show red badges wherever the event appears; their
@@ -166,8 +186,10 @@ below).
    analysis but no Validation. (WF-11, WF-13)
 7. **Injuries by body part** — On `TF-26-0003` (TF2) review, Injuries reads "Choose the body parts
    first."; choosing Ear offers 12 injuries, including "Burn (1°/2° degree)",
-   "Tinnitus (buzzing)" and "Other", not "Fracture"; adding Fingers offers 17; choosing "Tinnitus (buzzing)"
-   then removing Ear drops it. (RV-6, MD-4)
+   "Tinnitus (buzzing)" and "Other", not "Fracture"; adding Fingers adds its 14 injuries under a
+   "Fingers" heading, indented like Ear's: "Bruise" is offered twice. Choosing both Bruises shows
+   the badges "Ear: Bruise" and "Fingers: Bruise"; removing Ear keeps "Fingers: Bruise" only, and
+   the completed review's summary reads Injuries "Fingers: Bruise". (RV-6, RV-15, MD-4)
 8. **Catalogs** — Ludovic opens Master data: chips Standards, Hazards, Diseases, Body Part
    Categories, Body Parts, Injuries. Standards shows "12 values", from "STD-01 Confined Spaces" to
    "STD-12 Control of contractors"; Hazards "16 values", "HZ-01 Acts of violence" to "HZ-16 Trapped
@@ -192,6 +214,13 @@ below).
     `TF-26-0003` (TF2) asks Standards, Hazards, Body Parts and Injuries, all required: completing
     with them empty shows "Choose a value." twice and "Choose at least one value." twice. (RV-6,
     RV-7, RV-11, RV-15)
+14. **Sign in in steps** — Event Reporting asks Plant (Curitiba, Lyon, Porto), then Role (Lyon:
+    User, Manager, Site Admin; Curitiba: User, Manager), then Person (Lyon managers: Carla Mendes,
+    Diego Laurent, Lucas Weber; Diego shows "Manager · Lyon, Porto"); Role and Person wait for the
+    step before, and Sign in for a person. The Control Panel asks Pillar (the four), Level (Health &
+    Safety: Central, Cluster, Local; Industrial Risk: Central, Local), then Person (Health & Safety
+    Local: Carla Mendes, Eva Novak, Felix Tanaka); Ana Ribeiro, without a Control Panel role, is
+    never offered. User Management asks the same. (PD-7)
 
 ## Demo data changes
 

@@ -38,9 +38,11 @@ classifies it, assesses its severity, and sends it to its next step or archives 
      none optional — with the values available at
      its plant ([master data](master-data.md) MD-10; Body Parts grouped by category, coded values
      as "<code> — <name>"). Standards and Hazards take one value each; the other lists several.
-     **Injuries** offers only the injuries of the chosen Body Parts ([master data](master-data.md)
-     MD-4); before a body part is chosen it reads "Choose the body parts first." and offers
-     nothing; removing a body part drops the chosen injuries no longer offered.
+     **Injuries** lists, under each chosen Body Part as a heading, the injuries offered for
+     it ([master data](master-data.md) MD-4) and available at the plant, indented; an injury is chosen for a body part —
+     "Ear: Bruise" and "Fingers: Bruise" are two answers, each shown as such in its badge, the
+     summary and what the Sharing Hub receives. Before a body part is chosen it reads "Choose the body
+     parts first." and offers nothing; removing a body part drops the injuries chosen for it.
   2. **Severity** / **Serious incident potential** / **High consequence loss** / **Serious
      potential loss** (by pillar, below).
   3. **Next step** — the root cause analysis designation ([root cause
@@ -145,7 +147,9 @@ Mendes, Eva Novak and Diego Laurent.
 5. **Only available values** — After Carla deactivates Hazard HZ-01 for Lyon in the Control Panel,
    HZ-01 is not offered in the review of a Lyon event. On `TF-26-0003`, Injuries reads "Choose the
    body parts first."; choosing Ear offers 12 injuries, including "Tinnitus (buzzing)", not
-   "Fracture"; adding Fingers offers 17; removing Ear drops a chosen "Tinnitus (buzzing)". (RV-6)
+   "Fracture"; adding Fingers adds its 14 injuries under a "Fingers" heading: "Bruise" is offered
+   twice, and choosing both shows "Ear: Bruise" and "Fingers: Bruise"; removing Ear keeps
+   "Fingers: Bruise" only, which the completed review's summary shows. (RV-6, RV-15)
 6. **Environment** — Reviewing `EVE-26-0001` asks Aspects and Impacts and "Is this event a SIP?"
    (starting from No, the submission's answer); Yes asks the SIP type. (RV-7, RV-9)
 7. **Industrial Risk** — Carla reviewing `SRE-26-0001` (SRE4) as valid is asked Categories and

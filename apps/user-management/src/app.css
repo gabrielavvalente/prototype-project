@@ -466,3 +466,10 @@ input {
   color: var(--color-muted);
   font-size: var(--font-size-small);
 }
+
+/* Choose a demo account: pillar, level, then person (012 PD-7). */
+.start-steps {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 420px;
+}

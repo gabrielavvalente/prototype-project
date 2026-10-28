@@ -1,7 +1,7 @@
 // The Event Sharing Hub (feature 009): sharing a published Safety Warning with other plants, and
 // each receiving plant's local check. Shares and checks are kept on the event (research R1).
 
-import { getList } from '../../../../shared/platform/masterData.js';
+import { classificationValueName, getList } from '../../../../shared/platform/masterData.js';
 import { getPlants } from '../../../../shared/platform/organization.js';
 import { planOwners } from './actionPlan.js';
 import { warningState } from './safetyCommunication.js';
@@ -86,7 +86,8 @@ export function classificationNames(event, values) {
     .filter(([, ids]) => ids?.length)
     .map(([listId, ids]) => ({
       list: getList(listId)?.label ?? listId,
-      values: ids.map((id) => values.find((value) => value.id === id)?.name).filter(Boolean),
+      // An injury chosen for a body part reads "Ear: Bruise" (012 RV-6).
+      values: ids.map((id) => classificationValueName(values, id)).filter(Boolean),
     }));
 }
 

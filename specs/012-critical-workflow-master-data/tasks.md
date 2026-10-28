@@ -97,6 +97,22 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 4d: Review remarks — injuries under their body part, sign-in in steps (2026-10-28)
+
+**Scenarios**: 7, 14
+
+- [X] T016 `injuryChoice`, `injuryOptions`, `keepInjuries`, `classificationValueName` in
+  `shared/platform/masterData.js` with tests; used by `apps/event-reporting/src/events/ReviewStep.jsx`
+  (headings, indented options, "Ear: Bruise" badges and summary) and `logic/sharingHub.js` (RV-6,
+  RV-15)
+- [X] T017 New `shared/platform/demoAccounts.js` with tests; the start screens of
+  `apps/event-reporting`, `apps/control-panel` and `apps/user-management` as Plant / Role / Person
+  and Pillar / Level / Person (PD-7)
+- [X] T018 Apply to `specs/capabilities/event-review.md`, `platform-data.md` and
+  `control-panel-workspace.md`; scenarios 7 and 14 through the launcher
+
+---
+
 ## Phase 5: Apply the change to the capabilities
 
 - [X] T008 Apply the change to `specs/capabilities/workflow-settings.md`, `event-review.md`,

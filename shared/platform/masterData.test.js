@@ -1,6 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { masterValues } from './catalogs.js';
-import { allowedValueActions, availableValues, getList, injuriesFor, listsForPillar, planImport, validateValue } from './masterData.js';
+import {
+  allowedValueActions,
+  availableValues,
+  classificationValueName,
+  getList,
+  injuriesFor,
+  injuryChoice,
+  injuryOptions,
+  keepInjuries,
+  listsForPillar,
+  planImport,
+  validateValue,
+} from './masterData.js';
 import { users } from './sampleData.js';
 
 const byId = (id) => users.find((user) => user.id === id);
@@ -44,6 +56,23 @@ describe('initial catalogs (FR-014)', () => {
     expect(injuriesFor(injuries, [part('Ear'), part('Fingers')])).toHaveLength(17);
     expect(injuriesFor(injuries, [])).toEqual([]);
     expect(injuries.find((injury) => injury.name === 'Other').bodyPartIds).toHaveLength(36);
+  });
+
+  it('groups the injuries under each chosen body part, one choice per body part (012 RV-6)', () => {
+    const injuries = masterValues.filter((value) => value.listId === 'injuries');
+    const part = (name) => masterValues.find((value) => value.listId === 'bodyParts' && value.name === name);
+    const bruise = injuries.find((injury) => injury.name === 'Bruise');
+    const groups = injuryOptions(injuries, [part('Ear'), part('Fingers')]);
+    expect(groups.map((group) => [group.group, group.items.length])).toEqual([['Ear', 12], ['Fingers', 14]]);
+    expect(groups[0].items.find((item) => item.injury === 'Bruise').label).toBe('Ear: Bruise');
+    const choices = groups.flatMap((group) => group.items.map((item) => item.value));
+    expect(choices.filter((choice) => choice.endsWith(`>${bruise.id}`))).toHaveLength(2);
+    expect(new Set(choices).size).toBe(choices.length);
+    const earBruise = injuryChoice(part('Ear').id, bruise.id);
+    expect(classificationValueName(masterValues, earBruise)).toBe('Ear: Bruise');
+    expect(classificationValueName(masterValues, bruise.id)).toBe('Bruise');
+    const fingersBruise = injuryChoice(part('Fingers').id, bruise.id);
+    expect(keepInjuries([earBruise, fingersBruise], [part('Fingers').id])).toEqual([fingersBruise]);
   });
 
   it('puts every Body Part in a category', () => {

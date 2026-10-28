@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, MultiSelect, Select, Textarea } from '@mantine/core';
 import { useApp } from '../AppContext.js';
-import { availableValues, injuriesFor } from '../../../../shared/platform/masterData.js';
+import { availableValues, classificationValueName, injuryOptions, keepInjuries } from '../../../../shared/platform/masterData.js';
 import { groupsCovering } from '../../../../shared/platform/groups.js';
 import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
 import { getMasterData } from '../../../../shared/platform/platformData.js';
@@ -32,10 +32,13 @@ import SummaryList from './SummaryList.jsx';
 import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 // Options of one master data list at the event's plant; Body Parts grouped by category; Injuries
-// only those of the chosen body parts (012 RV-6).
+// under each chosen body part, chosen for that body part (012 RV-6).
 function listOptions(list, values, activations, plantId, classification = {}) {
-  let available = availableValues(values, activations, { listId: list.id, plantId });
-  if (list.id === 'injuries') available = injuriesFor(available, classification.bodyParts || []);
+  const available = availableValues(values, activations, { listId: list.id, plantId });
+  if (list.id === 'injuries') {
+    const parts = (classification.bodyParts || []).map((id) => values.find((value) => value.id === id)).filter(Boolean);
+    return injuryOptions(available, parts);
+  }
   const items = available.map((value) => ({
     value: value.id,
     label: value.code ? `${value.code} — ${value.name}` : value.name,
@@ -86,7 +89,7 @@ function ReviewSummary({ event, masterData }) {
   const { users, reference } = useApp();
   const review = event.review;
   const assessment = assessmentFor(event);
-  const valueName = (id) => masterData?.values.find((value) => value.id === id)?.name ?? id;
+  const valueName = (id) => (masterData ? classificationValueName(masterData.values, id) : id);
   const rows = [
     { label: 'Reviewer', value: getLabel(users, review.reviewerId) },
     { label: 'Reviewed on', value: new Date(review.reviewedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) },
@@ -322,8 +325,7 @@ function ClassificationFields({ event, review, set, errorsFor, masterData }) {
           const setIds = (ids) => {
             const classification = { ...review.classification, [list.id]: ids };
             if (list.id === 'bodyParts' && classification.injuries) {
-              const offered = injuriesFor(masterData.values, ids).map((value) => value.id);
-              classification.injuries = classification.injuries.filter((id) => offered.includes(id));
+              classification.injuries = keepInjuries(classification.injuries, ids);
             }
             set({ classification });
           };
@@ -333,7 +335,14 @@ function ClassificationFields({ event, review, set, errorsFor, masterData }) {
               {SINGLE_CHOICE_LISTS.includes(list.id) ? (
                 <Select {...common} value={review.classification[list.id]?.[0] ?? null} onChange={(id) => setIds(id ? [id] : [])} />
               ) : (
-                <MultiSelect {...common} value={review.classification[list.id] || []} onChange={setIds} />
+                <MultiSelect
+                  {...common}
+                  value={review.classification[list.id] || []}
+                  onChange={setIds}
+                  // Injuries: the body part as a heading, its injuries indented below (012 RV-6).
+                  classNames={list.id === 'injuries' ? { groupLabel: 'injury-group', option: 'injury-option' } : undefined}
+                  renderOption={list.id === 'injuries' ? ({ option }) => option.injury : undefined}
+                />
               )}
             </div>
           );
