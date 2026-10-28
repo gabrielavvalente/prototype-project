@@ -1,0 +1,9 @@
+# Netlify: the launcher builds the launcher page and every app into one static site
+# (launcher/build.js), so all apps share one address and the data stored in the browser.
+[build]
+  base = "launcher"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"

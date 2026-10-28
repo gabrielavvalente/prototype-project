@@ -28,5 +28,13 @@ npm run dev      # opens http://localhost:5173 with a card per app
 
 Each app can also run alone (see its README), with its own copy of the demo data.
 
+## Host it (static site)
+
+`cd launcher && npm run build` builds the launcher page and every app into one static site,
+`launcher/dist/` — the page at `/`, each app at `/apps/<app-name>/`, the same addresses as in
+development, so the apps keep sharing the browser data. `npm run preview` serves it at
+http://localhost:4173. [netlify.toml](netlify.toml) tells Netlify to run that build and publish
+`launcher/dist`. Everything stays in each visitor's browser: every visitor has their own demo data.
+
 Specifications live in [specs/](specs/); project rules in
 [.specify/memory/constitution.md](.specify/memory/constitution.md).
