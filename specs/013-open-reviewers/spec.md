@@ -10,7 +10,8 @@ configured by the local admins and not the central or cluster teams." — with t
 decided with the user on 2026-10-28.
 
 **Capabilities**: changed: `specs/capabilities/workflow-settings.md` (WF-6, WF-8, WF-9, WF-11,
-WF-12, WF-6a added, scenarios 4 and 9), `specs/capabilities/platform-data.md` (workflow settings)
+WF-12, WF-6a added, scenarios 4 and 9), `specs/capabilities/platform-data.md` (workflow settings),
+`specs/domain.md` (Workflow)
 
 ## Why
 
@@ -52,8 +53,8 @@ today a Local admin cannot touch the reviewers of a Review that a higher level r
 - **WF-11** *(the reviewers)* … the reviewers chosen at every level covering the event's plant
   (WF-6a), limited to Managers and Site Admins who can see its plant and pillar. *(was: the
   reviewers of each setting requiring Review)*
-- **WF-12** *(reviewers)* A reviewers choice writes "Reviewers changed": "<names>" → "<names>"
-  ("No reviewers" when empty). *(was: "Required (reviewers: …)" on the Review setting)*
+- **WF-12** *(reviewers)* A reviewers choice writes "<level> · Reviewers", "Changed": "<names>" →
+  "<names>" ("No reviewers" when empty). *(was: "Required (reviewers: …)" on the Review setting)*
 
 ## Acceptance scenarios
 
@@ -78,7 +79,8 @@ Diego Laurent.
 4. **A colleague's choice** — After scenario 1, Carla (Local Lyon, like Eva) opens TF2's reviewers:
    "Eva Novak set this. They will be notified of your change."; she adds Diego Laurent. Eva's bell:
    "Carla Mendes changed your Reviewers setting for TF2 (Health & Safety, Local Lyon): Lucas Weber
-   → Lucas Weber, Diego Laurent."; the H&S Audit shows "Reviewers changed". (WF-6a, WF-12)
+   → Lucas Weber, Diego Laurent."; the H&S Audit shows "TF2 · Reviewers", "Changed", "Lucas
+   Weber → Lucas Weber, Diego Laurent". (WF-6a, WF-12)
 5. **Only where Review is Required** — At the start, Eva's TF5 Review is Optional: no reviewers
    are offered there. (WF-6a)
 6. **Phone and keyboard** — At 320px the Review cells and the reviewers list are usable, and with

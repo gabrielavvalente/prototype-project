@@ -89,8 +89,9 @@ Each person shows their initials as avatar.
 
 ### Workflow settings (all Central unless said otherwise)
 
-Reviewers of every Review setting: Carla Mendes, Eva Novak, Felix Tanaka, Diego Laurent (each
-event keeps only those who can see its plant and pillar).
+Reviewers: Central chose Carla Mendes, Eva Novak, Felix Tanaka and Diego Laurent on every level
+where it requires Review; no other level has chosen any (each event keeps only those who can see
+its plant and pillar).
 
 | Pillar | Review | Root cause analysis | Actions | Validation | Author |
 |---|---|---|---|---|---|
