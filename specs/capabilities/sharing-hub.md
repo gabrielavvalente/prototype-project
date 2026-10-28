@@ -40,7 +40,8 @@ checks whether it could happen there and acts on it.
 ### Receiving
 
 - **SH-5** **Sharing Hub**, a page of the event workspace (EL-1), lists the packages shared to the
-  context's plant in two sections (each a framed panel with its title), newest first: **Open** — "Not checked", "Being checked" and "Could
+  context's plant in two sections (each a framed panel with its title; History in grey), newest
+  first: **Open** — "Not checked", "Being checked" and "Could
   happen here" cases — and **History** — closed cases ("Could happen here — closed on <date>",
   "Could not happen here — closed on <date>"). Each card: "Safety Warning" from <plant>, the pillar,
   the level, the date shared, the first line of the statement and the state. Everyone with an event
@@ -65,7 +66,8 @@ checks whether it could happen there and acts on it.
   **Close case** closes it ("Could happen here — closed"). **No** closes it at once ("Could not
   happen here"). Closing — by No or Close case — is refused while an action is On Going: "Finish or
   cancel every action first.". A closed case is read-only and moves to the History.
-- **SH-9** The **history** of the package at the plant: "Received on <date>", "Check started by
+- **SH-9** The **history** of the package at the plant, a grey section of its own below the local
+  check: "Received on <date>", "Check started by
   <name>", "<action> completed by <name>", "Could happen here — answered by <name>", "Case closed by
   <name>" or "Check completed by <name>: could not happen here" — oldest first. Names appear only
   here, at the receiving plant, for its own people.

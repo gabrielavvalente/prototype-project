@@ -143,6 +143,7 @@ export default function HubItemPage() {
       <div className={`hub-layout${check.state === 'notChecked' ? '' : ' hub-layout--checking'}`}>
       <CommunicationDocument kind="warning" content={item.pkg.content} attachments={attachments} classification={item.pkg.classification} />
 
+      <div className="hub-side">
       <section className="hub-check" aria-labelledby="check-title">
         <h2 id="check-title">Local check</h2>
         {check.state === 'notChecked' && <p className="field-hint">Not checked yet.</p>}
@@ -219,13 +220,17 @@ export default function HubItemPage() {
             )}
           </>
         )}
-        <h3>History</h3>
+      </section>
+      {/* The history is a section of its own, in grey (SH-9). */}
+      <section className="hub-history-section" aria-labelledby="history-title">
+        <h2 id="history-title">History</h2>
         <ol className="hub-history">
           {historyOf(event, plantId).map((entry, index) => (
             <li key={index}>{entry.text}</li>
           ))}
         </ol>
       </section>
+      </div>
       </div>
     </main>
   );
