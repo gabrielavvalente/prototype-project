@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useApp } from '../AppContext.js';
 import { coveredPlantIds } from '../../../../shared/platform/permissions.js';
-import { CONFIGURABLE_PHASES, CRITICAL_PHASES, levelLabel, PHASE_LABELS, PHASES, resultingWorkflow } from '../../../../shared/platform/workflow.js';
+import { CONFIGURABLE_PHASES, CRITICAL_PHASES, hasNoReviewer, reviewerChoices, levelLabel, PHASE_LABELS, PHASES, resultingWorkflow } from '../../../../shared/platform/workflow.js';
 import CellDetails from './CellDetails.jsx';
 import EventPath from './EventPath.jsx';
 import ResultCell from './ResultCell.jsx';
@@ -9,7 +9,7 @@ import ResultCell from './ResultCell.jsx';
 // Result per plant (FR-011): what applies at one plant, who requires each phase, and the path of
 // an event of the chosen level.
 export default function ResultGrid({ pillar, role, levels, settings }) {
-  const { organization } = useApp();
+  const { organization, users } = useApp();
   const plants = coveredPlantIds(role, organization).map((id) => organization.find((node) => node.id === id));
   const [plantId, setPlantId] = useState(plants[0].id);
   const [levelCode, setLevelCode] = useState(levels[0].code);
@@ -73,6 +73,7 @@ export default function ResultGrid({ pillar, role, levels, settings }) {
                       <ResultCell
                         cell={results[level.code][phase]}
                         label={`${level.shownCode} ${PHASE_LABELS[phase]}`}
+                        noReviewer={phase === 'review' && hasNoReviewer(settings, users, { pillarId: pillar.id, levelCode: level.code, plantId })}
                         onOpen={() => setOpenCell({ levelCode: level.code, phase })}
                       />
                     )}
@@ -89,6 +90,7 @@ export default function ResultGrid({ pillar, role, levels, settings }) {
         <CellDetails
           pillarId={pillar.id}
           levelCode={levelLabel(pillar.id, openCell.levelCode)}
+          reviewerChoices={reviewerChoices(settings, { pillarId: pillar.id, levelCode: openCell.levelCode, plantId })}
           phase={openCell.phase}
           plant={plant}
           cell={results[openCell.levelCode][openCell.phase]}

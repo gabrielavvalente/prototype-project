@@ -180,7 +180,7 @@ export default function UserDetail({ userId: selectedUserId, backTo = '/users' }
                           <Text fw={600}>{setting.levelCode}</Text>
                         </Group>
                         <Text size="sm" c="dimmed">
-                          {PHASE_LABELS[setting.phase]}
+                          {/* A reviewers choice is for the Review phase (013 WF-6a). */}{PHASE_LABELS.review}
                         </Text>
                       </div>
                       <Text size="sm" c="dimmed" ta="right">

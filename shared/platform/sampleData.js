@@ -346,9 +346,12 @@ function requiredSetting(pillarId, levelCode, phase, role, authorId, reviewerIds
 // Managers and Site Admins of every plant, so each plant has someone to review.
 const reviewers = ['user-carla', 'user-eva', 'user-felix', 'user-diego'];
 
+// Central's Review settings come with Central's reviewers choice for every plant (013 WF-6a).
 function centralSettings(pillarId, authorId, phase, levelCodes) {
-  const ids = phase === 'review' ? reviewers : [];
-  return levelCodes.map((code) => requiredSetting(pillarId, code, phase, central(pillarId), authorId, ids));
+  return levelCodes.flatMap((code) => [
+    requiredSetting(pillarId, code, phase, central(pillarId), authorId),
+    ...(phase === 'review' ? [requiredSetting(pillarId, code, 'reviewers', central(pillarId), authorId, reviewers)] : []),
+  ]);
 }
 
 export const workflowSettings = [

@@ -5,8 +5,9 @@ import { getPlantName } from '../../../../shared/platform/organization.js';
 import { validReviewers } from '../../../../shared/platform/workflow.js';
 import Sheet from '../shell/Sheet.jsx';
 
-// Chooses the reviewers of a Review setting: Managers and Site Admins who can see the pillar at
-// the plants concerned (FR-010). Done stays disabled until one person is chosen.
+// Chooses the reviewers of the user's level for its plants: Managers and Site Admins who can see
+// the pillar there (FR-010). They are added to the other levels' reviewers; none is allowed
+// (013 WF-6a).
 export default function ReviewersPicker({ pillarId, plantIds, levelCode, initialIds, onDone, onClose }) {
   const { users, organization } = useApp();
   const [selectedIds, setSelectedIds] = useState(initialIds);
@@ -22,16 +23,18 @@ export default function ReviewersPicker({ pillarId, plantIds, levelCode, initial
     <Button
       type="button"
       className="button button--primary button--block"
-      disabled={selectedIds.length === 0}
       onClick={() => onDone(selectedIds.filter((id) => candidates.some((user) => user.id === id)))}
     >
-      {selectedIds.length === 0 ? 'Choose at least one reviewer' : `Done — ${selectedIds.length} selected`}
+      {selectedIds.length === 0 ? 'Save — no reviewers' : `Save — ${selectedIds.length} selected`}
     </Button>
   );
 
   return (
     <Sheet title={`Reviewers for ${levelCode}`} onClose={onClose} footer={footer}>
-      <p className="field-hint">Managers and Site Admins who can see this pillar at your plants.</p>
+      <p className="field-hint">
+        Managers and Site Admins who can see this pillar at your plants. They are added to the reviewers
+        chosen by the other levels.
+      </p>
       {lostAccess.length > 0 && (
         <p className="message message--warning">
           {lostAccess.length} saved reviewer(s) no longer have access and will be removed.
