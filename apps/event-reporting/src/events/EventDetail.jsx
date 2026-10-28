@@ -49,6 +49,9 @@ function buildHistory(event, users) {
     const label = validation.effective ? `Validation: effective — closed by ${by}` : `Validation: not effective — ${validation.reason} (${by})`;
     items.push({ label, at: validation.at });
   }
+  if (event.optionalAnalysis?.startedAt) {
+    items.push({ label: `Root cause analysis started by ${getLabel(users, event.optionalAnalysis.startedBy)}`, at: event.optionalAnalysis.startedAt });
+  }
   if (event.rca?.completedAt) {
     items.push({ label: `Root cause analysis completed by ${getLabel(users, event.rca.completedBy)}`, at: event.rca.completedAt });
   }

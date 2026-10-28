@@ -19,6 +19,7 @@ import { getLabel } from '../logic/lookups.js';
 import { normalizeAnalysis } from '../logic/rootCause.js';
 import ActionModal from './ActionModal.jsx';
 import PlanActions from './PlanActions.jsx';
+import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 function formatDateTime(isoText) {
   return new Date(isoText).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
@@ -83,6 +84,7 @@ export default function ActionPlanStep({ event, onSaved }) {
     const incomplete = current.actions.filter((action) => action.status === 'planned' && Object.keys(validateAction(action)).length > 0);
     if (incomplete.length > 0) {
       setError(`Complete these actions before deploying: ${incomplete.map((action) => action.description || 'an action without description').join('; ')}.`);
+      scrollToFirstProblemSoon();
       return;
     }
     await save(deployPlan(current, user.id, new Date().toISOString(), users));

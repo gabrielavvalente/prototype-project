@@ -21,6 +21,7 @@ import {
   validateLocalAction,
 } from '../logic/sharingHub.js';
 import CommunicationDocument from '../communications/CommunicationDocument.jsx';
+import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 const NOT_AVAILABLE = 'This shared event is not available.';
 const formatDate = (iso) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -34,6 +35,7 @@ function LocalActionForm({ initial, people, onSave, onCancel }) {
   function save() {
     const found = validateLocalAction(action);
     setErrors(found);
+    if (Object.keys(found).length > 0) scrollToFirstProblemSoon();
     if (Object.keys(found).length === 0) onSave(action);
   }
 
@@ -119,6 +121,7 @@ export default function HubItemPage() {
   function complete() {
     const found = completionProblem(check, answer);
     setProblem(found || '');
+    if (found) scrollToFirstProblemSoon();
     if (!found) save(completeCheck(event, plantId, answer, user, now()));
   }
 

@@ -4,6 +4,7 @@ import ChipGroup from '../create/ChipGroup.jsx';
 import { YesNoField } from '../create/fields.jsx';
 import { ACTION_PRIORITIES, MAX_ASSIGNEES, validateAction } from '../logic/actions.js';
 import DueDateHistory from './DueDateHistory.jsx';
+import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 const PRIORITY_OPTIONS = ACTION_PRIORITIES.map((priority) => ({ value: priority, label: priority }));
 
@@ -20,6 +21,7 @@ export default function ActionModal({ action, isNew, event, whys, whyFixed, cand
   function save() {
     const found = validateAction(draft);
     setErrors(found);
+    if (Object.keys(found).length > 0) scrollToFirstProblemSoon();
     if (Object.keys(found).length === 0) onSave(draft);
   }
 

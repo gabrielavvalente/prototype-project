@@ -27,14 +27,14 @@ acceptance scenarios through the launcher.
 
 **Scenarios**: 1–4
 
-- [ ] T003 New `apps/event-reporting/src/events/OptionalAnalysisStart.jsx`; `EventSteps.jsx` opens the
+- [X] T003 New `apps/event-reporting/src/events/OptionalAnalysisStart.jsx`; `EventSteps.jsx` opens the
   optional step for those who can start it; `EventDetail.jsx` history line (RCA-18, EL-18)
 
 ## Phase 3: Guided corrections
 
 **Scenarios**: 2, 5–7
 
-- [ ] T004 New `shared/ui/scrollToProblem.js` and its calls in `ReviewStep.jsx`, `RootCauseStep.jsx`,
+- [X] T004 New `shared/ui/scrollToProblem.js` and its calls in `ReviewStep.jsx`, `RootCauseStep.jsx`,
   `ActionModal.jsx`, `ValidationStep.jsx`, `ShareToHub.jsx`, `HubItemPage.jsx`,
   `OptionalAnalysisStart.jsx` and the Control Panel's `RuleForm.jsx` and `ValueForm.jsx` (Domain)
 

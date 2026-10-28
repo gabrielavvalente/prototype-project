@@ -7,6 +7,7 @@ import { investigationGroups } from '../../../../shared/platform/sampleData.js';
 import { canEditEvent, getMenuItems, isEventVisible } from '../logic/access.js';
 import { canOpenOptionalPlan } from '../logic/actionPlan.js';
 import { communicationStates } from '../logic/safetyCommunication.js';
+import { canStartAnalysis } from '../logic/optionalAnalysis.js';
 import { STEP_LABELS, STEPS, stepStates } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
@@ -14,6 +15,7 @@ import { EventForm } from '../create/EventForm.jsx';
 import CommunicationView from '../communications/CommunicationView.jsx';
 import { EventHeadCard, EventHistory, EventSections, SavedBanner } from './EventDetail.jsx';
 import ActionPlanStep from './ActionPlanStep.jsx';
+import OptionalAnalysisStart from './OptionalAnalysisStart.jsx';
 import ReviewStep from './ReviewStep.jsx';
 import RootCauseStep from './RootCauseStep.jsx';
 import ValidationStep from './ValidationStep.jsx';
@@ -43,7 +45,7 @@ function StepsMenu({ event, activeStep, canOpenOptional }) {
               </span>
             </>
           );
-          const open = state === 'done' || state === 'current' || (state === 'optional' && canOpenOptional);
+          const open = state === 'done' || state === 'current' || (state === 'optional' && canOpenOptional(step));
           return (
             <li key={step}>
               {open ? (
@@ -154,8 +156,11 @@ export default function EventSteps() {
     : null;
 
   const state = communication ? null : stepStates(event).find((item) => item.step === step).state;
-  const canOpenOptional = canOpenOptionalPlan(user, event, investigationGroups, users);
-  const available = state === 'done' || state === 'current' || (state === 'optional' && canOpenOptional);
+  // An optional Actions step opens for the plan's owners, an optional analysis for those who can
+  // start it (005 AP-3, 010 RCA-18).
+  const canOpenOptional = (which) =>
+    which === 'rootCause' ? canStartAnalysis(user, event) : canOpenOptionalPlan(user, event, investigationGroups, users);
+  const available = state === 'done' || state === 'current' || (state === 'optional' && canOpenOptional(step));
 
   return (
     <main className="page page--wide steps-page">
@@ -197,7 +202,8 @@ export default function EventSteps() {
           {available && step === 'submission' && <SubmissionStep event={event} attachments={attachments} />}
           {/* A new form for each event: going from one event's steps to another's keeps this page. */}
           {available && step === 'review' && <ReviewStep key={event.id} event={event} onSaved={setEvent} />}
-          {available && step === 'rootCause' && <RootCauseStep key={event.id} event={event} onSaved={setEvent} />}
+          {available && step === 'rootCause' && state === 'optional' && <OptionalAnalysisStart key={event.id} event={event} onSaved={setEvent} />}
+          {available && step === 'rootCause' && state !== 'optional' && <RootCauseStep key={event.id} event={event} onSaved={setEvent} />}
           {available && step === 'actions' && <ActionPlanStep key={event.id} event={event} onSaved={setEvent} />}
           {available && step === 'validation' && <ValidationStep key={event.id} event={event} onSaved={setEvent} />}
         </Paper>
