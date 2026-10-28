@@ -79,7 +79,7 @@ From freshly reset demo data (`specs/capabilities/platform-data.md`), in order.
    Novak (Site Admin) starts it, designating herself. *Then* the current step is Root cause
    analysis, before Actions, and Eva is taken to it. (RCA-18)
 4. **Not for archived events** — After Carla archives `TF-26-0001` (Duplicated), its Root cause
-   analysis step is not Optional ("This step has not been reached yet."). (RCA-18)
+   analysis step shows "Not required", not Optional, and does not open. (RCA-18)
 5. **Guided review** — Carla completes the review of `TF-26-0005` as valid without Standards. *Then*
    the review is refused, the page scrolls to Standards with "Choose a value." and the focus is in
    that field. (Domain)

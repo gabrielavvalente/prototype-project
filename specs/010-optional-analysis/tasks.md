@@ -14,11 +14,11 @@ acceptance scenarios through the launcher.
 
 ## Phase 1: Rules
 
-- [ ] T001 In `apps/event-reporting/src/logic/review.js` and `rootCause.js`: the optional Root cause
+- [X] T001 In `apps/event-reporting/src/logic/review.js` and `rootCause.js`: the optional Root cause
   analysis step (valid review, In Progress or Closed, nobody required it) and Root cause analysis
   required once `event.optionalAnalysis` is set; `designatedIds` reads its people; tests in
   `review.test.js` and `rootCause.test.js` (RCA-18, Domain Steps)
-- [ ] T002 New `apps/event-reporting/src/logic/optionalAnalysis.js` with
+- [X] T002 New `apps/event-reporting/src/logic/optionalAnalysis.js` with
   `optionalAnalysis.test.js`: `canStartAnalysis(user, event)`, `startAnalysis(event, assignees,
   user, now)` (reopens a Closed event); its alert candidates in `logic/notifications.js` (RCA-18,
   NT-3)

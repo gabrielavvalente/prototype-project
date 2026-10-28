@@ -102,3 +102,8 @@ export function sharedAlerts(plantIds, { actorId, users, settings = [] }) {
       .map((user) => ({ recipientId: user.id, type: 'Shared event received', plantId })),
   );
 }
+
+// An optional analysis started (010 RCA-18): the designated people get their work alert.
+export function analysisStartedCandidates(analystIds) {
+  return work(analystIds, 'Root cause analysis assigned to you');
+}

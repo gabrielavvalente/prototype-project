@@ -25,11 +25,12 @@ export function isReviewer(user, event) {
   return Boolean(event.workflow?.phases.review?.reviewerIds?.includes(user.id));
 }
 
-// Root cause analysis is also required when the reviewer asked for it ("further analyze" = Yes);
-// Actions also as soon as the event's plan has an action (005 AP-3).
+// Root cause analysis is also required when the reviewer asked for it ("further analyze" = Yes) or
+// someone started it on its optional step (010 RCA-18); Actions also as soon as the event's plan
+// has an action (005 AP-3).
 function isRequired(event, step) {
   if (step === 'submission') return true;
-  if (step === 'rootCause' && event.review?.furtherAnalysis === true) return true;
+  if (step === 'rootCause' && (event.review?.furtherAnalysis === true || Boolean(event.optionalAnalysis?.startedAt))) return true;
   if (step === 'actions' && (event.actions?.length ?? 0) > 0) return true;
   return Boolean(event.workflow?.phases[step]?.required);
 }
@@ -64,7 +65,9 @@ export function stepStates(event) {
   return STEPS.map((step, index) => {
     let state = 'upcoming';
     const optionalActions = step === 'actions' && ACTIVE_STATUSES.includes(event.status) && !event.workflow?.phases.actions?.required;
-    if (!isRequired(event, step)) state = optionalActions ? 'optional' : 'skipped';
+    // An analysis nobody required, after a valid review, can still be started (010 RCA-18).
+    const optionalAnalysis = step === 'rootCause' && event.review?.decision === 'valid' && ['In Progress', 'Closed'].includes(event.status);
+    if (!isRequired(event, step)) state = optionalActions || optionalAnalysis ? 'optional' : 'skipped';
     else if (step === current) state = 'current';
     else if (index < currentIndex || isDone(event, step)) state = 'done';
     // A plan started on a not-required Actions step stays Optional until it is the current step.

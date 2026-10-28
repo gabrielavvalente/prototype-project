@@ -40,7 +40,8 @@ describe('steps of an event', () => {
 
   it('shows done, current, upcoming and skipped steps', () => {
     const event = makeEvent(['review', 'actions'], { status: 'In Progress', review: { decision: 'valid' } });
-    expect(stepStates(event).map((item) => item.state)).toEqual(['done', 'done', 'skipped', 'current', 'skipped']);
+    // After a valid review, an analysis nobody required stays possible: Optional (010 RCA-18).
+    expect(stepStates(event).map((item) => item.state)).toEqual(['done', 'done', 'optional', 'current', 'skipped']);
     expect(stepStates(makeEvent(['review', 'validation'])).map((item) => item.state)).toEqual([
       'done',
       'current',
