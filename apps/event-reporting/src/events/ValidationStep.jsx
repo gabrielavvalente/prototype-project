@@ -110,7 +110,11 @@ export default function ValidationStep({ event, onSaved }) {
               label="No additional actions are needed."
               checked={answer.noMoreActions}
               error={errors.noMoreActions}
-              onChange={(e) => setAnswer((currentAnswer) => ({ ...currentAnswer, noMoreActions: e.currentTarget.checked }))}
+              onChange={(e) => {
+                // Read the value now: the event's currentTarget is gone when the update runs.
+                const noMoreActions = e.currentTarget.checked;
+                setAnswer((currentAnswer) => ({ ...currentAnswer, noMoreActions }));
+              }}
             />
           )}
           {answer.effective === false && (

@@ -32,11 +32,11 @@ acceptance scenarios through the launcher.
 
 ## Phase 3: Apply the change to the capabilities
 
-- [ ] T005 Create `specs/capabilities/record-historian.md`; apply the changes to `validation.md`,
+- [X] T005 Create `specs/capabilities/record-historian.md`; apply the changes to `validation.md`,
   `root-cause-analysis.md`, `notifications.md` and `specs/domain.md`. No "was", no change history.
-- [ ] T006 Check the counts and names of every changed scenario against the demo data
+- [X] T006 Check the counts and names of every changed scenario against the demo data
 
 ## Phase 4: Checks
 
-- [ ] T007 `npm test` and `npm run build` in `apps/event-reporting/` and `apps/control-panel/`, then the
+- [X] T007 `npm test` and `npm run build` in `apps/event-reporting/` and `apps/control-panel/`, then the
   scenarios through the launcher, at 320px and with the keyboard, with a clean console

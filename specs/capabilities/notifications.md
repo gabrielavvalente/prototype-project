@@ -32,7 +32,7 @@ choices of the people of their plant.
   ([sharing hub](sharing-hub.md) SH-6).
 - **NT-2** Alerts are of two kinds. **Work** alerts hand the person something to do and are always
   raised: "Event to review", "Root cause analysis assigned to you", "Action plan ready for
-  validation", "Action plan not effective" (to the plan owners). **Information** alerts are all the
+  validation", "Action plan not effective" (to the plan owners), "Event sent back for rework". **Information** alerts are all the
   others; they skip the person who did the action ("Event submitted" excepted: it also goes to the
   Manager who reported the event) and are raised only when the person has them on (NT-5).
 - **NT-3** The alerts:
@@ -53,6 +53,7 @@ choices of the people of their plant.
   | Actions | Plan completed, Validation next | "Action plan ready for validation" (work) | The validators |
   | Actions | Plan completed | "Action plan completed" | The reporter |
   | Validation | Not effective | "Action plan not effective" | The plan owners (work) and the reporter (information) |
+  | Validation | Rework of a locked event ([validation](validation.md) VAL-7) | "Event sent back for rework" (work) | The plan owners, never the validator who sent it |
   | Closure | Closed at Review, Root cause analysis, Actions or Validation | "Event closed" | The reporter and the Shared with people |
   | Sharing | A published Safety Warning is shared | "Shared event received" | The Site Admins and Managers of each plant reached, not the person who shared |
 
@@ -143,7 +144,7 @@ From freshly reset [demo data](platform-data.md), in order.
    the plan and completes the action. *Then* Diego, its validator, gets "Action plan ready for
    validation" and Carla gets "Action plan completed". Diego answers No ("Rack still unstable").
    *Then* Ana gets "Action plan not effective" and Carla too. (NT-3, VAL-4)
-9. **My notifications** — Ana opens Account › My notifications. *Then* Always on lists the four
+9. **My notifications** — Ana opens Account › My notifications. *Then* Always on lists the five
    work alerts with "These alerts hand you work and cannot be turned off."; Information has 11
    switches, all on. She turns off "Event closed" ("Saved."). Carla reviews `TF-26-0001` (TF4,
    Review only) as valid: it closes. *Then* Ana gets no alert. (NT-1, NT-4)

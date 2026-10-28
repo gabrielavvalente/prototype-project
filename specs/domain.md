@@ -43,6 +43,8 @@ made in one product is seen by the others.
 | **Central / Cluster / Local** | The three levels of Control Panel roles: all plants / two or more plants / one plant. |
 | **Safety Alert** | An anonymised summary of a reviewed event for its plant. |
 | **Safety Warning** | The anonymised lessons of an analysed event, published by its plan owners for its plant. |
+| **Locked** | An event closed by its validation: read-only until a validator sends it back for rework. |
+| **Record Historian** | The log of every change made to an event after its review. |
 | **Sharing Hub** | Where a plant receives the Safety Warnings other plants shared with it, and checks whether they could happen there. |
 
 ## Organization
@@ -219,6 +221,7 @@ follows the dependencies.
 | Notifications (lifecycle alerts, My notifications, Site Admin settings) | Validation, Control Panel workspace | [notifications](capabilities/notifications.md) |
 | Safety communication (Safety Alert, Safety Warning) | Action plan, event library | [safety-communication](capabilities/safety-communication.md) |
 | Sharing Hub (sharing Safety Warnings across plants, local checks) | Safety communication, notifications | [sharing-hub](capabilities/sharing-hub.md) |
+| Record Historian (every change after the review) | Validation, event library | [record-historian](capabilities/record-historian.md) |
 
 ## Product-wide rules
 

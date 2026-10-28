@@ -219,7 +219,8 @@ export function EventHistory({ event }) {
     <Collapsible title="History" open>
       <ol className="timeline">
         {buildHistory(event, users).map((item) => (
-          <li key={item.label}>
+          // The same line can come twice (e.g. validated again after a rework): key by line and time.
+          <li key={`${item.label}-${item.at}`}>
             <span>{item.label}</span>
             <span className="field-hint">{formatDateTime(item.at)}</span>
           </li>
