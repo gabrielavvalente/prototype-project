@@ -7,10 +7,14 @@
 **Input**: User description: "Event Sharing Hub" — the Event Sharing Hub of the sources (feature 13:
 Share to Hub with a perimeter, an anonymised package, subscriptions, a Local Sharing Inbox, Verify
 Locally), with the open points decided with the user on 2026-10-26. Review remark (2026-10-28): the
-Share to Hub button sits next to the Print button.
+Share to Hub button sits next to the Print button. Review remarks (2026-10-28, second round): the
+Warning's Publish button sits next to Print; Verify locally is at the top right of the shared
+Warning; it adds no pre-filled action; "Could happen here" keeps the case open for actions until
+the plant closes it; closed cases go to the Sharing Hub's History.
 
 **Capabilities**: new: `specs/capabilities/sharing-hub.md` (prefix SH); changed:
-`specs/capabilities/event-library.md` (EL-1), `specs/capabilities/notifications.md` (NT-1, NT-3,
+`specs/capabilities/event-library.md` (EL-1), `specs/capabilities/safety-communication.md` (SC-7),
+`specs/capabilities/notifications.md` (NT-1, NT-3,
 NT-4, scenario 9), `specs/capabilities/platform-data.md` (Organization), `specs/domain.md`
 (Organization, Glossary, Capabilities)
 
@@ -34,6 +38,8 @@ check whether it could happen there and act on it.
 | Sharing again | A Warning can be shared again to reach more plants; never unshared | — |
 | Who checks | The Site Admins and Managers of the receiving plant; everyone with an event role there reads | — |
 | Local actions | No alerts about them | Notifications decision: the action management tool notifies actions |
+| Answering | "Could happen here" keeps the case open for as many actions as needed until the plant closes it; "Could not happen here" closes it | User (review remarks) |
+| Closed cases | In a History part of the Sharing Hub page | User (review remarks) |
 
 ## Rules
 
@@ -56,30 +62,36 @@ check whether it could happen there and act on it.
   Environment: Aspects, Impacts; Industrial Risk: Categories), never a name. The Warning then shows
   "Shared with <plants> on <date>" (one line per share).
 - **SH-5** **Sharing Hub**, a page of the event workspace (EL-1), lists the packages shared to the
-  context's plant, newest first: "Safety Warning" from <plant>, the pillar, the level, the date
-  shared, the first line of the statement and the local check's state ("Not checked", "Being
-  checked", "Could happen here", "Could not happen here"). Everyone with an event role at the plant
-  reads it; empty: "Nothing has been shared with <plant> yet.". Opening one shows the package
-  (document of SC-5 with a **Classification** part) and the local check.
+  context's plant in two parts, newest first: **Open** — "Not checked", "Being checked" and "Could
+  happen here" cases — and **History** — closed cases ("Could happen here — closed on <date>",
+  "Could not happen here — closed on <date>"). Each card: "Safety Warning" from <plant>, the pillar,
+  the level, the date shared, the first line of the statement and the state. Everyone with an event
+  role at the plant reads it; empty: "Nothing has been shared with <plant> yet." (and "No closed
+  case yet." for an empty History). Opening one shows the package (document of SC-5 with a
+  **Classification** part) and the local check.
 - **SH-6** Each receiving plant's **Site Admins and Managers** get the information alert "Shared
   event received" ([notifications](notifications.md)); opening it opens the package.
-- **SH-7** **Verify locally** (the receiving plant's Site Admins and Managers, while "Not checked")
-  starts the **local check**: "Being checked", and a first local action pre-filled "Check whether
-  this could happen here: <key learnings> (Hazards: <hazards>)" (without Hazards when the package
-  has none). A local action has a description, 1 to 5 assignees among the plant's people with an
-  event role, a due date and a status (On Going, Completed, Cancelled); the checkers add, edit and
-  cancel actions; an assignee completes their own. Saving with something missing is refused next to
-  the field: "Describe the action.", "Choose 1 to 5 assignees.", "Choose a due date.".
-- **SH-8** The checkers answer **"Could it happen here?"** Yes / No; **Complete check** is possible
-  once it is answered and every action is Completed or Cancelled ("Finish or cancel every action
-  first." otherwise) and makes the state "Could happen here" or "Could not happen here"; the check
-  is then read-only.
+- **SH-7** **Verify locally**, at the top right of the shared Warning (the receiving plant's Site
+  Admins and Managers, while "Not checked"), starts the **local check**: "Being checked", with no
+  action yet and **Add action**. A local action has a description, 1 to 5 assignees among the
+  plant's people with an event role, a due date and a status (On Going, Completed, Cancelled); the
+  checkers add, edit and cancel actions; an assignee completes their own. Saving with something
+  missing is refused next to the field: "Describe the action.", "Choose 1 to 5 assignees.",
+  "Choose a due date.".
+- **SH-8** The checkers answer **"Could it happen here?"** while "Being checked". **Yes** makes the
+  state "Could happen here": the case stays open, actions can be added for as long as needed, and
+  **Close case** closes it ("Could happen here — closed"). **No** closes it at once ("Could not
+  happen here"). Closing — by No or Close case — is refused while an action is On Going: "Finish or
+  cancel every action first.". A closed case is read-only and moves to the History.
 - **SH-9** The **history** of the package at the plant: "Received on <date>", "Check started by
-  <name>", "<action> completed by <name>", "Check completed by <name>: could (not) happen here" —
-  oldest first. Names appear only here, at the receiving plant, for its own people.
+  <name>", "<action> completed by <name>", "Could happen here — answered by <name>", "Case closed by
+  <name>" or "Check completed by <name>: could not happen here" — oldest first. Names appear only
+  here, at the receiving plant, for its own people.
 
 ### Changed
 
+- **SC-7** *(the button)* **Publish Safety Warning** sits next to the Warning's **Print** button;
+  the photos to include stay below the document. *(was: below the photos)*
 - **EL-1** "EVENT WORKSPACE" offers five pages — **Events**, **KPIs**, **Reports**, **Safety
   communications**, **Sharing Hub** ([sharing hub](sharing-hub.md) SH-5) — and **Create event**
   for those who can report. … *(was: four pages)*
@@ -101,7 +113,8 @@ From freshly reset demo data (`specs/capabilities/platform-data.md`), after [saf
 communication](../capabilities/safety-communication.md) scenarios 5–7: Diego Laurent published the
 Safety Warning of `TF-26-0002` (Lyon, TF3), whose plan owner he is.
 
-1. **Who shares** — Diego and Eva Novak (Site Admin, Lyon) see **Share to Hub** on the Warning;
+1. **Who shares** — Diego and Eva Novak (Site Admin, Lyon) see **Share to Hub** on the Warning
+   (next to Print);
    Carla Mendes (its reviewer) and Ana Ribeiro do not. (SH-1)
 2. **Reach** — Diego opens Share to Hub: Plants offers Curitiba and Porto, not Lyon. Choosing
    region Europe reads "Reaches 1 plant: Porto"; adding business Automotive Parts reads "Choose a
@@ -116,16 +129,20 @@ Safety Warning of `TF-26-0002` (Lyon, TF3), whose plan owner he is.
    Lyon, Health & Safety, "TF3 — First Aid", "Not checked"; it shows the Warning, a Classification
    part with the review's Standards and Hazards, and no name; she has no Verify locally. At Lyon,
    Carla's Sharing Hub reads "Nothing has been shared with Lyon yet.". (SH-4, SH-5)
-5. **Verify locally** — Lucas opens it and presses Verify locally. *Then* the state is "Being
-   checked" and a first action reads "Check whether this could happen here: Sharp edges must be
-   deburred before handling (Hazards: …)"; saving it without assignee is refused with "Choose 1 to
-   5 assignees."; he assigns Gina with a due date next week. Complete check is refused with
-   "Finish or cancel every action first.". (SH-7, SH-8)
-6. **Complete the check** — Gina completes her action; Lucas answers No and completes the check.
-   *Then* the list shows "Could not happen here", the check is read-only, and the history reads
-   "Received on <today>", "Check started by Lucas Weber", "Check whether this could happen here…
-   completed by Gina Rossi", "Check completed by Lucas Weber: could not happen here". Nobody got
-   an alert about the action. (SH-8, SH-9)
+5. **Verify locally** — Lucas opens it: Verify locally is at the top right. He presses it. *Then*
+   the state is "Being checked", no action is listed and Add action is offered; an action "Check
+   the sheet edges at the cutting station" saved without assignee is refused with "Choose 1 to 5
+   assignees."; he assigns Gina with a due date next week. Answering No is refused with "Finish or
+   cancel every action first.". (SH-7, SH-8)
+6. **Could happen here** — Lucas answers Yes: the state is "Could happen here" and the case stays
+   in Open; he adds a second action for Gina. Gina completes both. Lucas presses Close case. *Then*
+   the case is read-only and moves to the History as "Could happen here — closed on <today>", and
+   its history reads "Received on <today>", "Check started by Lucas Weber", "Could happen here —
+   answered by Lucas Weber", the two "… completed by Gina Rossi", "Case closed by Lucas Weber".
+   Nobody got an alert about the actions. (SH-5, SH-8, SH-9)
+6b. **Could not happen here** — At Curitiba, Felix Tanaka verifies locally and answers No at once
+   (no action): the case is closed, in the History as "Could not happen here — closed on <today>".
+   (SH-8)
 7. **Anonymisation gate** — A Warning whose key learnings read "Ana Ribeiro must deburr the edges"
    (published by its owners as in safety communication scenarios 5–7) cannot be shared: "This
    Safety Warning names someone (Key learnings) and cannot be shared.". (SH-3)

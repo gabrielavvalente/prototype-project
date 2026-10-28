@@ -8,9 +8,11 @@ import {
   canCheck,
   canShare,
   checkOf,
-  completeCheck,
-  completionProblem,
-  firstActionText,
+  answerNo,
+  answerYes,
+  closeCase,
+  closingProblem,
+  isClosed,
   historyOf,
   namedParts,
   namesToHide,
@@ -96,10 +98,10 @@ describe('receiving and checking (SH-5 to SH-9)', () => {
     expect(canCheck(byId('user-felix'), 'plant-porto')).toBe(false);
   });
 
-  it('runs a check with local actions to completion', () => {
+  it('starts with no action; Yes keeps the case open until it is closed', () => {
     const event = startCheck(shared(), 'plant-porto', byId('user-lucas'), NOW);
-    const text = firstActionText(event.hubShares[0].package);
-    expect(text).toBe('Check whether this could happen here: Sharp edges must be deburred before handling. (Hazards: Sharp edges)');
+    expect(checkOf(event, 'plant-porto')).toMatchObject({ state: 'beingChecked', actions: [] });
+    const text = 'Check the sheet edges at the cutting station';
     expect(validateLocalAction({ description: text, assigneeIds: [], dueDate: '' })).toEqual({
       assigneeIds: 'Choose 1 to 5 assignees.',
       dueDate: 'Choose a due date.',
@@ -107,19 +109,31 @@ describe('receiving and checking (SH-5 to SH-9)', () => {
     let checked = saveLocalAction(event, 'plant-porto', { description: text, assigneeIds: ['user-gina'], dueDate: '2026-11-02' });
     const action = checkOf(checked, 'plant-porto').actions[0];
     expect(action.status).toBe('onGoing');
-    expect(completionProblem(checkOf(checked, 'plant-porto'), false)).toBe('Finish or cancel every action first.');
+    expect(closingProblem(checkOf(checked, 'plant-porto'))).toBe('Finish or cancel every action first.');
     expect(allowedLocalStatuses(byId('user-gina'), action, 'plant-porto')).toEqual(['completed']);
     expect(allowedLocalStatuses(byId('user-lucas'), action, 'plant-porto')).toEqual(['cancelled']);
+    checked = answerYes(checked, 'plant-porto', byId('user-lucas'), NOW);
+    expect(checkOf(checked, 'plant-porto').state).toBe('yes');
+    expect(isClosed(checkOf(checked, 'plant-porto'))).toBe(false);
     checked = setLocalActionStatus(checked, 'plant-porto', action.id, 'completed', byId('user-gina'), NOW);
-    expect(completionProblem(checkOf(checked, 'plant-porto'), null)).toBe('Say whether it could happen here.');
-    expect(completionProblem(checkOf(checked, 'plant-porto'), false)).toBeNull();
-    checked = completeCheck(checked, 'plant-porto', false, byId('user-lucas'), NOW);
-    expect(checkOf(checked, 'plant-porto').state).toBe('no');
+    expect(closingProblem(checkOf(checked, 'plant-porto'))).toBeNull();
+    checked = closeCase(checked, 'plant-porto', byId('user-lucas'), NOW);
+    expect(checkOf(checked, 'plant-porto')).toMatchObject({ state: 'closedYes', closedAt: NOW });
+    expect(isClosed(checkOf(checked, 'plant-porto'))).toBe(true);
     expect(historyOf(checked, 'plant-porto').map((item) => item.text)).toEqual([
       'Received on 26 Oct 2026',
       'Check started by Lucas Weber',
+      'Could happen here — answered by Lucas Weber',
       `${text} completed by Gina Rossi`,
-      'Check completed by Lucas Weber: could not happen here',
+      'Case closed by Lucas Weber',
     ]);
+  });
+
+  it('closes at once with No', () => {
+    const event = startCheck(shared(), 'plant-porto', byId('user-lucas'), NOW);
+    const closed = answerNo(event, 'plant-porto', byId('user-lucas'), NOW);
+    expect(checkOf(closed, 'plant-porto')).toMatchObject({ state: 'no', closedAt: NOW });
+    expect(receivedPackages([closed], 'plant-porto')[0]).toMatchObject({ state: 'no', closedAt: NOW });
+    expect(historyOf(closed, 'plant-porto').at(-1).text).toBe('Check completed by Lucas Weber: could not happen here');
   });
 });

@@ -51,6 +51,11 @@ export default function CommunicationView({ event, kind, attachments, onSaved, s
       <div className="communication-toolbar no-print">
         {canOpenEvent ? <Link to={`/events/${event.recordNumber}`}>← Event {event.recordNumber}</Link> : <span />}
         <div className="communication-toolbar-buttons">
+          {owner && (
+            <Button type="button" disabled={saving} onClick={publish}>
+              Publish Safety Warning
+            </Button>
+          )}
           {kind === 'warning' && !isDraft && canShare(user, event, investigationGroups, users) && (
             <Button type="button" variant="light" onClick={() => setSharing(true)}>
               Share to Hub
@@ -102,9 +107,6 @@ export default function CommunicationView({ event, kind, attachments, onSaved, s
               ))}
             </Stack>
           )}
-          <Button type="button" disabled={saving} onClick={publish}>
-            Publish Safety Warning
-          </Button>
         </section>
       )}
     </div>
