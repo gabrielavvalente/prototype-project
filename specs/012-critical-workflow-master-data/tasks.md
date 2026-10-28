@@ -72,6 +72,20 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 4b: Review remark — an injury requires body parts (2026-10-28)
+
+**Scenarios**: 12
+
+- [X] T011 `linkedListId` on Injuries, "Choose at least one body part." in `validateValue`, Body
+  parts read by `planImport`, in `shared/platform/masterData.js`, with tests in
+  `shared/platform/masterData.test.js`; the body parts' count in the audit and an empty list for a
+  new injury in `shared/platform/platformData.js` (MD-4, MD-5, MD-13, MD-14)
+- [X] T012 The Body parts field in `apps/control-panel/src/masterData/ValueForm.jsx`; the import
+  hint in `ValueList.jsx` (MD-4, MD-13)
+- [X] T013 Apply to `specs/capabilities/master-data.md`; scenario 12 through the launcher
+
+---
+
 ## Phase 5: Apply the change to the capabilities
 
 - [X] T008 Apply the change to `specs/capabilities/workflow-settings.md`, `event-review.md`,

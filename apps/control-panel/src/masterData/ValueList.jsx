@@ -221,7 +221,8 @@ export default function ValueList({ list, values, activations, plants, plantId, 
       </div>
       {canImport && (
         <p className="field-hint">
-          Import reads the columns {list.hasCode && 'Code, '}Name, Description{list.parentListId && ', Category'}: a row
+          Import reads the columns {list.hasCode && 'Code, '}Name, Description{list.parentListId && ', Category'}
+          {list.linkedListId && ', Body parts (names separated by "|")'}: a row
           with the {list.hasCode ? 'code' : 'name'} of one of your values changes it, other rows add values. Export
           first to get a file in the right format.
         </p>

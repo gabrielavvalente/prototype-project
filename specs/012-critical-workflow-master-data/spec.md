@@ -8,12 +8,13 @@
 levels TF1–TF5 and add SIP/HCI; for environment, keep current levels and add SIP; for industrial
 risk, keep current levels and add SPL/HCL; in event reporting, instead of asking whether analysis
 is needed, remove the question. And for the master data content: see the Excel file and update the
-master data content." — with the open points decided with the user on 2026-10-28.
+master data content." — with the open points decided with the user on 2026-10-28. Review
+remark (2026-10-28): creating or editing an injury requires its link to body parts.
 
 **Capabilities**: changed: `specs/capabilities/workflow-settings.md` (WF-1, WF-5a, WF-10, WF-11,
 WF-13 added, scenarios 1 and 7), `specs/capabilities/event-review.md` (RV-6, RV-10, RV-11, RV-14,
 RV-15, scenarios 4, 5 and 8), `specs/capabilities/root-cause-analysis.md` (RCA-1),
-`specs/capabilities/master-data.md` (MD-1, MD-2, MD-4, MD-7, MD-11, MD-12, Initial catalogs,
+`specs/capabilities/master-data.md` (MD-1, MD-2, MD-4, MD-5, MD-7, MD-11, MD-12, MD-13, MD-14, Initial catalogs,
 scenarios 1, 3, 4, 6 and 9), `specs/capabilities/platform-data.md` (workflow settings),
 the scenarios of `action-plan.md`, `notifications.md` and `safety-communication.md` that answered
 "further analyze",
@@ -36,6 +37,7 @@ master data workbook, with injuries that make sense for the injured body part.
 | Standards, Hazards | Replaced by the workbook's 12 and 16 values, in its order; codes STD-01… and HZ-01… are given since both lists require codes | Workbook (no codes) |
 | Body Parts, Injuries | Values unchanged; the workbook's typos ("Torse", "Back and spin", "Pain (back,lumbago)") and its broken degree signs are not taken | Workbook |
 | Injuries by body part | The workbook's pairing applies: the review offers only the injuries of the chosen body parts | User |
+| Injury configuration | Creating or editing an injury requires at least one body part; import reads them too | User (review remark) |
 | Diseases | A new Health & Safety list with the workbook's 17 values, fixed: "or lower/upper limbs" → "of lower/upper limbs", "Psycological" → "Psychological"; the Health & Safety form uses it later | User |
 | Not taken | Risk Families, Circumstances, Type of Immediate actions; the empty sheets Aspects, Related Aspects, Risk Category change nothing | User |
 
@@ -98,7 +100,11 @@ master data workbook, with injuries that make sense for the injured body part.
   *(was: no Diseases)*
 - **MD-2** *(the catalogs)* The lists start with the catalogs of the business's master data
   workbook (Initial catalogs), all owned by Central and Active. *(was: the earlier sources)*
-- **MD-4** *(injuries)* An Injury also has the body parts it is offered for. *(was: none)*
+- **MD-4** *(injuries)* An Injury also has the body parts it is offered for. Creating or editing an
+  Injury asks **Body parts** ("The body parts this injury is offered for in the review."): a
+  required, searchable multiple choice of the Body Parts, grouped by category. *(was: none)*
+- **MD-5** *(injuries)* Saving an Injury without a body part is refused next to the field: "Choose
+  at least one body part.". *(was: no such check)*
 - **MD-7** *(Diseases)* Diseases follows the rules of Standards, Hazards, Aspects, Impacts and
   Industrial Risk Categories. *(was: not listed)*
 - **MD-11** *(injuries)* The Injuries table also shows **Body parts**: "<N> body parts" ("1 body
@@ -106,6 +112,12 @@ master data workbook, with injuries that make sense for the injured body part.
   *(was: no such column)*
 - **MD-12** *(injuries)* Export CSV of Injuries adds the column Body parts, their names separated
   by " | ". *(was: no such column)*
+- **MD-13** *(injuries)* Import CSV of Injuries also reads Body parts (names separated by "|",
+  ignoring case); a row without one is refused ("Choose at least one body part."), a name that is
+  not a body part too ("Unknown body part: <names>."). The import hint names the column. *(was:
+  Category only)*
+- **MD-14** *(injuries)* An Injury's audit entry shows its body parts' count ("Hearing Loss · 2 body
+  parts"). *(was: code, name, description)*
 
 ### Changed — `domain.md`
 
@@ -159,6 +171,12 @@ below).
     (MD-12)
 11. **Phone and keyboard** — At 320px the workflow grid with its critical row and the review's
     Injuries are usable without sideways page scrolling, and with the keyboard. (Domain)
+12. **Injury needs body parts** — Ludovic creates the Injury "Frostbite" without body parts:
+    refused with "Choose at least one body part."; with Fingers and Toe(s) it is added, "2 body
+    parts". Editing "Hearing Loss" shows Ear; adding Eyes saves "2 body parts", the audit shows
+    "Hearing Loss · 1 body part" → "Hearing Loss · 2 body parts", and Eyes now offers Hearing Loss
+    in the review; removing every body part is refused. Importing a row "Chilblain" with no body
+    part, or "Tail" as one, is refused with its line. (MD-4, MD-5, MD-13, MD-14)
 
 ## Demo data changes
 

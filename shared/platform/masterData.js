@@ -19,7 +19,8 @@ export const LISTS = [
     hasCode: false,
     parentListId: 'bodyPartCategories',
   },
-  { id: 'injuries', pillarId: 'pillar-hs', label: 'Injuries', fixedGlobal: true, hasCode: false },
+  // Each injury is offered for some body parts (012 MD-4): linkedListId names that list.
+  { id: 'injuries', pillarId: 'pillar-hs', label: 'Injuries', fixedGlobal: true, hasCode: false, linkedListId: 'bodyParts' },
   { id: 'aspects', pillarId: 'pillar-env', label: 'Aspects', fixedGlobal: false, hasCode: false },
   { id: 'impacts', pillarId: 'pillar-env', label: 'Impacts', fixedGlobal: false, hasCode: false },
   { id: 'irCategories', pillarId: 'pillar-ir', label: 'Categories', fixedGlobal: false, hasCode: true },
@@ -156,6 +157,7 @@ export function planImport(user, list, rows, values) {
   const scope = { ownerLevel: role.level, ownerPlantIds: role.level === 'central' ? [] : role.plantIds };
   const keyOf = (item) => (list.hasCode ? item.code : item.name).trim().toLowerCase();
   const categories = values.filter((item) => item.listId === list.parentListId);
+  const linked = values.filter((item) => item.listId === list.linkedListId && item.status !== 'Retired');
   const seen = visibleValues(user, list, values);
   let known = [...values];
   const keysInFile = new Set();
@@ -168,6 +170,16 @@ export function planImport(user, list, rows, values) {
       const category = categories.find((item) => item.name.toLowerCase() === (row.category || '').toLowerCase());
       fields.parentId = category ? category.id : '';
     }
+    // Injuries: the "Body parts" column, names separated by "|" (012 MD-13).
+    if (list.linkedListId) {
+      const names = (row['body parts'] || '').split('|').map((name) => name.trim()).filter(Boolean);
+      const unknown = names.filter((name) => !linked.some((item) => item.name.toLowerCase() === name.toLowerCase()));
+      if (unknown.length > 0) {
+        result.errors.push({ line, message: `Unknown body part: ${unknown.join(', ')}.` });
+        return;
+      }
+      fields.bodyPartIds = linked.filter((item) => names.some((name) => name.toLowerCase() === item.name.toLowerCase())).map((item) => item.id);
+    }
     if (keysInFile.has(keyOf(fields))) {
       result.errors.push({ line, message: `${fields.code || fields.name} appears more than once in the file.` });
       return;
@@ -179,7 +191,7 @@ export function planImport(user, list, rows, values) {
       result.skipped.push({ line, message: `${fields.code || fields.name} belongs to another level and was left unchanged.` });
       return;
     }
-    if (existing && Object.keys(fields).every((field) => existing[field] === fields[field])) {
+    if (existing && Object.keys(fields).every((field) => JSON.stringify(existing[field]) === JSON.stringify(fields[field]))) {
       return;
     }
     const value = existing
@@ -213,6 +225,9 @@ export function validateValue(list, value, existingValues) {
     } else if (others.some((item) => item.code.trim().toLowerCase() === value.code.trim().toLowerCase())) {
       errors.code = `A value with code ${value.code.trim()} already exists.`;
     }
+  }
+  if (list.linkedListId && !(value.bodyPartIds || []).length) {
+    errors.bodyPartIds = 'Choose at least one body part.';
   }
   if (list.parentListId) {
     const parent = existingValues.find((item) => item.id === value.parentId);

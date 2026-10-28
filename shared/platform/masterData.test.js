@@ -145,6 +145,13 @@ describe('validateValue (FR-019, FR-020)', () => {
     expect(validateValue(getList('hazards'), clusterValue, masterValues)).toEqual({});
   });
 
+  it('requires an injury to be linked to at least one body part (012 MD-5)', () => {
+    const injuries = getList('injuries');
+    expect(validateValue(injuries, newValue('injuries', { name: 'Frostbite' }), masterValues)).toEqual({ bodyPartIds: 'Choose at least one body part.' });
+    expect(validateValue(injuries, newValue('injuries', { name: 'Frostbite', bodyPartIds: ['bodyParts-1'] }), masterValues)).toEqual({});
+    expect(validateValue(getList('hazards'), newValue('hazards', { code: 'HZ-99', name: 'New' }), masterValues)).toEqual({});
+  });
+
   it('refuses a duplicate name in lists without codes', () => {
     expect(validateValue(getList('impacts'), newValue('impacts', { name: 'hazardous waste' }), masterValues)).toEqual({
       name: '"hazardous waste" already exists in this list.',
@@ -194,6 +201,25 @@ describe('planImport (review 2026-10-25)', () => {
     const plan = planImport(byId('user-ludovic'), standards, rows, masterValues);
     expect(plan.errors.map((item) => item.line)).toEqual([2, 4]);
     expect(plan.changes.map((change) => change.after.name)).toEqual(['A']);
+  });
+
+  it('reads the body parts of an injury by name (012 MD-13)', () => {
+    const injuries = getList('injuries');
+    const rows = [
+      { name: 'Frostbite', 'body parts': 'fingers | Toe(s)' },
+      { name: 'Chilblain', 'body parts': '' },
+      { name: 'Scale burn', 'body parts': 'Tail' },
+      { name: 'Hearing Loss', 'body parts': 'Ear' },
+    ];
+    const plan = planImport(byId('user-ludovic'), injuries, rows, masterValues);
+    const fingers = masterValues.find((value) => value.listId === 'bodyParts' && value.name === 'Fingers').id;
+    expect(plan.changes.map((change) => change.after.name)).toEqual(['Frostbite']);
+    expect(plan.changes[0].after.bodyPartIds).toContain(fingers);
+    expect(plan.changes[0].after.bodyPartIds).toHaveLength(2);
+    expect(plan.errors).toEqual([
+      { line: 3, message: 'Choose at least one body part.' },
+      { line: 4, message: 'Unknown body part: Tail.' },
+    ]);
   });
 
   it('finds the Body Part category by name', () => {

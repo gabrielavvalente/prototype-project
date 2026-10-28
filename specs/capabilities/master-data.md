@@ -34,13 +34,16 @@ own, and every level can switch values off for its plants.
 
 - **MD-4** A value has a code (when the list has codes), a name, an optional description, a
   category (Body Parts only), the body parts it is offered for (Injuries only), an owner (Central, or a Cluster with its plants; Local never owns
-  values) and a status: Active, Inactive or Retired (final).
+  values) and a status: Active, Inactive or Retired (final). Creating or editing an Injury asks
+  **Body parts** ("The body parts this injury is offered for in the review."): a required,
+  searchable multiple choice of the Body Parts, grouped by category.
 - **MD-5** Saving a value is refused, with the message next to the field, when: the name is empty
   ("Enter a name."); the code is empty in a list with codes ("Enter a code."); the code — or the
   name in a list without codes — already exists in the same list for the same owner ("A value with
   code <code> already exists." / "<name>" already exists in this list."); a Body Part has no
   category ("Choose a category.") or is Active while its category is not ("The category is not
-  active, so this value cannot be active.").
+  active, so this value cannot be active."); an Injury has no body part ("Choose at least one body
+  part.").
 - **MD-6** A person sees the Central values and the values of Clusters sharing a plant with their
   role (Central sees all). Values are sorted by code (natural order: A2 before A10), or by name;
   Body Parts are grouped under their category (with its status when not Active).
@@ -82,14 +85,17 @@ own, and every level can switch values off for its plants.
   Name, Description, Category (Body Parts), Body parts (Injuries: their names separated by " | "),
   Owner, Status, "Available at <plant>"; the file opens
   with accents in Excel.
-- **MD-13** **Import CSV** reads Code, Name, Description (and Category for Body Parts). A row with
+- **MD-13** **Import CSV** reads Code, Name, Description (and Category for Body Parts; Body parts
+  for Injuries, names separated by "|", ignoring case — a name that is not a body part is refused:
+  "Unknown body part: <names>."), as the hint under the buttons says. A row with
   the code (or name) of one of the person's own values changes it; a row matching another level's
   value is left unchanged; other rows add values owned by the person's level. A code repeated in
   the file is an error. If any row is invalid nothing is saved: "Nothing was imported. Fix these
   lines and import the file again:" with "Line N: …" for each. Otherwise: "Import done: N values
   added, N updated, N left unchanged (owned by another level)."
 - **MD-14** Every add, edit, status change, deactivation, reactivation and import change writes an
-  audit entry ([workspace](control-panel-workspace.md) CPW-6).
+  audit entry ([workspace](control-panel-workspace.md) CPW-6); an Injury's shows its body parts'
+  count (e.g. "Hearing Loss · 2 body parts").
 
 ## Acceptance scenarios
 
@@ -124,6 +130,12 @@ From freshly reset [demo data](platform-data.md).
 11. **Diseases** — Lucas creates the Disease "Hand-arm vibration syndrome": owner "Cluster Lyon,
     Porto"; Carla uses "Deactivate for Lyon" on "Pathology of hearing": available at Lyon No.
     (MD-7)
+12. **Injury needs body parts** — Ludovic creates the Injury "Frostbite" without body parts:
+    refused with "Choose at least one body part."; with Fingers and Toe(s) it is added, "2 body
+    parts". Editing "Hearing Loss" shows Ear; adding Eyes saves "2 body parts", the audit shows
+    "Hearing Loss · 1 body part" → "Hearing Loss · 2 body parts", and Eyes now offers Hearing Loss
+    in the review; removing every body part is refused. Importing a row "Chilblain" with no body
+    part, or "Tail" as one, is refused with its line. (MD-4, MD-5, MD-13, MD-14)
 10. **Audit** — The H&S Audit shows each change above with its level and plants. (MD-14)
 
 ## Initial catalogs

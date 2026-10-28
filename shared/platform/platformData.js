@@ -287,8 +287,10 @@ function auditEntry(user, list, value, action, before, after) {
   };
 }
 
+// An injury also shows how many body parts it is offered for (012 MD-4).
 function describeValue(value) {
-  return [value.code, value.name, value.description].filter(Boolean).join(' · ');
+  const parts = value.bodyPartIds ? `${value.bodyPartIds.length} body part${value.bodyPartIds.length === 1 ? '' : 's'}` : '';
+  return [value.code, value.name, value.description, parts].filter(Boolean).join(' · ');
 }
 
 // Adds a value (value.id empty) or saves changes to one. Throws with the validation messages
@@ -312,6 +314,7 @@ export async function saveValue(user, listId, changes) {
         code: '',
         description: '',
         parentId: '',
+        ...(list.linkedListId ? { bodyPartIds: [] } : {}),
         ...fields,
         ownerLevel: role.level,
         ownerPlantIds: role.level === 'central' ? [] : role.plantIds,
