@@ -25,9 +25,9 @@ acceptance scenarios through the launcher.
 
 **Scenarios**: 1–7
 
-- [ ] T003 `events/ValidationStep.jsx` (confirmation, Rework), `events/EventSteps.jsx` (locked notice,
+- [X] T003 `events/ValidationStep.jsx` (confirmation, Rework), `events/EventSteps.jsx` (locked notice,
   Record Historian link), `events/EventDetail.jsx` (history line) (VAL-2, VAL-5 to VAL-7)
-- [ ] T004 New `events/RecordHistorianPage.jsx`, route in `App.jsx` and `logic/access.js`, styles in
+- [X] T004 New `events/RecordHistorianPage.jsx`, route in `App.jsx` and `logic/access.js`, styles in
   `app.css` (RH-2)
 
 ## Phase 3: Apply the change to the capabilities

@@ -8,6 +8,7 @@ import { canEditEvent, getMenuItems, isEventVisible } from '../logic/access.js';
 import { canOpenOptionalPlan } from '../logic/actionPlan.js';
 import { communicationStates } from '../logic/safetyCommunication.js';
 import { canStartAnalysis } from '../logic/optionalAnalysis.js';
+import { isLocked } from '../logic/planValidation.js';
 import { STEP_LABELS, STEPS, stepStates } from '../logic/review.js';
 import Icon from '../shell/Icon.jsx';
 import NotAllowed from '../shell/NotAllowed.jsx';
@@ -102,6 +103,10 @@ function StepsMenu({ event, activeStep, canOpenOptional }) {
           );
         })}
       </ul>
+      {/* Every change after the review (011 RH-2). */}
+      <Link className="historian-link" to={`/events/${event.recordNumber}/historian`}>
+        <Icon name="clock" size={16} /> Record Historian
+      </Link>
     </nav>
   );
 }
@@ -181,6 +186,11 @@ export default function EventSteps() {
       )}
 
       <EventHeadCard event={event} compact />
+      {isLocked(event) && (
+        <p className="message message--warning locked-notice" role="status">
+          This event is closed and locked. Only a rework can reopen it.
+        </p>
+      )}
 
       <div className="steps-layout">
         <StepsMenu event={event} activeStep={step} canOpenOptional={canOpenOptional} />

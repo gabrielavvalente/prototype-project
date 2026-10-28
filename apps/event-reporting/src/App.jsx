@@ -14,6 +14,7 @@ import Header from './shell/Header.jsx';
 import NotAllowed from './shell/NotAllowed.jsx';
 import CommunicationPage from './communications/CommunicationPage.jsx';
 import HubItemPage from './hub/HubItemPage.jsx';
+import RecordHistorianPage from './events/RecordHistorianPage.jsx';
 import MyNotifications from './shell/MyNotifications.jsx';
 import SearchPage from './shell/SearchPage.jsx';
 import StartScreen from './shell/StartScreen.jsx';
@@ -58,6 +59,7 @@ const router = createHashRouter([
       { path: 'events/new', element: <RequireRoute name="events-new"><EventFormPage /></RequireRoute> },
       { path: 'events/:id', element: <RequireRoute name="event-detail"><EventDetail /></RequireRoute> },
       { path: 'events/:id/edit', element: <RequireRoute name="event-edit"><EventFormPage /></RequireRoute> },
+      { path: 'events/:id/historian', element: <RequireRoute name="event-steps"><RecordHistorianPage /></RequireRoute> },
       { path: 'events/:id/steps/:step', element: <RequireRoute name="event-steps"><EventSteps /></RequireRoute> },
       { path: '*', element: <NotAllowed reason="notFound" /> },
     ],

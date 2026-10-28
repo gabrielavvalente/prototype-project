@@ -46,7 +46,11 @@ function buildHistory(event, users) {
   }
   for (const validation of event.validations ?? []) {
     const by = getLabel(users, validation.by);
-    const label = validation.effective ? `Validation: effective — closed by ${by}` : `Validation: not effective — ${validation.reason} (${by})`;
+    const label = validation.effective
+      ? `Validation: effective — closed by ${by}`
+      : validation.rework
+        ? `Rework: ${validation.reason} (${by})`
+        : `Validation: not effective — ${validation.reason} (${by})`;
     items.push({ label, at: validation.at });
   }
   if (event.optionalAnalysis?.startedAt) {
