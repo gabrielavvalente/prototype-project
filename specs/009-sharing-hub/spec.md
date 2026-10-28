@@ -12,6 +12,7 @@ Warning's Publish button sits next to Print; Verify locally is at the top right 
 Warning; it adds no pre-filled action; "Could happen here" keeps the case open for actions until
 the plant closes it; closed cases go to the Sharing Hub's History. Third round: once the check has
 started, the local check sits on the right of the shared Warning; Open and History are sections.
+Fourth round: History is a section of its own, in grey.
 
 **Capabilities**: new: `specs/capabilities/sharing-hub.md` (prefix SH); changed:
 `specs/capabilities/event-library.md` (EL-1), `specs/capabilities/safety-communication.md` (SC-7),
@@ -63,7 +64,8 @@ check whether it could happen there and act on it.
   Environment: Aspects, Impacts; Industrial Risk: Categories), never a name. The Warning then shows
   "Shared with <plants> on <date>" (one line per share).
 - **SH-5** **Sharing Hub**, a page of the event workspace (EL-1), lists the packages shared to the
-  context's plant in two sections (each a framed panel with its title), newest first: **Open** — "Not checked", "Being checked" and "Could
+  context's plant in two sections (each a framed panel with its title; History in grey), newest
+  first: **Open** — "Not checked", "Being checked" and "Could
   happen here" cases — and **History** — closed cases ("Could happen here — closed on <date>",
   "Could not happen here — closed on <date>"). Each card: "Safety Warning" from <plant>, the pillar,
   the level, the date shared, the first line of the statement and the state. Everyone with an event
@@ -85,7 +87,8 @@ check whether it could happen there and act on it.
   **Close case** closes it ("Could happen here — closed"). **No** closes it at once ("Could not
   happen here"). Closing — by No or Close case — is refused while an action is On Going: "Finish or
   cancel every action first.". A closed case is read-only and moves to the History.
-- **SH-9** The **history** of the package at the plant: "Received on <date>", "Check started by
+- **SH-9** The **history** of the package at the plant, a grey section of its own below the local
+  check: "Received on <date>", "Check started by
   <name>", "<action> completed by <name>", "Could happen here — answered by <name>", "Case closed by
   <name>" or "Check completed by <name>: could not happen here" — oldest first. Names appear only
   here, at the receiving plant, for its own people.

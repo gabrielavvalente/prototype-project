@@ -55,7 +55,7 @@ export default function HubList() {
         <h2 id="hub-open-title">Open</h2>
         {open.length === 0 ? <p className="field-hint">No open case.</p> : <ul className="communication-list">{open.map(card)}</ul>}
       </section>
-      <section className="hub-section" aria-labelledby="hub-history-title">
+      <section className="hub-section hub-section--history" aria-labelledby="hub-history-title">
         <h2 id="hub-history-title">History</h2>
         {closed.length === 0 ? <p className="field-hint">No closed case yet.</p> : <ul className="communication-list">{closed.map(card)}</ul>}
       </section>

@@ -94,6 +94,14 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 9: Review remarks — History in grey
+
+- [X] T015 In `apps/event-reporting/src/hub/HubItemPage.jsx`: History as its own grey section below
+  the local check; in `hub/HubList.jsx`: the History section in grey; styles appended to `app.css`;
+  apply SH-5 and SH-9 to `specs/capabilities/sharing-hub.md` (SH-5, SH-9)
+
+---
+
 ## Phase 4: Apply the change to the capabilities
 
 - [X] T006 Create `specs/capabilities/sharing-hub.md` (SH-1 to SH-9, scenarios, Decisions) and apply
