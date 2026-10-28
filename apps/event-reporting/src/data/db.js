@@ -8,6 +8,7 @@ import {
   resetPlatformData,
 } from '../../../../shared/platform/platformData.js';
 import { deliverAlerts, sharedAlerts, submissionCandidates } from '../logic/notifications.js';
+import { historianEntries } from '../logic/recordHistorian.js';
 import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 import { completeImmediateActions, getSubmittedStatus } from '../logic/submission.js';
 import * as sampleData from './sampleData.js';
@@ -207,6 +208,10 @@ export async function saveWorkflowStep(event, candidates = [], { clearReviewAler
   ];
   const db = await getDatabase();
   const tx = db.transaction(['events', 'alerts'], 'readwrite');
+  // The Record Historian: what changed since the stored event, once the review is complete (011 RH-1).
+  const previous = await tx.objectStore('events').get(event.id);
+  const entries = historianEntries(previous, event, { userId: actor, now: event.updatedAt || new Date().toISOString(), users });
+  event = { ...event, historian: [...(previous?.historian || []), ...entries] };
   tx.objectStore('events').put(event);
   for (const alert of alerts) {
     tx.objectStore('alerts').put({ id: newId(), createdAt: event.updatedAt, ...alert, eventId: event.id });

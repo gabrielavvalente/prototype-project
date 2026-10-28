@@ -107,3 +107,8 @@ export function sharedAlerts(plantIds, { actorId, users, settings = [] }) {
 export function analysisStartedCandidates(analystIds) {
   return work(analystIds, 'Root cause analysis assigned to you');
 }
+
+// A rework sends the event back to its plan owners (011 VAL-7).
+export function reworkCandidates(ownerIds) {
+  return work(ownerIds, 'Event sent back for rework');
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { users } from '../../../../shared/platform/sampleData.js';
-import { completeValidation, validateValidation, validatorIds } from './planValidation.js';
+import { completeValidation, isLocked, rework, validateRework, validateValidation, validatorIds } from './planValidation.js';
 import { currentStep } from './review.js';
 
 const NOW = '2026-10-26T10:00:00.000Z';
@@ -40,7 +40,21 @@ describe('validation (005)', () => {
   it('needs an answer, and a reason when not effective', () => {
     expect(Object.keys(validateValidation({ effective: null, reason: '' }))).toEqual(['effective']);
     expect(validateValidation({ effective: false, reason: ' ' })).toEqual({ reason: 'Explain why it is not effective.' });
-    expect(validateValidation({ effective: true, reason: '' })).toEqual({});
+    expect(validateValidation({ effective: true, reason: '' })).toEqual({ noMoreActions: 'Confirm that no additional actions are needed.' });
+    expect(validateValidation({ effective: true, reason: '', noMoreActions: true })).toEqual({});
+  });
+
+  it('locks an event closed by an effective validation; rework reopens it at Actions (011)', () => {
+    const { event: closed } = completeValidation(atValidation(), { effective: true, reason: '' }, 'user-carla', NOW, ['user-carla']);
+    expect(isLocked(closed)).toBe(true);
+    expect(isLocked({ ...closed, validations: [] })).toBe(false);
+    expect(validateRework('  ')).toBe('Explain why it needs rework.');
+    const { event: reworked, alerts } = rework(closed, ' Guard rail still loose ', 'user-carla', NOW, ['user-carla', 'user-diego']);
+    expect(reworked).toMatchObject({ status: 'In Progress', closedAt: null, actionPlan: { completedAt: null } });
+    expect(reworked.validations.at(-1)).toMatchObject({ effective: false, rework: true, reason: 'Guard rail still loose' });
+    expect(isLocked(reworked)).toBe(false);
+    expect(currentStep(reworked)).toBe('actions');
+    expect(alerts.map((alert) => [alert.recipientId, alert.type, alert.work])).toEqual([['user-diego', 'Event sent back for rework', true]]);
   });
 
   it('closes the event when effective and tells the reporter', () => {

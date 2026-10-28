@@ -10,6 +10,7 @@ export const WORK_ALERTS = [
   'Root cause analysis assigned to you',
   'Action plan ready for validation',
   'Action plan not effective',
+  'Event sent back for rework',
 ];
 
 // Alerts a person can turn off, with the hint of My notifications (NT-4).
@@ -42,6 +43,7 @@ export const STAGE_ORDER = [
   'Action plan ready for validation',
   'Action plan completed',
   'Action plan not effective',
+  'Event sent back for rework',
   'Event closed',
   'Shared event received',
 ];

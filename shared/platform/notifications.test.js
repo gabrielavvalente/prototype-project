@@ -18,8 +18,8 @@ import { organization, reference, users } from './sampleData.js';
 const person = (id) => users.find((user) => user.id === id);
 
 describe('alert catalogue (NT-2, NT-4)', () => {
-  it('has four work alerts and eleven information alerts', () => {
-    expect(WORK_ALERTS).toHaveLength(4);
+  it('has five work alerts and eleven information alerts', () => {
+    expect(WORK_ALERTS).toHaveLength(5);
     expect(INFORMATION_ALERTS.map((alert) => alert.key)).toHaveLength(11);
   });
 });

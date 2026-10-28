@@ -14,11 +14,11 @@ acceptance scenarios through the launcher.
 
 ## Phase 1: Rules
 
-- [ ] T001 In `apps/event-reporting/src/logic/planValidation.js`: the "No additional actions"
+- [X] T001 In `apps/event-reporting/src/logic/planValidation.js`: the "No additional actions"
   confirmation, `isLocked`, `rework`; `optionalAnalysis.js` never on a locked event; "Event sent back
   for rework" in `shared/platform/notifications.js` and its candidates in `logic/notifications.js`;
   tests (VAL-2, VAL-3, VAL-6, VAL-7, RCA-18, NT-2 to NT-4)
-- [ ] T002 New `apps/event-reporting/src/logic/recordHistorian.js` with tests: `historianEntries`,
+- [X] T002 New `apps/event-reporting/src/logic/recordHistorian.js` with tests: `historianEntries`,
   `filterEntries`; `data/db.js` appends the entries in `saveWorkflowStep` (RH-1)
 
 ## Phase 2: Screens
