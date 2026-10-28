@@ -30,7 +30,7 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
   perform the root cause analysis?**: a required, searchable multiple choice in two groups —
   *Users* (people of any event role whose access includes the event's plant and pillar, the
   reviewer included) and *Groups* (investigation groups covering the event's plant and pillar).
-  Otherwise the question is not shown.
+  Otherwise the question is not shown, and the analysis can still be started later (RCA-18).
 - **RCA-2** Saving the review keeps the designated users and groups on the event and alerts them
   ([notifications](notifications.md) NT-3).
 - **RCA-3** A completed review shows who was designated.
@@ -116,6 +116,19 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 - **RCA-17** A completed analysis shows "Completed by <name> on <date>"; the event history shows
   "Root cause analysis completed by <name>".
 
+### Optional analysis
+
+- **RCA-18** **Optional analysis**: after a valid review, when neither the workflow nor the review
+  made Root cause analysis required, the step shows **Optional** while the event is In Progress or
+  Closed (never Archived). Its reviewer and the Managers and Site Admins who can see the event open
+  it and see "This analysis is not required. You can still start it for this event." with **Who
+  will perform the root cause analysis?** (as RCA-1) and **Start root cause analysis**, refused
+  without anyone ("Choose who will perform the root cause analysis."). Starting it makes Root cause
+  analysis a required step of the event, keeps the designated people (RCA-2 alerts them, RCA-4
+  takes a designated starter to the analysis), records "Root cause analysis started by <name>" in
+  the history and — for a Closed event — reopens it: In Progress, current step Root cause analysis.
+  Everyone else sees "This step is not required for this event.".
+
 ## Content
 
 ### 5W1H sections
@@ -195,6 +208,17 @@ From freshly reset [demo data](platform-data.md). Carla Mendes is a reviewer of 
     field is read-only, but he can expand 5W1H and switch sections and themes. (RCA-7)
 12. **Phone and keyboard** — At 320px wide the 5W1H and 6M lists stack above their content and the
     5 Why tree scrolls sideways; every control works with Tab, Space and Enter. (Domain)
+13. **Optional after closing** — From freshly reset demo data, Carla reviews `TF-26-0006` (TF4,
+    Review only) as valid, Potential Minor × Minimal: it is Closed and its Root cause analysis shows
+    "Optional"; Carla reads "This analysis is not required. You can still start it for this
+    event.", Ana Ribeiro "This step is not required for this event.". Start root cause analysis
+    without anyone is refused with "Choose who will perform the root cause analysis."; with Diego
+    Laurent the event is In Progress at Root cause analysis, Diego gets "Root cause analysis
+    assigned to you" and the history shows "Root cause analysis started by Carla Mendes".
+    (RCA-18)
+14. **Before Actions** — On `TF-26-0003` reviewed as valid, not critical (current step Actions), Eva
+    Novak starts the optional analysis for herself: it becomes the current step, before Actions, and
+    she is taken to it. An archived event's analysis step shows "Not required". (RCA-18)
 
 ## Decisions
 

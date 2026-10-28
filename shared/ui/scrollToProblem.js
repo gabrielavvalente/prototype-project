@@ -7,8 +7,8 @@ const PROBLEMS = [
   '.mantine-Input-error',
   '.field-error',
   '.message--error',
-  '[role="alert"]',
 ].join(', ');
+// Not [role="alert"]: Mantine's information alerts carry it too.
 
 const FIELDS = 'input:not([type="hidden"]), textarea, select, button, [tabindex]';
 

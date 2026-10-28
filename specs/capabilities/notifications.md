@@ -47,6 +47,7 @@ choices of the people of their plant.
   | Review | Valid | "Your event was reviewed" | The reporter |
   | Review | Not valid | "Event archived (<reason>)" | The reporter, the Shared with people and the other reviewers |
   | Review | Root cause analysis next | "Root cause analysis assigned to you" (work) | Each designated user and member of a designated group, never the reviewer |
+  | Root cause analysis | Started on its optional step ([root cause analysis](root-cause-analysis.md) RCA-18) | "Root cause analysis assigned to you" (work) | Each designated user and member of a designated group, never the person who started it |
   | Root cause analysis | Completed | "Root cause analysis completed" | The reporter and the reviewer |
   | Actions | Plan deployed | "Action plan deployed" | The reporter and the reviewer |
   | Actions | Plan completed, Validation next | "Action plan ready for validation" (work) | The validators |

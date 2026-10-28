@@ -40,12 +40,12 @@ acceptance scenarios through the launcher.
 
 ## Phase 4: Apply the change to the capabilities
 
-- [ ] T005 Apply the change to `specs/capabilities/root-cause-analysis.md` (RCA-1, RCA-18, scenarios),
+- [X] T005 Apply the change to `specs/capabilities/root-cause-analysis.md` (RCA-1, RCA-18, scenarios),
   `event-library.md` (EL-18), `notifications.md` (NT-3) and `specs/domain.md` (Steps, Product-wide
   rules). No "was", no change history.
-- [ ] T006 Check the counts and names of every changed scenario against the demo data
+- [X] T006 Check the counts and names of every changed scenario against the demo data
 
 ## Phase 5: Checks
 
-- [ ] T007 `npm test` and `npm run build` in `apps/event-reporting/` and `apps/control-panel/`, then
+- [X] T007 `npm test` and `npm run build` in `apps/event-reporting/` and `apps/control-panel/`, then
   the scenarios through the launcher, at 320px and with the keyboard, with a clean console

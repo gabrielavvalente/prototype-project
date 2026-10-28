@@ -149,12 +149,14 @@ events.
 **Steps** are derived, never stored:
 
 - Required steps: Submission; each phase required by the event's workflow; Root cause analysis also
-  when the reviewer asked for further analysis; Actions also as soon as the event's action plan has
-  a corrective action.
+  when the reviewer asked for further analysis or someone started it on its optional step; Actions
+  also as soon as the event's action plan has a corrective action.
 - **Current step**: the first required step not yet done (none for Draft, Archived and Closed).
-- Each step shows as done, current, upcoming (required, not reached), not required, or — for an
-  Actions step the workflow does not require, on an Open or In Progress event — optional. Done and
-  current steps can be opened, an optional one by the plan's owners; the others cannot. For an Archived event, the required steps after
+- Each step shows as done, current, upcoming (required, not reached), not required, or optional:
+  an Actions step the workflow does not require, on an Open or In Progress event (opened by the
+  plan's owners), and a Root cause analysis step nobody required after a valid review, on an In
+  Progress or Closed event (opened by those who can start it, RCA-18). Done and current steps can
+  be opened; the others cannot. For an Archived event, the required steps after
   Review stay upcoming.
 - Completing a step moves the event to the next required step, or closes it when none is left.
   Validation is done when the last validation found the plan effective; a validation finding it
@@ -223,6 +225,8 @@ follows the dependencies.
 - Everything is in English.
 - Every screen has its own page title, works from 320px wide and can be used with the keyboard.
 - Dates are shown as "25 Oct 2026"; times in 24 hours.
+- When a save or a completion is refused, the page scrolls to the first field with a message and
+  focuses it.
 
 ## Open points
 
