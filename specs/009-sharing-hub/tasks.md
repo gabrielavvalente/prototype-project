@@ -68,6 +68,22 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 7: Review remarks — buttons, verifying and closing cases
+
+**Scenarios**: 1, 5, 6, 6b
+
+- [X] T010 In `apps/event-reporting/src/logic/sharingHub.js`: no pre-filled action; `answerYes`,
+  `answerNo`, `closeCase`, open and closed cases; tests in `sharingHub.test.js` (SH-7 to SH-9)
+- [X] T011 In `apps/event-reporting/src/hub/HubItemPage.jsx` and `HubList.jsx`: Verify locally at the
+  top right, Add action, Yes / No, Close case; Open and History parts (SH-5, SH-7, SH-8)
+- [X] T012 In `apps/event-reporting/src/communications/CommunicationView.jsx`: Publish Safety Warning
+  next to Print (SC-7)
+- [X] T013 Apply the remarks to `specs/capabilities/sharing-hub.md` and
+  `specs/capabilities/safety-communication.md` (SC-7); run the tests, the builds and the scenarios
+  through the launcher
+
+---
+
 ## Phase 4: Apply the change to the capabilities
 
 - [X] T006 Create `specs/capabilities/sharing-hub.md` (SH-1 to SH-9, scenarios, Decisions) and apply

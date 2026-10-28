@@ -16,8 +16,14 @@ export const CHECK_STATE_LABELS = {
   notChecked: 'Not checked',
   beingChecked: 'Being checked',
   yes: 'Could happen here',
+  closedYes: 'Could happen here — closed',
   no: 'Could not happen here',
 };
+
+// A closed case: read-only, in the Sharing Hub's History (SH-5, SH-8).
+export function isClosed(check) {
+  return check.state === 'closedYes' || check.state === 'no';
+}
 
 // The plan owners and the Site Admins of the event's plant, once the Warning is published (SH-1).
 export function canShare(user, event, groups, users) {
@@ -109,7 +115,8 @@ export function receivedPackages(events, plantId) {
   return events
     .map((event) => {
       const share = (event.hubShares || []).find((item) => item.plantIds.includes(plantId));
-      return share ? { event, pkg: share.package, receivedAt: share.at, state: checkOf(event, plantId).state } : null;
+      const check = checkOf(event, plantId);
+      return share ? { event, pkg: share.package, receivedAt: share.at, state: check.state, closedAt: check.closedAt ?? null } : null;
     })
     .filter(Boolean)
     .sort((a, b) => b.receivedAt.localeCompare(a.receivedAt));
@@ -124,15 +131,9 @@ function withCheck(event, plantId, check) {
   return { ...event, hubChecks: { ...(event.hubChecks || {}), [plantId]: check } };
 }
 
-// Verify locally: "Being checked" (SH-7).
+// Verify locally: "Being checked", with no action yet (SH-7).
 export function startCheck(event, plantId, user, now) {
   return withCheck(event, plantId, { state: 'beingChecked', answer: null, actions: [], history: [{ at: now, text: `Check started by ${user.name}` }] });
-}
-
-// The first local action's description: the shared learnings and hazards (SH-7).
-export function firstActionText(pkg) {
-  const hazards = pkg.classification.find((item) => item.list === 'Hazards')?.values ?? [];
-  return `Check whether this could happen here: ${pkg.content.learnings}${hazards.length ? ` (Hazards: ${hazards.join(', ')})` : ''}`;
 }
 
 // What is missing in a local action, as { field: message } (SH-7).
@@ -171,17 +172,29 @@ export function setLocalActionStatus(event, plantId, actionId, status, user, now
   return withCheck(event, plantId, { ...check, actions, history });
 }
 
-// Why the check cannot be completed yet, or null (SH-8).
-export function completionProblem(check, answer) {
-  if (typeof answer !== 'boolean') return 'Say whether it could happen here.';
-  if (check.actions.some((action) => !FINAL.includes(action.status))) return 'Finish or cancel every action first.';
-  return null;
+// Why the case cannot be closed yet, or null: an action is still On Going (SH-8).
+export function closingProblem(check) {
+  return check.actions.some((action) => !FINAL.includes(action.status)) ? 'Finish or cancel every action first.' : null;
 }
 
-export function completeCheck(event, plantId, answer, user, now) {
+function withHistory(event, plantId, changes, text, now) {
   const check = checkOf(event, plantId);
-  const text = `Check completed by ${user.name}: ${answer ? 'could happen here' : 'could not happen here'}`;
-  return withCheck(event, plantId, { ...check, state: answer ? 'yes' : 'no', answer, history: [...check.history, { at: now, text }] });
+  return withCheck(event, plantId, { ...check, ...changes, history: [...check.history, { at: now, text }] });
+}
+
+// Yes: the case stays open for as many actions as needed (SH-8).
+export function answerYes(event, plantId, user, now) {
+  return withHistory(event, plantId, { state: 'yes', answer: true }, `Could happen here — answered by ${user.name}`, now);
+}
+
+// No: the case is closed at once (SH-8).
+export function answerNo(event, plantId, user, now) {
+  return withHistory(event, plantId, { state: 'no', answer: false, closedAt: now }, `Check completed by ${user.name}: could not happen here`, now);
+}
+
+// Close case, after Yes (SH-8).
+export function closeCase(event, plantId, user, now) {
+  return withHistory(event, plantId, { state: 'closedYes', closedAt: now }, `Case closed by ${user.name}`, now);
 }
 
 // The package's history at the plant, oldest first (SH-9).

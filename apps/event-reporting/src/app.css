@@ -4579,3 +4579,30 @@ a.step-link:hover {
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+
+/* Shared Safety Warning (009 remarks): Verify locally at the top right; Open and History. */
+.hub-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hub-title h1 {
+  margin: 0;
+}
+
+.hub-list {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.hub-list h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-large);
+}
+
+.hub-state--closedYes {
+  color: var(--color-error);
+}

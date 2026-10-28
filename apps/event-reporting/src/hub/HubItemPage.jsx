@@ -7,13 +7,15 @@ import { findEvent, getByIndex, saveWorkflowStep } from '../data/db.js';
 import { ACTION_STATUS_LABELS } from '../logic/actions.js';
 import {
   allowedLocalStatuses,
+  answerNo,
+  answerYes,
   canCheck,
   CHECK_STATE_LABELS,
   checkOf,
-  completeCheck,
-  completionProblem,
-  firstActionText,
+  closeCase,
+  closingProblem,
   historyOf,
+  isClosed,
   receivedPackages,
   saveLocalAction,
   setLocalActionStatus,
@@ -73,7 +75,6 @@ export default function HubItemPage() {
   const [event, setEvent] = useState(undefined);
   const [attachments, setAttachments] = useState([]);
   const [draft, setDraft] = useState(null);
-  const [answer, setAnswer] = useState(null);
   const [problem, setProblem] = useState('');
   const plantId = context.plantId;
 
@@ -111,23 +112,29 @@ export default function HubItemPage() {
     setEvent(await saveWorkflowStep(updated));
   }
 
-  function verify() {
-    save(startCheck(event, plantId, user, now()));
-    setDraft({ description: firstActionText(item.pkg), assigneeIds: [], dueDate: '' });
+  // Closing — by No or Close case — needs every action finished (SH-8).
+  function close(closing) {
+    const found = closingProblem(check);
+    setProblem(found || '');
+    if (!found) save(closing(event, plantId, user, now()));
   }
 
-  function complete() {
-    const found = completionProblem(check, answer);
-    setProblem(found || '');
-    if (!found) save(completeCheck(event, plantId, answer, user, now()));
-  }
+  const open = !isClosed(check) && check.state !== 'notChecked';
+  const canVerify = check.state === 'notChecked' && checker;
 
   return (
     <main className="page hub-page">
       <div className="communication-toolbar">
         <Link to="/events?tab=hub">← Sharing Hub</Link>
       </div>
-      <h1>Shared Safety Warning</h1>
+      <div className="hub-title">
+        <h1>Shared Safety Warning</h1>
+        {canVerify && (
+          <Button type="button" onClick={() => save(startCheck(event, plantId, user, now()))}>
+            Verify locally
+          </Button>
+        )}
+      </div>
       <p className="communication-published">
         From {getPlantName(organization, event.plantId)} · shared on {formatDate(item.receivedAt)} ·{' '}
         <span className={`hub-state hub-state--${check.state}`}>{CHECK_STATE_LABELS[check.state]}</span>
@@ -136,37 +143,32 @@ export default function HubItemPage() {
 
       <section className="hub-check" aria-labelledby="check-title">
         <h2 id="check-title">Local check</h2>
-        {check.state === 'notChecked' &&
-          (checker ? (
-            <Button type="button" onClick={verify}>
-              Verify locally
-            </Button>
-          ) : (
-            <p className="field-hint">Not checked yet.</p>
-          ))}
+        {check.state === 'notChecked' && <p className="field-hint">Not checked yet.</p>}
         {check.state !== 'notChecked' && (
           <>
             <h3>Local actions</h3>
-            {check.actions.length === 0 && !draft && <p className="field-hint">No local action yet.</p>}
-            <ul className="hub-actions">
-              {check.actions.map((action) => (
-                <li key={action.id} className="hub-action">
-                  <span>
-                    {action.description} · {action.assigneeIds.map(name).join(', ')} · Due {formatDate(`${action.dueDate}T00:00:00`)} ·{' '}
-                    <strong>{ACTION_STATUS_LABELS[action.status]}</strong>
-                  </span>
-                  <span className="hub-buttons">
-                    {check.state === 'beingChecked' &&
-                      allowedLocalStatuses(user, action, plantId).map((status) => (
-                        <Button key={status} type="button" size="xs" variant="default" onClick={() => save(setLocalActionStatus(event, plantId, action.id, status, user, now()))}>
-                          {status === 'completed' ? 'Completed' : 'Cancel'}
-                        </Button>
-                      ))}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            {check.state === 'beingChecked' && checker && (
+            {check.actions.length === 0 && <p className="field-hint">No local action yet.</p>}
+            {check.actions.length > 0 && (
+              <ul className="hub-actions">
+                {check.actions.map((action) => (
+                  <li key={action.id} className="hub-action">
+                    <span>
+                      {action.description} · {action.assigneeIds.map(name).join(', ')} · Due {formatDate(`${action.dueDate}T00:00:00`)} ·{' '}
+                      <strong>{ACTION_STATUS_LABELS[action.status]}</strong>
+                    </span>
+                    <span className="hub-buttons">
+                      {open &&
+                        allowedLocalStatuses(user, action, plantId).map((status) => (
+                          <Button key={status} type="button" size="xs" variant="default" onClick={() => save(setLocalActionStatus(event, plantId, action.id, status, user, now()))}>
+                            {status === 'completed' ? 'Completed' : 'Cancel'}
+                          </Button>
+                        ))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {open && checker && (
               <>
                 {draft ? (
                   <LocalActionForm
@@ -183,32 +185,34 @@ export default function HubItemPage() {
                     Add action
                   </Button>
                 )}
-                <div className="hub-answer" role="group" aria-labelledby="answer-title">
-                  <h3 id="answer-title">Could it happen here?</h3>
-                  <div className="hub-buttons">
-                    {[
-                      [true, 'Yes'],
-                      [false, 'No'],
-                    ].map(([value, label]) => (
-                      <Button key={label} type="button" variant={answer === value ? 'filled' : 'default'} aria-pressed={answer === value} onClick={() => setAnswer(value)}>
-                        {label}
+                {check.state === 'beingChecked' && (
+                  <div className="hub-answer" role="group" aria-labelledby="answer-title">
+                    <h3 id="answer-title">Could it happen here?</h3>
+                    <div className="hub-buttons">
+                      <Button type="button" variant="default" onClick={() => save(answerYes(event, plantId, user, now()))}>
+                        Yes
                       </Button>
-                    ))}
+                      <Button type="button" variant="default" onClick={() => close(answerNo)}>
+                        No
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                )}
+                {check.state === 'yes' && (
+                  <Button type="button" onClick={() => close(closeCase)}>
+                    Close case
+                  </Button>
+                )}
                 {problem && (
                   <p className="message message--error" role="alert">
                     {problem}
                   </p>
                 )}
-                <Button type="button" onClick={complete}>
-                  Complete check
-                </Button>
               </>
             )}
-            {(check.state === 'yes' || check.state === 'no') && (
+            {isClosed(check) && (
               <p>
-                Could it happen here? <strong>{check.state === 'yes' ? 'Yes' : 'No'}</strong>
+                Could it happen here? <strong>{check.state === 'closedYes' ? 'Yes' : 'No'}</strong> · closed on {formatDate(check.closedAt)}
               </p>
             )}
           </>
