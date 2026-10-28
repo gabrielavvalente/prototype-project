@@ -4783,3 +4783,20 @@ a.step-link:hover {
   padding: var(--space-3) var(--space-4);
   border-top: 1px solid var(--color-border);
 }
+
+/* Review › Injuries: each chosen body part as a heading, its injuries indented below (012 RV-6). */
+.injury-group {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.injury-option {
+  padding-left: var(--space-6, 24px);
+}
+
+/* Choose a demo account: plant, role, then person (012 PD-7). */
+.start-steps {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 420px;
+}

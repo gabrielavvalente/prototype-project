@@ -94,7 +94,7 @@ Actions and Validation; `TF-26-0002` (TF3, Lyon) requires Review only; both have
 action ("Area made safe and people informed") and the reviewers Carla Mendes, Eva Novak and Diego
 Laurent.
 
-1. **Owner without analysis** — Carla reviews `TF-26-0005` as valid and rates it below Very Critical (not critical, so "Do you want to further analyze?" is not asked). *Then*
+1. **Owner without analysis** — Carla reviews `TF-26-0005` as valid and rates it below Very Critical (not critical, so no root cause analysis). *Then*
    the current step is Actions: "1 action · 1 completed · 0 overdue · Not deployed", the immediate
    action under Immediate actions, Add action and Deploy action plan for Carla; Diego sees the plan
    read-only. (AP-1, AP-2, AP-6, AP-11)

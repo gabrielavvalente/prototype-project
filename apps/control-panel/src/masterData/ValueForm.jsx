@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Button } from '@mantine/core';
+import { Button, MultiSelect } from '@mantine/core';
 import { useApp } from '../AppContext.js';
-import { validateValue } from '../../../../shared/platform/masterData.js';
+import { getList, validateValue } from '../../../../shared/platform/masterData.js';
 import { saveValue } from '../../../../shared/platform/platformData.js';
 import { getRole } from '../../../../shared/platform/permissions.js';
 import Sheet from '../shell/Sheet.jsx';
 import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
 // Adds a value or edits one (FR-015, FR-019, FR-020). New values belong to the user's level and
-// plants; mistakes are shown next to each field before anything is saved.
+// plants; mistakes are shown next to each field before anything is saved. An injury is linked to the
+// body parts it is offered for (012 MD-4, MD-5).
 export default function ValueForm({ list, value, values, onSaved, onClose }) {
   const { user } = useApp();
   const role = getRole(user, list.pillarId);
@@ -18,10 +19,23 @@ export default function ValueForm({ list, value, values, onSaved, onClose }) {
     name: value?.name ?? '',
     description: value?.description ?? '',
     parentId: value?.parentId ?? '',
+    ...(list.linkedListId ? { bodyPartIds: value?.bodyPartIds ?? [] } : {}),
   });
   const [errors, setErrors] = useState({});
   const [saveError, setSaveError] = useState('');
   const categories = values.filter((item) => item.listId === list.parentListId && item.status !== 'Retired');
+  // The linked list's values (Body Parts), grouped by their category.
+  const linkedOptions = list.linkedListId
+    ? values
+        .filter((item) => item.listId === getList(list.linkedListId).parentListId)
+        .map((category) => ({
+          group: category.name,
+          items: values
+            .filter((item) => item.listId === list.linkedListId && item.parentId === category.id && item.status !== 'Retired')
+            .map((item) => ({ value: item.id, label: item.name })),
+        }))
+        .filter((group) => group.items.length > 0)
+    : [];
 
   function update(field, text) {
     setDraft((current) => ({ ...current, [field]: text }));
@@ -124,6 +138,22 @@ export default function ValueForm({ list, value, values, onSaved, onClose }) {
                 {errors.parentId}
               </span>
             )}
+          </div>
+        )}
+        {list.linkedListId && (
+          <div className="field">
+            <MultiSelect
+              id="value-body-parts"
+              label="Body parts"
+              description="The body parts this injury is offered for in the review."
+              required
+              searchable
+              hidePickedOptions
+              data={linkedOptions}
+              value={draft.bodyPartIds}
+              onChange={(ids) => setDraft((current) => ({ ...current, bodyPartIds: ids }))}
+              error={errors.bodyPartIds}
+            />
           </div>
         )}
         <div className="field">

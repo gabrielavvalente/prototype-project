@@ -24,9 +24,16 @@ reset, and the demo data itself, which every capability's acceptance scenarios s
   same for PD-3 only.
 - **PD-6** The data is kept on the device, per browser origin: the products share it only when
   opened from the same address.
-- **PD-7** Signing in means choosing a person on the start screen (no password). Event Reporting
-  lists only people with an event role; the Control Panel lists everyone but only people with a
-  Control Panel role can be chosen (the others are shown disabled). Closing the tab signs out.
+- **PD-7** Signing in means choosing a person on the start screen, "Choose a demo account" (no
+  password), in steps: Event Reporting asks **Plant** (the plants of people with an event role, by
+  name), **Role** (the event roles held there: User, Manager, Site Admin) and **Person** (the
+  people of that plant with that role; once chosen, their role and plants are shown under it); the
+  Control Panel and User Management ask **Pillar**, **Level** (the Control Panel levels held on it:
+  Central, Cluster, Local) and **Person** (their Control Panel roles shown under it). Each step
+  waits for the previous one ("Choose a plant first", …) and changing a step empties the next
+  ones; **Sign in** is enabled once a person is chosen. People without an event role are not
+  offered in Event Reporting, nor people without a Control Panel role in the Control Panel and User
+  Management. Closing the tab signs out.
 
 ## Demo data
 
@@ -92,7 +99,9 @@ event keeps only those who can see its plant and pillar).
 | Industrial Risk | SRE1–SRE4 | SRE1, SRE2 | — | — | Sergio Martins |
 | Industrial Hygiene | all four disease types | — | — | — | Ludovic Costa |
 
-TF5, EvE5 and SRE5 require nothing, so their events are Closed at submission.
+TF5, EvE5 and SRE5 require nothing, so their events are Closed at submission. The critical rows
+([workflow settings](workflow-settings.md) WF-13) require Root cause analysis: H&S SIP/HCI by
+Ludovic Costa, Environment SIP by Ed Petrov, Industrial Risk SPL/HCL by Sergio Martins.
 
 ### Events
 
@@ -152,9 +161,13 @@ rule; every information alert is on, set by nobody.
 
 1. **Shared data** — Sign in to the Control Panel as Ludovic Costa and to Event Reporting as Carla
    Mendes from the same address: both list the same plants and people. (PD-1, PD-6)
-2. **Start screens** — Event Reporting offers the 8 people with an event role; the Control Panel
-   lists all 12 people, and only the 8 with a Control Panel role can be chosen (Eva Novak through
-   her Site Admin roles). (PD-7)
+2. **Start screens** — Event Reporting asks Plant (Curitiba, Lyon, Porto), then Role (Lyon:
+   User, Manager, Site Admin; Curitiba: User, Manager), then Person (Lyon managers: Carla Mendes,
+   Diego Laurent, Lucas Weber; Diego shows "Manager · Lyon, Porto"); Role and Person wait for the
+   step before, and Sign in for a person. The Control Panel asks Pillar (the four), Level (Health &
+   Safety: Central, Cluster, Local; Industrial Risk: Central, Local), then Person (Health & Safety
+   Local: Carla Mendes, Eva Novak, Felix Tanaka); Ana Ribeiro, without a Control Panel role, is
+   never offered. User Management asks the same. (PD-7)
 3. **Demo events** — As Carla at Lyon, all pillars: the list shows the 16 submitted Lyon events,
    3 of them Closed, and her draft "Hydraulic oil drip from forklift"; Ana's drafts are not shown.
    (Demo data, domain Visibility)

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, MultiSelect, Select, Textarea } from '@mantine/core';
 import { useApp } from '../AppContext.js';
-import { availableValues, listsForPillar } from '../../../../shared/platform/masterData.js';
+import { availableValues, classificationValueName, injuryOptions, keepInjuries } from '../../../../shared/platform/masterData.js';
 import { groupsCovering } from '../../../../shared/platform/groups.js';
 import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
 import { getMasterData } from '../../../../shared/platform/platformData.js';
@@ -13,13 +13,14 @@ import { SelectField, YesNoField } from '../create/fields.jsx';
 import { getLabel, getReferenceList } from '../logic/lookups.js';
 import { reviewCandidates } from '../logic/notifications.js';
 import {
-  asksFurtherAnalysis,
   canStartReview,
   claimReview,
   completeReview,
   INVALID_REASONS,
   isReviewer,
   leadsToAnalysis,
+  reviewLists,
+  summaryLists,
   REASON_NEEDING_COMMENT,
   SINGLE_CHOICE_LISTS,
   validateReview,
@@ -30,17 +31,15 @@ import SeverityMatrix from './SeverityMatrix.jsx';
 import SummaryList from './SummaryList.jsx';
 import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
 
-// The pillar's own lists, without lists that only group another one (Body Part Categories group
-// Body Parts, which are shown by category). Lists shown read-only from another pillar (H&S
-// Standards and Hazards in Industrial Risk) are not asked (third review).
-function reviewLists(pillarId) {
-  const lists = listsForPillar(pillarId).filter((list) => !list.readOnly);
-  return lists.filter((list) => !lists.some((other) => other.parentListId === list.id));
-}
-
-// Options of one master data list at the event's plant; Body Parts grouped by category.
-function listOptions(list, values, activations, plantId) {
-  const items = availableValues(values, activations, { listId: list.id, plantId }).map((value) => ({
+// Options of one master data list at the event's plant; Body Parts grouped by category; Injuries
+// under each chosen body part, chosen for that body part (012 RV-6).
+function listOptions(list, values, activations, plantId, classification = {}) {
+  const available = availableValues(values, activations, { listId: list.id, plantId });
+  if (list.id === 'injuries') {
+    const parts = (classification.bodyParts || []).map((id) => values.find((value) => value.id === id)).filter(Boolean);
+    return injuryOptions(available, parts);
+  }
+  const items = available.map((value) => ({
     value: value.id,
     label: value.code ? `${value.code} — ${value.name}` : value.name,
     parentId: value.parentId,
@@ -74,7 +73,6 @@ function startingReview(event) {
     actual: null,
     flagConfirmed: question?.flag === 'SIP' ? submittedSip : null,
     criticalTypeId: '',
-    furtherAnalysis: null,
     rcaAssignees: { userIds: [], groupIds: [] },
   };
 }
@@ -91,7 +89,7 @@ function ReviewSummary({ event, masterData }) {
   const { users, reference } = useApp();
   const review = event.review;
   const assessment = assessmentFor(event);
-  const valueName = (id) => masterData?.values.find((value) => value.id === id)?.name ?? id;
+  const valueName = (id) => (masterData ? classificationValueName(masterData.values, id) : id);
   const rows = [
     { label: 'Reviewer', value: getLabel(users, review.reviewerId) },
     { label: 'Reviewed on', value: new Date(review.reviewedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) },
@@ -103,7 +101,7 @@ function ReviewSummary({ event, masterData }) {
     return <SummaryList rows={rows} />;
   }
   rows.push({ label: 'Event statement', value: review.statement });
-  for (const list of reviewLists(event.pillarId)) {
+  for (const list of summaryLists(event, review.classification || {})) {
     rows.push({ label: list.label, value: (review.classification[list.id] || []).map(valueName).join(', ') });
   }
   if (assessment.potential) rows.push({ label: assessment.potentialTitle, value: ratingText(assessment.matrix, review.potential) });
@@ -309,7 +307,7 @@ function ClassificationFields({ event, review, set, errorsFor, masterData }) {
       </div>
       {!masterData && <p>Loading the lists…</p>}
       {masterData &&
-        reviewLists(event.pillarId).map((list) => {
+        reviewLists(event).map((list) => {
           const required = assessment.requiredListIds.includes(list.id);
           const common = {
             id: `list-${list.id}`,
@@ -317,17 +315,34 @@ function ClassificationFields({ event, review, set, errorsFor, masterData }) {
             required,
             searchable: true,
             clearable: true,
-            data: listOptions(list, masterData.values, masterData.activations, event.plantId),
+            data: listOptions(list, masterData.values, masterData.activations, event.plantId, review.classification),
             error: errorsFor(`list-${list.id}`)[0]?.message,
           };
-          const setIds = (ids) => set({ classification: { ...review.classification, [list.id]: ids } });
+          // Injuries wait for the body parts; removing a body part drops the injuries it offered.
+          if (list.id === 'injuries' && !(review.classification.bodyParts || []).length) {
+            Object.assign(common, { placeholder: 'Choose the body parts first.', disabled: true });
+          }
+          const setIds = (ids) => {
+            const classification = { ...review.classification, [list.id]: ids };
+            if (list.id === 'bodyParts' && classification.injuries) {
+              classification.injuries = keepInjuries(classification.injuries, ids);
+            }
+            set({ classification });
+          };
           return (
             <div className="field" key={list.id}>
               {/* Standards and Hazards take a single value, kept as a one-value list (005 remarks). */}
               {SINGLE_CHOICE_LISTS.includes(list.id) ? (
                 <Select {...common} value={review.classification[list.id]?.[0] ?? null} onChange={(id) => setIds(id ? [id] : [])} />
               ) : (
-                <MultiSelect {...common} value={review.classification[list.id] || []} onChange={setIds} />
+                <MultiSelect
+                  {...common}
+                  value={review.classification[list.id] || []}
+                  onChange={setIds}
+                  // Injuries: the body part as a heading, its injuries indented below (012 RV-6).
+                  classNames={list.id === 'injuries' ? { groupLabel: 'injury-group', option: 'injury-option' } : undefined}
+                  renderOption={list.id === 'injuries' ? ({ option }) => option.injury : undefined}
+                />
               )}
             </div>
           );
@@ -344,7 +359,6 @@ function severityTitle(assessment) {
 // A valid event, in titled parts: statement and lists, severity, and the next step.
 function ValidFields({ event, review, set, errorsFor, masterData }) {
   const assessment = assessmentFor(event);
-  const critical = criticalFlagsOf(event, review).length > 0;
   const hasSeverity = assessment.potential || assessment.actual || assessment.flagQuestion;
   return (
     <>
@@ -356,23 +370,10 @@ function ValidFields({ event, review, set, errorsFor, masterData }) {
           <SeverityFields event={event} review={review} set={set} errorsFor={errorsFor} />
         </ReviewSection>
       )}
-      {(asksFurtherAnalysis(event, review) || leadsToAnalysis(event, review)) && (
+      {/* The workflow decides: its level, or its critical row once the event is critical (012 RV-10). */}
+      {leadsToAnalysis(event, review) && (
         <ReviewSection title="Next step">
-          {asksFurtherAnalysis(event, review) && (
-            <YesNoField
-              id="furtherAnalysis"
-              label="Do you want to further analyze?"
-              hint={
-                critical
-                  ? 'Proposed for a critical event: Yes opens a root cause analysis.'
-                  : 'Yes opens a root cause analysis; No goes on to the next required step.'
-              }
-              value={review.furtherAnalysis}
-              onChange={(furtherAnalysis) => set({ furtherAnalysis })}
-              errors={errorsFor('furtherAnalysis')}
-            />
-          )}
-          {leadsToAnalysis(event, review) && <AssigneesField event={event} review={review} set={set} errorsFor={errorsFor} />}
+          <AssigneesField event={event} review={review} set={set} errorsFor={errorsFor} />
         </ReviewSection>
       )}
     </>
@@ -391,9 +392,6 @@ export default function ReviewStep({ event, onSaved }) {
   const [saving, setSaving] = useState(false);
   const reviewerId = event.review?.reviewerId;
   const errorsFor = (field) => (errors[field] ? [{ field, message: errors[field] }] : []);
-  // A critical event proposes "further analyze" = Yes until the reviewer answers (FR-028).
-  const proposed = criticalFlagsOf(event, review).length > 0 ? true : null;
-  const effective = { ...review, furtherAnalysis: review.furtherAnalysis ?? proposed };
   const set = (changes) => setReview((current) => ({ ...current, ...changes }));
 
   useEffect(() => {
@@ -410,11 +408,11 @@ export default function ReviewStep({ event, onSaved }) {
   }
 
   async function submit() {
-    const found = validateReview(effective, event, getLabel(users, event.reporterId));
+    const found = validateReview(review, event, getLabel(users, event.reporterId));
     setErrors(found);
     if (Object.keys(found).length > 0) scrollToFirstProblemSoon();
     if (Object.keys(found).length > 0) return;
-    const reviewed = completeReview(event, effective, new Date().toISOString());
+    const reviewed = completeReview(event, review, new Date().toISOString());
     await save(reviewed, reviewCandidates(reviewed, assigneeIds(reviewed, investigationGroups, users)));
     // A reviewer who also performs the analysis goes straight to it; others see the review summary
     // (004 FR-003a).
@@ -476,7 +474,7 @@ export default function ReviewStep({ event, onSaved }) {
       />
       {review.decision === 'invalid' && <InvalidFields review={review} set={set} errorsFor={errorsFor} />}
       {review.decision === 'valid' && (
-        <ValidFields event={event} review={effective} set={set} errorsFor={errorsFor} masterData={masterData} />
+        <ValidFields event={event} review={review} set={set} errorsFor={errorsFor} masterData={masterData} />
       )}
       <div className="form-actions">
         <Button type="submit" disabled={saving}>

@@ -150,9 +150,10 @@ events.
 
 **Steps** are derived, never stored:
 
-- Required steps: Submission; each phase required by the event's workflow; Root cause analysis also
-  when the reviewer asked for further analysis or someone started it on its optional step; Actions
-  also as soon as the event's action plan has a corrective action.
+- Required steps: Submission; each phase required by the event's workflow — its level's, and its
+  critical row's once the review flags it critical; Root cause analysis also when someone started
+  it on its optional step; Actions also as soon as the event's action plan has a corrective
+  action.
 - **Current step**: the first required step not yet done (none for Draft, Archived and Closed).
 - Each step shows as done, current, upcoming (required, not reached), not required, or optional:
   an Actions step the workflow does not require, on an Open or In Progress event (opened by the
@@ -178,7 +179,8 @@ A review can flag an event as critical:
 
 Very Critical means a score of 50 or more on the injury matrix (Critical 20–49, Moderate 2–19).
 Only the review makes an event critical: before it, no event is red, whatever the reporter answered. A SIP needs a type. Critical events show red badges
-wherever the event appears and are the only ones asked "Do you want to further analyze?".
+wherever the event appears; their workflow's critical row can require more phases (SIP/HCI, SIP,
+SPL/HCL: [workflow settings](capabilities/workflow-settings.md) WF-13).
 
 ## Master data
 

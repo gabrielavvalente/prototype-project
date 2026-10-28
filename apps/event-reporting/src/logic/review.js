@@ -2,6 +2,7 @@
 // Review and Governance source). The reviewers are the ones the Control Panel configured, kept on
 // the event at submission (002 FR-010, FR-012).
 
+import { listsForPillar } from '../../../../shared/platform/masterData.js';
 import { assessmentFor, criticalFlagsOf, typedFlag } from './severity.js';
 
 export const STEPS = ['submission', 'review', 'rootCause', 'actions', 'validation'];
@@ -25,14 +26,22 @@ export function isReviewer(user, event) {
   return Boolean(event.workflow?.phases.review?.reviewerIds?.includes(user.id));
 }
 
-// Root cause analysis is also required when the reviewer asked for it ("further analyze" = Yes) or
-// someone started it on its optional step (010 RCA-18); Actions also as soon as the event's plan
-// has an action (005 AP-3).
+// What the event's workflow requires: its level, or — once the review flags it critical — its
+// critical row (012 WF-13, RV-10). flags: the review's critical flags (the live answers while
+// reviewing, the stored ones after).
+export function requiredByWorkflow(event, step, flags = event.review?.criticalFlags ?? []) {
+  if (event.workflow?.phases[step]?.required) return true;
+  return flags.length > 0 && Boolean(event.workflow?.critical?.[step]?.required);
+}
+
+// Root cause analysis is also required when someone started it on its optional step (010 RCA-18),
+// or when an earlier review answered Yes to "further analyze"; Actions also as soon as the event's
+// plan has an action (005 AP-3).
 function isRequired(event, step) {
   if (step === 'submission') return true;
   if (step === 'rootCause' && (event.review?.furtherAnalysis === true || Boolean(event.optionalAnalysis?.startedAt))) return true;
   if (step === 'actions' && (event.actions?.length ?? 0) > 0) return true;
-  return Boolean(event.workflow?.phases[step]?.required);
+  return requiredByWorkflow(event, step);
 }
 
 // Review is done once decided; Root cause analysis once completed (004); Actions once the plan is
@@ -64,7 +73,7 @@ export function stepStates(event) {
   const currentIndex = current ? STEPS.indexOf(current) : lastReached;
   return STEPS.map((step, index) => {
     let state = 'upcoming';
-    const optionalActions = step === 'actions' && ACTIVE_STATUSES.includes(event.status) && !event.workflow?.phases.actions?.required;
+    const optionalActions = step === 'actions' && ACTIVE_STATUSES.includes(event.status) && !requiredByWorkflow(event, 'actions');
     // An analysis nobody required, after a valid review, can still be started (010 RCA-18).
     // Never on an event locked by its validation (011 VAL-6).
     const locked = event.status === 'Closed' && event.validations?.at(-1)?.effective === true;
@@ -78,21 +87,30 @@ export function stepStates(event) {
   });
 }
 
+// The lists the review asks: those the event's level requires (RV-7) — Health & Safety TF1–TF3
+// Standards, Hazards, Body Parts and Injuries, TF4–TF5 Standards and Hazards only; no optional list
+// (012 remarks). Read-only lists of another pillar are never asked (third review).
+export function reviewLists(event) {
+  const required = assessmentFor(event).requiredListIds;
+  return listsForPillar(event.pillarId).filter((list) => !list.readOnly && required.includes(list.id));
+}
+
+// The summary also shows a list answered by an earlier review, when it is no longer asked.
+export function summaryLists(event, classification) {
+  const asked = reviewLists(event);
+  const answered = listsForPillar(event.pillarId).filter(
+    (list) => !asked.some((item) => item.id === list.id) && (classification[list.id] || []).length > 0,
+  );
+  return [...asked, ...answered];
+}
+
 // Lists of which a review picks a single value (review remarks 2026-10-26).
 export const SINGLE_CHOICE_LISTS = ['standards', 'hazards'];
 
-const analysisRequired = (event) => Boolean(event.workflow?.phases.rootCause?.required);
-
-// "Do you want to further analyze?" is asked only for a critical (red) event whose workflow does
-// not already require Root cause analysis (review remarks 2026-10-26).
-export function asksFurtherAnalysis(event, review) {
-  return !analysisRequired(event) && criticalFlagsOf(event, review).length > 0;
-}
-
-// Whether a valid review sends the event to Root cause analysis: required by the workflow, or
-// asked for with "further analyze" = Yes.
+// Whether a valid review sends the event to Root cause analysis: its level requires it, or its
+// critical row does and the answers make it critical (012 RV-10).
 export function leadsToAnalysis(event, review) {
-  return analysisRequired(event) || (asksFurtherAnalysis(event, review) && review.furtherAnalysis === true);
+  return requiredByWorkflow(event, 'rootCause', criticalFlagsOf(event, review));
 }
 
 // The Review button: a configured reviewer, an event waiting for review, not taken by someone else.
@@ -119,7 +137,8 @@ function validateStatement(statement, reporterName) {
   return null;
 }
 
-// Lists, severity, SIP answer, type and "further analyze" of a valid event (spec FR-022 to FR-028).
+// Lists, severity, SIP answer, type and the analysis designation of a valid event (spec FR-022 to
+// FR-028).
 function validateAssessment(review, event, errors) {
   const assessment = assessmentFor(event);
   for (const listId of assessment.requiredListIds) {
@@ -136,9 +155,6 @@ function validateAssessment(review, event, errors) {
   if (flag && criticalFlagsOf(event, review).includes(flag) && !review.criticalTypeId) {
     errors.criticalTypeId = `Choose the ${flag} type.`;
   }
-  if (asksFurtherAnalysis(event, review) && typeof review.furtherAnalysis !== 'boolean') {
-    errors.furtherAnalysis = 'Say whether the event should be analyzed further.';
-  }
   const assignees = review.rcaAssignees;
   if (leadsToAnalysis(event, review) && !(assignees?.userIds.length || assignees?.groupIds.length)) {
     errors.rcaAssignees = 'Choose who will perform the root cause analysis.';
@@ -146,7 +162,7 @@ function validateAssessment(review, event, errors) {
 }
 
 // review = { decision, invalidReason, invalidComment, statement, classification, potential,
-// actual, flagConfirmed, criticalTypeId, furtherAnalysis, rcaAssignees: { userIds, groupIds } } —
+// actual, flagConfirmed, criticalTypeId, rcaAssignees: { userIds, groupIds } } —
 // potential / actual are rated cells.
 export function validateReview(review, event, reporterName) {
   const errors = {};
@@ -186,13 +202,12 @@ function decidedFields(event, review) {
     flagConfirmed: assessment.flagQuestion ? review.flagConfirmed : null,
     criticalFlags,
     criticalTypeId: criticalFlags.includes(typedFlag(event)) ? review.criticalTypeId : '',
-    furtherAnalysis: asksFurtherAnalysis(event, review) ? review.furtherAnalysis : null,
     rcaAssignees: leadsToAnalysis(event, review) ? review.rcaAssignees : null,
   };
 }
 
-// Saves the decision: an invalid event is Archived; a valid one goes on to Root cause analysis
-// (required or asked for), the next required step, or is Closed when nothing else is required.
+// Saves the decision: an invalid event is Archived; a valid one goes on to the next step its
+// workflow requires (012 RV-14), or is Closed when nothing else is required.
 export function completeReview(event, review, now) {
   const { reviewerId, claimedAt } = event.review || {};
   const reviewed = { ...event, review: { reviewerId, claimedAt, ...decidedFields(event, review), reviewedAt: now } };

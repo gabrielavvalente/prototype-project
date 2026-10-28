@@ -1351,3 +1351,22 @@
   margin-bottom: var(--space-3);
   color: var(--color-primary);
 }
+
+/* The critical row (012 WF-13): set apart from the levels; its fixed cells read "From the level". */
+.workflow-grid .row--critical th,
+.workflow-grid .row--critical td {
+  border-top: 2px solid var(--color-border);
+}
+
+.cell-from-level {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+}
+
+/* Choose a demo account: pillar, level, then person (012 PD-7). */
+.start-steps {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 420px;
+  margin-bottom: var(--space-5);
+}

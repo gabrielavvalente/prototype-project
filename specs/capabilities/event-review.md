@@ -34,18 +34,25 @@ classifies it, assesses its severity, and sends it to its next step or archives 
 - **RV-6** **Yes**: the form in three titled parts and **Complete review** on the far right:
   1. **Event statement and classification** — the event statement, starting from the reported
      description ("Starts from the reported description: rewrite it to be shared. Do not name the
-     reporter."), and the classification lists of the event's pillar with the values available at
+     reporter."), and the classification lists the event's level requires (RV-7) — all required,
+     none optional — with the values available at
      its plant ([master data](master-data.md) MD-10; Body Parts grouped by category, coded values
      as "<code> — <name>"). Standards and Hazards take one value each; the other lists several.
+     **Injuries** lists, under each chosen Body Part as a heading, the injuries offered for
+     it ([master data](master-data.md) MD-4) and available at the plant, indented; an injury is chosen for a body part —
+     "Ear: Bruise" and "Fingers: Bruise" are two answers, each shown as such in its badge, the
+     summary and what the Sharing Hub receives. Before a body part is chosen it reads "Choose the body
+     parts first." and offers nothing; removing a body part drops the injuries chosen for it.
   2. **Severity** / **Serious incident potential** / **High consequence loss** / **Serious
      potential loss** (by pillar, below).
-  3. **Next step** — "Do you want to further analyze?" and the root cause analysis designation
-     ([root cause analysis](root-cause-analysis.md) RCA-1).
+  3. **Next step** — the root cause analysis designation ([root cause
+     analysis](root-cause-analysis.md) RCA-1), shown only when the event goes to Root cause
+     analysis (RV-10).
 - **RV-7** What each pillar assesses:
 
   | Pillar | Required lists | Assessment |
   |---|---|---|
-  | Health & Safety | Standards, Hazards; also Body Parts and Injuries for TF1–TF3 | **Potential severity** (TF1–TF4) and **Actual severity** (TF1–TF3) on the injury matrix |
+  | Health & Safety | TF1–TF3: Standards, Hazards, Body Parts, Injuries; TF4–TF5: Standards and Hazards only | **Potential severity** (TF1–TF4) and **Actual severity** (TF1–TF3) on the injury matrix |
   | Environment | Aspects, Impacts | "Is this event a SIP?" ("Serious Incident Potential: could it have caused serious harm under slightly different circumstances?"), starting from the submission's answer |
   | Industrial Risk | Categories | "Is this event an HCL?" ("High Consequence Loss: a real event with actual consequences — a major loss for the Group.") for SRE1–SRE3; "Is this event an SPL?" ("Serious Potential Loss: a near miss or moderate event whose potential severity is a weak signal before a major loss.") for SRE4–SRE5; Yes / No, nothing selected when the review opens |
   | Industrial Hygiene | — | — |
@@ -85,18 +92,18 @@ classifies it, assesses its severity, and sends it to its next step or archives 
     remediation · Impact where the environment needs a long time to recover · Enforcement action
     by the Regulatory Authority · Significant financial penalty or cost · Reputational damage with
     stakeholders.
-- **RV-10** "Do you want to further analyze?" is asked only for a critical (red) event (RV-9) whose
-  workflow does not already require Root cause analysis, with Yes proposed ("Proposed for a
-  critical event: Yes opens a root cause analysis."); Yes makes Root cause analysis a required
-  step. Otherwise it is not asked, and the event goes to the analysis only when its workflow
-  requires it.
+- **RV-10** A valid review sends the event to Root cause analysis when its workflow requires it —
+  its level, or, once the answers make it critical (RV-9), its critical row ([workflow
+  settings](workflow-settings.md) WF-13) — following the answers live: the designation appears or
+  disappears as the event becomes critical or not. Nobody is asked whether to analyse further.
+  Actions and Validation required by the critical row follow in the same way.
 - **RV-11** Completing with something missing saves nothing and shows each message next to its
   field: "Say whether the event is valid." · "Choose why the event is not valid." · "Explain what
   makes the report of bad quality." · "Write the event statement." · "Do not name the reporter in
   the event statement." (the reporter's full name, ignoring case) · "Choose a value." (Standards, Hazards) · "Choose at least one value." (the other lists) ·
   "Rate the potential severity." (or actual severity) · "Say whether the event is a SIP." (or "an
-  HCL." / "an SPL.") · "Choose the SIP type." · "Say whether the event should be analyzed
-  further." · "Choose who will perform the root cause analysis.".
+  HCL." / "an SPL.") · "Choose the SIP type." · "Choose who will perform the root
+  cause analysis.".
 - **RV-12** Only the answers of the decision taken are kept (switching No → Yes drops the reason,
   changing a matrix drops a type no longer needed).
 
@@ -104,13 +111,15 @@ classifies it, assesses its severity, and sends it to its next step or archives 
 
 - **RV-13** Not valid → **Archived** (final), with the alert of [notifications](notifications.md)
   NT-3. The steps after Review stay "Not reached yet".
-- **RV-14** Valid → the next required step (Root cause analysis when required or asked for) with
-  the event In Progress, or **Closed** when nothing else is required.
+- **RV-14** Valid → the next required step (RV-10) with the event In Progress, or **Closed** when
+  nothing else is required.
 - **RV-15** A completed review shows its summary: Reviewer, Reviewed on, Valid event; then either
-  Reason (and Comment), or Event statement, each list's values, the ratings ("<score> — <Moderate |
+  Reason (and Comment), or Event statement, each list's values (the lists asked, and any list an
+  earlier review answered), the ratings ("<score> — <Moderate |
   Critical | Very Critical> (<impact> × <duration>)", e.g. "50 — Very Critical (Severe × Medium
   term)"), the Yes / No answer ("Is this event a SIP?", "Is this event an HCL?" or "Is this event
-  an SPL?"), Critical (flags or No), the SIP type, Further analysis, Root cause analysis by.
+  an SPL?"), Critical (flags or No), the SIP type, Root cause analysis by — and Further analysis
+  on events reviewed with that answer.
 - **RV-16** Once reviewed, the submission can no longer be edited ([event reporting](event-reporting.md)
   ER-21); the history shows "Review taken by …" and "Review completed — valid" or "— archived
   (<reason>)".
@@ -132,9 +141,15 @@ Mendes, Eva Novak and Diego Laurent.
 4. **Safety assessment** — Standards and Hazards (one value each), Body Parts and Injuries are
    required (TF2). Potential
    Severe × Medium term = 50 Very Critical → SIP, the "Critical event" badge and a required SIP type; Actual
-   Minor × Short term = 5 Moderate. "Do you want to further analyze?" proposes Yes. (RV-7 to RV-10)
-5. **Only available values** — After Carla deactivates Hazard A1 for Lyon in the Control Panel, A1
-   is not offered in the review of a Lyon event. (RV-6)
+   Minor × Short term = 5 Moderate. The SIP/HCI row requiring Root cause analysis, the Next step
+   asks "Who will perform the root cause analysis?"; nobody is asked whether to analyse further.
+   (RV-7 to RV-10)
+5. **Only available values** — After Carla deactivates Hazard HZ-01 for Lyon in the Control Panel,
+   HZ-01 is not offered in the review of a Lyon event. On `TF-26-0003`, Injuries reads "Choose the
+   body parts first."; choosing Ear offers 12 injuries, including "Tinnitus (buzzing)", not
+   "Fracture"; adding Fingers adds its 14 injuries under a "Fingers" heading: "Bruise" is offered
+   twice, and choosing both shows "Ear: Bruise" and "Fingers: Bruise"; removing Ear keeps
+   "Fingers: Bruise" only, which the completed review's summary shows. (RV-6, RV-15)
 6. **Environment** — Reviewing `EVE-26-0001` asks Aspects and Impacts and "Is this event a SIP?"
    (starting from No, the submission's answer); Yes asks the SIP type. (RV-7, RV-9)
 7. **Industrial Risk** — Carla reviewing `SRE-26-0001` (SRE4) as valid is asked Categories and
@@ -146,8 +161,15 @@ Mendes, Eva Novak and Diego Laurent.
    of chemical or fuel tanks" to "Reputational damage with stakeholders". (RV-7, RV-9, RV-11,
    RV-15)
 8. **Valid, nothing else required** — `TF-26-0006` (TF4, Review only) reviewed valid with Potential
-   Minor × Minimal (Moderate): "Do you want to further analyze?" is not asked → Closed. With Severe ×
-   Long term instead, the event is SIP and the question appears, proposing Yes. (RV-10, RV-14)
+   Minor × Minimal (Moderate): no Next step → Closed. `TF-26-0004` (TF4) with Severe × Long term is
+   SIP: the Next step asks who will perform the analysis, and completing with Diego Laurent leaves
+   it In Progress at Root cause analysis. `SRE-26-0001` (SRE4): Yes to "Is this event an SPL?"
+   shows the designation, No hides it and completing closes it. (RV-10, RV-14)
+8b. **Lists by level** — Reviewing `TF-26-0006` (TF4) asks Standards and Hazards only — no Body
+   Parts, Injuries or Diseases, nothing "(optional)" — and its summary lists no body part;
+   `TF-26-0003` (TF2) asks Standards, Hazards, Body Parts and Injuries, all required: completing
+   with them empty shows "Choose a value." twice and "Choose at least one value." twice. (RV-6,
+   RV-7, RV-11)
 9. **Summary and history** — The completed review of `TF-26-0003` shows its summary rows; the
    Submission step's history shows "Review taken by Diego Laurent" and "Review completed — valid";
    the submission is read-only. (RV-15, RV-16)

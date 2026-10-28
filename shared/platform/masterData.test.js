@@ -1,6 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { masterValues } from './catalogs.js';
-import { allowedValueActions, availableValues, getList, listsForPillar, planImport, validateValue } from './masterData.js';
+import {
+  allowedValueActions,
+  availableValues,
+  classificationValueName,
+  getList,
+  injuriesFor,
+  injuryChoice,
+  injuryOptions,
+  keepInjuries,
+  listsForPillar,
+  planImport,
+  validateValue,
+} from './masterData.js';
 import { users } from './sampleData.js';
 
 const byId = (id) => users.find((user) => user.id === id);
@@ -12,13 +24,55 @@ function newValue(listId, fields) {
 
 describe('initial catalogs (FR-014)', () => {
   it('has the counts of the sources', () => {
-    expect(count('standards')).toBe(14);
-    expect(count('hazards')).toBe(36);
+    expect(count('standards')).toBe(12);
+    expect(count('hazards')).toBe(16);
+    expect(count('diseases')).toBe(17);
     expect(count('bodyPartCategories')).toBe(8);
     expect(count('injuries')).toBe(38);
     expect(count('aspects')).toBe(15);
     expect(count('impacts')).toBe(13);
     expect(count('irCategories')).toBe(11);
+  });
+
+  it('gives Standards and Hazards the workbook values with codes (012)', () => {
+    const named = (listId) => masterValues.filter((value) => value.listId === listId).map((value) => `${value.code} ${value.name}`);
+    expect(named('standards').at(0)).toBe('STD-01 Confined Spaces');
+    expect(named('standards').at(-1)).toBe('STD-12 Control of contractors');
+    expect(named('hazards').at(0)).toBe('HZ-01 Acts of violence');
+    expect(named('hazards').at(-1)).toBe('HZ-16 Trapped by something collapsing / overturning');
+    expect(masterValues.some((value) => value.name === 'Psychological pathology')).toBe(true);
+    expect(listsForPillar('pillar-hs').map((list) => list.id)).toContain('diseases');
+    expect(listsForPillar('pillar-ir').map((list) => list.id)).not.toContain('diseases');
+  });
+
+  it('offers the injuries of the chosen body parts (012 MD-4)', () => {
+    const injuries = masterValues.filter((value) => value.listId === 'injuries');
+    const part = (name) => masterValues.find((value) => value.listId === 'bodyParts' && value.name === name).id;
+    expect(injuries.reduce((sum, injury) => sum + injury.bodyPartIds.length, 0)).toBe(423);
+    const ear = injuriesFor(injuries, [part('Ear')]).map((injury) => injury.name);
+    expect(ear).toHaveLength(12);
+    expect(ear).toContain('Tinnitus (buzzing)');
+    expect(ear).not.toContain('Fracture');
+    expect(injuriesFor(injuries, [part('Ear'), part('Fingers')])).toHaveLength(17);
+    expect(injuriesFor(injuries, [])).toEqual([]);
+    expect(injuries.find((injury) => injury.name === 'Other').bodyPartIds).toHaveLength(36);
+  });
+
+  it('groups the injuries under each chosen body part, one choice per body part (012 RV-6)', () => {
+    const injuries = masterValues.filter((value) => value.listId === 'injuries');
+    const part = (name) => masterValues.find((value) => value.listId === 'bodyParts' && value.name === name);
+    const bruise = injuries.find((injury) => injury.name === 'Bruise');
+    const groups = injuryOptions(injuries, [part('Ear'), part('Fingers')]);
+    expect(groups.map((group) => [group.group, group.items.length])).toEqual([['Ear', 12], ['Fingers', 14]]);
+    expect(groups[0].items.find((item) => item.injury === 'Bruise').label).toBe('Ear: Bruise');
+    const choices = groups.flatMap((group) => group.items.map((item) => item.value));
+    expect(choices.filter((choice) => choice.endsWith(`>${bruise.id}`))).toHaveLength(2);
+    expect(new Set(choices).size).toBe(choices.length);
+    const earBruise = injuryChoice(part('Ear').id, bruise.id);
+    expect(classificationValueName(masterValues, earBruise)).toBe('Ear: Bruise');
+    expect(classificationValueName(masterValues, bruise.id)).toBe('Bruise');
+    const fingersBruise = injuryChoice(part('Fingers').id, bruise.id);
+    expect(keepInjuries([earBruise, fingersBruise], [part('Fingers').id])).toEqual([fingersBruise]);
   });
 
   it('puts every Body Part in a category', () => {
@@ -58,7 +112,7 @@ describe('availableValues (FR-018, FR-020)', () => {
     expect(ids('plant-porto')).not.toContain('hazards-3');
     expect(ids('plant-curitiba')).toContain('hazards-3');
     expect(ids('plant-curitiba')).not.toContain('h-cluster');
-    expect(ids('plant-lyon')).toHaveLength(36 - 3 + 1);
+    expect(ids('plant-lyon')).toHaveLength(16 - 3 + 1);
   });
 
   it('hides the Body Parts of an inactive category', () => {
@@ -110,14 +164,21 @@ describe('allowedValueActions (FR-015, FR-016)', () => {
 
 describe('validateValue (FR-019, FR-020)', () => {
   it('refuses a duplicate code, a missing name and a missing code', () => {
-    const errors = validateValue(getList('hazards'), newValue('hazards', { code: 'a1', name: '' }), masterValues);
-    expect(errors).toEqual({ name: 'Enter a name.', code: 'A value with code a1 already exists.' });
+    const errors = validateValue(getList('hazards'), newValue('hazards', { code: 'hz-01', name: '' }), masterValues);
+    expect(errors).toEqual({ name: 'Enter a name.', code: 'A value with code hz-01 already exists.' });
     expect(validateValue(getList('standards'), newValue('standards', { name: 'New' }), masterValues)).toEqual({ code: 'Enter a code.' });
   });
 
   it('allows the same code in another owner scope', () => {
-    const clusterValue = newValue('hazards', { code: 'A1', name: 'Local variant', ownerLevel: 'cluster', ownerPlantIds: ['plant-lyon', 'plant-porto'] });
+    const clusterValue = newValue('hazards', { code: 'HZ-01', name: 'Local variant', ownerLevel: 'cluster', ownerPlantIds: ['plant-lyon', 'plant-porto'] });
     expect(validateValue(getList('hazards'), clusterValue, masterValues)).toEqual({});
+  });
+
+  it('requires an injury to be linked to at least one body part (012 MD-5)', () => {
+    const injuries = getList('injuries');
+    expect(validateValue(injuries, newValue('injuries', { name: 'Frostbite' }), masterValues)).toEqual({ bodyPartIds: 'Choose at least one body part.' });
+    expect(validateValue(injuries, newValue('injuries', { name: 'Frostbite', bodyPartIds: ['bodyParts-1'] }), masterValues)).toEqual({});
+    expect(validateValue(getList('hazards'), newValue('hazards', { code: 'HZ-99', name: 'New' }), masterValues)).toEqual({});
   });
 
   it('refuses a duplicate name in lists without codes', () => {
@@ -141,7 +202,7 @@ describe('planImport (review 2026-10-25)', () => {
 
   it('changes Central values for Central and adds new codes', () => {
     const rows = [
-      { code: 'STD-01', name: 'Confined Space Entry', description: 'Updated' },
+      { code: 'STD-01', name: 'Confined Spaces', description: 'Updated' },
       { code: 'STD-99', name: 'New standard', description: '' },
     ];
     const plan = planImport(byId('user-ludovic'), standards, rows, masterValues);
@@ -153,12 +214,12 @@ describe('planImport (review 2026-10-25)', () => {
   });
 
   it('skips unchanged rows', () => {
-    const plan = planImport(byId('user-ludovic'), standards, [{ code: 'STD-01', name: 'Confined Space Entry' }], masterValues);
+    const plan = planImport(byId('user-ludovic'), standards, [{ code: 'STD-01', name: 'Confined Spaces' }], masterValues);
     expect(plan.changes).toEqual([]);
   });
 
   it('never copies Central values for a Cluster', () => {
-    const rows = [{ code: 'STD-01', name: 'Confined Space Entry' }, { code: 'LY-1', name: 'Lyon rule' }];
+    const rows = [{ code: 'STD-01', name: 'Confined Spaces' }, { code: 'LY-1', name: 'Lyon rule' }];
     const plan = planImport(byId('user-lucas'), standards, rows, masterValues);
     expect(plan.skipped.map((item) => item.line)).toEqual([2]);
     expect(plan.changes[0].after).toMatchObject({ code: 'LY-1', ownerLevel: 'cluster' });
@@ -169,6 +230,25 @@ describe('planImport (review 2026-10-25)', () => {
     const plan = planImport(byId('user-ludovic'), standards, rows, masterValues);
     expect(plan.errors.map((item) => item.line)).toEqual([2, 4]);
     expect(plan.changes.map((change) => change.after.name)).toEqual(['A']);
+  });
+
+  it('reads the body parts of an injury by name (012 MD-13)', () => {
+    const injuries = getList('injuries');
+    const rows = [
+      { name: 'Frostbite', 'body parts': 'fingers | Toe(s)' },
+      { name: 'Chilblain', 'body parts': '' },
+      { name: 'Scale burn', 'body parts': 'Tail' },
+      { name: 'Hearing Loss', 'body parts': 'Ear' },
+    ];
+    const plan = planImport(byId('user-ludovic'), injuries, rows, masterValues);
+    const fingers = masterValues.find((value) => value.listId === 'bodyParts' && value.name === 'Fingers').id;
+    expect(plan.changes.map((change) => change.after.name)).toEqual(['Frostbite']);
+    expect(plan.changes[0].after.bodyPartIds).toContain(fingers);
+    expect(plan.changes[0].after.bodyPartIds).toHaveLength(2);
+    expect(plan.errors).toEqual([
+      { line: 3, message: 'Choose at least one body part.' },
+      { line: 4, message: 'Unknown body part: Tail.' },
+    ]);
   });
 
   it('finds the Body Part category by name', () => {

@@ -24,10 +24,9 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 
 ### Designation (in the review)
 
-- **RCA-1** When a valid review leads to Root cause analysis (the event's workflow requires it, or
-  the reviewer answered Yes to "Do you want to further analyze?", asked for critical events), the
-  review asks **Who will
-  perform the root cause analysis?**: a required, searchable multiple choice in two groups —
+- **RCA-1** When a valid review leads to Root cause analysis ([event review](event-review.md)
+  RV-10: the event's level or, for a critical event, its critical row requires it), the review asks
+  **Who will perform the root cause analysis?**: a required, searchable multiple choice in two groups —
   *Users* (people of any event role whose access includes the event's plant and pillar, the
   reviewer included) and *Groups* (investigation groups covering the event's plant and pillar).
   Otherwise the question is not shown, and the analysis can still be started later (RCA-18).
@@ -162,18 +161,18 @@ From freshly reset [demo data](platform-data.md). Carla Mendes is a reviewer of 
 `EVE-26-0001` (EvE4) require Review only.
 
 1. **Designation required** — Carla reviews `TF-26-0003` as valid with Potential Severe × Medium
-   term (SIP, type chosen), "further analyze" Yes. *Then* "Who will perform the root cause
-   analysis?" is required: Complete review with it empty is refused next to the field. She picks
+   term (SIP, type chosen): the SIP/HCI row requires the analysis. *Then* "Who will perform the
+   root cause analysis?" is required: Complete review with it empty is refused next to the field. She picks
    the Lyon H&S investigation team and Diego Laurent → current step Root cause analysis, and
    Carla, a member of that team, is taken to it; the review step shows the designation.
    (RCA-1, RCA-3, RCA-4)
 2. **Alerts** — Eva Novak, Ana Ribeiro and Diego Laurent have one "Root cause analysis assigned to
    you" each; Carla has none. (RCA-2)
 3. **Reviewer stays on the summary** — Carla reviews `TF-26-0002` as valid with Potential Severe ×
-   Medium term (SIP, type chosen), "further analyze" Yes, and designates only Diego Laurent. *Then* she stays on the review summary.
+   Medium term (SIP, type chosen) and designates only Diego Laurent. *Then* she stays on the review summary.
    (RCA-4)
 4. **Not asked** — Carla reviews `TF-26-0006` as valid with Potential Minor × Minimal (not critical,
-   workflow not requiring the analysis): neither "further analyze" nor the designation is asked.
+   workflow not requiring the analysis): the designation is not asked.
    (RCA-1)
 5. **Overview and immediate actions** — Diego opens `TF-26-0003`, Root cause analysis: statement
    pre-filled, immediate actions as compact lines, every part Not started, 5W1H collapsed, 5 Why
@@ -182,8 +181,7 @@ From freshly reset [demo data](platform-data.md). Carla Mendes is a reviewer of 
    "Immediate actions updated in the root cause analysis by Diego Laurent". (RCA-8, RCA-9)
 6. **5W1H** — Expand 5W1H, open "What happened?", choose Yes. *Then* 13 numbered questions appear;
    No hides them. Carla reviews `EVE-26-0001` as valid, confirming it is a SIP (type chosen),
-   "further analyze" Yes, designating
-   herself: its 5W1H has no "Who was injured?". (RCA-10)
+   designating herself: its 5W1H has no "Who was injured?". (RCA-10)
 7. **6M and the 5 Why gate** — Tick Management › Lack of Resources. *Then* card C1 asks "How did
    "Lack of Resources" contribute to the event occurrence?" and 5 Why stays disabled; answer it.
    *Then* 5 Why opens with a column headed "C1 · Lack of Resources" and its answer (not editable)

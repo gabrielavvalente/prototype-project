@@ -323,7 +323,8 @@ export const investigationGroups = [
 // Starting workflow settings (only Required ones are stored, research R5). Central requires Review
 // on most levels of each pillar and a few more phases; Eva Novak adds Validation for TF1 at Lyon.
 // The lowest levels (TF5, EvE5, SRE5) require nothing, so their events close right after
-// submission (FR-026).
+// submission (FR-026). The critical rows require Root cause analysis, so flagged events are
+// analysed (012 WF-13).
 // ---------------------------------------------------------------------------
 
 const SEEDED_AT = '2026-10-20T09:00:00.000Z';
@@ -359,4 +360,7 @@ export const workflowSettings = [
   ...centralSettings('pillar-ir', 'user-sergio', 'review', ['SRE1', 'SRE2', 'SRE3', 'SRE4']),
   ...centralSettings('pillar-ir', 'user-sergio', 'rootCause', ['SRE1', 'SRE2']),
   ...centralSettings('pillar-ih', 'user-ludovic', 'review', ['OH-RESP', 'OH-SKIN', 'OH-MSD', 'OH-HEAR']),
+  ...centralSettings('pillar-hs', 'user-ludovic', 'rootCause', ['critical']),
+  ...centralSettings('pillar-env', 'user-ed', 'rootCause', ['critical']),
+  ...centralSettings('pillar-ir', 'user-sergio', 'rootCause', ['critical']),
 ];

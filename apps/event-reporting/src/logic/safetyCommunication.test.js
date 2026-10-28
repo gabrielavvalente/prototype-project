@@ -21,6 +21,8 @@ const TODAY = '2026-10-26';
 const lookups = { organization, reference: [...reference, ...formLists] };
 const byId = (id) => users.find((user) => user.id === id);
 const sample = (record) => events.find((event) => event.recordNumber === record);
+// The event as if its critical row required nothing: a SIP review does not lead to an analysis (012).
+const withoutCriticalRow = (event) => ({ ...event, workflow: { ...event.workflow, critical: {} } });
 
 const review = (changes = {}) => ({
   decision: 'valid',
@@ -40,7 +42,7 @@ function workedEvent() {
   return {
     ...event,
     status: 'In Progress',
-    review: review({ furtherAnalysis: true, rcaAssignees: { userIds: ['user-diego'], groupIds: [] } }),
+    review: review({ rcaAssignees: { userIds: ['user-diego'], groupIds: [] } }),
     rca: {
       statement: 'A worker cut a finger on a sharp sheet edge.',
       causes: [{ id: 'c1', theme: 'methods', option: 'Inadequate procedure', other: '', why: 'No step to deburr the edges.' }],
@@ -73,7 +75,7 @@ describe('which events have documents (SC-1, SC-4, SC-5)', () => {
 
 describe('content (SC-2, SC-4, SC-5)', () => {
   it('builds the Alert from the event', () => {
-    const event = { ...sample('TF-26-0003'), status: 'In Progress', review: review({ furtherAnalysis: false }) };
+    const event = { ...withoutCriticalRow(sample('TF-26-0003')), status: 'In Progress', review: review() };
     const alert = alertContent(event, lookups);
     expect(alert).toMatchObject({
       record: 'TF-26-0003',
@@ -149,8 +151,11 @@ describe('the Communications section of the steps menu (SC-10)', () => {
 
   it('says when each document will be available', () => {
     expect(states('user-ana', sample('TF-26-0003'))).toEqual(['Safety Alert: After the review', 'Safety Warning: After the analysis and the action plan']);
-    const reviewed = { ...sample('TF-26-0003'), status: 'In Progress', review: review({ furtherAnalysis: false }) };
+    const reviewed = { ...withoutCriticalRow(sample('TF-26-0003')), status: 'In Progress', review: review() };
     expect(states('user-ana', reviewed)).toEqual(['Safety Alert: Available (opens)', 'Safety Warning: Only after a root cause analysis']);
+    // With the demo's SIP/HCI row, the same SIP review leads to the analysis.
+    const analysed = { ...sample('TF-26-0003'), status: 'In Progress', review: review() };
+    expect(states('user-ana', analysed)[1]).toBe('Safety Warning: After the analysis and the action plan');
     expect(states('user-ana', { ...sample('OH-26-0001'), review: review() })).toEqual(['Safety Alert: Not for Industrial Hygiene', 'Safety Warning: Not for Industrial Hygiene']);
     expect(states('user-ana', { ...sample('TF-26-0001'), status: 'Archived', review: review({ decision: 'invalid' }) })).toEqual([
       'Safety Alert: Not for an archived event',

@@ -1,15 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Button, Card, Group, Stack, Text, Title } from '@mantine/core';
+import { Button, Select, Stack, Text, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
+import { accountPeople, accountPlants, accountRoles } from '../../../../shared/platform/demoAccounts.js';
 import { resetDemoData } from '../data/db.js';
 import { getLabel } from '../logic/lookups.js';
 import Header from './Header.jsx';
 
-// Demo "sign in": there is no real login in this prototype (spec Assumptions).
+// Demo "sign in": there is no real login in this prototype (spec Assumptions). The person is chosen
+// in steps: plant, event role, then person (012 PD-7).
 export default function StartScreen() {
   const { users, organization, signIn } = useApp();
   const navigate = useNavigate();
+  const [plantId, setPlantId] = useState(null);
+  const [role, setRole] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const people = plantId && role ? accountPeople(users, plantId, role) : [];
+  const chosen = people.find((user) => user.id === userId);
 
   useEffect(() => {
     document.title = 'Sign in — Event Reporting';
@@ -39,30 +46,52 @@ export default function StartScreen() {
             <Title order={1}>Choose a demo account</Title>
             <Text c="dimmed">Sign in to report and review events for your plants.</Text>
           </Stack>
-          <div className="start-users">
-            {/* People who only use the Control Panel have no event role and are not offered here. */}
-            {users.filter((user) => user.role).map((user) => (
-              <Card
-                key={user.id}
-                component="button"
-                type="button"
-                withBorder
-                radius="md"
-                padding="md"
-                className="start-user-card"
-                onClick={() => handleSignIn(user.id)}
-              >
-                <Group wrap="nowrap" align="center">
-                  <Avatar radius="xl" color="blue" aria-hidden="true">{user.avatar}</Avatar>
-                  <Stack gap={3} className="start-user-copy">
-                    <Text fw={600}>{user.name}</Text>
-                    <Text size="sm" c="dimmed">{user.role} · {user.access.map((entry) => getLabel(organization, entry.plantId)).join(', ')}</Text>
-                  </Stack>
-                  <Text className="start-user-arrow" c="dimmed" aria-hidden="true">›</Text>
-                </Group>
-              </Card>
-            ))}
-          </div>
+          {/* People who only use the Control Panel have no event role and are not offered here. */}
+          <form
+            className="start-steps"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (chosen) handleSignIn(chosen.id);
+            }}
+          >
+            <Select
+              id="start-plant"
+              label="Plant"
+              placeholder="Choose a plant"
+              data={accountPlants(users, organization).map((plant) => ({ value: plant.id, label: plant.name }))}
+              value={plantId}
+              onChange={(value) => {
+                setPlantId(value);
+                setRole(null);
+                setUserId(null);
+              }}
+            />
+            <Select
+              id="start-role"
+              label="Role"
+              placeholder={plantId ? 'Choose a role' : 'Choose a plant first'}
+              disabled={!plantId}
+              data={plantId ? accountRoles(users, plantId) : []}
+              value={role}
+              onChange={(value) => {
+                setRole(value);
+                setUserId(null);
+              }}
+            />
+            <Select
+              id="start-person"
+              label="Person"
+              placeholder={role ? 'Choose a person' : 'Choose a role first'}
+              disabled={!role}
+              data={people.map((user) => ({ value: user.id, label: user.name }))}
+              value={userId}
+              onChange={setUserId}
+              description={chosen ? `${chosen.role} · ${chosen.access.map((entry) => getLabel(organization, entry.plantId)).join(', ')}` : undefined}
+            />
+            <Button type="submit" disabled={!chosen}>
+              Sign in
+            </Button>
+          </form>
           <Button variant="subtle" color="gray" className="reset-demo" onClick={handleReset}>
             Reset demo data
           </Button>

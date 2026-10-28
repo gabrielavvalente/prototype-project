@@ -9,6 +9,7 @@ import { getRole, plantsOverlap } from './permissions.js';
 export const LISTS = [
   { id: 'standards', pillarId: 'pillar-hs', label: 'Standards', fixedGlobal: false, hasCode: true },
   { id: 'hazards', pillarId: 'pillar-hs', label: 'Hazards', fixedGlobal: false, hasCode: true },
+  { id: 'diseases', pillarId: 'pillar-hs', label: 'Diseases', fixedGlobal: false, hasCode: false },
   { id: 'bodyPartCategories', pillarId: 'pillar-hs', label: 'Body Part Categories', fixedGlobal: true, hasCode: false },
   {
     id: 'bodyParts',
@@ -18,7 +19,8 @@ export const LISTS = [
     hasCode: false,
     parentListId: 'bodyPartCategories',
   },
-  { id: 'injuries', pillarId: 'pillar-hs', label: 'Injuries', fixedGlobal: true, hasCode: false },
+  // Each injury is offered for some body parts (012 MD-4): linkedListId names that list.
+  { id: 'injuries', pillarId: 'pillar-hs', label: 'Injuries', fixedGlobal: true, hasCode: false, linkedListId: 'bodyParts' },
   { id: 'aspects', pillarId: 'pillar-env', label: 'Aspects', fixedGlobal: false, hasCode: false },
   { id: 'impacts', pillarId: 'pillar-env', label: 'Impacts', fixedGlobal: false, hasCode: false },
   { id: 'irCategories', pillarId: 'pillar-ir', label: 'Categories', fixedGlobal: false, hasCode: true },
@@ -67,6 +69,47 @@ export function isAvailable(value, values, activations, plantId) {
 
 export function availableValues(values, activations, { listId, plantId }) {
   return values.filter((value) => value.listId === listId && isAvailable(value, values, activations, plantId));
+}
+
+// The injuries offered for any of the chosen body parts (012 MD-4, RV-6).
+export function injuriesFor(injuries, bodyPartIds) {
+  return injuries.filter((injury) => (injury.bodyPartIds || []).some((id) => bodyPartIds.includes(id)));
+}
+
+// A review's injury is chosen for one body part (012 RV-6): kept as "<bodyPartId>><injuryId>".
+const INJURY_SEPARATOR = '>';
+
+export function injuryChoice(bodyPartId, injuryId) {
+  return `${bodyPartId}${INJURY_SEPARATOR}${injuryId}`;
+}
+
+// The Injuries options of a review: one group per chosen body part, its injuries below it. The label
+// names both ("Ear: Bruise", for the chosen badge); injury is what the option itself shows.
+export function injuryOptions(injuries, bodyParts) {
+  return bodyParts
+    .map((part) => ({
+      group: part.name,
+      items: injuries
+        .filter((injury) => (injury.bodyPartIds || []).includes(part.id))
+        .map((injury) => ({ value: injuryChoice(part.id, injury.id), label: `${part.name}: ${injury.name}`, injury: injury.name })),
+    }))
+    .filter((group) => group.items.length > 0);
+}
+
+// The chosen injuries still offered once the body parts change.
+export function keepInjuries(choices, bodyPartIds) {
+  return choices.filter((choice) => !choice.includes(INJURY_SEPARATOR) || bodyPartIds.includes(choice.split(INJURY_SEPARATOR)[0]));
+}
+
+// The name of a classification value: "Ear: Bruise" for an injury chosen for a body part, the
+// value's name otherwise (also for injuries chosen before 012).
+export function classificationValueName(values, id) {
+  const name = (valueId) => values.find((value) => value.id === valueId)?.name;
+  if (id.includes(INJURY_SEPARATOR)) {
+    const [partId, injuryId] = id.split(INJURY_SEPARATOR);
+    return `${name(partId) ?? partId}: ${name(injuryId) ?? injuryId}`;
+  }
+  return name(id) ?? id;
 }
 
 // The values a user sees in a list: Central values and those of Clusters sharing a plant with
@@ -150,6 +193,7 @@ export function planImport(user, list, rows, values) {
   const scope = { ownerLevel: role.level, ownerPlantIds: role.level === 'central' ? [] : role.plantIds };
   const keyOf = (item) => (list.hasCode ? item.code : item.name).trim().toLowerCase();
   const categories = values.filter((item) => item.listId === list.parentListId);
+  const linked = values.filter((item) => item.listId === list.linkedListId && item.status !== 'Retired');
   const seen = visibleValues(user, list, values);
   let known = [...values];
   const keysInFile = new Set();
@@ -162,6 +206,16 @@ export function planImport(user, list, rows, values) {
       const category = categories.find((item) => item.name.toLowerCase() === (row.category || '').toLowerCase());
       fields.parentId = category ? category.id : '';
     }
+    // Injuries: the "Body parts" column, names separated by "|" (012 MD-13).
+    if (list.linkedListId) {
+      const names = (row['body parts'] || '').split('|').map((name) => name.trim()).filter(Boolean);
+      const unknown = names.filter((name) => !linked.some((item) => item.name.toLowerCase() === name.toLowerCase()));
+      if (unknown.length > 0) {
+        result.errors.push({ line, message: `Unknown body part: ${unknown.join(', ')}.` });
+        return;
+      }
+      fields.bodyPartIds = linked.filter((item) => names.some((name) => name.toLowerCase() === item.name.toLowerCase())).map((item) => item.id);
+    }
     if (keysInFile.has(keyOf(fields))) {
       result.errors.push({ line, message: `${fields.code || fields.name} appears more than once in the file.` });
       return;
@@ -173,7 +227,7 @@ export function planImport(user, list, rows, values) {
       result.skipped.push({ line, message: `${fields.code || fields.name} belongs to another level and was left unchanged.` });
       return;
     }
-    if (existing && Object.keys(fields).every((field) => existing[field] === fields[field])) {
+    if (existing && Object.keys(fields).every((field) => JSON.stringify(existing[field]) === JSON.stringify(fields[field]))) {
       return;
     }
     const value = existing
@@ -207,6 +261,9 @@ export function validateValue(list, value, existingValues) {
     } else if (others.some((item) => item.code.trim().toLowerCase() === value.code.trim().toLowerCase())) {
       errors.code = `A value with code ${value.code.trim()} already exists.`;
     }
+  }
+  if (list.linkedListId && !(value.bodyPartIds || []).length) {
+    errors.bodyPartIds = 'Choose at least one body part.';
   }
   if (list.parentListId) {
     const parent = existingValues.find((item) => item.id === value.parentId);
