@@ -63,17 +63,17 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ## Phase 4: Apply the change to the capabilities
 
-- [ ] T006 Create `specs/capabilities/sharing-hub.md` (SH-1 to SH-9, scenarios, Decisions) and apply
+- [X] T006 Create `specs/capabilities/sharing-hub.md` (SH-1 to SH-9, scenarios, Decisions) and apply
   the changes to `specs/capabilities/event-library.md` (EL-1), `notifications.md` (NT-1, NT-3, NT-4,
   scenario 9), `platform-data.md` (Organization) and `specs/domain.md` (Organization, Glossary,
   Capabilities). No "was", no change history.
-- [ ] T007 Check the counts and names of every changed scenario against the demo data
+- [X] T007 Check the counts and names of every changed scenario against the demo data
 
 ---
 
 ## Phase 5: Checks
 
-- [ ] T008 Run `npm test` and `npm run build` in `apps/event-reporting/` and `apps/control-panel/`,
+- [X] T008 Run `npm test` and `npm run build` in `apps/event-reporting/` and `apps/control-panel/`,
   then the spec's scenarios from **Reset demo data** through the launcher, at 320px and with the
   keyboard, with a clean browser console
 

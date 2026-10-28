@@ -27,6 +27,9 @@ choices of the people of their plant.
   same person on the same event, they get one: an alert that hands them work first, otherwise the
   one of the latest stage in NT-3 (e.g. a review that closes the event gives the reporter "Event
   closed", not "Your event was reviewed"); when the person turned that one off, they get none.
+  "Shared event received" is the exception: it goes to the Site Admins and Managers of each plant
+  a Safety Warning was shared with, who cannot see the event itself
+  ([sharing hub](sharing-hub.md) SH-6).
 - **NT-2** Alerts are of two kinds. **Work** alerts hand the person something to do and are always
   raised: "Event to review", "Root cause analysis assigned to you", "Action plan ready for
   validation", "Action plan not effective" (to the plan owners). **Information** alerts are all the
@@ -50,6 +53,7 @@ choices of the people of their plant.
   | Actions | Plan completed | "Action plan completed" | The reporter |
   | Validation | Not effective | "Action plan not effective" | The plan owners (work) and the reporter (information) |
   | Closure | Closed at Review, Root cause analysis, Actions or Validation | "Event closed" | The reporter and the Shared with people |
+  | Sharing | A published Safety Warning is shared | "Shared event received" | The Site Admins and Managers of each plant reached, not the person who shared |
 
   An event closed at submission raises no "Event closed" (its reporter sees it closed on the
   screen). Nothing is raised about single actions (assigned, changed, cancelled, overdue): the
@@ -73,6 +77,7 @@ choices of the people of their plant.
   | Action plan completed | "The action plan of an event you reported was completed." |
   | Action plan not effective | "On an event you reported. Plan owners always get it." |
   | Event closed | "An event you reported or that was shared with you was closed." |
+  | Shared event received | "A safety lesson was shared with your plant." |
 
   Every switch is on until someone turns it off. A change applies at once ("Saved.") to the
   alerts raised afterwards; alerts already received stay.
@@ -138,7 +143,7 @@ From freshly reset [demo data](platform-data.md), in order.
    validation" and Carla gets "Action plan completed". Diego answers No ("Rack still unstable").
    *Then* Ana gets "Action plan not effective" and Carla too. (NT-3, VAL-4)
 9. **My notifications** — Ana opens Account › My notifications. *Then* Always on lists the four
-   work alerts with "These alerts hand you work and cannot be turned off."; Information has 10
+   work alerts with "These alerts hand you work and cannot be turned off."; Information has 11
    switches, all on. She turns off "Event closed" ("Saved."). Carla reviews `TF-26-0001` (TF4,
    Review only) as valid: it closes. *Then* Ana gets no alert. (NT-1, NT-4)
 10. **Site Admin sets, person overrules** — In the Control Panel, Eva opens "Notifications · Lyon"
