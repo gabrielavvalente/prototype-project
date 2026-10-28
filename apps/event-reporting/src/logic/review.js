@@ -2,6 +2,7 @@
 // Review and Governance source). The reviewers are the ones the Control Panel configured, kept on
 // the event at submission (002 FR-010, FR-012).
 
+import { listsForPillar } from '../../../../shared/platform/masterData.js';
 import { assessmentFor, criticalFlagsOf, typedFlag } from './severity.js';
 
 export const STEPS = ['submission', 'review', 'rootCause', 'actions', 'validation'];
@@ -84,6 +85,23 @@ export function stepStates(event) {
     else if (optionalActions) state = 'optional';
     return { step, state };
   });
+}
+
+// The lists the review asks: those the event's level requires (RV-7) — Health & Safety TF1–TF3
+// Standards, Hazards, Body Parts and Injuries, TF4–TF5 Standards and Hazards only; no optional list
+// (012 remarks). Read-only lists of another pillar are never asked (third review).
+export function reviewLists(event) {
+  const required = assessmentFor(event).requiredListIds;
+  return listsForPillar(event.pillarId).filter((list) => !list.readOnly && required.includes(list.id));
+}
+
+// The summary also shows a list answered by an earlier review, when it is no longer asked.
+export function summaryLists(event, classification) {
+  const asked = reviewLists(event);
+  const answered = listsForPillar(event.pillarId).filter(
+    (list) => !asked.some((item) => item.id === list.id) && (classification[list.id] || []).length > 0,
+  );
+  return [...asked, ...answered];
 }
 
 // Lists of which a review picks a single value (review remarks 2026-10-26).

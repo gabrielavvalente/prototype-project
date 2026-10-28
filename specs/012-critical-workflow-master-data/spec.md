@@ -9,11 +9,13 @@ levels TF1–TF5 and add SIP/HCI; for environment, keep current levels and add S
 risk, keep current levels and add SPL/HCL; in event reporting, instead of asking whether analysis
 is needed, remove the question. And for the master data content: see the Excel file and update the
 master data content." — with the open points decided with the user on 2026-10-28. Review
-remark (2026-10-28): creating or editing an injury requires its link to body parts.
+remarks (2026-10-28): creating or editing an injury requires its link to body parts; a safety
+event's review asks Standards, Hazards, Body Parts and Injuries for TF1–TF3, Standards and Hazards
+only for TF4–TF5.
 
 **Capabilities**: changed: `specs/capabilities/workflow-settings.md` (WF-1, WF-5a, WF-10, WF-11,
-WF-13 added, scenarios 1 and 7), `specs/capabilities/event-review.md` (RV-6, RV-10, RV-11, RV-14,
-RV-15, scenarios 4, 5 and 8), `specs/capabilities/root-cause-analysis.md` (RCA-1),
+WF-13 added, scenarios 1 and 7), `specs/capabilities/event-review.md` (RV-6, RV-7, RV-10, RV-11, RV-14,
+RV-15, scenarios 4, 5, 8 and 8b), `specs/capabilities/root-cause-analysis.md` (RCA-1),
 `specs/capabilities/master-data.md` (MD-1, MD-2, MD-4, MD-5, MD-7, MD-11, MD-12, MD-13, MD-14, Initial catalogs,
 scenarios 1, 3, 4, 6 and 9), `specs/capabilities/platform-data.md` (workflow settings),
 the scenarios of `action-plan.md`, `notifications.md` and `safety-communication.md` that answered
@@ -37,6 +39,7 @@ master data workbook, with injuries that make sense for the injured body part.
 | Standards, Hazards | Replaced by the workbook's 12 and 16 values, in its order; codes STD-01… and HZ-01… are given since both lists require codes | Workbook (no codes) |
 | Body Parts, Injuries | Values unchanged; the workbook's typos ("Torse", "Back and spin", "Pain (back,lumbago)") and its broken degree signs are not taken | Workbook |
 | Injuries by body part | The workbook's pairing applies: the review offers only the injuries of the chosen body parts | User |
+| Lists by level | Health & Safety TF1–TF3: Standards, Hazards, Body Parts, Injuries; TF4–TF5: Standards and Hazards only; the review asks no optional list (so not Diseases, kept for the form) | User (review remark) |
 | Injury configuration | Creating or editing an injury requires at least one body part; import reads them too | User (review remark) |
 | Diseases | A new Health & Safety list with the workbook's 17 values, fixed: "or lower/upper limbs" → "of lower/upper limbs", "Psycological" → "Psychological"; the Health & Safety form uses it later | User |
 | Not taken | Risk Families, Circumstances, Type of Immediate actions; the empty sheets Aspects, Related Aspects, Risk Category change nothing | User |
@@ -73,6 +76,13 @@ master data workbook, with injuries that make sense for the injured body part.
   (master data MD-4), available at the plant; before a body part is chosen it reads "Choose the
   body parts first." and offers nothing; removing a body part drops the chosen injuries no longer
   offered. *(was: "Do you want to further analyze?" in part 3; every injury offered)*
+- **RV-6** *(the lists)* Part 1 asks only the classification lists the event's level requires
+  (RV-7), all required; no list is shown "(optional)". *(was: every list of the pillar, the others
+  optional)*
+- **RV-7** *(Health & Safety)* TF1–TF3: Standards, Hazards, Body Parts and Injuries; TF4–TF5:
+  Standards and Hazards only. *(was: Body Parts and Injuries optional for TF4–TF5)*
+- **RV-15** *(the lists)* The summary shows the lists asked, and any list an earlier review
+  answered. *(was: every list of the pillar)*
 - **RV-10** A valid review sends the event to Root cause analysis when its workflow requires it —
   its level, or, once the answers make it critical (RV-9), its critical row (workflow settings
   WF-13) — following the answers live: the designation appears or disappears as the event becomes
@@ -177,6 +187,11 @@ below).
     "Hearing Loss · 1 body part" → "Hearing Loss · 2 body parts", and Eyes now offers Hearing Loss
     in the review; removing every body part is refused. Importing a row "Chilblain" with no body
     part, or "Tail" as one, is refused with its line. (MD-4, MD-5, MD-13, MD-14)
+13. **Lists by level** — Carla reviews `TF-26-0006` (TF4): Standards and Hazards only — no Body
+    Parts, Injuries or Diseases, nothing "(optional)" — and the summary lists no body part.
+    `TF-26-0003` (TF2) asks Standards, Hazards, Body Parts and Injuries, all required: completing
+    with them empty shows "Choose a value." twice and "Choose at least one value." twice. (RV-6,
+    RV-7, RV-11, RV-15)
 
 ## Demo data changes
 

@@ -34,7 +34,8 @@ classifies it, assesses its severity, and sends it to its next step or archives 
 - **RV-6** **Yes**: the form in three titled parts and **Complete review** on the far right:
   1. **Event statement and classification** — the event statement, starting from the reported
      description ("Starts from the reported description: rewrite it to be shared. Do not name the
-     reporter."), and the classification lists of the event's pillar with the values available at
+     reporter."), and the classification lists the event's level requires (RV-7) — all required,
+     none optional — with the values available at
      its plant ([master data](master-data.md) MD-10; Body Parts grouped by category, coded values
      as "<code> — <name>"). Standards and Hazards take one value each; the other lists several.
      **Injuries** offers only the injuries of the chosen Body Parts ([master data](master-data.md)
@@ -49,7 +50,7 @@ classifies it, assesses its severity, and sends it to its next step or archives 
 
   | Pillar | Required lists | Assessment |
   |---|---|---|
-  | Health & Safety | Standards, Hazards; also Body Parts and Injuries for TF1–TF3 | **Potential severity** (TF1–TF4) and **Actual severity** (TF1–TF3) on the injury matrix |
+  | Health & Safety | TF1–TF3: Standards, Hazards, Body Parts, Injuries; TF4–TF5: Standards and Hazards only | **Potential severity** (TF1–TF4) and **Actual severity** (TF1–TF3) on the injury matrix |
   | Environment | Aspects, Impacts | "Is this event a SIP?" ("Serious Incident Potential: could it have caused serious harm under slightly different circumstances?"), starting from the submission's answer |
   | Industrial Risk | Categories | "Is this event an HCL?" ("High Consequence Loss: a real event with actual consequences — a major loss for the Group.") for SRE1–SRE3; "Is this event an SPL?" ("Serious Potential Loss: a near miss or moderate event whose potential severity is a weak signal before a major loss.") for SRE4–SRE5; Yes / No, nothing selected when the review opens |
   | Industrial Hygiene | — | — |
@@ -111,7 +112,8 @@ classifies it, assesses its severity, and sends it to its next step or archives 
 - **RV-14** Valid → the next required step (RV-10) with the event In Progress, or **Closed** when
   nothing else is required.
 - **RV-15** A completed review shows its summary: Reviewer, Reviewed on, Valid event; then either
-  Reason (and Comment), or Event statement, each list's values, the ratings ("<score> — <Moderate |
+  Reason (and Comment), or Event statement, each list's values (the lists asked, and any list an
+  earlier review answered), the ratings ("<score> — <Moderate |
   Critical | Very Critical> (<impact> × <duration>)", e.g. "50 — Very Critical (Severe × Medium
   term)"), the Yes / No answer ("Is this event a SIP?", "Is this event an HCL?" or "Is this event
   an SPL?"), Critical (flags or No), the SIP type, Root cause analysis by — and Further analysis
@@ -159,6 +161,11 @@ Mendes, Eva Novak and Diego Laurent.
    SIP: the Next step asks who will perform the analysis, and completing with Diego Laurent leaves
    it In Progress at Root cause analysis. `SRE-26-0001` (SRE4): Yes to "Is this event an SPL?"
    shows the designation, No hides it and completing closes it. (RV-10, RV-14)
+8b. **Lists by level** — Reviewing `TF-26-0006` (TF4) asks Standards and Hazards only — no Body
+   Parts, Injuries or Diseases, nothing "(optional)" — and its summary lists no body part;
+   `TF-26-0003` (TF2) asks Standards, Hazards, Body Parts and Injuries, all required: completing
+   with them empty shows "Choose a value." twice and "Choose at least one value." twice. (RV-6,
+   RV-7, RV-11)
 9. **Summary and history** — The completed review of `TF-26-0003` shows its summary rows; the
    Submission step's history shows "Review taken by Diego Laurent" and "Review completed — valid";
    the submission is read-only. (RV-15, RV-16)

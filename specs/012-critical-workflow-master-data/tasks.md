@@ -86,6 +86,17 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 4c: Review remark — the lists each safety level asks (2026-10-28)
+
+**Scenarios**: 13
+
+- [X] T014 `reviewLists` and `summaryLists` in `apps/event-reporting/src/logic/review.js` (the lists
+  the level requires, and earlier answers in the summary), with tests in `logic/review.test.js`;
+  used by `events/ReviewStep.jsx` (RV-6, RV-7, RV-15)
+- [X] T015 Apply to `specs/capabilities/event-review.md`; scenario 13 through the launcher
+
+---
+
 ## Phase 5: Apply the change to the capabilities
 
 - [X] T008 Apply the change to `specs/capabilities/workflow-settings.md`, `event-review.md`,

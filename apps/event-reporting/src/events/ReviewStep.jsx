@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, MultiSelect, Select, Textarea } from '@mantine/core';
 import { useApp } from '../AppContext.js';
-import { availableValues, injuriesFor, listsForPillar } from '../../../../shared/platform/masterData.js';
+import { availableValues, injuriesFor } from '../../../../shared/platform/masterData.js';
 import { groupsCovering } from '../../../../shared/platform/groups.js';
 import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
 import { getMasterData } from '../../../../shared/platform/platformData.js';
@@ -19,6 +19,8 @@ import {
   INVALID_REASONS,
   isReviewer,
   leadsToAnalysis,
+  reviewLists,
+  summaryLists,
   REASON_NEEDING_COMMENT,
   SINGLE_CHOICE_LISTS,
   validateReview,
@@ -28,14 +30,6 @@ import { assessmentFor, criticalFlagsOf, ratingText, typedFlag } from '../logic/
 import SeverityMatrix from './SeverityMatrix.jsx';
 import SummaryList from './SummaryList.jsx';
 import { scrollToFirstProblemSoon } from '../../../../shared/ui/scrollToProblem.js';
-
-// The pillar's own lists, without lists that only group another one (Body Part Categories group
-// Body Parts, which are shown by category). Lists shown read-only from another pillar (H&S
-// Standards and Hazards in Industrial Risk) are not asked (third review).
-function reviewLists(pillarId) {
-  const lists = listsForPillar(pillarId).filter((list) => !list.readOnly);
-  return lists.filter((list) => !lists.some((other) => other.parentListId === list.id));
-}
 
 // Options of one master data list at the event's plant; Body Parts grouped by category; Injuries
 // only those of the chosen body parts (012 RV-6).
@@ -104,7 +98,7 @@ function ReviewSummary({ event, masterData }) {
     return <SummaryList rows={rows} />;
   }
   rows.push({ label: 'Event statement', value: review.statement });
-  for (const list of reviewLists(event.pillarId)) {
+  for (const list of summaryLists(event, review.classification || {})) {
     rows.push({ label: list.label, value: (review.classification[list.id] || []).map(valueName).join(', ') });
   }
   if (assessment.potential) rows.push({ label: assessment.potentialTitle, value: ratingText(assessment.matrix, review.potential) });
@@ -310,7 +304,7 @@ function ClassificationFields({ event, review, set, errorsFor, masterData }) {
       </div>
       {!masterData && <p>Loading the lists…</p>}
       {masterData &&
-        reviewLists(event.pillarId).map((list) => {
+        reviewLists(event).map((list) => {
           const required = assessment.requiredListIds.includes(list.id);
           const common = {
             id: `list-${list.id}`,

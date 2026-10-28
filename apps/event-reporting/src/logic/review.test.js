@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canStartReview, claimReview, completeReview, currentStep, leadsToAnalysis, stepStates, validateReview } from './review.js';
+import { canStartReview, claimReview, completeReview, currentStep, leadsToAnalysis, reviewLists, stepStates, summaryLists, validateReview } from './review.js';
 
 const NOW = '2026-10-25T10:00:00.000Z';
 
@@ -125,6 +125,17 @@ describe('review', () => {
     const critical = validateReview(criticalReview(), envEvent(['review'], ['rootCause']), '');
     expect(Object.keys(critical)).toEqual(['rcaAssignees']);
     expect(validateReview(criticalReview(), envEvent(['review']), '')).toEqual({});
+  });
+
+  it('asks only the lists the level requires (012 remarks)', () => {
+    const ids = (event) => reviewLists(event).map((list) => list.id);
+    const tf = (levelCode) => ({ pillarId: 'pillar-hs', familyCode: 'TF', levelCode });
+    for (const level of ['TF1', 'TF2', 'TF3']) expect(ids(tf(level))).toEqual(['standards', 'hazards', 'bodyParts', 'injuries']);
+    for (const level of ['TF4', 'TF5']) expect(ids(tf(level))).toEqual(['standards', 'hazards']);
+    expect(ids({ pillarId: 'pillar-ir', familyCode: 'SRE', levelCode: 'SRE4' })).toEqual(['irCategories']);
+    // An earlier answer on a list no longer asked still shows in the summary.
+    const listed = summaryLists(tf('TF4'), { bodyParts: ['bodyParts-2'] }).map((list) => list.id);
+    expect(listed).toEqual(['standards', 'hazards', 'bodyParts']);
   });
 
   it('asks a single Standard and Hazard (005 remarks)', () => {
