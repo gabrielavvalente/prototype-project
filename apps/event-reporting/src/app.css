@@ -4606,3 +4606,41 @@ a.step-link:hover {
 .hub-state--closedYes {
   color: var(--color-error);
 }
+
+/* Sharing Hub (009 third remarks): the check beside the Warning; Open and History as sections. */
+.hub-layout--checking {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 26rem);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.hub-layout--checking .hub-check {
+  margin-top: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.hub-layout--checking .hub-check > h2 {
+  margin: 0;
+}
+
+.hub-section {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+}
+
+.hub-section .communication-card {
+  background: var(--color-background);
+}
+
+@media (max-width: 899px) {
+  .hub-layout--checking {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

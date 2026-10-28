@@ -40,7 +40,7 @@ checks whether it could happen there and acts on it.
 ### Receiving
 
 - **SH-5** **Sharing Hub**, a page of the event workspace (EL-1), lists the packages shared to the
-  context's plant in two parts, newest first: **Open** — "Not checked", "Being checked" and "Could
+  context's plant in two sections (each a framed panel with its title), newest first: **Open** — "Not checked", "Being checked" and "Could
   happen here" cases — and **History** — closed cases ("Could happen here — closed on <date>",
   "Could not happen here — closed on <date>"). Each card: "Safety Warning" from <plant>, the pillar,
   the level, the date shared, the first line of the statement and the state. Everyone with an event
@@ -54,7 +54,8 @@ checks whether it could happen there and acts on it.
 
 - **SH-7** **Verify locally**, at the top right of the shared Warning (the receiving plant's Site
   Admins and Managers, while "Not checked"), starts the **local check**: "Being checked", with no
-  action yet and **Add action**. A local action has a description, 1 to 5 assignees among the
+  action yet and **Add action**. Once started, the local check (actions, answer, history) is a
+  column on the right of the shared Warning (below it on phones). A local action has a description, 1 to 5 assignees among the
   plant's people with an event role, a due date and a status (On Going, Completed, Cancelled); the
   checkers add, edit and cancel actions; an assignee completes their own. Saving with something
   missing is refused next to the field: "Describe the action.", "Choose 1 to 5 assignees.",

@@ -139,6 +139,8 @@ export default function HubItemPage() {
         From {getPlantName(organization, event.plantId)} · shared on {formatDate(item.receivedAt)} ·{' '}
         <span className={`hub-state hub-state--${check.state}`}>{CHECK_STATE_LABELS[check.state]}</span>
       </p>
+      {/* Once the check has started, it is a column on the right of the Warning (SH-7). */}
+      <div className={`hub-layout${check.state === 'notChecked' ? '' : ' hub-layout--checking'}`}>
       <CommunicationDocument kind="warning" content={item.pkg.content} attachments={attachments} classification={item.pkg.classification} />
 
       <section className="hub-check" aria-labelledby="check-title">
@@ -224,6 +226,7 @@ export default function HubItemPage() {
           ))}
         </ol>
       </section>
+      </div>
     </main>
   );
 }

@@ -84,6 +84,16 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 8: Review remarks — layout of the check and the Hub
+
+**Scenarios**: 5, 6
+
+- [X] T014 In `apps/event-reporting/src/hub/HubItemPage.jsx`: the local check in a right-hand column
+  once started (below on phones); in `hub/HubList.jsx`: Open and History as framed sections; styles
+  appended to `app.css`; apply SH-5 and SH-7 to `specs/capabilities/sharing-hub.md` (SH-5, SH-7)
+
+---
+
 ## Phase 4: Apply the change to the capabilities
 
 - [X] T006 Create `specs/capabilities/sharing-hub.md` (SH-1 to SH-9, scenarios, Decisions) and apply

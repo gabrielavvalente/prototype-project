@@ -10,7 +10,8 @@ Locally), with the open points decided with the user on 2026-10-26. Review remar
 Share to Hub button sits next to the Print button. Review remarks (2026-10-28, second round): the
 Warning's Publish button sits next to Print; Verify locally is at the top right of the shared
 Warning; it adds no pre-filled action; "Could happen here" keeps the case open for actions until
-the plant closes it; closed cases go to the Sharing Hub's History.
+the plant closes it; closed cases go to the Sharing Hub's History. Third round: once the check has
+started, the local check sits on the right of the shared Warning; Open and History are sections.
 
 **Capabilities**: new: `specs/capabilities/sharing-hub.md` (prefix SH); changed:
 `specs/capabilities/event-library.md` (EL-1), `specs/capabilities/safety-communication.md` (SC-7),
@@ -62,7 +63,7 @@ check whether it could happen there and act on it.
   Environment: Aspects, Impacts; Industrial Risk: Categories), never a name. The Warning then shows
   "Shared with <plants> on <date>" (one line per share).
 - **SH-5** **Sharing Hub**, a page of the event workspace (EL-1), lists the packages shared to the
-  context's plant in two parts, newest first: **Open** — "Not checked", "Being checked" and "Could
+  context's plant in two sections (each a framed panel with its title), newest first: **Open** — "Not checked", "Being checked" and "Could
   happen here" cases — and **History** — closed cases ("Could happen here — closed on <date>",
   "Could not happen here — closed on <date>"). Each card: "Safety Warning" from <plant>, the pillar,
   the level, the date shared, the first line of the statement and the state. Everyone with an event
@@ -73,7 +74,8 @@ check whether it could happen there and act on it.
   event received" ([notifications](notifications.md)); opening it opens the package.
 - **SH-7** **Verify locally**, at the top right of the shared Warning (the receiving plant's Site
   Admins and Managers, while "Not checked"), starts the **local check**: "Being checked", with no
-  action yet and **Add action**. A local action has a description, 1 to 5 assignees among the
+  action yet and **Add action**. Once started, the local check (actions, answer, history) is a
+  column on the right of the shared Warning (below it on phones). A local action has a description, 1 to 5 assignees among the
   plant's people with an event role, a due date and a status (On Going, Completed, Cancelled); the
   checkers add, edit and cancel actions; an assignee completes their own. Saving with something
   missing is refused next to the field: "Describe the action.", "Choose 1 to 5 assignees.",
