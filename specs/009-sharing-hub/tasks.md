@@ -61,6 +61,13 @@ checked with the spec's acceptance scenarios through the launcher.
 
 ---
 
+## Phase 6: Review remarks — Share to Hub next to Print
+
+- [X] T009 In `apps/event-reporting/src/communications/CommunicationView.jsx`: Share to Hub in the
+  toolbar, next to Print; apply SH-1 to `specs/capabilities/sharing-hub.md`; check scenario 1 (SH-1)
+
+---
+
 ## Phase 4: Apply the change to the capabilities
 
 - [X] T006 Create `specs/capabilities/sharing-hub.md` (SH-1 to SH-9, scenarios, Decisions) and apply

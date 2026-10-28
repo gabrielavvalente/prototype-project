@@ -21,8 +21,8 @@ checks whether it could happen there and acts on it.
 ### Sharing
 
 - **SH-1** A published Safety Warning ([safety communication](safety-communication.md) SC-7) can be
-  shared to other plants with **Share to Hub**, shown on the Warning to the event's plan owners and
-  to the Site Admins of the event's plant — nobody else.
+  shared to other plants with **Share to Hub**, next to the Warning's **Print** button, shown to the
+  event's plan owners and to the Site Admins of the event's plant — nobody else.
 - **SH-2** **Share to Hub** opens "Who should receive it?": **Regions**, **Countries**,
   **Businesses** and **Plants**, each a multiple choice (the event's own plant is not offered).
   A plant is reached when it matches every region, country and business chosen (any value within

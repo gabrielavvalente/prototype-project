@@ -4572,3 +4572,10 @@ a.step-link:hover {
   border-radius: var(--radius);
   background: var(--color-surface);
 }
+
+/* Share to Hub next to Print (009 remark). */
+.communication-toolbar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

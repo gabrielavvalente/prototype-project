@@ -6,7 +6,8 @@
 
 **Input**: User description: "Event Sharing Hub" — the Event Sharing Hub of the sources (feature 13:
 Share to Hub with a perimeter, an anonymised package, subscriptions, a Local Sharing Inbox, Verify
-Locally), with the open points decided with the user on 2026-10-26.
+Locally), with the open points decided with the user on 2026-10-26. Review remark (2026-10-28): the
+Share to Hub button sits next to the Print button.
 
 **Capabilities**: new: `specs/capabilities/sharing-hub.md` (prefix SH); changed:
 `specs/capabilities/event-library.md` (EL-1), `specs/capabilities/notifications.md` (NT-1, NT-3,
@@ -39,8 +40,8 @@ check whether it could happen there and act on it.
 ### Added — `sharing-hub.md`
 
 - **SH-1** A published Safety Warning ([safety communication](safety-communication.md) SC-7) can be
-  shared to other plants with **Share to Hub**, shown on the Warning to the event's plan owners and
-  to the Site Admins of the event's plant — nobody else.
+  shared to other plants with **Share to Hub**, next to the Warning's **Print** button, shown to the
+  event's plan owners and to the Site Admins of the event's plant — nobody else.
 - **SH-2** **Share to Hub** opens "Who should receive it?": **Regions**, **Countries**,
   **Businesses** and **Plants**, each a multiple choice (the event's own plant is not offered).
   A plant is reached when it matches every region, country and business chosen (any value within
