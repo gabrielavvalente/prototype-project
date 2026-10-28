@@ -140,7 +140,8 @@ and phase (except Submission, always required), a Control Panel level may mark t
 - A Central setting applies to every plant; a Cluster or Local setting to its plants.
 - A phase is required for a plant when at least one applying setting requires it; a higher level
   (Central > Cluster > Local) requiring it locks it for the lower levels.
-- A required Review comes with its reviewers (Managers or Site Admins).
+- A required Review has the reviewers (Managers or Site Admins) that every level — Central, Cluster,
+  Local — chose for its plants, added together.
 - Root cause analysis can be required only where Review is required too (Actions and Validation
   can be required without Review).
 

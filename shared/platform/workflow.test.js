@@ -5,8 +5,12 @@ import {
   canEditSetting,
   cellStateFor,
   isOnlySubmission,
+  canChooseReviewers,
+  hasNoReviewer,
   levelLabel,
+  ownReviewerChoices,
   resultingWorkflow,
+  reviewersAt,
   validReviewers,
   workflowForEvent,
 } from './workflow.js';
@@ -131,5 +135,41 @@ describe('the critical row (012 WF-11, WF-13, WF-5a)', () => {
     expect(levelLabel('pillar-env', 'critical')).toBe('SIP');
     expect(levelLabel('pillar-ir', 'critical')).toBe('SPL/HCL');
     expect(levelLabel('pillar-hs', 'TF2')).toBe('TF2');
+  });
+});
+
+describe('reviewers chosen at every level (013 WF-6a, WF-8, WF-11)', () => {
+  const reviewers = (id, scopeLevel, plantIds, authorId, reviewerIds) => ({ ...setting(id, 'TF2', 'reviewers', scopeLevel, plantIds, authorId, reviewerIds) });
+  const base = [
+    setting('c-TF2', 'TF2', 'review', 'central', ALL, 'user-ludovic'),
+    reviewers('r-central', 'central', ALL, 'user-ludovic', ['user-carla', 'user-felix']),
+    reviewers('r-lyon', 'local', ['plant-lyon'], 'user-eva', ['user-lucas']),
+  ];
+  const at = (plantId) => ({ pillarId: 'pillar-hs', levelCode: 'TF2', plantId });
+
+  it('adds the reviewers of every level together, for the plants they cover', () => {
+    expect(reviewersAt(base, at('plant-lyon'))).toEqual(['user-carla', 'user-felix', 'user-lucas']);
+    expect(reviewersAt(base, at('plant-porto'))).toEqual(['user-carla', 'user-felix']);
+    const lyon = workflowForEvent(base, users, { ...at('plant-lyon') });
+    expect(lyon.phases.review.reviewerIds).toEqual(['user-carla', 'user-lucas']);
+    // A reviewers choice is never a phase of the event.
+    expect(Object.keys(resultingWorkflow(base, at('plant-lyon')))).not.toContain('reviewers');
+  });
+
+  it('lets every level choose where Review is Required for its plants', () => {
+    expect(canChooseReviewers(byId('user-eva'), base, { pillarId: 'pillar-hs', levelCode: 'TF2' })).toBe(true);
+    expect(canChooseReviewers(byId('user-eva'), base, { pillarId: 'pillar-hs', levelCode: 'TF5' })).toBe(false);
+    expect(ownReviewerChoices(byId('user-carla'), base, { pillarId: 'pillar-hs', levelCode: 'TF2' }).map((item) => item.id)).toEqual(['r-lyon']);
+    expect(ownReviewerChoices(byId('user-lucas'), base, { pillarId: 'pillar-hs', levelCode: 'TF2' })).toEqual([]);
+  });
+
+  it('warns about a Required Review nobody can do at a plant', () => {
+    const none = [setting('c-TF2', 'TF2', 'review', 'central', ALL, 'user-ludovic')];
+    expect(hasNoReviewer(none, users, at('plant-lyon'))).toBe(true);
+    expect(hasNoReviewer(base, users, at('plant-lyon'))).toBe(false);
+    // Felix is at Curitiba: Carla cannot review there either.
+    expect(hasNoReviewer(base, users, at('plant-porto'))).toBe(true);
+    expect(hasNoReviewer(base, users, at('plant-curitiba'))).toBe(false);
+    expect(hasNoReviewer([], users, at('plant-lyon'))).toBe(false);
   });
 });

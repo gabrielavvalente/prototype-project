@@ -1,15 +1,24 @@
 import { useCallback, useState } from 'react';
 import { useApp } from '../AppContext.js';
-import { saveWorkflowSetting } from '../../../../shared/platform/platformData.js';
+import { saveReviewers, saveWorkflowSetting } from '../../../../shared/platform/platformData.js';
 import { LEVEL_LABELS } from '../../../../shared/platform/permissions.js';
-import { cellStateFor, CONFIGURABLE_PHASES, CRITICAL_PHASES, levelLabel, PHASE_LABELS } from '../../../../shared/platform/workflow.js';
+import {
+  canChooseReviewers,
+  cellStateFor,
+  CONFIGURABLE_PHASES,
+  CRITICAL_PHASES,
+  levelLabel,
+  ownReviewerChoices,
+  PHASE_LABELS,
+} from '../../../../shared/platform/workflow.js';
 import Icon from '../shell/Icon.jsx';
 import ReviewersPicker from './ReviewersPicker.jsx';
 import { formatDate, userName } from './workflowText.js';
 
 // Settings view (FR-006, FR-008, FR-009, FR-010): one row per level, one column per phase.
 // The user switches phases of their own level; what a higher level requires is locked. The
-// critical row sets only the phases after the review (012 WF-13).
+// critical row sets only the phases after the review (012 WF-13). Every level chooses reviewers for
+// its plants wherever Review is Required there, even when a higher level locks it (013 WF-6a).
 export default function SettingsGrid({ pillar, role, levels, settings, onSaved }) {
   const { user, users } = useApp();
   const [picker, setPicker] = useState(null); // { levelCode, initialIds } while choosing reviewers
@@ -27,10 +36,10 @@ export default function SettingsGrid({ pillar, role, levels, settings, onSaved }
     return window.confirm(`${names} set this. They will be notified of your change.`);
   }
 
-  async function save(levelCode, phase, required, reviewerIds = []) {
+  async function save(levelCode, phase, required) {
     setError('');
     try {
-      await saveWorkflowSetting(user, { pillarId: pillar.id, levelCode, phase, required, reviewerIds });
+      await saveWorkflowSetting(user, { pillarId: pillar.id, levelCode, phase, required });
       onSaved(`Saved — ${levelLabel(pillar.id, levelCode)} ${PHASE_LABELS[phase]} is now ${required ? 'Required' : 'Optional'}. Applies to new events.`);
     } catch (saveError) {
       setError(saveError.message);
@@ -41,18 +50,38 @@ export default function SettingsGrid({ pillar, role, levels, settings, onSaved }
     if (!confirmOthers(cell.mine)) {
       return;
     }
-    const turningOn = cell.state === 'optional';
-    if (turningOn && phase === 'review') {
-      setPicker({ levelCode, initialIds: [] });
-    } else {
-      save(levelCode, phase, turningOn);
+    save(levelCode, phase, cell.state === 'optional');
+  }
+
+  function editReviewers(levelCode) {
+    const mine = ownReviewerChoices(user, settings, { pillarId: pillar.id, levelCode });
+    if (confirmOthers(mine)) {
+      setPicker({ levelCode, initialIds: mine.flatMap((setting) => setting.reviewerIds) });
     }
   }
 
-  function editReviewers(levelCode, cell) {
-    if (confirmOthers(cell.mine)) {
-      setPicker({ levelCode, initialIds: cell.mine.flatMap((setting) => setting.reviewerIds) });
+  async function chooseReviewers(levelCode, reviewerIds) {
+    setPicker(null);
+    setError('');
+    try {
+      await saveReviewers(user, { pillarId: pillar.id, levelCode, reviewerIds });
+      const names = reviewerIds.map((id) => userName(users, id)).join(', ') || 'none';
+      onSaved(`Saved — ${levelLabel(pillar.id, levelCode)} reviewers for your plants: ${names}. Applies to new events.`);
+    } catch (saveError) {
+      setError(saveError.message);
     }
+  }
+
+  // "Reviewers for your plants: N" on a Review Required at one of the user's plants (013 WF-6a).
+  function reviewersButton(level) {
+    if (!canChooseReviewers(user, settings, { pillarId: pillar.id, levelCode: level.code })) return null;
+    const count = new Set(ownReviewerChoices(user, settings, { pillarId: pillar.id, levelCode: level.code }).flatMap((setting) => setting.reviewerIds)).size;
+    return (
+      <button type="button" className="button--link cell-link" onClick={() => editReviewers(level.code)}>
+        Reviewers for your plants: {count}
+        <span className="visually-hidden"> ({level.shownCode})</span>
+      </button>
+    );
   }
 
   function renderCell(level, phase) {
@@ -70,13 +99,13 @@ export default function SettingsGrid({ pillar, role, levels, settings, onSaved }
             <small>
               {userName(users, source.authorId)}, {formatDate(source.updatedAt)}
             </small>
+            {phase === 'review' && reviewersButton(level)}
           </span>
         </div>
       );
     }
     const on = cell.state === 'mine';
     const othersAuthor = cell.mine.find((setting) => setting.authorId !== user.id);
-    const reviewerCount = new Set(cell.mine.flatMap((setting) => setting.reviewerIds)).size;
     return (
       <div className="cell-switch">
         <button
@@ -92,11 +121,7 @@ export default function SettingsGrid({ pillar, role, levels, settings, onSaved }
             {PHASE_LABELS[phase]} for {level.shownCode}
           </span>
         </button>
-        {on && phase === 'review' && (
-          <button type="button" className="button--link cell-link" onClick={() => editReviewers(level.code, cell)}>
-            {reviewerCount} reviewer{reviewerCount === 1 ? '' : 's'}
-          </button>
-        )}
+        {on && phase === 'review' && reviewersButton(level)}
         {othersAuthor && <small>Set by {userName(users, othersAuthor.authorId)}</small>}
       </div>
     );
@@ -153,10 +178,7 @@ export default function SettingsGrid({ pillar, role, levels, settings, onSaved }
           levelCode={picker.levelCode}
           initialIds={picker.initialIds}
           onClose={closePicker}
-          onDone={(reviewerIds) => {
-            setPicker(null);
-            save(picker.levelCode, 'review', true, reviewerIds);
-          }}
+          onDone={(reviewerIds) => chooseReviewers(picker.levelCode, reviewerIds)}
         />
       )}
     </>

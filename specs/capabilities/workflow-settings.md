@@ -45,10 +45,17 @@ Reporting gives every new event the resulting workflow.
 
 ### Reviewers
 
-- **WF-6** Making **Review** Required opens "Reviewers for <level>": the Managers and Site Admins
-  who can see the pillar at one of the person's plants (name, role, plants), as checkboxes. The
-  button reads "Choose at least one reviewer" (disabled) until one is chosen, then "Done — N
-  selected". A Required Review cell shows "N reviewers", which reopens the list to change them.
+- **WF-6** Making **Review** Required saves it at once, like the other phases (WF-3), without
+  choosing reviewers: a higher level may leave them to the plants (WF-6a).
+- **WF-6a** **Reviewers for your plants**: on a Review cell Required at one of the person's plants —
+  by their level or a higher one (locked) — the person sees "Reviewers for your plants: N" (N, the
+  reviewers their level chose there), which opens "Reviewers for <level>": the Managers and Site
+  Admins who can see the pillar at one of the person's plants, as checkboxes, with the hint "They
+  are added to the reviewers chosen by the other levels." **Save — N selected** (or **Save — no
+  reviewers**) keeps the choice for the person's level and plants: "Saved — <level> reviewers for
+  your plants: <names | none>. Applies to new events.". A choice made by a colleague of the same
+  level asks first and notifies them (WF-4, the setting named "Reviewers"). Where Review is
+  Optional for all the person's plants, no reviewers are offered.
 - **WF-7** When saved reviewers can no longer see the pillar at any of the plants, the list warns
   "N saved reviewer(s) no longer have access and will be removed." and saving drops them.
 
@@ -56,10 +63,12 @@ Reporting gives every new event the resulting workflow.
 
 - **WF-8** The **Result per plant** view lets the person choose one of their plants (all plants
   for Central) and shows each level × phase as **Required** with a badge of the highest level
-  requiring it (Central > Cluster > Local, "+N" when several), or **Optional**.
+  requiring it (Central > Cluster > Local, "+N" when several), or **Optional**. A Required Review
+  with no reviewer who can see that plant shows "No reviewer".
 - **WF-9** Opening a cell lists every setting requiring it there: level and plants, "Set by <name>
-  on <date>", and for Review its reviewers, with "Cannot see <plant>" next to a reviewer who cannot
-  see that plant. An Optional cell says "Optional: no level requires this phase here, so it is
+  on <date>"; for Review, then **Reviewers** by the level that chose them ("<Level> <plants>",
+  "Set by <name> on <date>", the names, with "Cannot see <plant>" next to a reviewer who cannot see
+  that plant), or "No reviewer chosen for <plant> yet.". An Optional cell says "Optional: no level requires this phase here, so it is
   skipped."
 - **WF-10** Choosing a level row shows "Path of a <level> event at <plant>": the phases in order,
   skipped ones crossed out, ending with "Closed", or "Closed after submission" when only
@@ -70,13 +79,14 @@ Reporting gives every new event the resulting workflow.
 ### Effect on events
 
 - **WF-11** Each submitted event keeps the workflow in force at its submission (domain Workflow):
-  the required phases and the reviewers — the reviewers of every setting requiring Review there,
-  limited to Managers and Site Admins who can see the event's plant and pillar — and the critical
+  the required phases and the reviewers — the reviewers chosen at every level covering its plant,
+  added together (WF-6a), limited to Managers and Site Admins who can see the event's plant and
+  pillar — and the critical
   row's required phases, applied if its review flags it (WF-13). Changing a setting never changes
   existing events.
 - **WF-12** Every change writes an audit entry ([workspace](control-panel-workspace.md) CPW-6):
-  "Made Required" (Optional → Required, or "Required (reviewers: …)" for Review), "Made Optional"
-  or "Changed" (reviewers).
+  "Made Required" (Optional → Required), "Made Optional", or for a reviewers choice "<level> ·
+  Reviewers", "Changed": "<names>" → "<names>" ("No reviewers" when empty).
 
 ### Critical row
 
@@ -104,9 +114,16 @@ TF1–TF2 at Central by Ludovic Costa, Validation TF1 at Lyon by Eva Novak).
    analysis is now Required. Applies to new events." In Result per plant, Lyon and Porto show TF2
    Root cause analysis Required with a Cluster badge; for Pascal Fischer (Cluster Lyon,
    Curitiba), Curitiba shows it Optional. (WF-3, WF-8)
-4. **Reviewers required** — Lucas switches TF5 Review on: the reviewers list offers Carla Mendes,
-   Diego Laurent, Eva Novak and Lucas Weber (not Felix Tanaka, who is at Curitiba); Done stays
-   disabled until one is chosen. After choosing Carla, the cell shows "1 reviewer". (WF-6)
+4. **Reviewers at every level** — Eva Novak (Local Lyon) sees TF2 Review "Required by Central"
+   and "Reviewers for your plants: 0"; the list offers Carla Mendes, Diego Laurent, Eva Novak and
+   Lucas Weber (not Felix Tanaka, at Curitiba); she saves Lucas Weber: "Saved — TF2 reviewers for
+   your plants: Lucas Weber. Applies to new events.". A TF2 submitted at Lyon then has Carla,
+   Diego, Eva and Lucas as reviewers. Lucas (Cluster) switches TF5 Review on: no list opens, and
+   Result per plant shows "No reviewer" at Lyon and Porto until Carla (Local Lyon) chooses herself
+   for TF5 — Porto still warns. Carla then adds Diego to TF2's: "Eva Novak set this. They will be
+   notified of your change.", and Eva gets "Carla Mendes changed your Reviewers setting for TF2
+   (Health & Safety, Local Lyon): Lucas Weber → Lucas Weber, Diego Laurent.". (WF-6, WF-6a, WF-8,
+   WF-11, WF-12)
 5. **A colleague's setting** — Carla Mendes (Local Lyon) sees TF1 Validation on, "Set by Eva
    Novak". Switching it off asks "Eva Novak set this. They will be notified of your change."; after
    confirming, Eva's bell shows 1 unread: "Carla Mendes changed your Validation setting for TF1
@@ -120,8 +137,9 @@ TF1–TF2 at Central by Ludovic Costa, Validation TF1 at Lyon by Eva Novak).
 8. **Existing events keep their workflow** — After scenario 3, Ana Ribeiro submits a TF2 at Lyon:
    its steps include Root cause analysis; `TF-26-0003` (submitted before) does not. (WF-11)
 9. **Cell details** — Ludovic opens Lyon TF1 Review: "Central", "Set by Ludovic Costa on 20 Oct
-   2026", reviewers Carla Mendes, Eva Novak, Felix Tanaka ("Cannot see Lyon"), Diego
-   Laurent. (WF-9)
+   2026", then Reviewers: Central — Carla Mendes, Eva Novak, Felix Tanaka ("Cannot see Lyon"),
+   Diego Laurent. After scenario 4, Lyon TF2 Review also lists "Local Lyon — Lucas Weber", set by
+   Eva Novak. (WF-9)
 10. **Analysis needs Review** — In Environment, Lucas switches EvE5 Root cause analysis on (EvE5
     has no Review): refused with "Make Review Required for EvE5 first: Root cause analysis needs a
     review (missing at Lyon, Porto).". Sergio Martins switches SRE1 Review off: refused, "Review stays Required
@@ -145,4 +163,5 @@ TF1–TF2 at Central by Ludovic Costa, Validation TF1 at Lyon by Eva Novak).
 | Who may change a setting | Only people at the same level with an overlapping perimeter (a higher level only adds Required on top). |
 | What is stored | Only Required settings; Optional is the absence of a setting. |
 | Existing events | Keep the workflow of their submission. |
+| Reviewers | Every level chooses reviewers for its plants, even where a higher level requires Review; they are added together; making Review Required needs none. |
 | Critical events | One more row per pillar (SIP/HCI, SIP, SPL/HCL; none for Industrial Hygiene) adds Root cause analysis, Actions or Validation when the review flags the event; nobody is asked whether to analyse further. |

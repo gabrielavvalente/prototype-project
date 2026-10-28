@@ -96,6 +96,58 @@ export function validReviewers(users, { pillarId, plantIds }) {
 const keptSources = (sources) =>
   sources.map((setting) => ({ settingId: setting.id, scopeLevel: setting.scopeLevel, authorId: setting.authorId }));
 
+// Reviewers chosen by a level for its plants (013 WF-6a): a setting of their own, phase
+// 'reviewers', kept per level row like the Required settings but never a phase of the event.
+export const REVIEWERS = 'reviewers';
+export const SETTING_LABELS = { ...PHASE_LABELS, [REVIEWERS]: 'Reviewers' };
+
+// Every reviewers choice applying at a plant for one level row, highest level first. Review settings
+// saved before 013 still holding reviewers count as choices too.
+export function reviewerChoices(settings, { pillarId, levelCode, plantId }) {
+  return settings
+    .filter(
+      (setting) =>
+        setting.pillarId === pillarId &&
+        setting.levelCode === levelCode &&
+        (setting.phase === REVIEWERS || setting.phase === 'review') &&
+        (setting.reviewerIds || []).length > 0 &&
+        settingApplies(setting, plantId),
+    )
+    .sort(byLevelDescending);
+}
+
+// The reviewers of every level, added together (013 WF-11).
+export function reviewersAt(settings, cell) {
+  return [...new Set(reviewerChoices(settings, cell).flatMap((setting) => setting.reviewerIds))];
+}
+
+// A Required Review with nobody able to review at that plant (013 WF-8).
+export function hasNoReviewer(settings, users, { pillarId, levelCode, plantId }) {
+  if (!resultingWorkflow(settings, { pillarId, levelCode, plantId }).review.required) return false;
+  const ids = reviewersAt(settings, { pillarId, levelCode, plantId });
+  return !users.some((user) => ids.includes(user.id) && canReviewAt(user, pillarId, plantId));
+}
+
+// The reviewers choices of the user's level on one level row (theirs or a colleague's).
+export function ownReviewerChoices(user, settings, { pillarId, levelCode }) {
+  return settings.filter(
+    (setting) => setting.phase === REVIEWERS && setting.pillarId === pillarId && setting.levelCode === levelCode && canEditSetting(user, setting),
+  );
+}
+
+// Reviewers can be chosen where Review is Required at one of the user's plants (013 WF-6a).
+export function canChooseReviewers(user, settings, { pillarId, levelCode }) {
+  const role = getRole(user, pillarId);
+  if (!role) return false;
+  return settings.some(
+    (setting) =>
+      setting.phase === 'review' &&
+      setting.pillarId === pillarId &&
+      setting.levelCode === levelCode &&
+      (setting.scopeLevel === 'central' || role.level === 'central' || plantsOverlap(setting.plantIds, role.plantIds)),
+  );
+}
+
 // The workflow kept on an event at submission (FR-012, research R6), with its critical row's
 // phases, applied if the review flags it (012 WF-11).
 export function workflowForEvent(settings, users, event) {
@@ -109,8 +161,8 @@ export function workflowForEvent(settings, users, event) {
   const critical = Object.fromEntries(
     CRITICAL_PHASES.map((phase) => [phase, { required: criticalResult[phase].required, sources: keptSources(criticalResult[phase].sources) }]),
   );
-  // Reviewers of every setting requiring Review, limited to people who can see the event.
-  const reviewerIds = new Set(result.review.sources.flatMap((setting) => setting.reviewerIds));
+  // The reviewers chosen at every level covering the plant, limited to people who can see the event.
+  const reviewerIds = new Set(reviewersAt(settings, event));
   phases.review.reviewerIds = users
     .filter((user) => reviewerIds.has(user.id) && canReviewAt(user, event.pillarId, event.plantId))
     .map((user) => user.id);

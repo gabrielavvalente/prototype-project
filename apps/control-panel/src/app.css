@@ -1370,3 +1370,9 @@
   max-width: 420px;
   margin-bottom: var(--space-5);
 }
+
+/* Result per plant: a Required Review nobody can do at the plant (013 WF-8). */
+.tag--warning {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}

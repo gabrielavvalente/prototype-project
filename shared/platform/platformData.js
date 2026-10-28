@@ -9,7 +9,7 @@ import { getPillarIdsForPlant, getPlantName } from './organization.js';
 import { getRole, LEVEL_LABELS } from './permissions.js';
 import * as sampleData from './sampleData.js';
 import { getAll, getAllByIndex, openDatabase, runTransaction } from './storage.js';
-import { analysisWithoutReview, cellStateFor, levelLabel, PHASE_LABELS } from './workflow.js';
+import { analysisWithoutReview, canChooseReviewers, cellStateFor, levelLabel, ownReviewerChoices, REVIEWERS, SETTING_LABELS } from './workflow.js';
 
 const DATABASE_NAME = 'platform';
 // Version 2 adds the notification stores (007); the upgrade only creates missing stores.
@@ -124,15 +124,16 @@ export async function getWorkflowSettings(pillarId) {
 }
 
 // Readable value of a cell for the audit trail and notifications.
-function describeSetting(setting, users) {
+function describeSetting(setting, users, phase) {
+  const names = (setting?.reviewerIds || []).map((id) => users.find((user) => user.id === id)?.name ?? id);
+  // A reviewers choice reads as its names (013 WF-12).
+  if (phase === REVIEWERS) {
+    return names.length ? names.join(', ') : 'No reviewers';
+  }
   if (!setting) {
     return 'Optional';
   }
-  if (setting.phase !== 'review') {
-    return 'Required';
-  }
-  const names = setting.reviewerIds.map((id) => users.find((user) => user.id === id)?.name ?? id);
-  return `Required (reviewers: ${names.join(', ')})`;
+  return setting.phase === 'review' && names.length ? `Required (reviewers: ${names.join(', ')})` : 'Required';
 }
 
 function describeScope(setting, organization) {
@@ -143,20 +144,17 @@ function describeScope(setting, organization) {
   return `${LEVEL_LABELS[setting.scopeLevel]} ${plants}`;
 }
 
-// Makes a phase Required or Optional at the user's level, or changes its reviewers.
-// change = { pillarId, levelCode, phase, required, reviewerIds }. Settings of the user's level made
-// by colleagues are changed too (option A); their authors are notified. One transaction writes the
+// Makes a phase Required or Optional at the user's level. change = { pillarId, levelCode, phase,
+// required }; Review no longer carries reviewers (013 WF-6). Settings of the user's level made by
+// colleagues are changed too (option A); their authors are notified. One transaction writes the
 // settings, the audit entries and the notifications.
-export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, required, reviewerIds = [] }) {
+export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, required }) {
   const role = getRole(user, pillarId);
   if (phase === 'submission') {
     throw new Error('Submission is always required.');
   }
   if (!role) {
     throw new Error('You have no Control Panel role on this pillar.');
-  }
-  if (required && phase === 'review' && reviewerIds.length === 0) {
-    throw new Error('Choose at least one reviewer.');
   }
   const db = await openPlatform();
   const [settings, platform] = await Promise.all([getWorkflowSettings(pillarId), loadPlatform()]);
@@ -165,12 +163,11 @@ export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, re
     throw new Error('A higher level requires this phase; it cannot be changed here.');
   }
   const now = new Date().toISOString();
-  const pillar = platform.reference.find((item) => item.id === pillarId);
 
   // Each changed setting: { before, after } where after is null when the setting is removed.
   const changes = cell.mine.map((setting) => ({
     before: setting,
-    after: required ? { ...setting, reviewerIds, authorId: user.id, updatedAt: now } : null,
+    after: required ? { ...setting, authorId: user.id, updatedAt: now } : null,
   }));
   if (required && cell.mine.length === 0) {
     const after = {
@@ -180,7 +177,7 @@ export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, re
       phase,
       scopeLevel: role.level,
       plantIds: role.plantIds,
-      reviewerIds,
+      reviewerIds: [],
       authorId: user.id,
       updatedAt: now,
     };
@@ -201,7 +198,38 @@ export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, re
     );
   }
 
-  await runTransaction(db, ['workflowSettings', 'audit', 'notifications'], 'readwrite', (stores) => {
+  await writeSettingChanges(db, user, platform, { pillarId, levelCode, phase }, changes, now);
+}
+
+// The reviewers the user's level chooses for its plants on one level row, added to those of the
+// other levels (013 WF-6a). An empty choice removes it. Colleagues of the same level are notified.
+export async function saveReviewers(user, { pillarId, levelCode, reviewerIds }) {
+  const role = getRole(user, pillarId);
+  if (!role) {
+    throw new Error('You have no Control Panel role on this pillar.');
+  }
+  const db = await openPlatform();
+  const [settings, platform] = await Promise.all([getWorkflowSettings(pillarId), loadPlatform()]);
+  if (!canChooseReviewers(user, settings, { pillarId, levelCode })) {
+    throw new Error('Review is not Required for your plants on this level.');
+  }
+  const now = new Date().toISOString();
+  const mine = ownReviewerChoices(user, settings, { pillarId, levelCode });
+  const keep = reviewerIds.length > 0;
+  const changes = mine.map((setting) => ({ before: setting, after: keep ? { ...setting, reviewerIds, authorId: user.id, updatedAt: now } : null }));
+  if (keep && mine.length === 0) {
+    changes.push({
+      before: null,
+      after: { id: newId(), pillarId, levelCode, phase: REVIEWERS, scopeLevel: role.level, plantIds: role.plantIds, reviewerIds, authorId: user.id, updatedAt: now },
+    });
+  }
+  await writeSettingChanges(db, user, platform, { pillarId, levelCode, phase: REVIEWERS }, changes, now);
+}
+
+// Writes setting changes with their audit entries and the notifications to colleagues, at once.
+function writeSettingChanges(db, user, platform, { pillarId, levelCode, phase }, changes, now) {
+  const pillar = platform.reference.find((item) => item.id === pillarId);
+  return runTransaction(db, ['workflowSettings', 'audit', 'notifications'], 'readwrite', (stores) => {
     for (const { before, after } of changes) {
       const setting = after || before;
       if (after) {
@@ -209,8 +237,8 @@ export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, re
       } else {
         stores.workflowSettings.delete(before.id);
       }
-      const beforeText = describeSetting(before, platform.users);
-      const afterText = describeSetting(after, platform.users);
+      const beforeText = describeSetting(before, platform.users, phase);
+      const afterText = describeSetting(after, platform.users, phase);
       stores.audit.put({
         id: newId(),
         pillarId,
@@ -219,8 +247,8 @@ export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, re
         scopeLevel: setting.scopeLevel,
         plantIds: setting.plantIds,
         subject: 'workflow',
-        targetId: `${levelLabel(pillarId, levelCode)} · ${PHASE_LABELS[phase]}`,
-        action: !after ? 'optional' : !before ? 'required' : 'reviewers',
+        targetId: `${levelLabel(pillarId, levelCode)} · ${SETTING_LABELS[phase]}`,
+        action: phase === REVIEWERS ? 'reviewers' : !after ? 'optional' : !before ? 'required' : 'reviewers',
         before: beforeText,
         after: afterText,
       });
@@ -233,7 +261,7 @@ export async function saveWorkflowSetting(user, { pillarId, levelCode, phase, re
           pillarId,
           settingId: setting.id,
           text:
-            `${user.name} changed your ${PHASE_LABELS[phase]} setting for ${levelLabel(pillarId, levelCode)} ` +
+            `${user.name} changed your ${SETTING_LABELS[phase]} setting for ${levelLabel(pillarId, levelCode)} ` +
             `(${pillar.label}, ${describeScope(setting, platform.organization)}): ${beforeText} → ${afterText}.`,
         });
       }
