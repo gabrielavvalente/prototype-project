@@ -71,7 +71,7 @@ describe('validation (005)', () => {
     expect(event.validations[0]).toMatchObject({ effective: false, reason: 'Still unfixed' });
     expect(currentStep(event)).toBe('actions');
     expect(alerts.map((alert) => [alert.recipientId, alert.type, alert.work])).toEqual([
-      ['user-diego', 'Action plan not effective', true],
+      ['user-diego', 'Event sent back for rework', true],
       [event.reporterId, 'Action plan not effective', false],
     ]);
   });

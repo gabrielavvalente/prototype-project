@@ -6,7 +6,9 @@
 
 **Input**: User description: "Review and governance (the rest of it)" — the Final Review, Rework,
 record immutability and Record Historian of the sources (Review and Governance feature, US-GOV-04
-to US-GOV-07), with the open points decided with the user on 2026-10-28.
+to US-GOV-07), with the open points decided with the user on 2026-10-28. Review remarks
+(2026-10-28): the question reads "Is this event closed? Were the actions effective?"; answering No
+alerts the plan owners with "Event sent back for rework".
 
 **Capabilities**: new: `specs/capabilities/record-historian.md` (prefix RH); changed:
 `specs/capabilities/validation.md` (VAL-2, VAL-3, VAL-5, VAL-6 and VAL-7 added),
@@ -26,6 +28,8 @@ audit.
 | Final Review | Our Validation step plays it; it keeps the name **Validation** everywhere | Review and Governance US-GOV-04 (a Final Review step) |
 | Final Risk Score | Not asked | Review and Governance FR-11 |
 | Confirmation | Closing needs "No additional actions are needed." ticked | Review and Governance FR-11 |
+| The question | "Is this event closed? Were the actions effective?" — Yes closes, No keeps the path back to Actions | User (review remark) |
+| Alert on No | The plan owners get "Event sent back for rework" (work); the reporter keeps "Action plan not effective" (information) | User (review remark) |
 | Roles | No Owner nor Final Reviewer: the validators (VAL-1) close and rework; the plan owners (AP-2) receive the rework | Review and Governance FR-2 (Owner, Final Reviewer at the review) |
 | Locking | An event closed by its validation is locked; only **Rework** by a validator reopens it, unlimited times; events closed earlier keep the optional analysis (RCA-18) | Review and Governance FR-12 to FR-14 |
 | Record Historian | A read-only, filterable log of the field changes made after the review, readable by everyone who can see the event | Review and Governance US-GOV-06 |
@@ -60,17 +64,25 @@ audit.
 
 ### Changed
 
-- **VAL-2** *(the Yes answer)* With Yes, "No additional actions are needed." must be ticked; Complete
-  validation without it is refused next to it: "Confirm that no additional actions are needed.".
-  *(was: no confirmation)*
+- **VAL-2** *(the question and the Yes answer)* The validators answer **"Is this event closed? Were
+  the actions effective?"** Yes / No ("Say whether this event is closed." when unanswered). With
+  Yes, "No additional actions are needed." must be ticked; Complete validation without it is
+  refused next to it: "Confirm that no additional actions are needed.". No asks "Why is it not
+  effective?" as before. *(was: "Is the action plan effective?", no confirmation)*
+- **VAL-4** *(the alert)* No sends the event back to Actions as a rework: the plan owners get "Event
+  sent back for rework" (work, never the validator who answered) and the reporter "Action plan not
+  effective" (information). *(was: "Action plan not effective" to the owners and the reporter)*
 - **VAL-3** **Yes** closes and locks the event (VAL-6), with the alerts of NT-3; the step shows
   "Validated as effective by <name> on <date>". *(was: closes it)*
 - **VAL-5** *(the history)* adds "Rework: <reason> (<name>)". *(was: validations only)*
 - **RCA-18** *(an exception)* … never on an event locked by its validation (VAL-6). *(was: every
   Closed event)*
-- **NT-2**, **NT-3**, **NT-4** *(a work alert)* "Event sent back for rework" (work) to the plan
-  owners at a rework (VAL-7), never to the validator who sent it; My notifications' Always on lists
-  five work alerts. *(was: four)*
+- **NT-2**, **NT-3**, **NT-4** *(the work alerts)* "Event sent back for rework" (work) to the plan
+  owners at a validation answered No (VAL-4) and at a rework (VAL-7), never to the validator;
+  "Action plan not effective" is an information alert to the reporter only ("On an event you
+  reported."). My notifications' Always on lists four work alerts: "Event to review", "Root cause
+  analysis assigned to you", "Action plan ready for validation", "Event sent back for rework".
+  *(was: "Action plan not effective" a work alert to the plan owners)*
 - **Domain**: the Glossary adds **Locked** ("an event closed by its validation: read-only until a
   rework") and **Record Historian**; the Capabilities table lists the record historian.
 
@@ -80,7 +92,8 @@ From freshly reset demo data (`specs/capabilities/platform-data.md`), after [val
 scenario 1's setup: `TF-26-0005` (TF1, Lyon; Review, Actions and Validation; reviewer and validator
 Carla Mendes) has its plan completed and Validation as its current step.
 
-1. **Confirmation** — Carla answers Yes and presses Complete validation without ticking. *Then* it is
+1. **Confirmation** — Carla reads "Is this event closed? Were the actions effective?", answers Yes
+   and presses Complete validation without ticking. *Then* it is
    refused with "Confirm that no additional actions are needed." and the page scrolls to it. She
    ticks it and completes. *Then* the event is Closed, the step shows "Validated as effective by
    Carla Mendes on …" and every step shows "This event is closed and locked. Only a rework can
@@ -99,8 +112,13 @@ Carla Mendes) has its plan completed and Validation as its current step.
    keeps only the status changes. Ana Ribeiro opens it read-only. (RH-1, RH-2)
 5. **Before the review** — `TF-26-0001` (Open, not reviewed): its Record Historian says "No change
    since the review.". (RH-1, RH-2)
-6. **My notifications** — Ana's Always on lists five work alerts, with "Event sent back for
-   rework". (NT-4)
+6. **My notifications** — Ana's Always on lists four work alerts, with "Event sent back for
+   rework" and without "Action plan not effective" (now an information switch). (NT-4)
+6b. **No is a rework** — On `TF-26-0005` reviewed and validated by Diego Laurent, analysed by Ana
+   Ribeiro (designated in the review; she owns the plan) and reported by Carla Mendes, Diego answers
+   No ("Rack still unstable") at Validation. *Then* Ana gets "Event sent back for rework", Carla gets
+   "Action plan not effective", Diego gets nothing, and the event is back at Actions. (VAL-4,
+   NT-3)
 7. **Phone and keyboard** — At 320px the Record Historian, its filters and Rework are usable without
    sideways scrolling, and with the keyboard. (Domain)
 

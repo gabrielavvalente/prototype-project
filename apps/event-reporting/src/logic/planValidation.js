@@ -18,7 +18,7 @@ export function lastValidation(event) {
 // answer = { effective: true | false | null, reason } — what is missing, as { field: message }.
 export function validateValidation(answer) {
   const errors = {};
-  if (typeof answer.effective !== 'boolean') errors.effective = 'Say whether the action plan is effective.';
+  if (typeof answer.effective !== 'boolean') errors.effective = 'Say whether this event is closed.';
   else if (!answer.effective && !answer.reason.trim()) errors.reason = 'Explain why it is not effective.';
   // Closing needs the confirmation that nothing more is needed (011 VAL-2).
   else if (answer.effective && !answer.noMoreActions) errors.noMoreActions = 'Confirm that no additional actions are needed.';
@@ -35,7 +35,8 @@ export function completeValidation(event, answer, userId, now, ownerIds) {
     return { event: closed, alerts: validationCandidates(closed, ownerIds) };
   }
   const reopened = { ...event, validations, status: 'In Progress', actionPlan: { ...event.actionPlan, completedBy: null, completedAt: null } };
-  return { event: reopened, alerts: validationCandidates(reopened, ownerIds) };
+  // Not effective is a rework: the owners get "Event sent back for rework", not the validator (011).
+  return { event: reopened, alerts: validationCandidates(reopened, ownerIds.filter((id) => id !== userId)) };
 }
 
 // Closed by an effective validation: nothing can change until a rework (011 VAL-6).

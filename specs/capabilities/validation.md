@@ -21,16 +21,17 @@ goes back to Actions for more corrective actions.
 - **VAL-1** The **validators** of an event are its reviewer; when its workflow has no review, the
   Managers who can see its plant and pillar.
 - **VAL-2** The **Validation** step shows every action of the plan read-only (the lines of AP-6)
-  and, for the validators while it is the current step, "Is the action plan effective?" Yes / No;
-  No asks "Why is it not effective?" (required); Yes asks "No additional actions are needed." to be
-  ticked; **Complete validation**. Missing answers are refused next to their field ("Say whether
-  the action plan is effective.", "Explain why it is not effective.", "Confirm that no additional
-  actions are needed."). Everyone else who can see the event reads it.
+  and, for the validators while it is the current step, "Is this event closed? Were the actions
+  effective?" Yes / No; No asks "Why is it not effective?" (required); Yes asks "No additional
+  actions are needed." to be ticked; **Complete validation**. Missing answers are refused next to
+  their field ("Say whether this event is closed.", "Explain why it is not effective.", "Confirm
+  that no additional actions are needed."). Everyone else who can see the event reads it.
 - **VAL-3** **Yes** closes and locks the event (Closed, VAL-6), with the alerts of
   [notifications](notifications.md) NT-3; the step shows "Validated as effective by <name> on
   <date>".
-- **VAL-4** **No** sends the event back to Actions (In Progress, current step Actions): the plan
-  opens again for its owners, who are alerted with its reporter (NT-3) and add corrective actions
+- **VAL-4** **No** sends the event back to Actions as a rework (In Progress, current step Actions):
+  the plan opens again for its owners, who get "Event sent back for rework" (never the validator who
+  answered) while the reporter gets "Action plan not effective" (NT-3), and add corrective actions
   (On Going at once, AP-9); once they are finished, the plan completes again (AP-12) and the event
   returns to Validation.
 - **VAL-5** Every validation is kept; the history shows "Validation: not effective — <reason> (<name>)",
@@ -53,8 +54,8 @@ completed and Validation as its current step.
 
 1. **Not effective** — Carla opens Validation: the three actions read-only; Complete validation with
    No and no reason is refused with "Explain why it is not effective."; with "The rack is still
-   unfixed at night" → the event is back at Actions (In Progress), Carla (owner) gets "Action plan
-   not effective", and the history shows "Validation: not effective — The rack is still unfixed at
+   unfixed at night" → the event is back at Actions (In Progress), Carla (owner, but the validator
+   who answered) gets no alert, and the history shows "Validation: not effective — The rack is still unfixed at
    night (Carla Mendes)". (VAL-2, VAL-4, VAL-5)
 2. **Effective** — Carla adds "Night check of the rack" for Ana (On Going at once); Ana
    completes it; the plan completes again and the event returns to Validation; Carla answers Yes

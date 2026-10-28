@@ -99,7 +99,7 @@ export default function ValidationStep({ event, onSaved }) {
         >
           <YesNoField
             id="effective"
-            label="Is the action plan effective?"
+            label="Is this event closed? Were the actions effective?"
             value={answer.effective}
             errors={errorsFor('effective')}
             onChange={(effective) => setAnswer((currentAnswer) => ({ ...currentAnswer, effective }))}

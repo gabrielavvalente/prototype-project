@@ -40,3 +40,15 @@ acceptance scenarios through the launcher.
 
 - [X] T007 `npm test` and `npm run build` in `apps/event-reporting/` and `apps/control-panel/`, then the
   scenarios through the launcher, at 320px and with the keyboard, with a clean console
+
+## Phase 5: Review remarks (2026-10-28)
+
+**Scenarios**: 1, 6, 6b
+
+- [X] T008 The question "Is this event closed? Were the actions effective?" and its message in
+  `events/ValidationStep.jsx` and `logic/planValidation.js`; No alerts the plan owners (never the
+  validator) with "Event sent back for rework" in `logic/notifications.js`; "Action plan not
+  effective" an information alert only in `shared/platform/notifications.js`; tests (VAL-2, VAL-4,
+  NT-2 to NT-4)
+- [X] T009 Apply the remarks to `specs/capabilities/validation.md` and `notifications.md`
+- [X] T010 `npm test` and `npm run build`, then scenarios 1, 6 and 6b through the launcher
