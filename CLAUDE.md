@@ -17,6 +17,8 @@ own `npm install`.
 
 ```bash
 cd launcher && npm run dev        # starts every app and serves them at http://localhost:5173/
+cd launcher && npm run build      # one static site in launcher/dist (hosted on Netlify: netlify.toml)
+cd launcher && npm run preview    # serves launcher/dist at http://localhost:4173/
 cd apps/<app> && npm test         # vitest run (event-reporting, control-panel)
 cd apps/<app> && npm run build
 npx vitest run src/logic/review.test.js                         # one test file (from the app folder)

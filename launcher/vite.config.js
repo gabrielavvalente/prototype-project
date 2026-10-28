@@ -19,4 +19,6 @@ export default defineConfig({
     proxy,
     fs: { allow: [launcherFolder, sharedFolder] },
   },
+  // The built site (npm run build) has the apps in dist/apps/: nothing to forward.
+  preview: { port: 4173, strictPort: true, proxy: {} },
 });

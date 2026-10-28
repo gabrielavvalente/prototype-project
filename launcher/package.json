@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "node start.js"
+    "dev": "node start.js",
+    "build": "node build.js",
+    "preview": "vite preview --port 4173 --strictPort"
   },
   "devDependencies": {
     "vite": "8.3.5"
