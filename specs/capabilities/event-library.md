@@ -13,9 +13,9 @@ with its workflow steps.
 
 ### Event workspace
 
-- **EL-1** "EVENT WORKSPACE" offers four pages — **Events**, **KPIs**, **Reports**, **Safety
-  communications** ([safety communication](safety-communication.md) SC-8) — and **Create event**
-  for those who can report. The first three show the events of the context (domain Visibility):
+- **EL-1** "EVENT WORKSPACE" offers five pages — **Events**, **KPIs**, **Reports**, **Safety
+  communications** ([safety communication](safety-communication.md) SC-8), **Sharing Hub**
+  ([sharing hub](sharing-hub.md) SH-5) — and **Create event** for those who can report. The first three show the events of the context (domain Visibility):
   submitted events plus the person's own drafts, never someone else's drafts. On phones the page
   names scroll sideways within their row.
 - **EL-2** One toolbar line: search ("Title or record number": title contains the text, or the

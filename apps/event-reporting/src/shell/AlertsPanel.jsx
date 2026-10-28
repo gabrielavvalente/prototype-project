@@ -4,6 +4,12 @@ import { formatRelativeTime } from '../logic/display.js';
 import Icon from './Icon.jsx';
 import Sheet from './Sheet.jsx';
 
+// A shared event shows its shared statement, never its title (written by the reporter).
+function sharedStatement({ alert, event }) {
+  const share = (event.hubShares || []).find((item) => item.plantIds.includes(alert.plantId));
+  return share ? share.package.content.statement.split(/\r?\n/)[0] : '';
+}
+
 // Notifications sheet: newest first, unread highlighted, "Mark all read" (FR-023, FR-043).
 // items: [{ alert, event }] already filtered to the user's current scope.
 export default function AlertsPanel({ items, onMarkRead, onClose }) {
@@ -13,7 +19,8 @@ export default function AlertsPanel({ items, onMarkRead, onClose }) {
   async function open({ alert, event }) {
     await onMarkRead([alert]);
     onClose();
-    navigate(`/events/${event.recordNumber || event.id}`);
+    // An alert about a shared event opens the package at the receiving plant (009 SH-6).
+    navigate(alert.plantId ? `/hub/${event.recordNumber}` : `/events/${event.recordNumber || event.id}`);
   }
 
   return (
@@ -47,7 +54,7 @@ export default function AlertsPanel({ items, onMarkRead, onClose }) {
                   <strong>
                     {item.alert.type}: {item.event.recordNumber}
                   </strong>
-                  <span className="field-hint">{item.event.title}</span>
+                  <span className="field-hint">{item.alert.plantId ? sharedStatement(item) : item.event.title}</span>
                 </span>
                 <span className="notification-time">
                   {formatRelativeTime(item.alert.createdAt)}

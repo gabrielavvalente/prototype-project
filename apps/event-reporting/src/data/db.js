@@ -7,7 +7,7 @@ import {
   loadPlatform,
   resetPlatformData,
 } from '../../../../shared/platform/platformData.js';
-import { deliverAlerts, submissionCandidates } from '../logic/notifications.js';
+import { deliverAlerts, sharedAlerts, submissionCandidates } from '../logic/notifications.js';
 import { formatRecordNumber, getCounterId } from '../logic/recordNumber.js';
 import { completeImmediateActions, getSubmittedStatus } from '../logic/submission.js';
 import * as sampleData from './sampleData.js';
@@ -195,15 +195,21 @@ export async function submitEvent({ users, workflow, ...args }) {
 // Saves a workflow step (taking the review, the decision, the root cause analysis, the plan) with
 // its alerts in one transaction. candidates: the stage's alerts (logic/notifications.js), delivered
 // for event.updatedBy (NT-1, NT-2). clearReviewAlerts: the review was just taken, so the other
-// reviewers' "Event to review" go and the taker's is read (NT-3, research R5).
-export async function saveWorkflowStep(event, candidates = [], { clearReviewAlerts = false } = {}) {
+// reviewers' "Event to review" go and the taker's is read (NT-3, research R5). sharedPlantIds: the
+// plants a share just reached, whose Site Admins and Managers are alerted (009 SH-6); actorId: who
+// acted when it is not event.updatedBy.
+export async function saveWorkflowStep(event, candidates = [], { clearReviewAlerts = false, sharedPlantIds = [], actorId } = {}) {
   const [{ users }, settings] = await Promise.all([loadPlatform(), getNotificationSettings()]);
-  const alerts = deliverAlerts(candidates, { event, actorId: event.updatedBy, users, settings });
+  const actor = actorId ?? event.updatedBy;
+  const alerts = [
+    ...deliverAlerts(candidates, { event, actorId: actor, users, settings }),
+    ...sharedAlerts(sharedPlantIds, { actorId: actor, users, settings }).map((alert) => ({ ...alert, createdAt: new Date().toISOString() })),
+  ];
   const db = await getDatabase();
   const tx = db.transaction(['events', 'alerts'], 'readwrite');
   tx.objectStore('events').put(event);
   for (const alert of alerts) {
-    tx.objectStore('alerts').put({ id: newId(), ...alert, eventId: event.id, createdAt: event.updatedAt });
+    tx.objectStore('alerts').put({ id: newId(), createdAt: event.updatedAt, ...alert, eventId: event.id });
   }
   if (clearReviewAlerts) {
     const store = tx.objectStore('alerts');

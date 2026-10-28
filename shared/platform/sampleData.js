@@ -82,6 +82,7 @@ const plants = [
     plantTypeLabel: 'Factory',
     countryFlag: '🇫🇷',
     countryName: 'France',
+    region: 'Europe',
   },
   {
     id: 'plant-curitiba',
@@ -92,6 +93,7 @@ const plants = [
     plantTypeLabel: 'Assembly plant',
     countryFlag: '🇧🇷',
     countryName: 'Brazil',
+    region: 'Latin America',
   },
   {
     id: 'plant-porto',
@@ -102,6 +104,7 @@ const plants = [
     plantTypeLabel: 'Distribution center',
     countryFlag: '🇵🇹',
     countryName: 'Portugal',
+    region: 'Europe',
   },
 ];
 

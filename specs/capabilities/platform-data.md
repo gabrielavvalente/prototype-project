@@ -32,11 +32,11 @@ reset, and the demo data itself, which every capability's acceptance scenarios s
 
 ### Organization
 
-| Business | Plant | Type | Country |
-|---|---|---|---|
-| Automotive Parts | Lyon | 🏭 Factory | 🇫🇷 France |
-| Automotive Parts | Curitiba | 🔧 Assembly plant | 🇧🇷 Brazil |
-| Packaging | Porto | 🏬 Distribution center | 🇵🇹 Portugal |
+| Business | Plant | Type | Country | Region |
+|---|---|---|---|---|
+| Automotive Parts | Lyon | 🏭 Factory | 🇫🇷 France | Europe |
+| Automotive Parts | Curitiba | 🔧 Assembly plant | 🇧🇷 Brazil | Latin America |
+| Packaging | Porto | 🏬 Distribution center | 🇵🇹 Portugal | Europe |
 
 Every plant has the same location tree, two nodes per level (2 departments × 2 workshops × 2 jobs
 × 2 workstations × 2 tasks):

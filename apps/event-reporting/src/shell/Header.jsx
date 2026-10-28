@@ -10,12 +10,14 @@ import AlertsPanel from './AlertsPanel.jsx';
 import Icon from './Icon.jsx';
 import ModuleHeader from './ModuleHeader.jsx';
 
-// The user's alerts whose event is in the current scope, newest first.
+// The user's alerts whose event is in the current scope, newest first; an alert about a shared
+// event belongs to the plant that received it (009 SH-6).
 async function loadAlerts(user, context) {
   const [alerts, events] = await Promise.all([getByIndex('alerts', 'recipientId', user.id), getAll('events')]);
+  const inScope = ({ alert, event }) => (alert.plantId ? alert.plantId === context.plantId : isEventVisible(user, context, event));
   return alerts
     .map((alert) => ({ alert, event: events.find((event) => event.id === alert.eventId) }))
-    .filter((item) => item.event && isEventVisible(user, context, item.event))
+    .filter((item) => item.event && inScope(item))
     .sort((a, b) => b.alert.createdAt.localeCompare(a.alert.createdAt));
 }
 

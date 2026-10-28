@@ -7,7 +7,9 @@ import { saveWorkflowStep } from '../data/db.js';
 import { getPillarIdsForPlant } from '../logic/access.js';
 import { localToday } from '../logic/actions.js';
 import { alertContent, canPublish, publishWarning, setWarningPhotos, warningToShow } from '../logic/safetyCommunication.js';
+import { canShare, sharedLines } from '../logic/sharingHub.js';
 import CommunicationDocument from './CommunicationDocument.jsx';
+import ShareToHub from './ShareToHub.jsx';
 
 // A readable Safety Alert or Safety Warning with Print and, for the plan owners of a draft, the
 // photos and Publish (SC-5 to SC-9). Used by the standalone page and inside the event page (SC-10).
@@ -15,6 +17,7 @@ import CommunicationDocument from './CommunicationDocument.jsx';
 export default function CommunicationView({ event, kind, attachments, onSaved, showEventLink = false }) {
   const { user, users, organization, reference } = useApp();
   const [saving, setSaving] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const lookups = { organization, reference };
   const isDraft = kind === 'warning' && !event.safetyWarning?.publishedAt;
   const owner = isDraft && canPublish(user, event, investigationGroups, users);
@@ -47,12 +50,43 @@ export default function CommunicationView({ event, kind, attachments, onSaved, s
     <div className="communication-view">
       <div className="communication-toolbar no-print">
         {canOpenEvent ? <Link to={`/events/${event.recordNumber}`}>← Event {event.recordNumber}</Link> : <span />}
-        <Button type="button" variant="default" onClick={() => window.print()}>
-          Print
-        </Button>
+        <div className="communication-toolbar-buttons">
+          {owner && (
+            <Button type="button" disabled={saving} onClick={publish}>
+              Publish Safety Warning
+            </Button>
+          )}
+          {kind === 'warning' && !isDraft && canShare(user, event, investigationGroups, users) && (
+            <Button type="button" variant="light" onClick={() => setSharing(true)}>
+              Share to Hub
+            </Button>
+          )}
+          <Button type="button" variant="default" onClick={() => window.print()}>
+            Print
+          </Button>
+        </div>
       </div>
       {isDraft && <p className="message message--warning no-print">Draft — only the plan owners see it until it is published.</p>}
-      {kind === 'warning' && !isDraft && <p className="communication-published">Published on {content.publishedOn}</p>}
+      {kind === 'warning' && !isDraft && (
+        <div className="communication-shared">
+          <p className="communication-published">Published on {content.publishedOn}</p>
+          {sharedLines(event, organization).map((line) => (
+            <p key={line} className="communication-published">
+              {line}
+            </p>
+          ))}
+        </div>
+      )}
+      {sharing && (
+        <ShareToHub
+          event={event}
+          onClose={() => setSharing(false)}
+          onShared={(saved) => {
+            setSharing(false);
+            onSaved(saved);
+          }}
+        />
+      )}
       <CommunicationDocument kind={kind} content={content} attachments={attachments} />
       {owner && (
         <section className="communication-draft no-print" aria-labelledby="photos-title">
@@ -73,9 +107,6 @@ export default function CommunicationView({ event, kind, attachments, onSaved, s
               ))}
             </Stack>
           )}
-          <Button type="button" disabled={saving} onClick={publish}>
-            Publish Safety Warning
-          </Button>
         </section>
       )}
     </div>

@@ -43,6 +43,7 @@ made in one product is seen by the others.
 | **Central / Cluster / Local** | The three levels of Control Panel roles: all plants / two or more plants / one plant. |
 | **Safety Alert** | An anonymised summary of a reviewed event for its plant. |
 | **Safety Warning** | The anonymised lessons of an analysed event, published by its plan owners for its plant. |
+| **Sharing Hub** | Where a plant receives the Safety Warnings other plants shared with it, and checks whether they could happen there. |
 
 ## Organization
 
@@ -50,7 +51,7 @@ made in one product is seen by the others.
 Business ─► Plant ─► Department ─► Workshop ─► Job ─► Workstation ─► Task
 ```
 
-- A plant has a type (with an icon) and a country (with a flag).
+- A plant has a type (with an icon), a country (with a flag) and a region.
 - An event's location is a path in this tree under the event's plant; each node must belong to its
   parent.
 
@@ -215,6 +216,7 @@ follows the dependencies.
 | Validation | Action plan | [validation](capabilities/validation.md) |
 | Notifications (lifecycle alerts, My notifications, Site Admin settings) | Validation, Control Panel workspace | [notifications](capabilities/notifications.md) |
 | Safety communication (Safety Alert, Safety Warning) | Action plan, event library | [safety-communication](capabilities/safety-communication.md) |
+| Sharing Hub (sharing Safety Warnings across plants, local checks) | Safety communication, notifications | [sharing-hub](capabilities/sharing-hub.md) |
 
 ## Product-wide rules
 

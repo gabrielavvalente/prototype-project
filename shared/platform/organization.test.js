@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getAncestry, getPillarIdsForPlant, getPlantOf, getPlants } from './organization.js';
+import { getAncestry, getPillarIdsForPlant, getPlantOf, getPlants, plantFacets } from './organization.js';
 import { organization, users } from './sampleData.js';
 
 const task = 'plant-lyon/department-1/workshop-2/job-1/workstation-2/task-1';
@@ -24,5 +24,18 @@ describe('organization helpers', () => {
     const ben = users.find((user) => user.id === 'user-ben');
     expect(getPillarIdsForPlant(ben, 'plant-curitiba')).toEqual(['pillar-hs', 'pillar-env']);
     expect(getPillarIdsForPlant(ben, 'plant-lyon')).toEqual([]);
+  });
+});
+
+describe('plant facets (009)', () => {
+  it('lists the regions, countries and businesses of the plants', () => {
+    expect(plantFacets(organization)).toEqual({
+      regions: ['Europe', 'Latin America'],
+      countries: ['Brazil', 'France', 'Portugal'],
+      businesses: [
+        { id: 'biz-auto', name: 'Automotive Parts' },
+        { id: 'biz-pack', name: 'Packaging' },
+      ],
+    });
   });
 });

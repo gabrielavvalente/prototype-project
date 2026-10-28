@@ -34,3 +34,14 @@ export function getPillarIdsForPlant(user, plantId) {
   const entry = user.access.find((item) => item.plantId === plantId);
   return entry ? entry.pillarIds : [];
 }
+
+// What plants can be chosen by (feature 009): their regions, countries and businesses, sorted.
+export function plantFacets(organization) {
+  const plants = getPlants(organization);
+  const unique = (values) => [...new Set(values)].sort();
+  return {
+    regions: unique(plants.map((plant) => plant.region)),
+    countries: unique(plants.map((plant) => plant.countryName)),
+    businesses: organization.filter((node) => node.type === 'business').map((node) => ({ id: node.id, name: node.name })),
+  };
+}

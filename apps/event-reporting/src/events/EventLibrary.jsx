@@ -24,6 +24,7 @@ import KanbanBoard from './KanbanBoard.jsx';
 import KpiOverview from './KpiOverview.jsx';
 import KpiTiles from './KpiTiles.jsx';
 import CommunicationsList from '../communications/CommunicationsList.jsx';
+import HubList from '../hub/HubList.jsx';
 
 // Quick filters opened from the KPIs page (005 EL-12).
 const ACTION_FILTER_LABELS = { openActions: 'Events with open actions', overdueActions: 'Events with overdue actions' };
@@ -33,6 +34,7 @@ const TABS = [
   { key: 'kpis', label: 'KPIs' },
   { key: 'reports', label: 'Reports' },
   { key: 'communications', label: 'Safety communications' },
+  { key: 'hub', label: 'Sharing Hub' },
 ];
 
 const VIEWS = [
@@ -63,12 +65,12 @@ export default function EventLibrary() {
   // The one row or card shown expanded (FR-027).
   const [expandedId, setExpandedId] = useState(null);
   const view = ['kanban', 'list'].includes(settings.listView) ? settings.listView : defaultView();
-  const mode = ['kpis', 'reports', 'communications'].includes(searchParams.get('tab')) ? searchParams.get('tab') : 'events';
+  const mode = ['kpis', 'reports', 'communications', 'hub'].includes(searchParams.get('tab')) ? searchParams.get('tab') : 'events';
   const savedFilters = settings.savedFilters || [];
 
   useEffect(() => {
-    // The Safety communications page sets its own title.
-    if (mode !== 'communications') document.title = 'Events — Event Reporting';
+    // The Safety communications and Sharing Hub pages set their own titles.
+    if (mode !== 'communications' && mode !== 'hub') document.title = 'Events — Event Reporting';
   }, [mode]);
 
   useEffect(() => {
@@ -192,7 +194,8 @@ export default function EventLibrary() {
       </nav>
 
       {mode === 'communications' && <CommunicationsList />}
-      {mode !== 'communications' && (
+      {mode === 'hub' && <HubList />}
+      {mode !== 'communications' && mode !== 'hub' && (
         <>
       {mode === 'events' && <KpiTiles kpis={kpis} selected={quickFilter} onSelect={changeQuickFilter} />}
       {/* Opened from the KPIs page: not a chip, so it shows as a badge (005 EL-12). */}

@@ -60,7 +60,8 @@ anyone.
 - **SC-6** In the draft, the plan owners tick the event's photos to include ("Photos to include",
   with "Choose photos that show no one's face or name."); none is ticked at first; videos are not
   offered.
-- **SC-7** **Publish Safety Warning** (plan owners, draft only) asks "Publish this Safety Warning?
+- **SC-7** **Publish Safety Warning** (plan owners, draft only), next to the Warning's **Print**
+  button (the photos to include stay below the document), asks "Publish this Safety Warning?
   Everyone at <plant> will be able to read it, and it will no longer change." — then the Warning
   shows "Published on <date>", keeps the content it had at that moment (later changes to the event
   do not appear) and becomes readable as SC-3 says. It cannot be unpublished. Publishing raises no

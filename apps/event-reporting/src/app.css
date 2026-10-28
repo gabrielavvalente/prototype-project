@@ -4476,3 +4476,203 @@ a.step-link:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Sharing Hub (009): the reach line, the local check, its actions and history. */
+.share-reach {
+  margin: 0;
+  font-weight: 600;
+}
+
+.communication-shared {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  margin-bottom: var(--space-3);
+}
+
+.communication-shared .communication-published {
+  margin: 0;
+}
+
+.communication-classification {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.communication-classification dt {
+  color: var(--color-muted);
+  font-size: var(--font-size-tiny);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.communication-classification dd {
+  margin: 0;
+}
+
+.hub-state {
+  font-weight: 600;
+}
+
+.hub-state--yes {
+  color: var(--color-error);
+}
+
+.hub-state--no {
+  color: var(--color-success);
+}
+
+.hub-state--beingChecked {
+  color: var(--color-warning);
+}
+
+.hub-check {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  margin-top: var(--space-5);
+}
+
+.hub-check h3 {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-base);
+}
+
+.hub-actions,
+.hub-history {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.hub-action {
+  overflow-wrap: anywhere;
+}
+
+.hub-action .hub-buttons {
+  display: inline-flex;
+  margin-left: var(--space-2);
+}
+
+.hub-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.hub-action-form {
+  width: 100%;
+  max-width: 40rem;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+/* Share to Hub next to Print (009 remark). */
+.communication-toolbar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Shared Safety Warning (009 remarks): Verify locally at the top right; Open and History. */
+.hub-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hub-title h1 {
+  margin: 0;
+}
+
+.hub-list {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.hub-list h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-large);
+}
+
+.hub-state--closedYes {
+  color: var(--color-error);
+}
+
+/* Sharing Hub (009 third remarks): the check beside the Warning; Open and History as sections. */
+.hub-layout--checking {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 26rem);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.hub-layout--checking .hub-check {
+  margin-top: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.hub-layout--checking .hub-check > h2 {
+  margin: 0;
+}
+
+.hub-section {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+}
+
+.hub-section .communication-card {
+  background: var(--color-background);
+}
+
+@media (max-width: 899px) {
+  .hub-layout--checking {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* History in grey, a section of its own (009 fourth remarks). */
+.hub-side {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.hub-history-section {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface-muted);
+}
+
+.hub-history-section h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-base);
+}
+
+.hub-history-section .hub-history {
+  color: var(--color-muted);
+}
+
+.hub-section--history {
+  background: var(--color-surface-muted);
+  box-shadow: none;
+}
+
+.hub-section--history .communication-card {
+  background: var(--color-surface);
+}

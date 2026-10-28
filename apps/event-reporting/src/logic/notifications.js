@@ -90,3 +90,15 @@ export function deliverAlerts(candidates, { event, actorId, users, settings = []
     .filter((candidate) => candidate.work || settingFor(settings, candidate.recipientId, candidate.key).on)
     .map(({ recipientId, type }) => ({ recipientId, type }));
 }
+
+// "Shared event received" to the Site Admins and Managers of each plant a share reached, who cannot
+// see the event itself; not to the person who shared, nor when turned off. Each alert keeps the
+// receiving plant (SH-6, NT-1, 009 research R5). Returns [{ recipientId, type, plantId }].
+export function sharedAlerts(plantIds, { actorId, users, settings = [] }) {
+  return plantIds.flatMap((plantId) =>
+    users
+      .filter((user) => ['Site Admin', 'Manager'].includes(user.role) && (user.access || []).some((entry) => entry.plantId === plantId))
+      .filter((user) => user.id !== actorId && settingFor(settings, user.id, 'Shared event received').on)
+      .map((user) => ({ recipientId: user.id, type: 'Shared event received', plantId })),
+  );
+}

@@ -33,8 +33,8 @@ function SeverityValue({ row }) {
 
 // A Safety Alert or Safety Warning as content (logic/safetyCommunication.js): no names (SC-2). The
 // Warning puts its photos next to the header, has no Next steps and ends with the key learnings
-// (SC-4, SC-5).
-export default function CommunicationDocument({ kind, content, attachments = [] }) {
+// (SC-4, SC-5). A shared package adds its Classification part (009 SH-4).
+export default function CommunicationDocument({ kind, content, attachments = [], classification = null }) {
   const photos = usePhotoUrls(attachments, kind === 'warning' ? content.photoIds || [] : []);
   return (
     <article className={`communication-document communication-document--${kind}`} aria-labelledby="communication-title">
@@ -83,6 +83,18 @@ export default function CommunicationDocument({ kind, content, attachments = [] 
           </div>
         )}
       </div>
+      {classification && classification.length > 0 && (
+        <Part title="Classification">
+          <dl className="communication-classification">
+            {classification.map((item) => (
+              <div key={item.list}>
+                <dt>{item.list}</dt>
+                <dd>{item.values.join(', ')}</dd>
+              </div>
+            ))}
+          </dl>
+        </Part>
+      )}
       <Part title="What happened">
         <p className="communication-text">{content.statement}</p>
       </Part>
