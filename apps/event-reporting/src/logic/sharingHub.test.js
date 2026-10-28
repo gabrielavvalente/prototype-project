@@ -47,11 +47,11 @@ function published(learnings = 'Sharp edges must be deburred before handling.') 
 const pkg = (event) => buildPackage(event, [{ list: 'Hazards', values: ['Sharp edges'] }]);
 
 describe('sharing (SH-1 to SH-4)', () => {
-  it('lets the plan owners and the Site Admins of the plant share a published Warning', () => {
+  it('lets the plan owners, the reviewer and the Site Admins of the plant share a published Warning', () => {
     const event = published();
     expect(canShare(byId('user-diego'), event, investigationGroups, users)).toBe(true);
     expect(canShare(byId('user-eva'), event, investigationGroups, users)).toBe(true);
-    expect(canShare(byId('user-carla'), event, investigationGroups, users)).toBe(false);
+    expect(canShare(byId('user-carla'), event, investigationGroups, users)).toBe(true);
     expect(canShare(byId('user-ana'), event, investigationGroups, users)).toBe(false);
   });
 

@@ -21,8 +21,10 @@ checks whether it could happen there and acts on it.
 ### Sharing
 
 - **SH-1** A published Safety Warning ([safety communication](safety-communication.md) SC-7) can be
-  shared to other plants with **Share to Hub**, next to the Warning's **Print** button, shown to the
-  event's plan owners and to the Site Admins of the event's plant — nobody else.
+  shared to other plants with **Share to Hub**, next to the Warning's **Print** button and under its
+  card on the Safety communications page (SC-8), shown to the event's plan owners, its reviewer and
+  the Site Admins of the event's plant — nobody else. Both open the same "Who should receive it?"
+  (SH-2).
 - **SH-2** **Share to Hub** opens "Who should receive it?": **Regions**, **Countries**,
   **Businesses** and **Plants**, each a multiple choice (the event's own plant is not offered).
   A plant is reached when it matches every region, country and business chosen (any value within
@@ -78,9 +80,9 @@ From freshly reset [demo data](platform-data.md), after [safety communication](s
 scenarios 5–7: Diego Laurent published the
 Safety Warning of `TF-26-0002` (Lyon, TF3), whose plan owner he is.
 
-1. **Who shares** — Diego and Eva Novak (Site Admin, Lyon) see **Share to Hub** on the Warning
-   (next to Print);
-   Carla Mendes (its reviewer) and Ana Ribeiro do not. (SH-1)
+1. **Who shares** — Diego, Eva Novak (Site Admin, Lyon) and Carla Mendes (its reviewer) see
+   **Share to Hub** on the Warning (next to Print) and under its card on the Safety communications
+   page; Ana Ribeiro does not, and no Safety Alert card offers it. (SH-1)
 2. **Reach** — Diego opens Share to Hub: Plants offers Curitiba and Porto, not Lyon. Choosing
    region Europe reads "Reaches 1 plant: Porto"; adding business Automotive Parts reads "Choose a
    reach that includes at least one plant other than Lyon." and Share is refused; removing the

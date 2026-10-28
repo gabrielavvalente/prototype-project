@@ -4720,3 +4720,66 @@ a.step-link:hover {
   color: var(--color-muted);
   font-size: var(--font-size-small);
 }
+
+/* Safety communications: Share to Hub under a published Warning's card (SH-1). */
+.communication-item--share .communication-card {
+  border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.communication-card-share {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-top: 1px dashed var(--color-border);
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--color-surface);
+}
+
+.communication-card-share > span {
+  display: grid;
+}
+
+/* The Filters popup: the criteria scroll, Clear all / Apply filters stay at the bottom (EL-3). */
+.filters-popup {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100vw - 32px);
+  padding: 0;
+}
+
+.filters-popup-body {
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.filters-popup .filter-date-range {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-2);
+}
+
+.filters-popup .filter-date-range legend {
+  grid-column: 1 / -1;
+}
+
+.filters-popup .filter-date-range > * {
+  min-width: 0;
+}
+
+.filters-popup-saved {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.filters-popup-actions {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+}

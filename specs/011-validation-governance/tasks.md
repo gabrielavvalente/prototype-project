@@ -52,3 +52,18 @@ acceptance scenarios through the launcher.
   NT-2 to NT-4)
 - [X] T009 Apply the remarks to `specs/capabilities/validation.md` and `notifications.md`
 - [X] T010 `npm test` and `npm run build`, then scenarios 1, 6 and 6b through the launcher
+
+## Phase 6: Review remarks — sharing from the page, filters at once (2026-10-28)
+
+**Scenarios**: 7–9
+
+- [X] T011 `canShare` in `apps/event-reporting/src/logic/sharingHub.js` also lets the event's
+  reviewer share, with its test (SH-1)
+- [X] T012 Share to Hub under a published Warning's card in `communications/CommunicationsList.jsx`,
+  opening `ShareToHub.jsx`; styles in `app.css` (SH-1, SC-8)
+- [X] T013 `events/FiltersMenu.jsx` becomes a popup with the criteria of `events/FilterPanel.jsx`
+  (was `FilterSheet.jsx`) and the saved filters; `EventLibrary.jsx` wiring; it fits the screen
+  (EL-3, EL-4)
+- [X] T014 Apply to `specs/capabilities/sharing-hub.md`, `safety-communication.md` and
+  `event-library.md`
+- [X] T015 `npm test` and `npm run build`, then scenarios 7–9 through the launcher
