@@ -39,11 +39,11 @@ products need from it is specified ([01](01-roles-and-permissions.md)).
 | 05 | [Action plan](05-action-plan.md) | Reviewed |
 | 06 | [Validation](06-validation.md) | Reviewed |
 | 07 | [Record Historian](07-record-historian.md) | Reviewed |
-| 08 | [Safety communication](08-safety-communication.md) (Safety Alert, Safety Warning) | Draft for review |
-| 09 | [Sharing Hub](09-sharing-hub.md) | Draft for review |
-| 10 | [Alerts and notifications](10-alerts-and-notifications.md) | Draft for review |
-| 11 | Workflow settings | To write |
-| 12 | Master data | To write |
-| 13 | Event library (lists, filters, KPIs, reports, event page) | To write |
-| 14 | Reference catalogs | To write |
+| 08 | [Safety communication](08-safety-communication.md) (Safety Alert, Safety Warning) | Reviewed |
+| 09 | [Sharing Hub](09-sharing-hub.md) | Reviewed |
+| 10 | [Alerts and notifications](10-alerts-and-notifications.md) | Reviewed |
+| 11 | [Workflow settings](11-workflow-settings.md) (and the Control Panel audit) | Draft for review |
+| 12 | [Master data](12-master-data.md) | Draft for review |
+| 13 | [Event library](13-event-library.md) (lists, filters, indicators, register, event page) | Draft for review |
+| 14 | [Reference catalogs](14-reference-catalogs.md) | Draft for review |
 | 15 | [Open questions](15-open-questions.md) | Draft for review |

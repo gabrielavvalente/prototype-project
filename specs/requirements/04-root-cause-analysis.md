@@ -15,7 +15,7 @@ Builds on: [00 Overview](00-overview.md), [01 Roles and permissions](01-roles-an
   perform the root cause analysis?** (required, one or more): **users** — people of any event role
   whose access includes the event's plant and pillar, the reviewer included — and **investigation
   groups** covering the event's plant and pillar (RP-3). Otherwise it is not asked, and an analysis
-  can still be started later (RCA-18).
+  can still be started later (RCA-15).
 - **RCA-2** Completing the review keeps the designated users and groups on the event and alerts them
   ([10](10-alerts-and-notifications.md)). The completed review shows who was designated.
 - **RCA-3** A reviewer who is among the designated people (directly or through a group) goes on to
