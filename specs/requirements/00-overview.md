@@ -35,7 +35,6 @@ products need from it is in [Roles and permissions](01-roles-and-permissions.md)
 | **HCI** | High Consequence Injury: a Health & Safety event whose actual severity is Very Critical. |
 | **HCL** | High Consequence Loss: an Industrial Risk event with real, actual consequences — a major loss for the Group. |
 | **SPL** | Serious Potential Loss: an Industrial Risk near miss or moderate event whose potential severity is a weak signal before a major loss. |
-| **CRP / SRP** | Critical Risk Potential / Serious Risk Potential: the reporter's view on an Industrial Risk event (OV-6). |
 | **Immediate action** | Something done at the scene right away to make the situation safe; recorded with the event, always completed. |
 | **Action plan** | One per event: its immediate actions and its corrective actions. |
 | **Corrective action** | An action of the plan with assignees, a due date, a priority and a status. |
@@ -100,15 +99,10 @@ products need from it is in [Roles and permissions](01-roles-and-permissions.md)
 
 - **OV-5** Each level has a one-sentence plain-language description, shown when the reporter
   chooses it (the texts are in [Reference catalogs](14-reference-catalogs.md)).
-- **OV-6** The reporter's risk question, according to pillar and level:
-
-  | When | Question | Effect of Yes |
-  |---|---|---|
-  | Safety (TF), Environment | "Could this be a SIP?" | Recorded as the reporter's view; it never makes the event critical. A TF5 answered Yes becomes TF4, and the reporter is told. |
-  | Industrial Risk SRE1–SRE2 | "Could this be a CRP? (Critical Risk Potential)" | Recorded with the event. |
-  | Industrial Risk SRE3–SRE5 | "Could this be a SRP? (Serious Risk Potential)" | Recorded with the event. |
-
-  The explanations shown with each question are in [Event reporting](02-event-reporting.md).
+- **OV-6** The reporter of a Safety (TF) or Environment event answers "Could this be a SIP?"
+  ([02](02-event-reporting.md) ER-4). The answer is recorded as the reporter's view and never
+  makes the event critical; a TF5 answered Yes becomes TF4, and the reporter is told. Occupational
+  Health and Industrial Risk events have no such question.
 
 ### Event lifecycle
 

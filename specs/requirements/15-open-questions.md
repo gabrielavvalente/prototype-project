@@ -17,7 +17,8 @@ answer (or an explicit "not in this version") before the matching part is built.
 - **Q-5 Personal data**: events hold names (reporter, people involved, assignees) and may hold
   health information (injuries, diseases). Who may see what, what is anonymised beyond the Safety
   Alert and Warning, and which privacy rules apply per country?
-- **Q-6 Attachments**: allowed types, maximum size and number, virus scanning, storage.
+- **Q-6 Attachments**: the platform team sets the allowed types, maximum size and number, virus
+  scanning and storage of event photos and videos.
 - **Q-7 Migration**: are events from the current tools (e.g. GAIA, mentioned in the immediate
   action types) imported, and how are their statuses and levels mapped?
 - **Q-8 Non-functional targets**: number of users and events, response times, availability,
@@ -37,9 +38,7 @@ answer (or an explicit "not in this version") before the matching part is built.
 
 ## Features left out of the prototype
 
-- **Q-12 Deleting a draft**: a draft can only be continued; should its author be able to delete it?
-- **Q-13 Root cause analysis**: the risk-assessment gap question, related hazards, attachments in
-  the analysis, export or print of the 5 Why diagram, the Behavioral / Conditional classification
+- **Q-13 Root cause analysis**: related hazards, attachments in the analysis, export or print of the 5 Why diagram, the Behavioral / Conditional classification
   of root causes.
 - **Q-14 Safety communication**: a PDF export other than printing, sending to a regional
   governance office or by email, documents for Occupational Health events, unpublishing or republishing a

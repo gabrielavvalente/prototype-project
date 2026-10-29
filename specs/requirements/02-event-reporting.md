@@ -4,7 +4,7 @@ A person with an event role reports an event in a few minutes, saving it as a dr
 Submitting gives it a record number and its workflow, and alerts its reviewers and the plant's
 Managers ([10 Alerts](10-alerts-and-notifications.md)).
 
-Builds on: [00 Overview](00-overview.md) (pillars, event types, levels, risk question, lifecycle,
+Builds on: [00 Overview](00-overview.md) (pillars, event types, levels, SIP question, lifecycle,
 workflow), [01 Roles and permissions](01-roles-and-permissions.md).
 
 ## Rules
@@ -24,20 +24,13 @@ workflow), [01 Roles and permissions](01-roles-and-permissions.md).
 - **ER-3** Pillar (taken from the context when the person works in one pillar), then event type
   (taken automatically when the pillar has only one), then level — each level with its
   description ([14](14-reference-catalogs.md)).
-- **ER-4** Right after the level, the risk question of OV-6, required, with its explanation:
-  - "Could this be a SIP?" — "Serious Incident Potential: under slightly different
-    circumstances, could this have caused a serious injury or serious harm?" (Safety,
-    Environment)
-  - "Could this be a CRP? (Critical Risk Potential)" — "Could this have led to a major fire,
-    explosion or loss of the site?" (SRE1–SRE2)
-  - "Could this be a SRP? (Serious Risk Potential)" — "Could this have led to serious damage or a
-    long stop of operations?" (SRE3–SRE5)
-
-  Occupational Health events have no risk question.
+- **ER-4** For Safety and Environment events, right after the level, the SIP question of OV-6,
+  required: "Could this be a SIP?" — "Serious Incident Potential: under slightly different
+  circumstances, could this have caused a serious injury or serious harm?". Occupational Health and
+  Industrial Risk events have none.
 - **ER-5** A TF5 answered SIP = Yes becomes TF4, and the reporter is told why — whether the answer
-  or the level is given last. Changing the pillar or event type clears the risk answer; changing
-  the level keeps it when the question stays the same (e.g. TF4 → TF5 keeps the SIP answer) and
-  clears it otherwise.
+  or the level is given last. Changing the pillar or event type clears the SIP answer; changing
+  the level keeps it.
 
 ### Location
 
@@ -52,21 +45,18 @@ workflow), [01 Roles and permissions](01-roles-and-permissions.md).
     the location instead."; camera refused: "The camera could not be opened. Allow camera access,
     or search or browse instead."
 - **ER-7** Required: the full path down to the task and a task type (Routine, Non-routine) —
-  except TF4 and TF5, which need only department and workshop (task type optional).
+  except TF4, TF5, EvE4 and EvE5, which need only department and workshop (task type optional).
 
 ### General information
 
 - **ER-8** Title (required, under 120 characters) and description (required, under 2,000
   characters). The description can be dictated (speech to text) where the device allows it.
-- **ER-9** Photos and videos are optional: at most 5 files, each at most 5 MB, images or videos
-  only (jpg, jpeg, png, gif, webp, heic, mp4, mov, webm), taken with the camera on mobile devices
-  or chosen from files. A refused file is not attached and says why: "You can attach at most 5
-  files." · ""<name>" is not allowed. Only photos and videos can be attached." · ""<name>" is
-  larger than 5 MB.".
-- **ER-10** For every event type and level: the employee type (Employee, Temporary Worker,
-  Permanent Contractor, Non-Permanent Contractor, Other) and the person involved — for Employee, a
-  person of the plant; otherwise their name (required) and "What was the person doing?"
-  (optional).
+- **ER-9** Photos and videos are optional, taken with the camera on mobile devices or chosen from
+  files. Their number, size and formats are set by the platform (Q-6).
+- **ER-10** The employee type (Employee, Temporary Worker, Permanent Contractor, Non-Permanent
+  Contractor, Other) and the person involved — for Employee, a person of the plant; otherwise their
+  name and "What was the person doing?" (optional). Required for TF1–TF3 (the employee type, and the
+  person or their name); optional for every other level.
 - **ER-11** For TF1–TF3: "What was the first aid treatment?", one or more of the first aid
   treatments ([14](14-reference-catalogs.md)); Other asks for a required description.
 
@@ -99,9 +89,9 @@ workflow), [01 Roles and permissions](01-roles-and-permissions.md).
 - **ER-17** **Submit** with something missing saves nothing and reports each missing item, with
   "N required fields are missing.":
   "Choose a pillar." · "Choose an event type." · "Choose a level." · "Answer "Could this be a
-  <SIP|CRP|SRP>?"." · "Choose the location down to the task." / "Choose at least the department and
+  SIP?"." · "Choose the location down to the task." / "Choose at least the department and
   workshop." · "Choose a task type." · "Enter a title." · "Describe what happened." · "Choose the
-  employee type." · "Choose the person involved." / "Enter the name of the person involved." ·
+  employee type." · "Choose the person involved." / "Enter the name of the person involved." (TF1–TF3) ·
   "Choose at least one first aid treatment." · "Describe the other first aid treatment." · "The
   event time cannot be in the future." · "Choose the shift moment." · "Say whether this has
   happened before." · "Choose at least one disease." · "Complete immediate action N." (with
@@ -116,8 +106,9 @@ workflow), [01 Roles and permissions](01-roles-and-permissions.md).
 
 ### Correcting
 
-- **ER-20** The author reopens their draft, continues and submits it. A draft cannot be deleted
-  (Q-12).
+- **ER-20** The author reopens their draft, continues and submits it, or **deletes** it after
+  confirming ("Delete this draft? It cannot be recovered."). Nobody else can delete a draft, and a
+  submitted event is never deleted.
 - **ER-21** A Manager or a Site Admin who can see the event corrects an **Open** event with the
   same rules as reporting (no draft, no automatic save). The record number, the status and the
   workflow taken at submission do not change, even if the level does; nobody is alerted.
@@ -133,7 +124,11 @@ workflow), [01 Roles and permissions](01-roles-and-permissions.md).
 |---|---|
 | Photos and videos | Optional for every level (a source required them for TF1–TF3) |
 | Immediate actions | Optional for every level, always Completed (a source required them for TF1–TF3 and SRE1–SRE3) |
-| Location for TF4 / TF5 | Department and workshop only |
+| Location for TF4, TF5, EvE4, EvE5 | Department and workshop only *(the prototype: TF4 and TF5)* |
+| Employee type and person involved | Required for TF1–TF3 only *(the prototype: every level)* |
+| Attachments | Optional; limits set by the platform, not by these requirements |
+| Question at reporting | The SIP question only, for Safety and Environment events |
+| Deleting a draft | Its author can *(the prototype: no)* |
 | First aid treatments | A starting list, to be replaced by the official one |
 | Who reports | Users, Managers and Site Admins; Managers and Site Admins can report on behalf of someone else *(the prototype: no reporting by Site Admins)* |
 | Correcting after the review | Site Admins of the plant, unless locked *(the prototype: nobody)* |
@@ -141,24 +136,24 @@ workflow), [01 Roles and permissions](01-roles-and-permissions.md).
 ## Examples
 
 1. **Given** a User of plant A, **when** they report a TF4 (Near Miss) with SIP No, the department
-   and workshop, a title, a description, the employee type, the person involved, the shift moment
-   and the recurrence, **then** the event is submitted with a record number `TF-<YY>-<NNNN>`,
+   and workshop, a title, a description, the shift moment and the recurrence (no employee type),
+   **then** the event is submitted with a record number `TF-<YY>-<NNNN>`,
    status Open, and its reviewers and plant A's Managers are alerted. (ER-1, ER-7, ER-18)
 2. **Given** a reporter choosing TF5 and answering SIP Yes, **then** the level becomes TF4 and they
    are told why. (ER-5)
 3. **Given** a TF2 report without location, **when** it is submitted, **then** nothing is saved and
    "Choose the location down to the task." and "Choose a task type." are reported, with "N required
    fields are missing.". (ER-7, ER-17)
-4. **Given** a reporter attaching a sixth photo, or a 6 MB video, or a PDF, **then** the file is
-   refused with the matching message. (ER-9)
+4. **Given** an EvE5 event, **then** the department and workshop are enough as location; **given** a
+   TF2, the employee type and the person involved are required. (ER-7, ER-10)
 5. **Given** a QR code of a station of plant B scanned while reporting for plant A, **then** "This QR
    code belongs to another plant." and the location stays empty. (ER-6)
 6. **Given** a Manager of plant A, **when** they report on behalf of a User of plant A, **then** that
    User is the reporter. (ER-12)
-7. **Given** an Occupational Health event, **then** no risk question is asked and at least one
-   disease is required. (ER-4, ER-13)
+7. **Given** an Occupational Health or an Industrial Risk event, **then** no SIP question is asked;
+   an Occupational Health event requires at least one disease. (ER-4, ER-13)
 8. **Given** a draft, **then** only its author sees it, it has no record number and no alert is
-   sent; the author continues it later and submits it. (ER-16, ER-20)
+   sent; the author continues it later and submits it, or deletes it after confirming. (ER-16, ER-20)
 9. **Given** an Open event, **when** a Manager of its plant changes its level, **then** its record
    number, status and workflow stay the same and nobody is alerted. **Given** the same event In
    Progress, **then** only a Site Admin of its plant can still correct it. (ER-21, ER-22)

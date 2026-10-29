@@ -69,7 +69,7 @@ ids in the last column of the tables point to where each permission is detailed.
   |---|---|---|
   | Create an event | Users, Managers and Site Admins | ER-1 |
   | Report on behalf of someone else | Managers and Site Admins | ER-12 |
-  | Continue a draft (drafts cannot be deleted, see Q-12) | Its author | ER |
+  | Continue or delete a draft | Its author | ER-20 |
   | Correct an Open event | Managers and Site Admins who see it | ER-21 |
   | Take and complete the review | One of its reviewers | RV-2 |
   | Start an optional root cause analysis | Its reviewer, and the Managers and Site Admins who see it | RCA-15 |
