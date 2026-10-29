@@ -36,12 +36,12 @@ products need from it is specified ([01](01-roles-and-permissions.md)).
 | 02 | [Event reporting](02-event-reporting.md) | Reviewed |
 | 03 | [Event review](03-event-review.md) (severity, critical events) | Reviewed |
 | 04 | [Root cause analysis](04-root-cause-analysis.md) | Reviewed |
-| 05 | [Action plan](05-action-plan.md) | Draft for review |
-| 06 | [Validation](06-validation.md) | Draft for review |
-| 07 | [Record Historian](07-record-historian.md) | Draft for review |
-| 08 | Safety communication (Safety Alert, Safety Warning) | To write |
-| 09 | Sharing Hub | To write |
-| 10 | Alerts and notifications | To write |
+| 05 | [Action plan](05-action-plan.md) | Reviewed |
+| 06 | [Validation](06-validation.md) | Reviewed |
+| 07 | [Record Historian](07-record-historian.md) | Reviewed |
+| 08 | [Safety communication](08-safety-communication.md) (Safety Alert, Safety Warning) | Draft for review |
+| 09 | [Sharing Hub](09-sharing-hub.md) | Draft for review |
+| 10 | [Alerts and notifications](10-alerts-and-notifications.md) | Draft for review |
 | 11 | Workflow settings | To write |
 | 12 | Master data | To write |
 | 13 | Event library (lists, filters, KPIs, reports, event page) | To write |
