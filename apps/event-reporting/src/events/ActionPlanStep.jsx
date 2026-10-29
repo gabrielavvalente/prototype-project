@@ -1,3 +1,4 @@
+import { isPlantSiteAdmin } from '../logic/access.js';
 import { useState } from 'react';
 import { Alert, Button } from '@mantine/core';
 import { useApp } from '../AppContext.js';
@@ -112,7 +113,7 @@ export default function ActionPlanStep({ event, onSaved }) {
         whyText={whyText}
         today={today}
         canEdit={canEdit}
-        statusesFor={completed ? null : (action) => allowedStatuses(user, action, canEdit)}
+        statusesFor={completed ? null : (action) => allowedStatuses(user, action, canEdit, isPlantSiteAdmin(user, current))}
         onEdit={(action) => setEditing({ action, isNew: false })}
         onDelete={remove}
         onStatus={changeStatus}

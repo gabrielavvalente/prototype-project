@@ -46,7 +46,8 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
 
 ### Who performs the analysis
 
-- **RCA-7** Only the designated users and the members of the designated groups can edit and save
+- **RCA-7** Only the designated users, the members of the designated groups and the Site Admins of
+  the event's plant can edit and save
   the analysis, and only while Root cause analysis is the event's current step — not the reviewer,
   a Manager or a Control Panel administrator unless designated. Everyone else who can see the
   event reads it (they can still open parts and switch sections). Once completed it is read-only
@@ -68,10 +69,10 @@ with 5W1H, 6M and 5 Why, create actions from the whys, record the learnings and 
   actions and the event history shows "Immediate actions updated in the root cause analysis by
   <name>" (one entry, kept for the last save that changed them).
 - **RCA-10 5W1H** (optional guide): collapsed until the person expands it (open when it already
-  has answers). Sections listed on the left, the chosen one on the right with "Is this section
-  applicable to your event?" (Yes / No) and, when Yes, its numbered questions, each with a text
-  answer. The "Who was injured?" section is offered for Health & Safety events only. Done when
-  every offered section is No, or Yes with every answer. Never required.
+  has answers). One question for the whole guide, "Is this section applicable to your event?" (Yes /
+  No); Yes lists the sections on the left and the chosen one's numbered questions on the right, each
+  with a text answer. The "Who was injured?" section is offered for Health & Safety events only.
+  Done when the answer is No, or Yes with every offered question answered. Never required.
 - **RCA-11 6M**: an introduction ("avoid selecting the max of six by default…"), the six themes
   listed on the left (with the number of causes ticked) and the chosen theme's guidance below
   them; on the right the theme's contributory causes as checkboxes, plus one **Other** per theme

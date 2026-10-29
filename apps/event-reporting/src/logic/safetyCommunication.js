@@ -2,6 +2,7 @@
 // allow-list of the event's fields, so they never carry a name (SC-2, research R2); only a
 // published Warning is stored, as a frozen copy (research R1).
 
+import { isPlantSiteAdmin } from './access.js';
 import { getPlantName } from '../../../../shared/platform/organization.js';
 import { ACTION_STATUS_LABELS } from './actions.js';
 import { planOwners, planSummary } from './actionPlan.js';
@@ -43,11 +44,12 @@ export function warningState(event) {
 export function canSeeWarning(user, event, groups, users) {
   const state = warningState(event);
   if (state === 'published') return canReadCommunication(user, event);
-  return state === 'draft' && planOwners(event, groups, users).includes(user.id);
+  return state === 'draft' && (planOwners(event, groups, users).includes(user.id) || isPlantSiteAdmin(user, event));
 }
 
+// The plan owners and the plant's Site Admins publish the draft (014 SC-7).
 export function canPublish(user, event, groups, users) {
-  return warningState(event) === 'draft' && planOwners(event, groups, users).includes(user.id);
+  return warningState(event) === 'draft' && (planOwners(event, groups, users).includes(user.id) || isPlantSiteAdmin(user, event));
 }
 
 // A rating as a badge "<score> — <band>" in its band's color and its "(<impact> × <duration>)".

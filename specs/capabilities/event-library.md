@@ -57,7 +57,7 @@ with its workflow steps.
   Department, Reporter (can be hidden); sortable by report date, level, status and reporter; 20 rows
   per page.
 - **EL-10** Clicking a card or row expands it in place with what it does not already show:
-  description, full location, event time, shift, task type, risk answer, photos and each immediate
+  description, full location, event time, shift, task type, SIP answer, photos and each immediate
   action ("No immediate action recorded."). Links: **Review** (for a reviewer who can start the
   review, Event review capability), **Open event** (a submitted event opens on its current step,
   Submission if none; a draft opens its page) and, for its author, **Continue draft**. Clicking
@@ -73,7 +73,8 @@ with its workflow steps.
   events** ("Reviewed as not valid"). Each opens the Events page narrowed to its events; Open and
   Overdue actions show the badge "Events with open actions" / "Events with overdue actions"
   (removable) since they are not chips.
-- **EL-13** **Reported events by type**: a stacked column per type (family), split by level in the
+- **EL-13** **Reported events by type**: a stacked column per type (family) — submitted events
+  only, never archived ones (an invalid event is not a reported event) — split by level in the
   pillar's color ("Darker shades are more serious levels."), every type and level listed even when
   zero, with details on hover and a table view (Type, Level, Events).
 - **EL-14** **Archived events by reason**: a stacked column per reason (Duplicated, Useless, Bad
@@ -89,7 +90,8 @@ with its workflow steps.
 ### Event page
 
 - **EL-16** A **draft** has its own page: back, "Draft", the header card, every section entered,
-  and a bottom bar with **All events** and, for its author, **Continue draft**.
+  and a bottom bar with **All events** and, for its author, **Delete draft** and **Continue draft**
+  ([event reporting](event-reporting.md) ER-16).
 - **EL-17** A **submitted** event has one page, its steps: back to events and the record number,
   a compact header card (pillar, level, status and critical badges, title, key facts on one line),
   the **steps menu** — Submission, Review, Root cause analysis, Actions, Validation, each Done,

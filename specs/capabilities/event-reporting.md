@@ -14,8 +14,8 @@ plant's Managers ([notifications](notifications.md)).
 
 ### The form
 
-- **ER-1** "Create event" opens **New event** in at most 3 taps from the landing screen. Site
-  Admins cannot report.
+- **ER-1** "Create event" opens **New event** in at most 3 taps from the landing screen, for Users,
+  Managers and Site Admins.
 - **ER-2** The form is one page with the sections **Classification**, **Location**, **General
   information**, **Event details** and **Immediate actions**, and a bar fixed at the bottom. On
   wide screens: Classification, Location and Event details on the left; General information and
@@ -28,17 +28,13 @@ plant's Managers ([notifications](notifications.md)).
 ### Classification
 
 - **ER-5** Pillar (pre-set and skipped when the person works in one pillar), then family (filled
-  in and hidden when the pillar has only one), then level, each level with its description (domain). Right after the level, the risk question of the
-  domain with its definition, required:
-  - "Could this be a SIP?" — "Serious Incident Potential: under slightly different
-    circumstances, could this have caused a serious injury or serious harm?"
-  - "Could this be a CRP? (Critical Risk Potential)" — "Could this have led to a major fire,
-    explosion or loss of the site?"
-  - "Could this be a SRP? (Serious Risk Potential)" — "Could this have led to serious damage or a
-    long stop of operations?"
+  in and hidden when the pillar has only one), then level, each level with its description (domain). For Health & Safety (Safety)
+  and Environment, right after the level, required: "Could this be a SIP?" — "Serious Incident
+  Potential: under slightly different circumstances, could this have caused a serious injury or
+  serious harm?". Industrial Risk and Industrial Hygiene events have no such question.
 - **ER-6** A TF5 answered SIP = Yes becomes TF4, with a warning explaining it — whether the answer
-  or the level comes last. Changing the pillar clears the risk answer; changing the level keeps it
-  when the question stays the same (e.g. TF4 → TF5 keeps the SIP answer) and clears it otherwise.
+  or the level comes last. Changing the pillar clears the SIP answer; changing the level keeps it.
+
 
 ### Location
 
@@ -52,7 +48,8 @@ plant's Managers ([notifications](notifications.md)).
   browse the location instead."; camera refused: "The camera could not be opened. Allow camera
   access, or search or browse instead."
 - **ER-8** Required: the full path down to the task and a task type (Routine, Non-routine) —
-  except TF4 and TF5, which need only department and workshop (task type optional).
+  except TF4, TF5, EvE4 and EvE5, which need only department and workshop (task type optional).
+
 
 ### General information
 
@@ -63,9 +60,10 @@ plant's Managers ([notifications](notifications.md)).
   only (jpg, jpeg, png, gif, webp, heic, mp4, mov, webm). A refused file is not attached and says
   why: "You can attach at most 5 files." / "<name>" is not allowed. Only photos and videos can be
   attached." / "<name>" is larger than 5 MB.".
-- **ER-11** For every pillar and level: employee type (Employee, Temporary Worker, Permanent
-  Contractor, Non-Permanent Contractor, Other) and the person involved: for Employee, a searchable user of the plant;
-  otherwise their name (required) and "What was the person doing?" (optional).
+- **ER-11** Employee type (Employee, Temporary Worker, Permanent Contractor, Non-Permanent
+  Contractor, Other) and the person involved: for Employee, a searchable user of the plant;
+  otherwise their name and "What was the person doing?" (optional). Required for TF1–TF3 (the
+  employee type, and the person or their name); "Employee type (optional)" for the other levels.
 - **ER-12** For TF1–TF3: "What was the first aid treatment?", one or more of: Wound cleaning and
   dressing, Plaster or bandage, Cold compress, Eye wash, Burn care, Splint or immobilisation,
   Removal of a splinter or foreign body, Rest and observation, Other (then a required
@@ -73,7 +71,8 @@ plant's Managers ([notifications](notifications.md)).
 
 ### Event details
 
-- **ER-13** Reporter (the current person; only a Manager can change it), report date (today,
+- **ER-13** Reporter (the current person; a Manager or a Site Admin can change it: "As a Manager or
+  Site Admin you can report on behalf of someone else."), report date (today,
   read-only), event time (optional, not in the future), shift moment (Day, Night, Afternoon),
   recurrence ("Has this happened before?" Yes / No), **Shared with** (people of the event's plant
   who can see its pillar, a multi-select that stays open, each choice also a removable badge) and,
@@ -94,11 +93,13 @@ plant's Managers ([notifications](notifications.md)).
   save automatically — use Save as draft". Submitted events never save automatically.
 - **ER-16** **Save as draft** keeps the event as Draft (visible only to its author, no record
   number, nothing sent). Leaving with unsaved changes asks "Leave this form? You have changes that
-  are not saved." with Save as draft, Discard changes, Stay.
+  are not saved." with Save as draft, Discard changes, Stay. Its author can **Delete draft** after
+  "Delete this draft? It cannot be recovered.": the draft and its attachments are gone ("Draft
+  deleted."), nobody is alerted. A submitted event is never deleted.
 - **ER-17** **Submit** with something missing saves nothing, flags each missing field next to it
   with its message, says "N required fields are missing." and scrolls to the first one. The
   messages: "Choose a pillar." · "Choose a family." · "Choose a level." · "Answer "Could this be a
-  <SIP|CRP|SRP>?"." · "Choose the location down to the task." / "Choose at least the department and
+  SIP?"." · "Choose the location down to the task." / "Choose at least the department and
   workshop." · "Choose a task type." · "Enter a title." · "Describe what happened." · "Choose the
   employee type." · "Choose the person involved." / "Enter the name of the person involved." ·
   "Choose at least one first aid treatment." · "Describe the other first aid treatment." · "The
@@ -116,12 +117,16 @@ plant's Managers ([notifications](notifications.md)).
 
 ### Editing
 
-- **ER-20** The author reopens their draft from the list, continues and submits it.
-- **ER-21** A Manager who can see the event edits an **Open** event right in its Submission step,
-  with the same form and rules and a **Save changes** button (no draft, no automatic save). The
-  record number, the status and the workflow taken at submission do not change, even if the level
-  does; nobody is alerted. Once
-  reviewed (In Progress, Archived, Closed) nobody edits the submission; the review corrects it.
+- **ER-20** The author reopens their draft from the list, continues and submits it, or deletes it
+  (ER-16).
+- **ER-21** A Manager or a Site Admin who can see the event edits an **Open** event right in its
+  Submission step, with the same form and rules and a **Save changes** button (no draft, no
+  automatic save). The record number, the status and the workflow taken at submission do not
+  change, even if the level does; nobody is alerted. While the review is under way, its assigned
+  reviewer edits it too, until they complete the review. Once reviewed (In Progress, Archived,
+  Closed), only a **Site Admin** of its plant edits it — never when locked
+  ([validation](validation.md) VAL-6) — and each change of its title, description, level or event
+  time is recorded in the [Record Historian](record-historian.md); otherwise the review corrects it.
 - **ER-22** Every event records who created it and when, and who last changed it and when.
 
 ## Acceptance scenarios
@@ -154,7 +159,11 @@ From freshly reset [demo data](platform-data.md), in the context Automotive Part
 10. **Edit an Open event** — Carla opens `TF-26-0006`, Submission step: the form with **Save
     changes**; she edits the title and saves: "Event TF-26-0006 was updated." Ana sees the same
     step read-only. After the event is reviewed, Carla sees it read-only too. (ER-21)
-11. **Site Admin** — Eva Novak has no Create event. (ER-1)
+11. **Site Admin** — Eva Novak (Site Admin, Lyon) reports a TF4 on behalf of Ana Ribeiro with only
+    department and workshop and no employee type ("Employee type (optional)"): Ana is the reporter.
+    On `TF-26-0002`, once reviewed, Eva changes the title: the Record Historian lists it; Carla
+    Mendes (Manager) cannot. Ana deletes her draft "Hand caught in press, glove torn": "Draft
+    deleted.". An SRE2 asks no risk question. (ER-1, ER-5, ER-8, ER-11, ER-13, ER-16, ER-21)
 12. **Phone and keyboard** — At 320px the form is one column with the bar at the bottom; every
     field and chip works with the keyboard. (Domain)
 

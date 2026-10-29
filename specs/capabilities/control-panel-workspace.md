@@ -27,7 +27,7 @@ notifications, the audit trail and the search.
 - **CPW-6 Audit**: the Audit tab lists every workflow and master data change of the pillar, newest
   first: when, who, level and plants ("Central", "Cluster Lyon, Porto"), what (e.g. "TF2 · Review"
   or the value), the change (Made Required, Made Optional, Changed, Added, Edited, Deactivated,
-  Reactivated, Retired) and "before → after". Filters **What** (Everything, Workflow, each
+  Reactivated; Retired on changes made before retiring was removed) and "before → after". Filters **What** (Everything, Workflow, each
   editable list of the pillar) and **Who** (Everyone, each author), with the number of changes
   shown. Every change and its audit entry are saved together: one is never saved without the
   other.

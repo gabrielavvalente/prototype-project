@@ -653,8 +653,8 @@
   white-space: nowrap;
 }
 
-.row--retired th,
-.row--retired td {
+.row--inactive th,
+.row--inactive td {
   color: var(--color-muted);
 }
 

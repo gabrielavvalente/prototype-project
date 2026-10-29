@@ -1,7 +1,8 @@
 // Master data rules (spec FR-013 to FR-021): the lists of each pillar, who may do what, which
 // values a plant can use, and value validation.
-// The owner of a value changes its status (Active, Inactive, Retired). Other levels switch it off
-// for their own plants with an "activation choice" (a deactivation for a scope).
+// The owner of a value deactivates or reactivates it (Active, Inactive); other levels switch it off
+// for their own plants with an "activation choice" (a deactivation for a scope). Nothing is ever
+// deleted: a deactivated value stays on the events that used it (014 remarks).
 // Shared code: imports no packages and nothing from apps/ (constitution v2.3.0).
 
 import { getRole, plantsOverlap } from './permissions.js';
@@ -26,7 +27,12 @@ export const LISTS = [
   { id: 'irCategories', pillarId: 'pillar-ir', label: 'Categories', fixedGlobal: false, hasCode: true },
 ];
 
-export const STATUSES = ['Active', 'Inactive', 'Retired'];
+export const STATUSES = ['Active', 'Inactive'];
+
+// A value saved as Retired before 014 is an Inactive one (it can be reactivated).
+export function normalizeValueStatus(value) {
+  return value.status === 'Retired' ? { ...value, status: 'Inactive' } : value;
+}
 
 export function getList(listId) {
   return LISTS.find((list) => list.id === listId);
@@ -112,6 +118,17 @@ export function classificationValueName(values, id) {
   return name(id) ?? id;
 }
 
+// Values already chosen on an event stay on it once deactivated, but are never offered again: the
+// options get them back, marked, only where they are already chosen (014 remarks).
+export function withChosenValues(options, chosenIds, values) {
+  const offered = new Set(options.flatMap((option) => (option.items ? option.items.map((item) => item.value) : [option.value])));
+  const missing = chosenIds
+    .filter((id) => !offered.has(id))
+    .map((id) => ({ value: id, label: `${classificationValueName(values, id)} (no longer available)` }));
+  if (missing.length === 0) return options;
+  return options.some((option) => option.items) ? [...options, { group: 'No longer available', items: missing }] : [...options, ...missing];
+}
+
 // The values a user sees in a list: Central values and those of Clusters sharing a plant with
 // them (Central sees all).
 export function visibleValues(user, list, values) {
@@ -149,7 +166,6 @@ export function allowedValueActions(user, list, value, activations = []) {
     edit: false,
     deactivate: false,
     reactivate: false,
-    retire: false,
     deactivateHere: false,
     reactivateHere: false,
   };
@@ -161,7 +177,7 @@ export function allowedValueActions(user, list, value, activations = []) {
     return none;
   }
   const add = role.level === 'central' || role.level === 'cluster';
-  if (!value || value.status === 'Retired') {
+  if (!value) {
     return { ...none, add };
   }
   const owner = isOwner(role, value);
@@ -172,7 +188,6 @@ export function allowedValueActions(user, list, value, activations = []) {
     edit: owner,
     deactivate: owner && value.status === 'Active',
     reactivate: owner && value.status === 'Inactive',
-    retire: owner,
     deactivateHere: !owner && !ownChoice,
     reactivateHere: !owner && Boolean(ownChoice),
   };
@@ -193,7 +208,7 @@ export function planImport(user, list, rows, values) {
   const scope = { ownerLevel: role.level, ownerPlantIds: role.level === 'central' ? [] : role.plantIds };
   const keyOf = (item) => (list.hasCode ? item.code : item.name).trim().toLowerCase();
   const categories = values.filter((item) => item.listId === list.parentListId);
-  const linked = values.filter((item) => item.listId === list.linkedListId && item.status !== 'Retired');
+  const linked = values.filter((item) => item.listId === list.linkedListId);
   const seen = visibleValues(user, list, values);
   let known = [...values];
   const keysInFile = new Set();
@@ -221,7 +236,7 @@ export function planImport(user, list, rows, values) {
       return;
     }
     keysInFile.add(keyOf(fields));
-    const sameKey = (item) => item.status !== 'Retired' && keyOf(item) === keyOf(fields);
+    const sameKey = (item) => keyOf(item) === keyOf(fields);
     const existing = known.find((item) => item.listId === list.id && sameScope(item, scope) && sameKey(item));
     if (!existing && seen.some((item) => !sameScope(item, scope) && sameKey(item))) {
       result.skipped.push({ line, message: `${fields.code || fields.name} belongs to another level and was left unchanged.` });

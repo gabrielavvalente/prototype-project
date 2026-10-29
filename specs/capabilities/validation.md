@@ -19,13 +19,12 @@ goes back to Actions for more corrective actions.
 ## Rules
 
 - **VAL-1** The **validators** of an event are its reviewer; when its workflow has no review, the
-  Managers who can see its plant and pillar.
+  Managers who can see its plant and pillar. The Site Admins of its plant validate and rework too.
 - **VAL-2** The **Validation** step shows every action of the plan read-only (the lines of AP-6)
   and, for the validators while it is the current step, "Is this event closed? Were the actions
-  effective?" Yes / No; No asks "Why is it not effective?" (required); Yes asks "No additional
-  actions are needed." to be ticked; **Complete validation**. Missing answers are refused next to
-  their field ("Say whether this event is closed.", "Explain why it is not effective.", "Confirm
-  that no additional actions are needed."). Everyone else who can see the event reads it.
+  effective?" Yes / No; No asks "Why is it not effective?" (required); Yes needs nothing more;
+  **Complete validation**. Missing answers are refused next to their field ("Say whether this event
+  is closed.", "Explain why it is not effective."). Everyone else who can see the event reads it.
 - **VAL-3** **Yes** closes and locks the event (Closed, VAL-6), with the alerts of
   [notifications](notifications.md) NT-3; the step shows "Validated as effective by <name> on
   <date>".
@@ -36,11 +35,13 @@ goes back to Actions for more corrective actions.
   returns to Validation.
 - **VAL-5** Every validation is kept; the history shows "Validation: not effective — <reason> (<name>)",
   "Validation: effective — closed by <name>" and "Rework: <reason> (<name>)".
-- **VAL-6** **Locked**: an event closed by its validation is locked — nothing of it can be changed
+- **VAL-6** **Locked**: an event closed by its validation is locked — nothing of it can be changed,
+  by anyone, a Site Admin included
   (submission, analysis, plan, actions, validation), its optional analysis (RCA-18) is not offered,
   and every step shows "This event is closed and locked. Only a rework can reopen it.". Its safety
   communications stay readable, and its Safety Warning can still be published and shared.
-- **VAL-7** **Rework** (the validators, on a locked event's Validation step) asks "Why does it need
+- **VAL-7** **Rework** (the validators and the Site Admins of its plant, on a locked event's
+  Validation step) asks "Why does it need
   rework?" (required: "Explain why it needs rework."); then the event is unlocked and back at
   Actions (In Progress, current step Actions), the plan opens again for its owners, who get "Event
   sent back for rework" (work), and the history shows "Rework: <reason> (<name>)". Once the plan
@@ -59,9 +60,7 @@ completed and Validation as its current step.
    night (Carla Mendes)". (VAL-2, VAL-4, VAL-5)
 2. **Effective** — Carla adds "Night check of the rack" for Ana (On Going at once); Ana
    completes it; the plan completes again and the event returns to Validation; Carla answers Yes
-   and presses Complete validation: refused with "Confirm that no additional actions are needed."
-   (and the page scrolls to it); she ticks "No additional actions are needed." and completes.
-   *Then* the event is Closed and locked (no "Event closed": Carla, its reporter, closed it
+   and presses Complete validation, with nothing more to confirm. *Then* the event is Closed and locked (no "Event closed": Carla, its reporter, closed it
    herself), the step shows "Validated as effective by Carla Mendes on …" and every step shows
    "This event is closed and locked. Only a rework can reopen it.". Diego sees the Validation step
    read-only. (AP-9, AP-12, VAL-1, VAL-2, VAL-3, VAL-6)

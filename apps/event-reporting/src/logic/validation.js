@@ -20,8 +20,9 @@ export const EMPLOYEE_TYPE_EMPLOYEE = 'employeeType-1';
 // The "Other" first aid treatment, which asks for a description (review 2026-10-25).
 export const FIRST_AID_OTHER = 'firstAidTreatment-9';
 
-// Near misses and hazardous situations only need the area (FR-005, safety event rules).
-const AREA_ONLY_LEVELS = ['TF4', 'TF5'];
+// Near misses and hazardous situations only need the area (FR-005, safety event rules), in Safety
+// and in Environment (014 ER-8).
+const AREA_ONLY_LEVELS = ['TF4', 'TF5', 'EvE4', 'EvE5'];
 
 export function getRequiredLocationLevels(levelCode) {
   return AREA_ONLY_LEVELS.includes(levelCode) ? ['departmentId', 'workshopId'] : LOCATION_LEVELS;
@@ -35,6 +36,11 @@ export function isFirstAidRequired(levelCode) {
   return ['TF1', 'TF2', 'TF3'].includes(levelCode);
 }
 
+// The employee type and the person involved are required for TF1–TF3 only (014 ER-11).
+export function isPersonInvolvedRequired(levelCode) {
+  return ['TF1', 'TF2', 'TF3'].includes(levelCode);
+}
+
 // A hazardous situation (TF5) with serious incident potential is reported as a near miss (TF4)
 // (FR-048). Returns the level to use and whether it was changed.
 export function applySipLevelRule(levelCode, riskQuestion) {
@@ -45,17 +51,15 @@ export function applySipLevelRule(levelCode, riskQuestion) {
   return { levelCode, changed: false };
 }
 
-// The follow-up question after the level (FR-004): SIP for Safety and Environment,
-// CRP for SRE1–SRE2 and SRP for SRE3–SRE5; none for Occupational Health.
+// The follow-up question after the level (FR-004): SIP for Safety and Environment; none for
+// Industrial Risk and Occupational Health (014 ER-5).
 export function getRiskQuestionType(familyCode, levelCode) {
   if (!levelCode) {
     return null;
   }
+  // Only the SIP question; Industrial Risk and Industrial Hygiene events have none (014 ER-5).
   if (familyCode === 'TF' || familyCode === 'EVE') {
     return 'SIP';
-  }
-  if (familyCode === 'SRE') {
-    return ['SRE1', 'SRE2'].includes(levelCode) ? 'CRP' : 'SRP';
   }
   return null;
 }
@@ -143,12 +147,14 @@ function validateGeneral(event) {
   } else if (description.length > MAX_DESCRIPTION_LENGTH) {
     errors.push(error('description', `Keep the description under ${MAX_DESCRIPTION_LENGTH} characters.`));
   }
-  if (isBlank(event.employeeType)) {
-    errors.push(error('employeeType', 'Choose the employee type.'));
-  } else if (event.employeeType === EMPLOYEE_TYPE_EMPLOYEE) {
-    if (isBlank(event.involvedPersonId)) errors.push(error('involvedPersonId', 'Choose the person involved.'));
-  } else if (isBlank(event.involvedPersonName)) {
-    errors.push(error('involvedPersonName', 'Enter the name of the person involved.'));
+  if (isPersonInvolvedRequired(event.levelCode)) {
+    if (isBlank(event.employeeType)) {
+      errors.push(error('employeeType', 'Choose the employee type.'));
+    } else if (event.employeeType === EMPLOYEE_TYPE_EMPLOYEE) {
+      if (isBlank(event.involvedPersonId)) errors.push(error('involvedPersonId', 'Choose the person involved.'));
+    } else if (isBlank(event.involvedPersonName)) {
+      errors.push(error('involvedPersonName', 'Enter the name of the person involved.'));
+    }
   }
   if (isFirstAidRequired(event.levelCode)) {
     const treatments = event.firstAidTreatmentIds || [];

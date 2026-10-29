@@ -70,11 +70,10 @@ describe('getRiskQuestionType (FR-004)', () => {
     expect(getRiskQuestionType('EVE', 'EvE5')).toBe('SIP');
   });
 
-  it('asks CRP for SRE1-SRE2 and SRP for SRE3-SRE5', () => {
-    expect(getRiskQuestionType('SRE', 'SRE1')).toBe('CRP');
-    expect(getRiskQuestionType('SRE', 'SRE2')).toBe('CRP');
-    expect(getRiskQuestionType('SRE', 'SRE3')).toBe('SRP');
-    expect(getRiskQuestionType('SRE', 'SRE5')).toBe('SRP');
+  it('asks nothing for Industrial Risk (014 ER-5)', () => {
+    expect(getRiskQuestionType('SRE', 'SRE1')).toBeNull();
+    expect(getRiskQuestionType('SRE', 'SRE5')).toBeNull();
+    expect(getRiskQuestionType('EVE', 'EvE3')).toBe('SIP');
   });
 
   it('asks nothing for Occupational Health or before a level is chosen', () => {
@@ -164,6 +163,9 @@ describe('validateSection', () => {
   it('only needs department and workshop for TF4 and TF5, task type optional', () => {
     const areaOnly = makeEvent({ location: { departmentId: 'd', workshopId: 'w' }, taskTypeId: '' });
     expect(validateSection('location', areaOnly, options)).toEqual([]);
+    // EvE4 and EvE5 need the area only too (014 ER-8).
+    const eve = makeEvent({ familyCode: 'EVE', levelCode: 'EvE5', riskQuestion: { type: 'SIP', answer: false }, location: { departmentId: 'd', workshopId: 'w' }, taskTypeId: '' });
+    expect(validateSection('location', eve, options)).toEqual([]);
     const noWorkshop = makeEvent({ levelCode: 'TF5', location: { departmentId: 'd' }, taskTypeId: '' });
     expect(validateSection('location', noWorkshop, options)[0].message).toMatch(/department and workshop/);
     expect(getRequiredLocationLevels('SRE4')).toHaveLength(5);
@@ -188,10 +190,13 @@ describe('validateSection', () => {
     expect(validateSection('general', makeEvent({ levelCode: 'TF1', firstAidTreatmentIds: ['firstAidTreatment-1'] }), options)).toEqual([]);
   });
 
-  it('asks the person involved according to the employee type (FR-010)', () => {
-    const employee = makeEvent({ involvedPersonId: '' });
+  it('asks the person involved according to the employee type, for TF1-TF3 only (FR-010, 014 ER-11)', () => {
+    expect(validateSection('general', makeEvent({ employeeType: '', involvedPersonId: '' }), options)).toEqual([]);
+    const tf1 = (changes) => makeEvent({ levelCode: 'TF1', firstAidTreatmentIds: ['firstAidTreatment-1'], ...changes });
+    expect(fields(validateSection('general', tf1({ employeeType: '' }), options))).toEqual(['employeeType']);
+    const employee = tf1({ involvedPersonId: '' });
     expect(fields(validateSection('general', employee, options))).toEqual(['involvedPersonId']);
-    const contractor = makeEvent({ employeeType: 'employeeType-3', involvedPersonId: '', involvedPersonName: '' });
+    const contractor = tf1({ employeeType: 'employeeType-3', involvedPersonId: '', involvedPersonName: '' });
     expect(fields(validateSection('general', contractor, options))).toEqual(['involvedPersonName']);
     const named = { ...contractor, involvedPersonName: 'Sam Lee' };
     expect(validateSection('general', named, options)).toEqual([]);
@@ -211,15 +216,14 @@ describe('validateSection', () => {
   });
 
   it('checks event details and OH diseases (FR-010)', () => {
-    const event = makeEvent({ employeeType: '', recurrence: null });
-    expect(fields(validateSection('general', event, options))).toEqual(['employeeType']);
+    const event = makeEvent({ recurrence: null });
     expect(fields(validateSection('details', event, options))).toEqual(['recurrence']);
     const oh = makeEvent({ familyCode: 'OH', levelCode: 'OH-SKIN', diseaseIds: [] });
     expect(fields(validateSection('details', oh, options))).toEqual(['diseaseIds']);
   });
 
   it('does not require an immediate action at any level, but checks the ones added (FR-012)', () => {
-    const event = makeEvent({ familyCode: 'SRE', levelCode: 'SRE1', riskQuestion: { type: 'CRP', answer: true } });
+    const event = makeEvent({ familyCode: 'SRE', levelCode: 'SRE1', riskQuestion: null });
     expect(validateSection('actions', event, options)).toEqual([]);
     const incomplete = { ...event, immediateActions: [makeAction({ description: '' })] };
     expect(fields(validateSection('actions', incomplete, options))).toEqual(['immediateActions.0']);

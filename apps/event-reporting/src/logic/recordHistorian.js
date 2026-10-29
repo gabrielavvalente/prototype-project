@@ -19,6 +19,10 @@ function validationText(event) {
 function fieldsOf(event) {
   const rca = event.rca || {};
   return {
+    Title: event.title || '',
+    Description: event.description || '',
+    Level: event.levelCode || '',
+    'Event time': event.eventTime || '',
     Status: event.status || '',
     'Event statement': rca.statement?.trim() || event.review?.statement || '',
     'Immediate actions': (event.immediateActions || []).map((action) => action.description).join('; '),

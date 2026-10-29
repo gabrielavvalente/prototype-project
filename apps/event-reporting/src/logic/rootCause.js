@@ -1,6 +1,7 @@
 // Root cause analysis (feature 004; Investigation source and UI/UX designs): 5W1H (optional), 6M,
 // 5 Why and learnings, who may fill them in, and completing the step.
 
+import { isPlantSiteAdmin } from './access.js';
 import { membersOf } from '../../../../shared/platform/groups.js';
 import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
 import { currentStep } from './review.js';
@@ -217,6 +218,8 @@ function emptyFiveW1H() {
 export function emptyAnalysis(event) {
   return {
     statement: event.review?.statement || event.description || '',
+    // One "applicable?" answer for the whole 5W1H (014 RCA-10).
+    fiveW1HApplies: null,
     fiveW1H: emptyFiveW1H(),
     causes: [],
     whys: [],
@@ -243,6 +246,10 @@ export function normalizeAnalysis(analysis) {
       return [section.key, { applies: saved.applies ?? null, answers }];
     }),
   );
+  // One answer for the whole guide (014 RCA-10); before, one per section: Yes if any section was.
+  const perSection = Object.values(fiveW1H).map((section) => section.applies);
+  const fiveW1HApplies =
+    rest.fiveW1HApplies !== undefined ? rest.fiveW1HApplies : perSection.includes(true) ? true : perSection.every((applies) => applies === false) ? false : null;
   const themeKeys = SIX_M_THEMES.map((theme) => theme.key);
   const causes = (rest.causes ?? []).map((cause) =>
     cause.option
@@ -255,17 +262,17 @@ export function normalizeAnalysis(analysis) {
     parentId: why.parentId ?? causes[0]?.id,
     rootCause: Boolean(why.rootCause),
   }));
-  return { ...rest, fiveW1H, causes, whys: syncWhysWithCauses(whys, causes) };
+  return { ...rest, fiveW1HApplies, fiveW1H, causes, whys: syncWhysWithCauses(whys, causes) };
 }
 
 const filled = (text) => Boolean((text || '').trim());
 
-function fiveW1HStatus(fiveW1H, pillarId) {
-  const sections = fiveW1HSections(pillarId).map((section) => ({ section, value: fiveW1H[section.key] }));
-  if (sections.every(({ value }) => value.applies === null)) return 'notStarted';
-  const answered = ({ section, value }) =>
-    value.applies === false || (value.applies === true && section.questions.every((question) => filled(value.answers[question.id])));
-  return sections.every(answered) ? 'done' : 'inProgress';
+// Done when the guide does not apply, or applies with every offered question answered (014 RCA-10).
+function fiveW1HStatus(applies, fiveW1H, pillarId) {
+  if (applies === null || applies === undefined) return 'notStarted';
+  if (applies === false) return 'done';
+  const answered = (section) => section.questions.every((question) => filled(fiveW1H[section.key]?.answers[question.id]));
+  return fiveW1HSections(pillarId).every(answered) ? 'done' : 'inProgress';
 }
 
 const explained = (cause) => filled(cause.why) && (cause.option !== OTHER_CAUSE || filled(cause.other));
@@ -285,7 +292,7 @@ function fiveWhyStatus(whys) {
 // notStarted | inProgress | done for each part (5W1H is optional and depends on the event's pillar).
 export function partStatus(analysis, pillarId) {
   return {
-    fiveW1H: fiveW1HStatus(analysis.fiveW1H, pillarId),
+    fiveW1H: fiveW1HStatus(analysis.fiveW1HApplies, analysis.fiveW1H, pillarId),
     sixM: sixMStatus(analysis.causes),
     fiveWhy: fiveWhyStatus(analysis.whys),
     learnings: filled(analysis.learnings) ? 'done' : 'notStarted',
@@ -322,6 +329,8 @@ export function designatedIds(event, groups) {
 // when nobody was designated (events reviewed before feature 004).
 export function canPerformAnalysis(user, event, groups) {
   if (currentStep(event) !== 'rootCause') return false;
+  // The plant's Site Admins too (014 RCA-7).
+  if (isPlantSiteAdmin(user, event)) return true;
   const ids = designatedIds(event, groups);
   return ids.length > 0 ? ids.includes(user.id) : event.review?.reviewerId === user.id;
 }

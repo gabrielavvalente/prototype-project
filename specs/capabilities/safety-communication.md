@@ -42,7 +42,8 @@ anyone.
   | Next steps | The event's required steps not done yet ("Root cause analysis · Actions · Validation"), or "None — the event is closed." |
 
 - **SC-5** The **Safety Warning** exists once the event's root cause analysis is completed and its
-  action plan deployed. Until it is published it is a **draft** that only the plan owners see,
+  action plan deployed. Until it is published it is a **draft** that only the plan owners and the
+  Site Admins of its plant see,
   with "Draft — only the plan owners see it until it is published."; it shows the Alert's header,
   Critical, Severity, What happened and What was done — not its Next steps — with the photos
   chosen (SC-6) next to the header (below it on phones), then, in this order:
@@ -57,10 +58,10 @@ anyone.
 
 ### Publishing
 
-- **SC-6** In the draft, the plan owners tick the event's photos to include ("Photos to include",
+- **SC-6** In the draft, the plan owners (and the plant's Site Admins) tick the event's photos to include ("Photos to include",
   with "Choose photos that show no one's face or name."); none is ticked at first; videos are not
   offered.
-- **SC-7** **Publish Safety Warning** (plan owners, draft only), next to the Warning's **Print**
+- **SC-7** **Publish Safety Warning** (plan owners and the plant's Site Admins, draft only), next to the Warning's **Print**
   button (the photos to include stay below the document), asks "Publish this Safety Warning?
   Everyone at <plant> will be able to read it, and it will no longer change." — then the Warning
   shows "Published on <date>", keeps the content it had at that moment (later changes to the event
@@ -89,7 +90,7 @@ anyone.
   | Safety Alert | "Available" | yes |
   | Safety Alert | "After the review" — or "Not for an archived event", "Not for Industrial Hygiene" | no |
   | Safety Warning | "Published" | yes |
-  | Safety Warning | "Draft — ready to publish" (plan owners) | yes |
+  | Safety Warning | "Draft — ready to publish" (plan owners, Site Admins of the plant) | yes |
   | Safety Warning | "Being prepared by the plan owners" (everyone else, during the draft) | no |
   | Safety Warning | "After the analysis and the action plan" — or "Only after a root cause analysis" (the review is done and the event has no analysis), "Not for an archived event", "Not for Industrial Hygiene" | no |
 

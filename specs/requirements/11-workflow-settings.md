@@ -89,7 +89,7 @@ Builds on: [00 Overview](00-overview.md) (workflow, critical events), [01 Roles 
 - **WF-12** Every workflow and master data change of a pillar writes an **audit entry**, saved together
   with the change: when, who, layer and plants ("Central", "Cluster <plants>"), what (e.g. "TF2 ·
   Review", "TF2 · Reviewers", or the master data value), the change (Made Required, Made Optional,
-  Changed, Added, Edited, Deactivated, Reactivated, Retired) and before → after (for reviewers, the
+  Changed, Added, Edited, Deactivated, Reactivated) and before → after (for reviewers, the
   names; "No reviewers" when empty). The pillar's audit is listed newest first and can be narrowed by
   **What** (everything, workflow, each editable list) and **Who** (everyone, each author), with the
   number of changes shown. People with a Control Panel role on the pillar read it.

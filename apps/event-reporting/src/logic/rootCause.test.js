@@ -76,13 +76,17 @@ describe('root cause analysis (004)', () => {
     expect(Object.keys(validateAnalysis(unnamedOther))).toEqual(['sixM']);
   });
 
-  it('counts 5W1H as done when every section is No, or Yes with every answer', () => {
+  it('counts 5W1H as done when it does not apply, or applies with every question answered (014 RCA-10)', () => {
     const analysis = emptyAnalysis(makeEvent(['review', 'rootCause'], null));
-    for (const section of FIVE_W1H) analysis.fiveW1H[section.key].applies = false;
-    analysis.fiveW1H.what = { applies: true, answers: { 'what-1': 'Slipped on a wet floor' } };
-    expect(partStatus(analysis).fiveW1H).toBe('inProgress');
-    analysis.fiveW1H.what.answers = Object.fromEntries(FIVE_W1H[1].questions.map((question) => [question.id, 'Answered']));
-    expect(partStatus(analysis).fiveW1H).toBe('done');
+    expect(partStatus(analysis, 'pillar-env').fiveW1H).toBe('notStarted');
+    expect(partStatus({ ...analysis, fiveW1HApplies: false }, 'pillar-env').fiveW1H).toBe('done');
+    const applies = { ...analysis, fiveW1HApplies: true };
+    applies.fiveW1H.what = { applies: null, answers: { 'what-1': 'Slipped on a wet floor' } };
+    expect(partStatus(applies, 'pillar-env').fiveW1H).toBe('inProgress');
+    for (const section of fiveW1HSections('pillar-env')) {
+      applies.fiveW1H[section.key].answers = Object.fromEntries(section.questions.map((question) => [question.id, 'Answered']));
+    }
+    expect(partStatus(applies, 'pillar-env').fiveW1H).toBe('done');
   });
 
   it('offers "Who was injured?" for Health & Safety events only (006)', () => {
@@ -90,9 +94,10 @@ describe('root cause analysis (004)', () => {
     expect(fiveW1HSections('pillar-ir').map((section) => section.key)).not.toContain('who');
     expect(fiveW1HSections('pillar-ih').map((section) => section.key)).not.toContain('who');
     expect(fiveW1HSections('pillar-hs').map((section) => section.key)).toContain('who');
-    const analysis = emptyAnalysis(makeEvent(['review', 'rootCause'], null));
-    for (const section of FIVE_W1H) analysis.fiveW1H[section.key].applies = false;
-    analysis.fiveW1H.who = { applies: true, answers: {} };
+    const analysis = { ...emptyAnalysis(makeEvent(['review', 'rootCause'], null)), fiveW1HApplies: true };
+    for (const section of fiveW1HSections('pillar-env')) {
+      analysis.fiveW1H[section.key].answers = Object.fromEntries(section.questions.map((question) => [question.id, 'x']));
+    }
     expect(partStatus(analysis, 'pillar-hs').fiveW1H).toBe('inProgress');
     expect(partStatus(analysis, 'pillar-env').fiveW1H).toBe('done');
   });
@@ -136,6 +141,8 @@ describe('root cause analysis (004)', () => {
     expect(analysis.whys.map((why) => why.rootCause)).toEqual([false, true]);
     expect(analysis.fiveW1H.who).toEqual({ applies: true, answers: { 'who-1': 'Diego' } });
     expect(analysis.fiveW1H.how).toEqual({ applies: null, answers: {} });
+    // One section answered Yes before 014: the whole guide applies.
+    expect(analysis.fiveW1HApplies).toBe(true);
     expect(analysis.causes[0]).toMatchObject({ theme: 'management', option: 'Other', other: 'No signage' });
   });
 

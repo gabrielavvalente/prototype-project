@@ -112,8 +112,9 @@ workflow), [01 Roles and permissions](01-roles-and-permissions.md).
 - **ER-21** A Manager or a Site Admin who can see the event corrects an **Open** event with the
   same rules as reporting (no draft, no automatic save). The record number, the status and the
   workflow taken at submission do not change, even if the level does; nobody is alerted.
-- **ER-22** Once reviewed (In Progress, Archived, Closed), only the plant's **Site Admins** can
-  correct the report, as long as the event is not locked (RP-8a); the change is recorded in the
+- **ER-22** While the review is under way, its **assigned reviewer** corrects the report too, until
+  they complete it. Once reviewed (In Progress, Archived, Closed), only the plant's **Site Admins**
+  can correct the report, as long as the event is not locked (RP-8a); the change is recorded in the
   Record Historian ([07](07-record-historian.md)). Otherwise the review corrects what needs
   correcting.
 - **ER-23** Every event records who created it and when, and who last changed it and when (OV-13).

@@ -9,6 +9,7 @@ import PeoplePicker from './PeoplePicker.jsx';
 // (FR-006, FR-010; review 2026-10-25).
 export default function DetailsSection({ event, update, errors }) {
   const { reference, users, user } = useApp();
+  const onBehalf = ['Manager', 'Site Admin'].includes(user.role);
   const plantUsers = users.filter((person) => person.access.some((entry) => entry.plantId === event.plantId));
   const diseases = getReferenceList(reference, 'disease');
   // People of this plant who can see the event's pillar, except the person reporting it.
@@ -21,8 +22,9 @@ export default function DetailsSection({ event, update, errors }) {
         label="Reporter"
         value={event.reporterId}
         options={plantUsers.map((person) => ({ id: person.id, label: person.name }))}
-        disabled={user.role !== 'Manager'}
-        hint={user.role === 'Manager' ? 'As a Manager you can report on behalf of someone else.' : undefined}
+        // Managers and Site Admins report on behalf of someone else (014 ER-13).
+        disabled={!onBehalf}
+        hint={onBehalf ? 'As a Manager or Site Admin you can report on behalf of someone else.' : undefined}
         onChange={(value) => update({ reporterId: value })}
         errors={errors}
       />

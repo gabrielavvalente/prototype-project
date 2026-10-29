@@ -34,13 +34,13 @@ choices of the people of their plant.
   raised: "Event to review", "Root cause analysis assigned to you", "Action plan ready for
   validation", "Event sent back for rework" (to the plan owners). **Information** alerts are all the
   others; they skip the person who did the action ("Event submitted" excepted: it also goes to the
-  Manager who reported the event) and are raised only when the person has them on (NT-5).
+  Manager or Site Admin who reported the event) and are raised only when the person has them on (NT-5).
 - **NT-3** The alerts:
 
   | Stage | When | Alert | To |
   |---|---|---|---|
   | Submission | Submitted, Review required | "Event to review" (work) | The event's reviewers |
-  | Submission | Submitted | "Event submitted" | The Managers who see the event and are not its reviewers; the people of the matching submission rules (NT-9) |
+  | Submission | Submitted | "Event submitted" | The Managers who see the event and the Site Admins of its plant, when not its reviewers; the people of the matching submission rules (NT-9) |
   | Submission | Submitted by someone else than its reporter | "Event reported on your behalf" | The reporter |
   | Submission | Submitted with Shared with people | "Event shared with you" | Each Shared with person |
   | Review | A reviewer takes the review | — the other reviewers' "Event to review" for this event disappear; the taker's is marked read | — |

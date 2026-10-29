@@ -107,15 +107,9 @@ const businessOfPlant = {
   'plant-porto': 'biz-pack',
 };
 
+// Only Safety and Environment events answer the SIP question (014 ER-5).
 function riskQuestionFor(familyCode, levelCode, answer) {
-  if (familyCode === 'TF' || familyCode === 'EVE') {
-    return { type: 'SIP', answer };
-  }
-  if (familyCode === 'SRE') {
-    const type = ['SRE1', 'SRE2'].includes(levelCode) ? 'CRP' : 'SRP';
-    return { type, answer };
-  }
-  return null;
+  return familyCode === 'TF' || familyCode === 'EVE' ? { type: 'SIP', answer } : null;
 }
 
 // Picks one branch of the location hierarchy; "variant" (0-31) chooses which.

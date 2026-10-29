@@ -10,7 +10,7 @@ import { getRole } from '../../../../shared/platform/permissions.js';
 import Icon from '../shell/Icon.jsx';
 import { describePlants } from '../shell/roleText.js';
 
-const STATUS_TAGS = { Active: 'tag--teal', Inactive: 'tag--outline', Retired: 'tag--dark' };
+const STATUS_TAGS = { Active: 'tag--teal', Inactive: 'tag--outline' };
 
 // Saves text as a file in the browser's downloads.
 function downloadFile(fileName, text) {
@@ -111,27 +111,26 @@ export default function ValueList({ list, values, activations, plants, plantId, 
     if (allowed.edit) {
       buttons.push(['Edit', () => onEdit(value)]);
     }
+    // The owner deactivates its value for all the plants it covers; nothing is deleted (014 remarks).
+    const scope = value.ownerLevel === 'central' ? 'all plants' : value.ownerPlantIds.map((id) => getPlantName(organization, id)).join(', ');
     if (allowed.deactivate) {
-      buttons.push(['Deactivate', () => run(() => setValueStatus(user, list.id, value.id, 'Inactive'), `${value.name} is now Inactive everywhere it was used.`)]);
+      buttons.push([
+        `Deactivate for ${scope}`,
+        () =>
+          run(
+            () => setValueStatus(user, list.id, value.id, 'Inactive'),
+            `${value.name} is deactivated for ${scope}: no longer offered for new events; past events keep it.`,
+          ),
+      ]);
     }
     if (allowed.reactivate) {
-      buttons.push(['Reactivate', () => run(() => setValueStatus(user, list.id, value.id, 'Active'), `${value.name} is Active again.`)]);
+      buttons.push([`Reactivate for ${scope}`, () => run(() => setValueStatus(user, list.id, value.id, 'Active'), `${value.name} is active again for ${scope}.`)]);
     }
     if (allowed.deactivateHere) {
       buttons.push([`Deactivate for ${myPlants}`, () => run(() => setActivation(user, list.id, value.id, false), `${value.name} is deactivated for ${myPlants}.`)]);
     }
     if (allowed.reactivateHere) {
       buttons.push([`Reactivate for ${myPlants}`, () => run(() => setActivation(user, list.id, value.id, true), `${value.name} is active again for ${myPlants}.`)]);
-    }
-    if (allowed.retire) {
-      buttons.push([
-        'Retire',
-        () => {
-          if (window.confirm(`Retire ${value.name}? It will no longer be offered anywhere, and this cannot be undone.`)) {
-            run(() => setValueStatus(user, list.id, value.id, 'Retired'), `${value.name} was retired.`);
-          }
-        },
-      ]);
     }
     return buttons;
   }
@@ -140,7 +139,7 @@ export default function ValueList({ list, values, activations, plants, plantId, 
     const available = isAvailable(value, values, activations, plantId);
     const buttons = actionsFor(value);
     return (
-      <tr key={value.id} className={value.status === 'Retired' ? 'row--retired' : ''}>
+      <tr key={value.id} className={value.status === 'Inactive' ? 'row--inactive' : ''}>
         {list.hasCode && <td className="cell-code">{value.code}</td>}
         <th scope="row">
           {value.name}

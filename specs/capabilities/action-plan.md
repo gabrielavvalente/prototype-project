@@ -30,7 +30,8 @@ deploy them, assignees carry them out, and the plan completes by itself, which m
   make the Actions step required (AP-3).
 - **AP-2** The plan's **owners** are the people designated for the root cause analysis (directly
   or through a group); when the event had no analysis, its reviewer; when it had no review either,
-  the Managers who can see its plant and pillar. Only owners prepare, deploy and cancel; each
+  the Managers who can see its plant and pillar. Only owners — and the Site Admins of the event's
+  plant — prepare, deploy and cancel; each
   assignee updates their own deployed actions; everyone else who can see the event reads the plan,
   with the list of owners shown.
 - **AP-3** When the event's workflow does not require Actions, the step shows **Optional** in the
@@ -72,7 +73,8 @@ deploy them, assignees carry them out, and the plan completes by itself, which m
   [notifications](notifications.md) NT-3 says ("Action plan deployed"); nothing is sent about
   single actions.
 - **AP-10** An assignee sets their own On Going action to **To Complete** or **Completed**, and a To
-  Complete one to **Completed**; a Completed or Cancelled action no longer changes.
+  Complete one to **Completed**; a Site Admin of the event's plant can do so for any action. A
+  Completed or Cancelled action no longer changes.
 - **AP-11** The plan header counts every action of the plan, immediate ones included: "N actions ·
   N completed · N overdue", with "· Not deployed" before deployment.
 
