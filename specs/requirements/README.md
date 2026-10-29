@@ -42,8 +42,8 @@ products need from it is specified ([01](01-roles-and-permissions.md)).
 | 08 | [Safety communication](08-safety-communication.md) (Safety Alert, Safety Warning) | Reviewed |
 | 09 | [Sharing Hub](09-sharing-hub.md) | Reviewed |
 | 10 | [Alerts and notifications](10-alerts-and-notifications.md) | Reviewed |
-| 11 | [Workflow settings](11-workflow-settings.md) (and the Control Panel audit) | Draft for review |
-| 12 | [Master data](12-master-data.md) | Draft for review |
-| 13 | [Event library](13-event-library.md) (lists, filters, indicators, register, event page) | Draft for review |
-| 14 | [Reference catalogs](14-reference-catalogs.md) | Draft for review |
-| 15 | [Open questions](15-open-questions.md) | Draft for review |
+| 11 | [Workflow settings](11-workflow-settings.md) (and the Control Panel audit) | Reviewed |
+| 12 | [Master data](12-master-data.md) | Reviewed |
+| 13 | [Event library](13-event-library.md) (lists, filters, indicators, register, event page) | Reviewed |
+| 14 | [Reference catalogs](14-reference-catalogs.md) | Reviewed |
+| 15 | [Open questions](15-open-questions.md) | Reviewed |
