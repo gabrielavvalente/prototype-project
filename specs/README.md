@@ -5,6 +5,9 @@
 - **[capabilities/](capabilities/)** — one file per business capability, describing the product as
   it behaves now. Together with the domain, they are what a new project reuses to rebuild the
   product. Template: [`.specify/templates/capability-template.md`](../.specify/templates/capability-template.md).
+- **[requirements/](requirements/)** — the business requirements for the development team of the
+  real product: the capabilities without the prototype's demo data and design, with the open
+  questions a real product must answer.
 - **`NNN-name/`** — one Spec Kit folder per change (spec, plan, tasks…). The spec describes the
   change to the capabilities; its last task applies it to them. The folders are history and are
   not updated afterwards. 001–004 predate this format: their specs describe whole features and are
