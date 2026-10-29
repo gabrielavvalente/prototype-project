@@ -14,10 +14,9 @@ Builds on: [00 Overview](00-overview.md), [01 Roles and permissions](01-roles-an
 - **VAL-2** The Validation step shows every action of the plan, read-only, and asks the validators,
   while it is the current step: "Is this event closed? Were the actions effective?" Yes / No.
   - **No** asks "Why is it not effective?" (required).
-  - **Yes** asks to confirm "No additional actions are needed.".
+  - **Yes** needs nothing more.
   Missing answers are refused: "Say whether this event is closed." · "Explain why it is not
-  effective." · "Confirm that no additional actions are needed.". Everyone else who can see the
-  event reads the step.
+  effective.". Everyone else who can see the event reads the step.
 - **VAL-3** **Yes** closes and locks the event (VAL-5), with the closing alerts
   ([10](10-alerts-and-notifications.md)); the step shows "Validated as effective by <name> on
   <date>".
@@ -47,12 +46,13 @@ Builds on: [00 Overview](00-overview.md), [01 Roles and permissions](01-roles-an
 | Who validates | The reviewer; without review, the Managers of the plant and pillar; the plant's Site Admins too |
 | Outcome | Effective closes and locks the event; not effective (with a reason) returns it to Actions |
 | Locking | Only a rework reopens a locked event, any number of times |
+| Answering Yes | Closes at once, with no extra confirmation *(the prototype also asked to confirm "No additional actions are needed.")* |
 
 ## Examples
 
-1. **Given** a TF1 event whose plan completed, **when** its validator answers Yes without confirming
-   "No additional actions are needed.", **then** it is refused; with the confirmation, the event is
-   Closed and locked. (VAL-2, VAL-3)
+1. **Given** a TF1 event whose plan completed, **when** its validator answers Yes, **then** the event
+   is Closed and locked, with no further confirmation; completing without an answer is refused with
+   "Say whether this event is closed.". (VAL-2, VAL-3)
 2. **Given** a validator answering No with "Rack still unstable", **then** the event is back at
    Actions, the action plan owners are told "Event sent back for rework" and the reporter "Action
    plan not effective"; once the new actions are completed the event returns to Validation. (VAL-4)
