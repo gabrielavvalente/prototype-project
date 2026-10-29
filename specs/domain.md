@@ -68,13 +68,9 @@ Business ─► Plant ─► Department ─► Workshop ─► Job ─► Workst
 
 Each level has a one-sentence plain-language description shown when choosing it.
 
-**Risk question at reporting** (asked according to pillar and level):
-
-| When | Question | Effect of Yes |
-|---|---|---|
-| Health & Safety, Environment | SIP? | Recorded as the reporter's view (it never makes the event critical). A TF5 answered Yes becomes TF4 (with a warning). |
-| Industrial Risk SRE1–SRE2 | CRP? | Recorded with the event. |
-| Industrial Risk SRE3–SRE5 | SRP? | Recorded with the event. |
+**Risk question at reporting**: Health & Safety (Safety) and Environment events ask "Could this be a
+SIP?" — recorded as the reporter's view, it never makes the event critical; a TF5 answered Yes
+becomes TF4 (with a warning). Industrial Risk and Industrial Hygiene events ask none.
 
 ## People and roles
 
@@ -86,7 +82,7 @@ A person has, independently:
    |---|---|
    | User | Report events, see the events of their access, receive alerts. |
    | Manager | As User, plus: edit Open events of their plant and pillars, report on behalf of someone else, receive "Event submitted" alerts, be a reviewer. |
-   | Site Admin | See the events of their access (no reporting, no editing), receive alerts, be a reviewer, manage the notifications of their plants (Control Panel). |
+   | Site Admin | The highest access on the events of their plants, every pillar: as Manager, plus correct an event at any status and act on any step of any event — take over a review, the analysis, the action plan and any action, validation, rework, the Safety Warning — without being its reviewer, designated, owner, assignee or validator; never on a locked event (a rework first). Manage the notifications of their plants (Control Panel). |
 
 2. **Control Panel roles**: at most one per pillar, each Central (all plants), Cluster (two or more
    plants) or Local (one plant). A Site Admin automatically holds a Local role for every pillar
@@ -101,7 +97,7 @@ cannot open the Control Panel or User Management.
 
 | What | Who sees it |
 |---|---|
-| A submitted event | People whose access includes the event's plant **and** pillar. |
+| A submitted event | People whose access includes the event's plant **and** pillar; the Site Admins of its plant, whatever its pillar. |
 | A draft event | Only the person who created it. |
 | A user (User Management) | Central (on any pillar): everyone. Others: users linked, by event access or by Control Panel role, to a plant of one of the viewer's Control Panel roles. |
 | An investigation group | Central: all. Others: groups covering a plant of one of the viewer's Control Panel roles. |
@@ -236,5 +232,4 @@ follows the dependencies.
 
 ## Open points
 
-- SIP is "Serious Incident Potential", CRP "Critical Risk Potential" and SRP "Serious Risk
-  Potential" (as the report form explains them).
+- SIP is "Serious Incident Potential" (as the report form explains it).

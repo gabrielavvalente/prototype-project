@@ -16,12 +16,15 @@ classifies it, assesses its severity, and sends it to its next step or archives 
 - **RV-1** The reviewers of an event are those its workflow kept at submission
   ([workflow settings](workflow-settings.md) WF-11).
 - **RV-2** While nobody has taken it, the Review step says "This event is waiting for a reviewer.";
-  a reviewer sees "Assign yourself to review it. The other reviewers will no longer be able to." and
-  **Assign myself as reviewer**; others see the list of reviewers. Opening the step changes nothing.
+  a reviewer — or a Site Admin of the event's plant — sees "Assign yourself to review it. The other
+  reviewers will no longer be able to." and **Assign myself as reviewer**; others see the list of
+  reviewers. Opening the step changes nothing.
 - **RV-3** Assigning oneself sets the event **In Progress**. Then only that reviewer reviews it;
   others see "<name> is reviewing this event." (reviewers add "Only the assigned reviewer can
-  complete the review."). The assigned reviewer sees "You are the assigned reviewer for this
-  event." and the form.
+  complete the review."). A Site Admin of the event's plant can still take the review over ("As Site
+  Admin of this plant you can take this review over." and **Assign myself as reviewer**): they become
+  its reviewer. The assigned reviewer sees "You are the assigned reviewer for this event." and the
+  form.
 - **RV-4** The **Review** button (on the expanded card, [event library](event-library.md) EL-10)
   shows for a reviewer while Review is the current step and nobody else took it.
 

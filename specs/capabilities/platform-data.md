@@ -108,8 +108,9 @@ Ludovic Costa, Environment SIP by Ed Petrov, Industrial Risk SPL/HCL by Sergio M
 
 All in 2026. The workflow of each submitted event comes from the settings above; "Closed" ones
 required nothing besides Submission. "IA" = has one immediate action ("Area made safe and people
-informed", High priority, done by the reporter). Risk answer: the SIP / CRP / SRP answer of the
-domain (— for Industrial Hygiene).
+informed", High priority, done by the reporter). Risk answer: the SIP answer of the
+domain for Health & Safety and Environment (— for Industrial Risk and Industrial Hygiene, which ask
+none).
 
 | Record | Title | Level | Plant | Reporter | Risk | Status | Reported | IA |
 |---|---|---|---|---|---|---|---|---|
