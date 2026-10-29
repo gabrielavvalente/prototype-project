@@ -3,7 +3,7 @@ import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-route
 import { Alert, Badge, Button, Paper, Title } from '@mantine/core';
 import { useApp } from '../AppContext.js';
 import { AttachmentPreview } from '../create/AttachmentInput.jsx';
-import { findEvent, getByIndex } from '../data/db.js';
+import { deleteDraft, findEvent, getByIndex } from '../data/db.js';
 import { canEditEvent, getMenuItems, isEventVisible } from '../logic/access.js';
 import { isCritical } from '../logic/display.js';
 import CriticalBadges from './CriticalBadges.jsx';
@@ -298,10 +298,25 @@ export default function EventDetail() {
           All events
         </Button>
         {canEditEvent(user, event) && (
-          <Button component={Link} to={editPath}>
-            <Icon name="edit" size={18} />
-            Continue draft
-          </Button>
+          <>
+            {/* Its author deletes a draft after confirming (014 ER-16). */}
+            <Button
+              type="button"
+              variant="default"
+              color="red"
+              onClick={async () => {
+                if (!window.confirm('Delete this draft? It cannot be recovered.')) return;
+                await deleteDraft(event.id, user.id);
+                navigate('/events', { state: { draftDeleted: true } });
+              }}
+            >
+              Delete draft
+            </Button>
+            <Button component={Link} to={editPath}>
+              <Icon name="edit" size={18} />
+              Continue draft
+            </Button>
+          </>
         )}
       </div>
     </main>

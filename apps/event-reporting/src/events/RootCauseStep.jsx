@@ -263,7 +263,14 @@ export default function RootCauseStep({ event, onSaved }) {
           opened={fiveW1HOpened}
           onToggle={() => setFiveW1HOpened((opened) => !opened)}
         >
-          <FiveW1HPart pillarId={event.pillarId} value={analysis.fiveW1H} onChange={(fiveW1H) => set({ fiveW1H })} readOnly={readOnly} />
+          <FiveW1HPart
+            pillarId={event.pillarId}
+            applies={analysis.fiveW1HApplies}
+            onAppliesChange={(fiveW1HApplies) => set({ fiveW1HApplies })}
+            value={analysis.fiveW1H}
+            onChange={(fiveW1H) => set({ fiveW1H })}
+            readOnly={readOnly}
+          />
         </CollapsiblePart>
         <Part title="6M — contributory causes" error={errors.sixM}>
           <SixMPart causes={analysis.causes} onChange={changeCauses} readOnly={readOnly} />

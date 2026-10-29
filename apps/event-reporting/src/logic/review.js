@@ -2,6 +2,7 @@
 // Review and Governance source). The reviewers are the ones the Control Panel configured, kept on
 // the event at submission (002 FR-010, FR-012).
 
+import { isPlantSiteAdmin } from './access.js';
 import { listsForPillar } from '../../../../shared/platform/masterData.js';
 import { assessmentFor, criticalFlagsOf, typedFlag } from './severity.js';
 
@@ -113,13 +114,12 @@ export function leadsToAnalysis(event, review) {
   return requiredByWorkflow(event, 'rootCause', criticalFlagsOf(event, review));
 }
 
-// The Review button: a configured reviewer, an event waiting for review, not taken by someone else.
+// The Review button: a configured reviewer, an event waiting for review, not taken by someone else;
+// or a Site Admin of its plant, who can take the review over from another reviewer (014 RV-2).
 export function canStartReview(user, event) {
-  return (
-    isReviewer(user, event) &&
-    currentStep(event) === 'review' &&
-    (!event.review?.reviewerId || event.review.reviewerId === user.id)
-  );
+  if (currentStep(event) !== 'review') return false;
+  if (isPlantSiteAdmin(user, event)) return event.review?.reviewerId !== user.id;
+  return isReviewer(user, event) && (!event.review?.reviewerId || event.review.reviewerId === user.id);
 }
 
 // "Assign myself": the event becomes In Progress and only this reviewer can review it.

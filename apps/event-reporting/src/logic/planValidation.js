@@ -1,13 +1,18 @@
 // The Validation step (feature 005, review remarks of 2026-10-26): the reviewer checks that the
 // action plan was effective, then closes the event or sends it back to Actions.
 
-import { getManagersToAlert } from './access.js';
+import { getManagersToAlert, isPlantSiteAdmin } from './access.js';
 import { reworkCandidates, validationCandidates } from './notifications.js';
 
 // The event's reviewer; with no review in its workflow, the Managers who can see it (VAL-1).
 export function validatorIds(event, users) {
   if (event.workflow?.phases.review?.required) return event.review?.reviewerId ? [event.review.reviewerId] : [];
   return getManagersToAlert(users, event).map((user) => user.id);
+}
+
+// Who may validate and rework: the validators and the plant's Site Admins (014 VAL-1, VAL-7).
+export function canValidate(user, event, users) {
+  return validatorIds(event, users).includes(user.id) || isPlantSiteAdmin(user, event);
 }
 
 // The last validation, or null.
@@ -20,8 +25,7 @@ export function validateValidation(answer) {
   const errors = {};
   if (typeof answer.effective !== 'boolean') errors.effective = 'Say whether this event is closed.';
   else if (!answer.effective && !answer.reason.trim()) errors.reason = 'Explain why it is not effective.';
-  // Closing needs the confirmation that nothing more is needed (011 VAL-2).
-  else if (answer.effective && !answer.noMoreActions) errors.noMoreActions = 'Confirm that no additional actions are needed.';
+  // Yes needs nothing more (014 VAL-2).
   return errors;
 }
 

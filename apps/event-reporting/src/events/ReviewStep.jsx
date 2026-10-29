@@ -446,7 +446,16 @@ export default function ReviewStep({ event, onSaved }) {
     return (
       <Alert color="blue" variant="light">
         {getLabel(users, reviewerId)} is reviewing this event.
-        {isReviewer(user, event) && ' Only the assigned reviewer can complete the review.'}
+        {isReviewer(user, event) && !canStartReview(user, event) && ' Only the assigned reviewer can complete the review.'}
+        {/* A Site Admin of the plant can take the review over (014 RV-3). */}
+        {canStartReview(user, event) && (
+          <>
+            <p>As Site Admin of this plant you can take this review over.</p>
+            <Button type="button" disabled={saving} onClick={() => save(claimReview(event, user.id, new Date().toISOString()), [], { clearReviewAlerts: true })}>
+              Assign myself as reviewer
+            </Button>
+          </>
+        )}
       </Alert>
     );
   }

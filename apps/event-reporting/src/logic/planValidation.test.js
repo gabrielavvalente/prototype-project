@@ -40,8 +40,8 @@ describe('validation (005)', () => {
   it('needs an answer, and a reason when not effective', () => {
     expect(Object.keys(validateValidation({ effective: null, reason: '' }))).toEqual(['effective']);
     expect(validateValidation({ effective: false, reason: ' ' })).toEqual({ reason: 'Explain why it is not effective.' });
-    expect(validateValidation({ effective: true, reason: '' })).toEqual({ noMoreActions: 'Confirm that no additional actions are needed.' });
-    expect(validateValidation({ effective: true, reason: '', noMoreActions: true })).toEqual({});
+    // Yes needs no confirmation (014 VAL-2).
+    expect(validateValidation({ effective: true, reason: '' })).toEqual({});
   });
 
   it('locks an event closed by an effective validation; rework reopens it at Actions (011)', () => {

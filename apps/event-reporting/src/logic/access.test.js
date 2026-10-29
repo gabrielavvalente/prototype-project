@@ -43,15 +43,15 @@ describe('getMenuItems', () => {
     expect(getMenuItems('Manager')).toEqual(['events', 'create-event', 'my-alerts']);
   });
 
-  it('gives Site Admin events and alerts, no creation', () => {
-    expect(getMenuItems('Site Admin')).toEqual(['events', 'my-alerts']);
+  it('gives Site Admin creation too (014 ER-1)', () => {
+    expect(getMenuItems('Site Admin')).toEqual(['events', 'create-event', 'my-alerts']);
   });
 });
 
 describe('canOpenRoute', () => {
-  it('refuses event creation and editing to Site Admin', () => {
-    expect(canOpenRoute('Site Admin', 'events-new')).toBe(false);
-    expect(canOpenRoute('Site Admin', 'event-edit')).toBe(false);
+  it('opens event creation and editing to Site Admin (014 ER-1, ER-21)', () => {
+    expect(canOpenRoute('Site Admin', 'events-new')).toBe(true);
+    expect(canOpenRoute('Site Admin', 'event-edit')).toBe(true);
     expect(canOpenRoute('Site Admin', 'events')).toBe(true);
     expect(canOpenRoute('Site Admin', 'search')).toBe(true);
   });
@@ -102,8 +102,21 @@ describe('canEditEvent', () => {
     expect(canEditEvent(otherPlantManager, makeEvent())).toBe(false);
   });
 
-  it('never lets a Site Admin edit', () => {
-    expect(canEditEvent(siteAdmin, makeEvent())).toBe(false);
+  it('lets a Site Admin of the plant correct at any status, never a locked event (014 ER-21)', () => {
+    expect(canEditEvent(siteAdmin, makeEvent())).toBe(true);
+    expect(canEditEvent(siteAdmin, makeEvent({ status: 'In Progress' }))).toBe(true);
+    expect(canEditEvent(siteAdmin, makeEvent({ status: 'Archived' }))).toBe(true);
+    expect(canEditEvent(siteAdmin, makeEvent({ status: 'Closed', validations: [{ effective: true }] }))).toBe(false);
+    expect(canEditEvent(manager, makeEvent({ status: 'In Progress' }))).toBe(false);
+    const otherPlant = { ...siteAdmin, access: [{ businessId: 'biz-auto', plantId: 'plant-curitiba', pillarIds: ['pillar-hs'] }] };
+    expect(canEditEvent(otherPlant, makeEvent())).toBe(false);
+  });
+
+  it('shows a Site Admin every pillar of their plant (014)', () => {
+    const hsOnly = { ...siteAdmin, access: [{ ...lyonAllPillars, pillarIds: ['pillar-hs'] }] };
+    expect(isEventVisible(hsOnly, lyonContext, makeEvent({ pillarId: 'pillar-env' }))).toBe(true);
+    const user = { ...reporter, access: [{ ...lyonAllPillars, pillarIds: ['pillar-hs'] }] };
+    expect(isEventVisible(user, lyonContext, makeEvent({ pillarId: 'pillar-env' }))).toBe(false);
   });
 });
 

@@ -2,6 +2,7 @@
 // Managers and Site Admins who can see it start it on its Optional step, any time after a valid
 // review — a Closed event reopens.
 
+import { isPlantSiteAdmin } from './access.js';
 import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
 import { stepStates } from './review.js';
 import { membersOf } from '../../../../shared/platform/groups.js';
@@ -14,7 +15,7 @@ export function analysisIsOptional(event) {
 
 export function canStartAnalysis(user, event) {
   if (!analysisIsOptional(event)) return false;
-  if (event.review?.reviewerId === user.id) return true;
+  if (event.review?.reviewerId === user.id || isPlantSiteAdmin(user, event)) return true;
   return ['Manager', 'Site Admin'].includes(user.role) && getPillarIdsForPlant(user, event.plantId).includes(event.pillarId);
 }
 

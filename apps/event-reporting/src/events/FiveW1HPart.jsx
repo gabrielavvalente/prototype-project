@@ -10,60 +10,59 @@ const APPLIES = [
 ];
 const appliesValue = (applies) => (applies === true ? 'yes' : applies === false ? 'no' : '');
 
-// What the list shows next to a section once it is decided.
+// How many of a section's questions are answered, shown next to it in the list.
 function sectionNote(section, value) {
-  if (value.applies === false) return 'N/A';
-  if (value.applies !== true) return '';
   const answered = section.questions.filter((question) => (value.answers[question.id] || '').trim()).length;
   return `${answered}/${section.questions.length}`;
 }
 
-// 5W1H, an optional guide (ui-ux/5w1h.png, 004 FR-008): pick a section, say whether it applies,
-// then answer its numbered questions.
-export default function FiveW1HPart({ pillarId, value, onChange, readOnly }) {
+// 5W1H, an optional guide (ui-ux/5w1h.png, 004 FR-008): one "applicable?" question for the whole
+// guide (014 RCA-10); when it applies, pick a section and answer its numbered questions.
+export default function FiveW1HPart({ pillarId, applies, onAppliesChange, value, onChange, readOnly }) {
   const sections = fiveW1HSections(pillarId);
   const [currentKey, setCurrentKey] = useState(sections[0].key);
   const section = sections.find((item) => item.key === currentKey);
   const current = value[currentKey];
-  const set = (changes) => onChange({ ...value, [currentKey]: { ...current, ...changes } });
-  const setAnswer = (questionId, text) => set({ answers: { ...current.answers, [questionId]: text } });
+  const setAnswer = (questionId, text) => onChange({ ...value, [currentKey]: { ...current, answers: { ...current.answers, [questionId]: text } } });
 
   return (
-    <div className="rca-split">
-      <RcaNav
-        title="Checklists"
-        items={sections.map((item) => ({ key: item.key, label: item.label, note: sectionNote(item, value[item.key]) }))}
-        current={currentKey}
-        onSelect={setCurrentKey}
+    <fieldset className="section-fieldset" disabled={readOnly}>
+      <NativeSelect
+        label="Is this section applicable to your event?"
+        data={APPLIES}
+        value={appliesValue(applies)}
+        onChange={(e) => onAppliesChange(e.target.value === '' ? null : e.target.value === 'yes')}
       />
-      <fieldset className="rca-panel section-fieldset" disabled={readOnly}>
-        <div className="rca-panel-head">
-          <h4>{section.label}</h4>
-          <NativeSelect
-            label="Is this section applicable to your event?"
-            data={APPLIES}
-            value={appliesValue(current.applies)}
-            onChange={(e) => set({ applies: e.target.value === '' ? null : e.target.value === 'yes' })}
+      {applies === false && <p className="field-hint">Not applicable to this event.</p>}
+      {applies === true && (
+        <div className="rca-split">
+          <RcaNav
+            title="Checklists"
+            items={sections.map((item) => ({ key: item.key, label: item.label, note: sectionNote(item, value[item.key]) }))}
+            current={currentKey}
+            onSelect={setCurrentKey}
           />
+          <div className="rca-panel">
+            <div className="rca-panel-head">
+              <h4>{section.label}</h4>
+            </div>
+            <ol className="rca-questions">
+              {section.questions.map((question) => (
+                <li key={question.id}>
+                  <Textarea
+                    label={question.text}
+                    description={question.hint}
+                    minRows={1}
+                    autosize
+                    value={current.answers[question.id] || ''}
+                    onChange={(e) => setAnswer(question.id, e.target.value)}
+                  />
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
-        {current.applies && (
-          <ol className="rca-questions">
-            {section.questions.map((question) => (
-              <li key={question.id}>
-                <Textarea
-                  label={question.text}
-                  description={question.hint}
-                  minRows={1}
-                  autosize
-                  value={current.answers[question.id] || ''}
-                  onChange={(e) => setAnswer(question.id, e.target.value)}
-                />
-              </li>
-            ))}
-          </ol>
-        )}
-        {current.applies === false && <p className="field-hint">Not applicable to this event.</p>}
-      </fieldset>
-    </div>
+      )}
+    </fieldset>
   );
 }

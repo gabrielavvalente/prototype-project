@@ -1,13 +1,7 @@
 import { useApp } from '../AppContext.js';
 import { Textarea } from '@mantine/core';
 import { getReferenceList } from '../logic/lookups.js';
-import {
-  EMPLOYEE_TYPE_EMPLOYEE,
-  FIRST_AID_OTHER,
-  isFirstAidRequired,
-  MAX_DESCRIPTION_LENGTH,
-  MAX_TITLE_LENGTH,
-} from '../logic/validation.js';
+import { EMPLOYEE_TYPE_EMPLOYEE, FIRST_AID_OTHER, isFirstAidRequired, isPersonInvolvedRequired, MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH } from '../logic/validation.js';
 import AttachmentInput from './AttachmentInput.jsx';
 import ChipGroup from './ChipGroup.jsx';
 import DictationButton from './DictationButton.jsx';
@@ -21,6 +15,8 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
   const plantUsers = users.filter((person) => person.access.some((entry) => entry.plantId === event.plantId));
   const description = event.description || '';
   const isEmployee = event.employeeType === EMPLOYEE_TYPE_EMPLOYEE;
+  // Required for TF1–TF3 only (014 ER-11).
+  const personRequired = isPersonInvolvedRequired(event.levelCode);
   const firstAidIds = event.firstAidTreatmentIds || [];
 
   // A new employee type asks for the person again (a user, or a name and activity).
@@ -75,8 +71,9 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
       </div>
       <ChipGroup
         id="employeeType"
-        label="Employee type"
-        required
+        label={personRequired ? 'Employee type' : 'Employee type (optional)'}
+        required={personRequired}
+        allowEmpty={!personRequired}
         value={event.employeeType}
         options={getReferenceList(reference, 'employeeType').map((item) => ({ value: item.id, label: item.label }))}
         onChange={chooseEmployeeType}
@@ -86,7 +83,7 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
         <SelectField
           id="involvedPersonId"
           label="Person involved"
-          required
+          required={personRequired}
           value={event.involvedPersonId}
           options={plantUsers.map((person) => ({ id: person.id, label: person.name }))}
           searchable
@@ -99,7 +96,7 @@ export default function GeneralInfoSection({ event, update, errors, attachments,
           <TextField
             id="involvedPersonName"
             label="Name of the person involved"
-            required
+            required={personRequired}
             value={event.involvedPersonName}
             onChange={(value) => update({ involvedPersonName: value })}
             errors={errors}

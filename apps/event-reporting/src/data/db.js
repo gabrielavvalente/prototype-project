@@ -117,6 +117,9 @@ export async function findEvent(idOrRecordNumber) {
 // attachments: [{ id, fileName, mimeType, size, blob, isNew }] as kept by the form.
 // beforeSave(tx, event, now) may change the event (used by submit) inside the same transaction.
 async function writeEvent({ event, attachments, removedAttachmentIds = [], userId }, beforeSave) {
+  // The people, read before the transaction (it cannot wait for another database), name the
+  // Record Historian entries of a correction after the review (014 ER-21).
+  const users = event.review?.decision ? (await loadPlatform()).users : [];
   const db = await getDatabase();
   return withStorageCheck(async () => {
     const tx = db.transaction(['events', 'attachments', 'counters', 'alerts'], 'readwrite');
@@ -133,6 +136,10 @@ async function writeEvent({ event, attachments, removedAttachmentIds = [], userI
     };
     if (beforeSave) {
       await beforeSave(tx, saved, now);
+    }
+    if (saved.review?.decision) {
+      const previous = await tx.objectStore('events').get(saved.id);
+      saved.historian = [...(previous?.historian || []), ...historianEntries(previous, saved, { userId, now, users })];
     }
     for (const attachment of attachments.filter((item) => item.isNew)) {
       tx.objectStore('attachments').put({
@@ -153,6 +160,23 @@ async function writeEvent({ event, attachments, removedAttachmentIds = [], userI
     await tx.done;
     return saved;
   });
+}
+
+// Deletes a draft and its attachments, only for its author; a submitted event is never deleted
+// (014 ER-16).
+export async function deleteDraft(eventId, userId) {
+  const db = await getDatabase();
+  const tx = db.transaction(['events', 'attachments'], 'readwrite');
+  const event = await tx.objectStore('events').get(eventId);
+  if (!event || event.status !== 'Draft' || event.createdBy !== userId) {
+    tx.abort();
+    throw new Error('Only the author of a draft can delete it.');
+  }
+  for (const attachment of await tx.objectStore('attachments').index('eventId').getAll(eventId)) {
+    tx.objectStore('attachments').delete(attachment.id);
+  }
+  tx.objectStore('events').delete(eventId);
+  await tx.done;
 }
 
 // Save as Draft: no record number, nobody is notified (FR-015).

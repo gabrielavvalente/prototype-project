@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Group, Modal, Text, TextInput, Title } from '@mantine/core';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../AppContext.js';
 import { getAll } from '../data/db.js';
 import { getMenuItems, isEventVisible } from '../logic/access.js';
@@ -50,6 +50,7 @@ function defaultView() {
 export default function EventLibrary() {
   const { user, users, context, settings, updateSettings } = useApp();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [events, setEvents] = useState(null);
   const [search, setSearch] = useState('');
@@ -176,6 +177,12 @@ export default function EventLibrary() {
           </Button>
         )}
       </div>
+
+      {location.state?.draftDeleted && (
+        <Alert color="green" variant="light" role="status" mb="md">
+          Draft deleted.
+        </Alert>
+      )}
 
       <nav className="event-page-tabs" aria-label="Event workspace pages">
         {TABS.map((tab) => (

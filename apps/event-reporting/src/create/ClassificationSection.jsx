@@ -12,17 +12,10 @@ const RISK_QUESTIONS = {
     label: 'Could this be a SIP?',
     hint: 'Serious Incident Potential: under slightly different circumstances, could this have caused a serious injury or serious harm?',
   },
-  CRP: {
-    label: 'Could this be a CRP? (Critical Risk Potential)',
-    hint: 'Could this have led to a major fire, explosion or loss of the site?',
-  },
-  SRP: {
-    label: 'Could this be a SRP? (Serious Risk Potential)',
-    hint: 'Could this have led to serious damage or a long stop of operations?',
-  },
 };
 
-// Classification: pillar → (family) → level, then the SIP / CRP / SRP question (FR-003, FR-004, FR-039).
+// Classification: pillar → (family) → level, then the SIP question for Safety and Environment
+// (FR-003, FR-004; 014 ER-5).
 export default function ClassificationSection({ event, update, errors, pillarLocked }) {
   const { reference, user } = useApp();
   const allowedPillarIds = getPillarIdsForPlant(user, event.plantId);

@@ -1,7 +1,7 @@
 // The action plan of an event (feature 005): who owns it, deploying it, the assignees' updates,
 // cancelling and completing it. The actions themselves are in actions.js.
 
-import { getManagersToAlert } from './access.js';
+import { getManagersToAlert, isPlantSiteAdmin } from './access.js';
 import { changeDueDate, isDeployed, isFinal, isOverdue } from './actions.js';
 import { currentStep, stepStates } from './review.js';
 import { planCompletedCandidates, planDeployedCandidates } from './notifications.js';
@@ -29,13 +29,14 @@ function stepIsOpen(event) {
   return stepStates(event).find((item) => item.step === 'actions').state === 'optional';
 }
 
+// The owners, and the plant's Site Admins (014 AP-2).
 export function canEditPlan(user, event, groups, users) {
-  return stepIsOpen(event) && planOwners(event, groups, users).includes(user.id);
+  return stepIsOpen(event) && (planOwners(event, groups, users).includes(user.id) || isPlantSiteAdmin(user, event));
 }
 
 // Whether the user may open the Actions step when it is Optional (AP-3).
 export function canOpenOptionalPlan(user, event, groups, users) {
-  return planOwners(event, groups, users).includes(user.id);
+  return planOwners(event, groups, users).includes(user.id) || isPlantSiteAdmin(user, event);
 }
 
 const withStatus = (action, status, userId, now) => ({ ...action, status, statusChangedBy: userId, statusChangedAt: now });
@@ -74,10 +75,11 @@ export function deleteAction(event, actionId) {
 
 // The statuses the user may give an action (AP-7, AP-10): the assignee moves their own action
 // forward; an owner cancels a deployed one. Completed and Cancelled are final.
-export function allowedStatuses(user, action, isOwner) {
+// actsForAssignees: a Site Admin of the plant changes any action as its assignee would (014 AP-10).
+export function allowedStatuses(user, action, isOwner, actsForAssignees = false) {
   if (!isDeployed(action) || isFinal(action)) return [];
   const next = [];
-  if (action.assigneeIds.includes(user.id)) {
+  if (action.assigneeIds.includes(user.id) || actsForAssignees) {
     if (action.status === 'onGoing') next.push('toComplete');
     next.push('completed');
   }

@@ -5,7 +5,7 @@
 
 import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
 import { ruleRecipientIds, settingFor, STAGE_ORDER } from '../../../../shared/platform/notifications.js';
-import { getManagersToAlert } from './access.js';
+import { getSubmissionWatchers, isPlantSiteAdmin } from './access.js';
 
 const information = (ids, key, type = key) => ids.filter(Boolean).map((recipientId) => ({ recipientId, key, type, work: false }));
 const work = (ids, key) => ids.filter(Boolean).map((recipientId) => ({ recipientId, key, type: key, work: true }));
@@ -17,11 +17,11 @@ export function closedCandidates(event) {
   return event.status === 'Closed' ? information([event.reporterId, ...(event.sharedWithIds || [])], 'Event closed') : [];
 }
 
-// Submission: the reviewers, the other Managers, the rules' people, the reporter when someone else
+// Submission: the reviewers, the other Managers and the plant's Site Admins (014), the rules' people, the reporter when someone else
 // reported, the Shared with people. Closing at submission raises no "Event closed" (NT-3, NT-9).
 export function submissionCandidates(event, users, rules) {
   const reviewerIds = reviewerIdsOf(event);
-  const managerIds = getManagersToAlert(users, event)
+  const managerIds = getSubmissionWatchers(users, event)
     .map((user) => user.id)
     .filter((id) => !reviewerIds.includes(id));
   return [
@@ -79,7 +79,8 @@ export function deliverAlerts(candidates, { event, actorId, users, settings = []
   const kept = new Map();
   for (const candidate of candidates) {
     const person = users.find((user) => user.id === candidate.recipientId);
-    if (!person?.role || !getPillarIdsForPlant(person, event.plantId).includes(event.pillarId)) continue;
+    // Who can see the event: its plant and pillar, or a Site Admin of its plant (014).
+    if (!person?.role || !(isPlantSiteAdmin(person, event) || getPillarIdsForPlant(person, event.plantId).includes(event.pillarId))) continue;
     if (!candidate.work && candidate.recipientId === actorId && candidate.key !== 'Event submitted') continue;
     const current = kept.get(candidate.recipientId);
     const better =
