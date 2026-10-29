@@ -183,8 +183,8 @@ SPL/HCL: [workflow settings](capabilities/workflow-settings.md) WF-13).
 
 - Lists belong to a pillar; some are fixed global lists (Body Part Categories, Body Parts,
   Injuries) that only Central maintains.
-- A value is owned by Central or by a Cluster (for its plants), and is Active, Inactive or Retired
-  (final).
+- A value is owned by Central or by a Cluster (for its plants), and is Active or Inactive. Nothing is
+  ever deleted: a deactivated value stays on the events that used it, but is no longer offered.
 - A value is **available at a plant** when it is Active, owned by Central or by a Cluster covering
   the plant, and not deactivated for that plant (by Central, a covering Cluster or the plant's
   Local). A Body Part also needs its category available.

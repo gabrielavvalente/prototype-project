@@ -162,7 +162,8 @@ products need from it is in [Roles and permissions](01-roles-and-permissions.md)
 ### Master data
 
 - **OV-12** Master data lists belong to a pillar. A value is owned by Central or by a Cluster (for
-  its plants) and is Active, Inactive or Retired (final). It is **available at a plant** when it is
+  its plants) and is Active or Inactive — never deleted: a deactivated value stays on the events
+  that used it but is no longer offered for new ones. It is **available at a plant** when it is
   Active, owned by Central or by a Cluster covering the plant, and not deactivated there by Central,
   a covering Cluster or the plant's Local; a Body Part also needs its category available.
   Classifying an event offers only the values available at its plant.

@@ -34,7 +34,8 @@ own, and every level can switch values off for its plants.
 
 - **MD-4** A value has a code (when the list has codes), a name, an optional description, a
   category (Body Parts only), the body parts it is offered for (Injuries only), an owner (Central, or a Cluster with its plants; Local never owns
-  values) and a status: Active, Inactive or Retired (final). Creating or editing an Injury asks
+  values) and a status: Active or Inactive. Nothing is ever deleted: a value deactivated keeps showing on the events
+  that used it, but is no longer offered for new choices. Creating or editing an Injury asks
   **Body parts** ("The body parts this injury is offered for in the review."): a required,
   searchable multiple choice of the Body Parts, grouped by category.
 - **MD-5** Saving a value is refused, with the message next to the field, when: the name is empty
@@ -54,14 +55,16 @@ own, and every level can switch values off for its plants.
 
   | Level | Own values (owner) | Other values |
   |---|---|---|
-  | Central | Create, Edit, Deactivate / Reactivate (status, everywhere), Retire | — |
-  | Cluster | Create (owned by its perimeter), Edit, Deactivate / Reactivate, Retire | "Deactivate for <plants>" / "Reactivate for <plants>" |
+  | Central | Create, Edit, Deactivate / Reactivate for all plants | — |
+  | Cluster | Create (owned by its perimeter), Edit, Deactivate / Reactivate for its plants | "Deactivate for <plants>" / "Reactivate for <plants>" |
   | Local | — (cannot create) | "Deactivate for <plant>" / "Reactivate for <plant>" |
 
   Fixed global lists: only Central acts; others see them read-only. Read-only lists (Industrial
-  Risk's view of Standards and Hazards): nobody acts. A Retired value offers no action.
-- **MD-8** Retiring asks "Retire <name>? It will no longer be offered anywhere, and this cannot be
-  undone." Each action confirms with a message (e.g. "<name> is deactivated for Lyon.").
+  Risk's view of Standards and Hazards): nobody acts.
+- **MD-8** The owner's actions read **Deactivate for <all plants | its plants>** and **Reactivate for
+  …**; deactivating confirms "<name> is deactivated for <plants>: no longer offered for new events;
+  past events keep it."; the other actions confirm with a message (e.g. "<name> is deactivated for
+  Lyon.").
 - **MD-9** "Deactivate for …" records a deactivation for the person's level and plants; "Reactivate
   for …" removes only the deactivation made at the person's level. A Local person cannot undo a
   Cluster's or Central's deactivation.
@@ -70,8 +73,9 @@ own, and every level can switch values off for its plants.
 
 - **MD-10** A value is available at a plant as defined in the domain (Active, owned by Central or by
   a Cluster covering the plant, not deactivated there by Central, a covering Cluster or the
-  plant's Local; a Body Part also needs its category available). Retired values stay listed but
-  are never available.
+  plant's Local; a Body Part also needs its category available). An event keeps the values chosen
+  before they were deactivated: its review shows them, and an unfinished review still lists them as
+  "<name> (no longer available)" without offering them for new choices.
 - **MD-11** The list screen shows, on one line (wrapping on narrow screens): **Search <list>**,
   **Availability for** (one of the person's plants; all plants for Central), **Export CSV**,
   **Import CSV** and **Create <list>** (the last two only for those who can create). Then "N
@@ -116,8 +120,11 @@ From freshly reset [demo data](platform-data.md).
 4. **Lower level cannot undo** — Lucas uses "Deactivate for Lyon, Porto" on HZ-02. Carla sees HZ-02 not
    available at Lyon and is offered "Deactivate for Lyon", not "Reactivate". (MD-9)
 5. **Fixed global** — Lucas opens Body Parts: grouped by category, no action, no Create. (MD-7)
-6. **Retire** — Ludovic retires Standard STD-12 after confirming: status Retired, available No
-   everywhere, no more actions. (MD-8, MD-10)
+6. **Deactivate, never delete** — Ludovic uses "Deactivate for all plants" on Hazard HZ-02: "… is
+   deactivated for all plants: no longer offered for new events; past events keep it.", status
+   Inactive, still listed, with "Reactivate for all plants"; a review started afterwards does not
+   offer HZ-02, while an event reviewed earlier with HZ-02 still shows it. There is no Retire.
+   (MD-4, MD-8, MD-10)
 7. **Body part category** — Ludovic deactivates the Body Part Category "Head": Cranium, Eyes and
    the other Head parts become unavailable; editing "Eyes" and saving it Active is refused: "The
    category is not active, so this value cannot be active." (MD-5, MD-10)

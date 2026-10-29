@@ -73,7 +73,8 @@ with its workflow steps.
   events** ("Reviewed as not valid"). Each opens the Events page narrowed to its events; Open and
   Overdue actions show the badge "Events with open actions" / "Events with overdue actions"
   (removable) since they are not chips.
-- **EL-13** **Reported events by type**: a stacked column per type (family), split by level in the
+- **EL-13** **Reported events by type**: a stacked column per type (family) — submitted events
+  only, never archived ones (an invalid event is not a reported event) — split by level in the
   pillar's color ("Darker shades are more serious levels."), every type and level listed even when
   zero, with details on hover and a table view (Type, Level, Events).
 - **EL-14** **Archived events by reason**: a stacked column per reason (Duplicated, Useless, Bad

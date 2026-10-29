@@ -71,6 +71,7 @@ ids in the last column of the tables point to where each permission is detailed.
   | Report on behalf of someone else | Managers and Site Admins | ER-12 |
   | Continue or delete a draft | Its author | ER-20 |
   | Correct an Open event | Managers and Site Admins who see it | ER-21 |
+  | Correct the report during the review | The assigned reviewer, until the review is completed | ER-22 |
   | Take and complete the review | One of its reviewers | RV-2 |
   | Start an optional root cause analysis | Its reviewer, and the Managers and Site Admins who see it | RCA-15 |
   | Edit and complete the root cause analysis | The designated people, while it is the current step | RCA-4 |
@@ -99,8 +100,8 @@ ids in the last column of the tables point to where each permission is detailed.
 
   | Layer | Own values | Other values |
   |---|---|---|
-  | Central | Create, edit, deactivate / reactivate everywhere, retire | — |
-  | Cluster | Create (owned by its plants), edit, deactivate / reactivate, retire | Deactivate / reactivate for its plants |
+  | Central | Create, edit, deactivate / reactivate for all plants | — |
+  | Cluster | Create (owned by its plants), edit, deactivate / reactivate for its plants | Deactivate / reactivate for its plants |
   | Local | — (cannot create) | Deactivate / reactivate for its plant |
 
   Fixed global lists (Body Part Categories, Body Parts, Injuries) are maintained by Central only. A

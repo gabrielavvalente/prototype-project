@@ -30,8 +30,8 @@ the starting values are in [14 Reference catalogs](14-reference-catalogs.md).
 
 - **MD-4** A value has a code (when the list has codes), a name, an optional description, a category
   (Body Parts only), the body parts it applies to (Injuries only, at least one), an owner (Central, or
-  a Cluster with its plants; Local never owns values) and a status: Active, Inactive or Retired
-  (final).
+  a Cluster with its plants; Local never owns values) and a status: Active or Inactive. Values are
+  never deleted (MD-10).
 - **MD-5** Saving a value is refused when: the name is empty ("Enter a name."); the code is empty in a
   list with codes ("Enter a code."); the code — or the name in a list without codes — already exists
   in the list for the same owner ("A value with code <code> already exists." / ""<name>" already
@@ -48,22 +48,25 @@ the starting values are in [14 Reference catalogs](14-reference-catalogs.md).
 
   | Layer | Own values | Other values |
   |---|---|---|
-  | Central | Create, edit, deactivate / reactivate (everywhere), retire | — |
-  | Cluster | Create (owned by its plants), edit, deactivate / reactivate, retire | Deactivate / reactivate for its plants |
+  | Central | Create, edit, deactivate / reactivate for all plants | — |
+  | Cluster | Create (owned by its plants), edit, deactivate / reactivate for its plants | Deactivate / reactivate for its plants |
   | Local | — (cannot create) | Deactivate / reactivate for its plant |
 
   Fixed global lists: only Central acts. Read-only lists (Industrial Risk's view of Standards and
-  Hazards): nobody acts there. A Retired value allows no action.
-- **MD-8** Retiring asks "Retire <name>? It will no longer be offered anywhere, and this cannot be
-  undone."; each action is confirmed (e.g. "<name> is deactivated for <plant>.").
+  Hazards): nobody acts there.
+- **MD-8** Deactivating is confirmed with "<name> is deactivated for <plants>: no longer offered for new
+  events; past events keep it."; reactivating with "<name> is active again for <plants>.".
 - **MD-9** Deactivating for some plants records a deactivation for the person's layer and plants;
   reactivating removes only the deactivation made at the person's layer. A lower layer cannot undo a
   higher layer's deactivation.
 
 ### Availability
 
-- **MD-10** A value is available at a plant as OV-12 defines. Retired values stay listed but are never
-  available. For each value, a person can see whether it is available at a chosen plant of theirs.
+- **MD-10** A value is available at a plant as OV-12 defines. **Nothing is deleted**: a deactivated
+  value stays listed, and stays on every event that chose it — the review, the Safety Warning, the
+  shared packages and the Record Historian keep showing it — but it is never offered for a new choice;
+  a review not yet completed shows it as "<name> (no longer available)". For each value, a person can
+  see whether it is available at a chosen plant of theirs.
 - **MD-11** A list can be searched; its number of values is shown; Injuries show how many body parts
   each applies to ("<N> body parts", "1 body part").
 
@@ -96,6 +99,7 @@ the starting values are in [14 Reference catalogs](14-reference-catalogs.md).
 | Injuries | Each applies to one or more body parts; the review offers only those (RV-6a) |
 | Diseases | A Health & Safety list, not yet asked on events (Q-18) |
 | Occupational Health | No list of its own: it is part of the Health & Safety pillar |
+| Lifecycle | Deactivate / reactivate only; no Retire and no deletion, so that past events keep their values |
 
 ## Examples
 

@@ -122,10 +122,11 @@ plant's Managers ([notifications](notifications.md)).
 - **ER-21** A Manager or a Site Admin who can see the event edits an **Open** event right in its
   Submission step, with the same form and rules and a **Save changes** button (no draft, no
   automatic save). The record number, the status and the workflow taken at submission do not
-  change, even if the level does; nobody is alerted. Once reviewed (In Progress, Archived, Closed),
-  only a **Site Admin** of its plant edits it — never when locked ([validation](validation.md)
-  VAL-6) — and each change of its title, description, level or event time is recorded in the
-  [Record Historian](record-historian.md); otherwise the review corrects it.
+  change, even if the level does; nobody is alerted. While the review is under way, its assigned
+  reviewer edits it too, until they complete the review. Once reviewed (In Progress, Archived,
+  Closed), only a **Site Admin** of its plant edits it — never when locked
+  ([validation](validation.md) VAL-6) — and each change of its title, description, level or event
+  time is recorded in the [Record Historian](record-historian.md); otherwise the review corrects it.
 - **ER-22** Every event records who created it and when, and who last changed it and when.
 
 ## Acceptance scenarios

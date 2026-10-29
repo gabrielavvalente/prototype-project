@@ -128,6 +128,20 @@ highest access on their plants; the prototype must show the same behavior to sta
   answer, SIP / CRP / SRP)*
 - **EL-16** *(draft page)* Its author also has **Delete draft** (ER-16). *(was: Continue draft only)*
 
+### Review remarks (2026-10-29)
+
+- **MD-4**, **MD-7**, **MD-8**, **MD-10** *(no Retire)* Values are Active or Inactive only; the owner
+  deactivates and reactivates ("Deactivate for all plants" / "for <plants>", "… no longer offered for
+  new events; past events keep it."); nothing is deleted; values saved as Retired are Inactive. An
+  event keeps the values chosen before their deactivation; an unfinished review lists them as "<name>
+  (no longer available)", never offered for new choices. *(was: Retire, final)*
+- **ER-21** *(review)* The assigned reviewer also corrects the report while the review is not
+  completed. *(was: Site Admins only after the review began)*
+- **EL-13** *(counts)* Reported events by type never count archived events. *(was: archived counted
+  when the Status filter showed them)*
+- **WF-11** *(unchanged, now tested)* A workflow change after an event's submission never changes its
+  steps.
+
 ## Acceptance scenarios
 
 From freshly reset demo data (`specs/capabilities/platform-data.md`). Eva Novak is the Site Admin
@@ -164,6 +178,11 @@ of Lyon; Carla Mendes, Diego Laurent and Lucas Weber are Managers at Lyon; Ana R
    the six sections (five for an Environment event); No makes it Done. (RCA-10)
 10. **Phone and keyboard** — At 320px the new buttons and messages are usable, and with the keyboard.
     (Domain)
+11. **Deactivate, never delete** — Ludovic deactivates HZ-02 for all plants: Inactive, still listed,
+    "Reactivate for all plants", no Retire; Carla's new review of `TF-26-0003` does not offer HZ-02.
+    (MD-4, MD-8, MD-10)
+12. **Reviewer corrects** — Carla assigns herself to `TF-26-0003`: its Submission step offers Save
+    changes to her, not to Ana. (ER-21)
 
 ## Demo data changes
 

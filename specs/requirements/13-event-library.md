@@ -49,7 +49,8 @@ Builds on: [00 Overview](00-overview.md) (context, visibility, lifecycle, steps)
   deployed plans neither Completed nor Cancelled), **Overdue actions** ("Past their due date", AP-5),
   **Events in progress** ("Submitted and not yet closed": Open or In Progress) and **Archived events**
   ("Reviewed as not valid").
-- **EL-12** **Reported events by type**: per event type, the events by level, every type and level
+- **EL-12** **Reported events by type**: per event type, the submitted events by level — never the
+  archived ones (invalid, duplicate, useless or of bad quality: they are not reported events) — every type and level
   listed even when zero, also as a table (Type, Level, Events).
 - **EL-13** **Archived events by reason**: per reason (Duplicated, Useless, Bad quality), the events by
   type ("Events reviewed as not valid in your scope, split by type."), also as a table (Reason, Type,
@@ -84,7 +85,7 @@ Builds on: [00 Overview](00-overview.md) (context, visibility, lifecycle, steps)
 | Topic | Decision |
 |---|---|
 | SIP | Only the review's SIP flag counts; the reporter's answer is informative |
-| Archived events | Hidden unless the Status filter asks for them |
+| Archived events | Hidden unless the Status filter asks for them; never counted as reported events, only in the Archived indicator and breakdown |
 | Event register | The same events as the table, with the same filters; no export (later) |
 | Indicators | Follow the search and filters in use |
 

@@ -27,6 +27,18 @@ description: "Task list for Align the prototype with the business requirements (
 - [X] T005 Delete draft: `data/db.js` `deleteDraft`, the draft page and the form (ER-16, EL-16);
   Record Historian for Site Admin corrections after the review (ER-21)
 
+## Phase 2b: Review remarks (2026-10-29)
+
+**Scenarios**: 11, 12
+
+- [X] T009 No Retire: `normalizeValueStatus`, `allowedValueActions`, `setValueStatus` in
+  `shared/platform/masterData.js` and `platformData.js`; "Deactivate / Reactivate for …" in
+  `apps/control-panel/src/masterData/ValueList.jsx`; tests (MD-4, MD-7, MD-8)
+- [X] T010 `withChosenValues` (values chosen before their deactivation), the assigned reviewer
+  correcting the report (`logic/access.js`), archived events out of the events by type
+  (`logic/eventList.js`); tests in `logic/historyRules.test.js`, including a workflow change after
+  submission (MD-10, ER-21, EL-13, WF-11)
+
 ## Phase 3: Apply the change to the capabilities
 
 - [X] T006 Apply to `specs/domain.md` and the capabilities listed in the spec. No "was".
