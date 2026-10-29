@@ -10,6 +10,7 @@ import {
   injuryOptions,
   keepInjuries,
   listsForPillar,
+  normalizeValueStatus,
   planImport,
   validateValue,
 } from './masterData.js';
@@ -91,10 +92,17 @@ describe('initial catalogs (FR-014)', () => {
   });
 });
 
+describe('no Retire: deactivate and reactivate only (014 remarks)', () => {
+  it('reads a value saved as Retired as Inactive', () => {
+    expect(normalizeValueStatus({ id: 'v', status: 'Retired' }).status).toBe('Inactive');
+    expect(normalizeValueStatus({ id: 'v', status: 'Active' }).status).toBe('Active');
+  });
+});
+
 describe('availableValues (FR-018, FR-020)', () => {
   const clusterHazard = newValue('hazards', { id: 'h-cluster', code: 'X1', name: 'Cluster hazard', ownerLevel: 'cluster', ownerPlantIds: ['plant-lyon', 'plant-porto'] });
   const values = [
-    ...masterValues.map((value) => (value.id === 'hazards-2' ? { ...value, status: 'Retired' } : value)),
+    ...masterValues.map((value) => (value.id === 'hazards-2' ? { ...value, status: 'Inactive' } : value)),
     clusterHazard,
   ];
   const activations = [
@@ -103,7 +111,7 @@ describe('availableValues (FR-018, FR-020)', () => {
   ];
   const ids = (plantId) => availableValues(values, activations, { listId: 'hazards', plantId }).map((value) => value.id);
 
-  it('applies retirement, deactivations and cluster ownership per plant', () => {
+  it('applies the status, deactivations and cluster ownership per plant', () => {
     expect(ids('plant-lyon')).not.toContain('hazards-1');
     expect(ids('plant-lyon')).not.toContain('hazards-2');
     expect(ids('plant-lyon')).not.toContain('hazards-3');
@@ -133,11 +141,11 @@ describe('allowedValueActions (FR-015, FR-016)', () => {
       .map(([action]) => action);
 
   it('gives Central full control', () => {
-    expect(allowed('user-ludovic', hazards, centralHazard)).toEqual(['add', 'edit', 'deactivate', 'retire']);
+    expect(allowed('user-ludovic', hazards, centralHazard)).toEqual(['add', 'edit', 'deactivate']);
   });
 
   it('lets a Cluster add, manage its own values and switch Central ones off for its plants', () => {
-    expect(allowed('user-lucas', hazards, lucasHazard)).toEqual(['add', 'edit', 'deactivate', 'retire']);
+    expect(allowed('user-lucas', hazards, lucasHazard)).toEqual(['add', 'edit', 'deactivate']);
     expect(allowed('user-lucas', hazards, centralHazard)).toEqual(['add', 'deactivateHere']);
   });
 
@@ -153,7 +161,7 @@ describe('allowedValueActions (FR-015, FR-016)', () => {
   it('keeps fixed global lists for Central only', () => {
     const bodyPart = masterValues.find((value) => value.listId === 'bodyParts');
     expect(allowed('user-lucas', getList('bodyParts'), bodyPart)).toEqual([]);
-    expect(allowed('user-ludovic', getList('bodyParts'), bodyPart)).toEqual(['add', 'edit', 'deactivate', 'retire']);
+    expect(allowed('user-ludovic', getList('bodyParts'), bodyPart)).toEqual(['add', 'edit', 'deactivate']);
   });
 
   it('gives Industrial Risk nothing on the H&S lists it shows', () => {

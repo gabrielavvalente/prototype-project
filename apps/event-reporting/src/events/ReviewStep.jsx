@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, MultiSelect, Select, Textarea } from '@mantine/core';
 import { useApp } from '../AppContext.js';
-import { availableValues, classificationValueName, injuryOptions, keepInjuries } from '../../../../shared/platform/masterData.js';
+import { availableValues, classificationValueName, injuryOptions, keepInjuries, withChosenValues } from '../../../../shared/platform/masterData.js';
 import { groupsCovering } from '../../../../shared/platform/groups.js';
 import { getPillarIdsForPlant } from '../../../../shared/platform/organization.js';
 import { getMasterData } from '../../../../shared/platform/platformData.js';
@@ -315,7 +315,12 @@ function ClassificationFields({ event, review, set, errorsFor, masterData }) {
             required,
             searchable: true,
             clearable: true,
-            data: listOptions(list, masterData.values, masterData.activations, event.plantId, review.classification),
+            // A value chosen before it was deactivated stays, marked (014 remarks).
+            data: withChosenValues(
+              listOptions(list, masterData.values, masterData.activations, event.plantId, review.classification),
+              review.classification[list.id] || [],
+              masterData.values,
+            ),
             error: errorsFor(`list-${list.id}`)[0]?.message,
           };
           // Injuries wait for the body parts; removing a body part drops the injuries it offered.

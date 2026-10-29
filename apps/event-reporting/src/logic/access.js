@@ -51,14 +51,19 @@ export function isEventVisible(user, context, event) {
   return true;
 }
 
-// A draft by its author; an Open event by the Managers and Site Admins who see it; once reviewed,
-// only by a Site Admin of its plant, never when locked (014 ER-21).
+// A draft by its author; an Open event by the Managers and Site Admins who see it; during the review
+// by its assigned reviewer; once reviewed, only by a Site Admin of its plant, never when locked
+// (014 ER-21).
 export function canEditEvent(user, event) {
   if (event.status === 'Draft') {
     return event.createdBy === user.id;
   }
   if (isPlantSiteAdmin(user, event)) {
     return !isLockedEvent(event);
+  }
+  // The assigned reviewer corrects the report while reviewing it (014 remarks).
+  if (event.status === 'In Progress' && event.review?.reviewerId === user.id && !event.review?.decision) {
+    return true;
   }
   return event.status === 'Open' && user.role === 'Manager' && getPillarIdsForPlant(user, event.plantId).includes(event.pillarId);
 }

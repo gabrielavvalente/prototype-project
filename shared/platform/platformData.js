@@ -3,7 +3,7 @@
 // Shared code: imports no packages and nothing from apps/ (constitution v2.3.0).
 
 import { masterValues } from './catalogs.js';
-import { allowedValueActions, getList, ownActivation, planImport, validateValue } from './masterData.js';
+import { allowedValueActions, getList, normalizeValueStatus, ownActivation, planImport, validateValue } from './masterData.js';
 import { canChangeSetting, canManagePlant, describeRule, settingFor, validateRule } from './notifications.js';
 import { getPillarIdsForPlant, getPlantName } from './organization.js';
 import { getRole, LEVEL_LABELS } from './permissions.js';
@@ -295,7 +295,7 @@ export async function markNotificationsRead(userId) {
 export async function getMasterData() {
   const db = await openPlatform();
   const [values, activations] = await Promise.all([getAll(db, 'masterValues'), getAll(db, 'activations')]);
-  return { values, activations };
+  return { values: values.map(normalizeValueStatus), activations };
 }
 
 function auditEntry(user, list, value, action, before, after) {
@@ -394,13 +394,13 @@ export async function importValues(user, listId, rows) {
   return plan;
 }
 
-// The owner changes a value's status: Active ⇄ Inactive, or Retired (final).
+// The owner deactivates or reactivates a value: Active ⇄ Inactive (014 remarks: no Retire).
 export async function setValueStatus(user, listId, valueId, status) {
   const list = getList(listId);
   const { values, activations } = await getMasterData();
   const value = values.find((item) => item.id === valueId);
   const allowed = allowedValueActions(user, list, value, activations);
-  const permitted = { Active: allowed.reactivate, Inactive: allowed.deactivate, Retired: allowed.retire }[status];
+  const permitted = { Active: allowed.reactivate, Inactive: allowed.deactivate }[status];
   if (!permitted) {
     throw new Error('You are not allowed to change the status of this value.');
   }
@@ -412,7 +412,7 @@ export async function setValueStatus(user, listId, valueId, status) {
       throw new Error(errors.parentId);
     }
   }
-  const action = { Active: 'reactivate', Inactive: 'deactivate', Retired: 'retire' }[status];
+  const action = { Active: 'reactivate', Inactive: 'deactivate' }[status];
   const db = await openPlatform();
   await runTransaction(db, ['masterValues', 'audit'], 'readwrite', (stores) => {
     stores.masterValues.put(updated);

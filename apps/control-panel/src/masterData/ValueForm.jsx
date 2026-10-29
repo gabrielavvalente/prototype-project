@@ -23,7 +23,7 @@ export default function ValueForm({ list, value, values, onSaved, onClose }) {
   });
   const [errors, setErrors] = useState({});
   const [saveError, setSaveError] = useState('');
-  const categories = values.filter((item) => item.listId === list.parentListId && item.status !== 'Retired');
+  const categories = values.filter((item) => item.listId === list.parentListId);
   // The linked list's values (Body Parts), grouped by their category.
   const linkedOptions = list.linkedListId
     ? values
@@ -31,7 +31,7 @@ export default function ValueForm({ list, value, values, onSaved, onClose }) {
         .map((category) => ({
           group: category.name,
           items: values
-            .filter((item) => item.listId === list.linkedListId && item.parentId === category.id && item.status !== 'Retired')
+            .filter((item) => item.listId === list.linkedListId && item.parentId === category.id)
             .map((item) => ({ value: item.id, label: item.name })),
         }))
         .filter((group) => group.items.length > 0)

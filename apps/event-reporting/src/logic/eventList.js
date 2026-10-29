@@ -135,11 +135,12 @@ export function countActiveFilters(filters) {
   return simple.length + location + (filters.myEvents ? 1 : 0);
 }
 
-// Submitted events per type (family) and level, for the KPIs chart (review 2026-10-25). Every
-// family and level in the reference data is listed, even with no event, in reference order.
+// Reported events per type (family) and level, for the KPIs chart (review 2026-10-25): submitted
+// and not archived — an invalid event is never a reported one (014 remarks). Every family and level
+// in the reference data is listed, even with no event, in reference order.
 // Returns [{ family, total, levels: [{ level, count }] }].
 export function countByFamilyAndLevel(events, families, levels) {
-  const submitted = events.filter((event) => event.status !== 'Draft');
+  const submitted = events.filter((event) => event.status !== 'Draft' && event.status !== 'Archived');
   return families.map((family) => {
     const familyLevels = levels
       .filter((level) => level.familyId === family.id)
