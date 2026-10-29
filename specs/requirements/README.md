@@ -18,8 +18,9 @@ products need from it is specified ([01](01-roles-and-permissions.md)).
 
 ## How to read a requirement
 
-- Each requirement has an id (e.g. **RV-10**): the prefix is its capability, kept from the
-  prototype so a requirement can be traced to the behavior that was validated.
+- Each requirement has an id (e.g. **RV-10**). The prefix names its capability, as in the
+  prototype; the numbers are this specification's own (rules about screen design were left out),
+  so an id here may differ from the prototype's.
 - Each capability file ends with **Examples**: Given / When / Then cases written with roles and
   generic data (a Manager of plant A, a TF2 event), to be turned into acceptance tests.
 - **Decisions** tables record choices made with the business and why; they are part of the
@@ -30,11 +31,11 @@ products need from it is specified ([01](01-roles-and-permissions.md)).
 
 | # | File | Status |
 |---|---|---|
-| 00 | [Overview and glossary](00-overview.md) | Draft for review |
-| 01 | [Roles and permissions](01-roles-and-permissions.md) | Draft for review |
-| 02 | Event reporting | To write |
-| 03 | Event review (severity, critical events) | To write |
-| 04 | Root cause analysis | To write |
+| 00 | [Overview and glossary](00-overview.md) | Reviewed |
+| 01 | [Roles and permissions](01-roles-and-permissions.md) | Reviewed |
+| 02 | [Event reporting](02-event-reporting.md) | Draft for review |
+| 03 | [Event review](03-event-review.md) (severity, critical events) | Draft for review |
+| 04 | [Root cause analysis](04-root-cause-analysis.md) | Draft for review |
 | 05 | Action plan | To write |
 | 06 | Validation | To write |
 | 07 | Record Historian | To write |

@@ -55,7 +55,7 @@ ids in the last column of the tables point to where each permission is detailed.
   |---|---|---|
   | **Reporter** | The person the event is reported for (the author, or the person a Manager or Site Admin reported on behalf of) | ER |
   | **Reviewers** | Those its workflow kept at submission (OV-10); one of them takes the review and becomes **the reviewer** | RV-1, RV-2 |
-  | **Designated people** | The users and the members of the groups the review (or an optional start) designated | RCA-1, RCA-7 |
+  | **Designated people** | The users and the members of the groups the review (or an optional start) designated | RCA-1, RCA-4 |
   | **Action plan owners** | The designated people; with no analysis, the reviewer; with no review, the Managers who see its plant and pillar | AP-2 |
   | **Assignees** | The people of each corrective action | AP-10 |
   | **Validators** | Its reviewer; with no review in its workflow, the Managers who see its plant and pillar | VAL-1 |
@@ -68,12 +68,12 @@ ids in the last column of the tables point to where each permission is detailed.
   | Action | Who | Rule |
   |---|---|---|
   | Create an event | Users, Managers and Site Admins | ER-1 |
-  | Report on behalf of someone else | Managers and Site Admins | ER-13 |
+  | Report on behalf of someone else | Managers and Site Admins | ER-12 |
   | Continue a draft (drafts cannot be deleted, see Q-12) | Its author | ER |
   | Correct an Open event | Managers and Site Admins who see it | ER-21 |
   | Take and complete the review | One of its reviewers | RV-2 |
-  | Start an optional root cause analysis | Its reviewer, and the Managers and Site Admins who see it | RCA-18 |
-  | Edit and complete the root cause analysis | The designated people, while it is the current step | RCA-7 |
+  | Start an optional root cause analysis | Its reviewer, and the Managers and Site Admins who see it | RCA-15 |
+  | Edit and complete the root cause analysis | The designated people, while it is the current step | RCA-4 |
   | Prepare, deploy and cancel the action plan | The action plan owners | AP-2 |
   | Update a deployed corrective action | Its assignees, each for their own | AP-10 |
   | Validate, send back to Actions | The validators | VAL-1 |
