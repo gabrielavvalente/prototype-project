@@ -3,7 +3,9 @@
 The business requirements of the EHS event management platform, for the development team that
 builds it. They come from a validated prototype; what the prototype only simulated (demo people and
 plants, demo sign-in, data kept in the browser) is left out, and what a real product still needs
-to decide is listed in [Open questions](16-open-questions.md).
+to decide is listed in [Open questions](15-open-questions.md). People, roles and groups are
+maintained in a user management tool the development team builds separately; only what the
+products need from it is specified ([01](01-roles-and-permissions.md)).
 
 ## What is in, what is out
 
@@ -42,6 +44,5 @@ to decide is listed in [Open questions](16-open-questions.md).
 | 11 | Workflow settings | To write |
 | 12 | Master data | To write |
 | 13 | Event library (lists, filters, KPIs, reports, event page) | To write |
-| 14 | User directory (users, investigation groups) | To write |
-| 15 | Reference catalogs | To write |
-| 16 | [Open questions](16-open-questions.md) | Draft for review |
+| 14 | Reference catalogs | To write |
+| 15 | [Open questions](15-open-questions.md) | Draft for review |

@@ -4,23 +4,24 @@ The vocabulary, the main entities and the rules every other file builds on.
 
 ## Products
 
-The platform has three products sharing one organization, one set of people and one set of
-reference data: a change made in one product is seen by the others at once.
+The platform has two products sharing one organization, one set of people and one set of
+reference data: a change made in one is seen by the other at once. People, their roles, layers and
+groups come from a user management tool built separately by the development team; what the two
+products need from it is in [Roles and permissions](01-roles-and-permissions.md).
 
 | Product | Purpose | Who uses it |
 |---|---|---|
 | **Event Reporting** | Report EHS events and follow each one through its workflow (review, root cause analysis, actions, validation), with its safety communications | Everyone with an event role |
 | **Control Panel** | Configure, per pillar, the workflow each event follows and the master data lists used to classify events; manage the alert settings of a plant | People with a Control Panel role (and Site Admins for their plants' alerts) |
-| **User Directory** | See, read-only, the people and investigation groups within one's perimeter | People with a Control Panel role |
 
 ## Glossary
 
 | Term | Meaning |
 |---|---|
 | **Event** | Something that happened, or could have happened, at a plant and must be recorded: an accident, a near miss, an environmental release, a hazardous situation, an occupational disease. |
-| **Pillar** | The EHS domain of an event: Health & Safety, Environment, Industrial Risk, Industrial Hygiene. |
-| **Family** | The classification scheme of a pillar (one family per pillar). |
-| **Level** | The class of an event within its family, from most to least severe (e.g. TF1 Lost Time Accident … TF5 Hazardous Situation). Industrial Hygiene uses disease types instead. |
+| **Pillar** | The EHS domain of an event: Health & Safety, Environment, Industrial Risk. Roles, access, workflow settings and master data are per pillar. |
+| **Event type (family)** | The classification scheme of events. Health & Safety has two — Safety (TF) and Occupational Health (OH) — the other pillars one each. The reporter chooses the event type; in the Control Panel both belong to Health & Safety. |
+| **Level** | The class of an event within its event type, from most to least severe (e.g. TF1 Lost Time Accident … TF5 Hazardous Situation). Occupational Health uses disease types instead. |
 | **Plant** | A site. Every event belongs to one plant; every plant belongs to one business. |
 | **Perimeter** | The plants and pillars a person acts for. |
 | **Context** | In Event Reporting, the business, plant and pillar (or all the person's pillars) the person is working in. |
@@ -38,14 +39,14 @@ reference data: a change made in one product is seen by the others at once.
 | **Immediate action** | Something done at the scene right away to make the situation safe; recorded with the event, always completed. |
 | **Action plan** | One per event: its immediate actions and its corrective actions. |
 | **Corrective action** | An action of the plan with assignees, a due date, a priority and a status. |
-| **Plan owners** | The people who prepare and deploy an event's action plan. |
+| **Action plan owners** | The people who prepare and deploy an event's action plan. |
 | **Validator** | The person who decides whether a completed action plan was effective and the event can close. |
 | **Rework** | A validator reopening a closed event so that more actions are taken. |
 | **Locked** | An event closed by its validation: nothing of it changes until a rework. |
 | **Master data** | Pillar-specific reference lists used to classify events (Standards, Hazards, Body Parts, Injuries, Diseases, Aspects, Impacts, Industrial Risk Categories). |
 | **Central / Cluster / Local** | The three levels of Control Panel roles: all plants / two or more plants / one plant. |
 | **Safety Alert** | An anonymised summary of a reviewed event, readable by everyone at its plant. |
-| **Safety Warning** | The anonymised lessons of an analysed event, published by its plan owners for its plant. |
+| **Safety Warning** | The anonymised lessons of an analysed event, published by its action plan owners for its plant. |
 | **Sharing Hub** | Where a plant receives the Safety Warnings other plants shared with it, and checks whether the same could happen there. |
 | **Record Historian** | The log of every change made to an event after its review. |
 | **Alert** | An Event Reporting message telling a person about an event that concerns them. |
@@ -57,9 +58,9 @@ reference data: a change made in one product is seen by the others at once.
 | Entity | Holds |
 |---|---|
 | Business, Plant, location nodes | The organization tree (OV-1) |
-| Pillar, Family, Level | The classification of events (OV-4) |
-| Person | Event role and access, Control Panel roles, group memberships ([01](01-roles-and-permissions.md)) |
-| Investigation group | Name, pillars, plants, members |
+| Pillar, Event type, Level | The classification of events (OV-4) |
+| Person | Event role and access, Control Panel roles, group memberships — from the user management tool ([01](01-roles-and-permissions.md)) |
+| Investigation group | Name, pillars, plants, members — from the user management tool |
 | Event | Its report, the workflow it took at submission, its review, root cause analysis, action plan, validations, safety communications, history and Record Historian |
 | Action | Immediate or corrective; on a corrective one, assignees, due date (and its changes), priority, status |
 | Workflow setting | A Control Panel level requiring a phase for a pillar, level and plants; the reviewers a level chose |
@@ -78,26 +79,32 @@ reference data: a change made in one product is seen by the others at once.
 - **OV-2** Event Reporting always works within a context: one business, one plant, and one pillar
   or all the person's pillars at that plant. Lists, searches and indicators show only events of the
   context. The last context is remembered for each person.
-- **OV-3** Everything is in English. Dates read "25 Oct 2026"; times use 24 hours.
+- **OV-3** Each person chooses the language of the interface with a **language selector**; English
+  is the default. The languages offered are an open question (Q-9). Dates read "25 Oct 2026"; times
+  use 24 hours.
 
 ### Pillars, families and levels
 
-- **OV-4** The pillars, their families and levels:
+- **OV-4** The pillars, their event types and levels:
 
-  | Pillar | Family | Levels (most to least severe) |
+  | Pillar | Event type | Levels (most to least severe) |
   |---|---|---|
   | Health & Safety | TF (Safety) | TF1 Lost Time Accident · TF2 Non-Lost Time Accident · TF3 First Aid · TF4 Near Miss · TF5 Hazardous Situation |
+  | Health & Safety | OH (Occupational Health) | By disease type: Respiratory disease · Skin disease · Musculoskeletal disorder · Hearing loss |
   | Environment | EVE (Environment) | EvE1 Major environmental accident · EvE2 Environmental accident · EvE3 Minor environmental accident · EvE4 Near-accident · EvE5 Poor environmental situation |
   | Industrial Risk | SRE (Industrial Risk) | SRE1 Major site risk accident · SRE2 Significant site risk accident · SRE3 Moderate site risk accident · SRE4 Site risk near accident · SRE5 Site risk hazardous acts or conditions |
-  | Industrial Hygiene | OH (Occupational Health) | By disease type: Respiratory disease · Skin disease · Musculoskeletal disorder · Hearing loss |
+
+  In Event Reporting, Safety and Occupational Health are two different event types, each with its
+  own form, record numbers and assessment; in the Control Panel they are the same pillar: one set
+  of roles, one master data, and one workflow grid holding the TF levels and the OH disease types.
 
 - **OV-5** Each level has a one-sentence plain-language description, shown when the reporter
-  chooses it (the texts are in [Reference catalogs](15-reference-catalogs.md)).
+  chooses it (the texts are in [Reference catalogs](14-reference-catalogs.md)).
 - **OV-6** The reporter's risk question, according to pillar and level:
 
   | When | Question | Effect of Yes |
   |---|---|---|
-  | Health & Safety, Environment | "Could this be a SIP?" | Recorded as the reporter's view; it never makes the event critical. A TF5 answered Yes becomes TF4, and the reporter is told. |
+  | Safety (TF), Environment | "Could this be a SIP?" | Recorded as the reporter's view; it never makes the event critical. A TF5 answered Yes becomes TF4, and the reporter is told. |
   | Industrial Risk SRE1–SRE2 | "Could this be a CRP? (Critical Risk Potential)" | Recorded with the event. |
   | Industrial Risk SRE3–SRE5 | "Could this be a SRP? (Serious Risk Potential)" | Recorded with the event. |
 
@@ -122,8 +129,8 @@ reference data: a change made in one product is seen by the others at once.
   | Archived | Reviewed as not valid, with a reason. Final. Hidden from lists unless asked for. |
   | Closed | Every required step is done. Locked when closed by its validation (only a rework reopens it). |
 
-- **OV-8** **Record number**: given at submission, `<FAMILY>-<YY>-<NNNN>` (e.g. `TF-26-0003`),
-  numbered per family and year, never reused. A draft has none.
+- **OV-8** **Record number**: given at submission, `<EVENT TYPE>-<YY>-<NNNN>` (e.g. `TF-26-0003`,
+  `OH-26-0001`), numbered per event type and year, never reused. A draft has none.
 
 ### Workflow
 
@@ -148,8 +155,8 @@ reference data: a change made in one product is seen by the others at once.
 
   | Flag | Pillar | Raised when |
   |---|---|---|
-  | SIP | Health & Safety | The potential severity is Very Critical |
-  | HCI | Health & Safety | The actual severity is Very Critical |
+  | SIP | Safety (TF) | The potential severity is Very Critical |
+  | HCI | Safety (TF) | The actual severity is Very Critical |
   | SIP | Environment | The reviewer answers Yes to "Is this event a SIP?" |
   | HCL | Industrial Risk SRE1–SRE3 | The reviewer answers Yes to "Is this event an HCL?" |
   | SPL | Industrial Risk SRE4–SRE5 | The reviewer answers Yes to "Is this event an SPL?" |
@@ -182,4 +189,6 @@ reference data: a change made in one product is seen by the others at once.
 |---|---|
 | Who reviews | The reviewers chosen in the Control Panel and kept on the event at submission |
 | Statuses | Draft, Open, In Progress, Archived, Closed; a validator's rework reopens a locked event |
-| Language | English only |
+| Language | A language selector, English by default *(the prototype: English only)* |
+| Health & Safety | One pillar holding two event types, Safety (TF) and Occupational Health (OH) *(the prototype had a separate Industrial Hygiene pillar for OH)* |
+| People and roles | Maintained in a user management tool built by the development team, outside this specification |
