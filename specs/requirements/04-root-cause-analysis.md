@@ -39,10 +39,10 @@ Builds on: [00 Overview](00-overview.md), [01 Roles and permissions](01-roles-an
   analysts add, edit and delete them with the rules of ER-14 (deleting asks for confirmation). Once
   saved, the report shows the same immediate actions and the history records "Immediate actions
   updated in the root cause analysis by <name>" (one entry, for the last save that changed them).
-- **RCA-8 5W1H** (optional guide): six sections (content below). Each asks "Is this section
-  applicable to your event?" Yes / No; Yes asks its numbered questions, each with a text answer.
-  "Who was injured?" is offered for Safety (TF) events only. Done when every offered section is
-  No, or Yes with every answer. Never required.
+- **RCA-8 5W1H** (optional guide): one question for the whole guide, "Is this section applicable to
+  your event?" Yes / No. Yes offers its six sections (content below), each with its numbered
+  questions and a text answer per question; "Who was injured?" is offered for Safety (TF) events
+  only. Done when answered No, or Yes with every offered question answered. Never required.
 - **RCA-9 6M**: six themes (content below), each with its contributory causes and guidance
   questions, and one **Other** per theme (with a required name). Each chosen cause gets a number —
   **C1, C2…** in the order the causes were chosen, renumbered when one is removed — and asks "How
@@ -124,6 +124,7 @@ Every theme also offers **Other**.
 | 6M | At most six contributory causes in total |
 | Root causes | Any why can be one; no further classification (Behavioral / Conditional is left out, Q-13) |
 | Optional analysis | Can be started after any valid review, even on a Closed event (which it reopens), never on an Archived or locked one |
+| 5W1H | One "applicable?" question for the whole guide, not one per section *(the prototype: one per section)* |
 | "Who was injured?" | Safety (TF) events only *(the prototype: Health & Safety events, with Occupational Health a separate pillar)* |
 
 ## Examples
@@ -143,4 +144,6 @@ Every theme also offers **Other**.
 7. **Given** a Closed TF4 reviewed as valid with no analysis, **when** a Manager of its plant starts
    an optional analysis designating P, **then** the event is In Progress at Root cause analysis and
    P is alerted. (RCA-15)
-8. **Given** an Environment event, **then** the 5W1H guide has no "Who was injured?" section. (RCA-8)
+8. **Given** an Environment event, **when** the analyst answers Yes to "Is this section applicable to
+   your event?", **then** the 5W1H sections are offered, without "Who was injured?"; answering No
+   makes the 5W1H Done with nothing else to fill. (RCA-8)
