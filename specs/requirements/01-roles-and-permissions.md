@@ -77,7 +77,7 @@ ids in the last column of the tables point to where each permission is detailed.
   | Prepare, deploy and cancel the action plan | The action plan owners | AP-2 |
   | Update a deployed corrective action | Its assignees, each for their own | AP-10 |
   | Validate, send back to Actions | The validators | VAL-1 |
-  | Rework a locked event | The validators | VAL-7 |
+  | Rework a locked event | The validators | VAL-6 |
   | Publish the Safety Warning | The action plan owners | SC-7 |
   | Share a published Safety Warning to other plants | The action plan owners, the reviewer, the Site Admins of the event's plant | SH-1 |
   | Check a shared Safety Warning locally | The receiving plant's Site Admins and Managers | SH-7 |
@@ -85,7 +85,7 @@ ids in the last column of the tables point to where each permission is detailed.
 
 - **RP-8a** **Site Admins** of an event's plant may do every action of RP-8 on that event — whoever
   the table names — and correct its report at any status, as long as the event is not locked: a
-  locked event first needs a rework (VAL-7), which they may also do. They act under their own
+  locked event first needs a rework (VAL-6), which they may also do. They act under their own
   name: the history and the Record Historian show them, and the alerts of each step are raised as
   if the named person had acted. Drafts stay their author's.
 

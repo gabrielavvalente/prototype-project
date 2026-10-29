@@ -82,7 +82,7 @@ Builds on: [00 Overview](00-overview.md), [01 Roles and permissions](01-roles-an
 
 - **RCA-15** After a valid review, when neither the workflow nor the review made Root cause analysis
   required, the step is **Optional** while the event is In Progress or Closed (never Archived, nor
-  locked, VAL-6). Its reviewer and the Managers and Site Admins who can see the event can start it:
+  locked, VAL-5). Its reviewer and the Managers and Site Admins who can see the event can start it:
   "This analysis is not required. You can still start it for this event." — choosing who performs
   it (as RCA-1; refused without anyone: "Choose who will perform the root cause analysis.").
   Starting it makes Root cause analysis a required step, keeps and alerts the designated people

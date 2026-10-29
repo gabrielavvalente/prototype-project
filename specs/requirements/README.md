@@ -33,12 +33,12 @@ products need from it is specified ([01](01-roles-and-permissions.md)).
 |---|---|---|
 | 00 | [Overview and glossary](00-overview.md) | Reviewed |
 | 01 | [Roles and permissions](01-roles-and-permissions.md) | Reviewed |
-| 02 | [Event reporting](02-event-reporting.md) | Draft for review |
-| 03 | [Event review](03-event-review.md) (severity, critical events) | Draft for review |
-| 04 | [Root cause analysis](04-root-cause-analysis.md) | Draft for review |
-| 05 | Action plan | To write |
-| 06 | Validation | To write |
-| 07 | Record Historian | To write |
+| 02 | [Event reporting](02-event-reporting.md) | Reviewed |
+| 03 | [Event review](03-event-review.md) (severity, critical events) | Reviewed |
+| 04 | [Root cause analysis](04-root-cause-analysis.md) | Reviewed |
+| 05 | [Action plan](05-action-plan.md) | Draft for review |
+| 06 | [Validation](06-validation.md) | Draft for review |
+| 07 | [Record Historian](07-record-historian.md) | Draft for review |
 | 08 | Safety communication (Safety Alert, Safety Warning) | To write |
 | 09 | Sharing Hub | To write |
 | 10 | Alerts and notifications | To write |
